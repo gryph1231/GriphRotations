@@ -49,7 +49,6 @@ execute = Spell(135358),
   HeroicThrow                           = Spell(57755),
   Pummel                                = Spell(6552),
   Slam                                  = Spell(1464),
-  odynsfury                             = Spell(28880),--Gift of Naru
   VictoryRush                           = Spell(34428),
   -- Talents
   Avatar                                = Spell(107574),

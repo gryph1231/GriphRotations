@@ -131,7 +131,7 @@ local function SingleTarget()
   end
   -- odyns_fury,if=!talent.annihilator&buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
   if S.OdynsFury:IsCastable() and Target:IsInRange(8) and ((not S.Annihilator:IsAvailable()) and EnrageUp) then
-    if Cast(S.odynsfury, nil, nil, not Target:IsInMeleeRange(12)) then return "odyns_fury single_target 10"; end
+    if Cast(S.OdynsFury, nil, nil, not Target:IsInMeleeRange(12)) then return "odyns_fury single_target 10"; end
   end
   -- rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)|buff.frenzy.remains<gcd
   if S.Rampage:IsReady(8) and (Player:BuffUp(S.RecklessnessBuff) or Player:BuffRemains(S.EnrageBuff) < Player:GCD() or (Player:Rage() > 110 and S.OverwhelmingRage:IsAvailable()) or (Player:Rage() > 80 and not S.OverwhelmingRage:IsAvailable()) or Player:BuffRemains(S.FrenzyBuff) < Player:GCD()) then
@@ -151,7 +151,7 @@ local function SingleTarget()
   end
   -- odyns_fury,if=talent.annihilator&buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
   if S.OdynsFury:IsCastable() and Target:IsInRange(8) and (S.Annihilator:IsAvailable() and EnrageUp) then
-    if Cast(S.odynsfury, nil, nil, not Target:IsInMeleeRange(12)) then return "odyns_fury single_target 20"; end
+    if Cast(S.OdynsFury, nil, nil, not Target:IsInMeleeRange(12)) then return "odyns_fury single_target 20"; end
   end
   -- onslaught,if=!talent.annihilator&buff.enrage.up|talent.tenderize
   if S.Onslaught:IsReady() and Target:IsInRange(8) and ((not S.Annihilator:IsAvailable()) and EnrageUp or S.Tenderize:IsAvailable()) then
