@@ -709,8 +709,8 @@ local function APL()
   if Player:IsChanneling(S.FistsofFury) and Player:ChannelPercentage()<80 and Player:BuffRemains(S.SerenityBuff) < 1 and S.Serenity:IsAvailable() then
     return (S.StopFoF)
   end
-  
-   print(Player:ChannelPercentage())
+
+  --  print(Player:ChannelPercentage())
 
   if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 
