@@ -78,17 +78,12 @@ HR.GUISettings.APL.Monk = {
     DisplayStyle = {
   
     },
-    ShowFortifyingBrewCD = false,
     IgnoreToK = false,
     IgnoreFSK = true,
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
-      FortifyingBrew          = true,
-      InvokeXuenTheWhiteTiger = true,
-      StormEarthAndFireFixate = false,
-      TouchOfDeath            = true,
-      TouchOfKarma            = true,
+
     },
     -- {Display OffGCD as OffGCD, ForceReturn}
     OffGCDasOffGCD = {
@@ -144,7 +139,6 @@ CreatePanelOption("Slider", CP_Monk, "APL.Monk.Commons.HealthPotionHealth", {0, 
 
 -- Windwalker
 CreateARPanelOptions(CP_Windwalker, "APL.Monk.Windwalker")
-CreatePanelOption("CheckButton", CP_Windwalker, "APL.Monk.Windwalker.ShowFortifyingBrewCD", "Fortifying Brew", "Enable or disable Fortifying Brew recommendations.")
 CreatePanelOption("CheckButton", CP_Windwalker, "APL.Monk.Windwalker.IgnoreToK", "Ignore Touch of Karma", "Enable this setting to allow you to ignore Touch of Karma without stalling the rotation. (NOTE: Touch of Karma will never be suggested if this is enabled)")
 CreatePanelOption("CheckButton", CP_Windwalker, "APL.Monk.Windwalker.IgnoreFSK", "Ignore Flying Serpent Kick", "Enable this setting to allow you to ignore Flying Serpent Kick without stalling the rotation. (NOTE: Flying Serpent Kick will never be suggested if this is enabled)")
 CreatePanelOption("Slider", CP_Windwalker, "APL.Monk.Mistweaver.DampenHarmHP", {1, 100, 1}, "Dampen Harm HP Threshold", "Set the HP threshold for when to suggest Dampen Harm.)")

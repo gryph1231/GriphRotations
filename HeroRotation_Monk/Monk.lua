@@ -48,6 +48,7 @@ Spell.Monk.Commons = {
   LightsJudgment                        = Spell(255647),
   QuakingPalm                           = Spell(107079),
   Shadowmeld                            = Spell(58984),
+  CraneVortex = Spell(388848),
   -- Abilities
   CracklingJadeLightning                = Spell(117952),
   ExpelHarm                             = Spell(322101),
@@ -121,6 +122,7 @@ Spell.Monk.Windwalker = MergeTableByKey(Spell.Monk.Commons, {
   TouchofKarma                          = Spell(122470),
   TouchofKarmaBuff= Spell(125174),
   -- Buffs
+  ChiEnergyBuff = Spell(393057),
   BlackoutKickBuff                      = Spell(116768),
   DanceofChijiBuff                      = Spell(325202),
   HitComboBuff                          = Spell(196741),
@@ -133,6 +135,7 @@ Spell.Monk.Windwalker = MergeTableByKey(Spell.Monk.Commons, {
   MarkoftheCraneDebuff                  = Spell(228287),
   SkyreachExhaustionDebuff              = Spell(393050),
   -- Tier 29 Effects
+  FastFeet = Spell(388809),
   KicksofFlowingMomentumBuff            = Spell(394944),
   FistsofFlowingMomentumBuff            = Spell(394949),
 })

@@ -396,7 +396,8 @@ local function APL()
     -- Pool if nothing else to suggest
     -- if HR.CastAnnotated(S.Pool, false, "WAIT") then return "Wait/Pool Resources"; end
   end
-  if Player:AffectingCombat() then
+  if  Player:IsMounted() then return HR.Cast(S.mounted)
+  elseif Player:AffectingCombat() then
     return HR.Cast(S.combat)
   else
 return HR.Cast(S.MPI)
