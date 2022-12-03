@@ -431,18 +431,31 @@ local function ST()
 end
 
 local function APL()
-  Enemies20y = Player:GetEnemiesInRange(20)
- 
-  if HR.QueuedSpell():IsReadyQueue() then
-    if Cast(HR.QueuedSpell()) then return "Queue Spell Sent"; end
-  end
-
-	if not HR.queuedSpell[1]:CooldownUp() or #Enemies20y==0 or not Player:AffectingCombat() then
-		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-	end
 
   if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 
+  Enemies20y = Player:GetEnemiesInRange(20)
+
+  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
+    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
+end
+
+if HR.QueuedSpell():IsReadyQueue() then
+  return Cast(HR.QueuedSpell()) 
+ end
+
+
+
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
+  end
 
 
   -- Target Count Checking

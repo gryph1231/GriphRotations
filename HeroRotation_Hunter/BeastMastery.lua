@@ -418,6 +418,36 @@ end
 
 --- ======= MAIN =======
 local function APL()
+
+
+  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
+
+  Enemies20y = Player:GetEnemiesInRange(20)
+
+  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
+    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
+end
+
+if HR.QueuedSpell():IsReadyQueue() then
+  return Cast(HR.QueuedSpell()) 
+ end
+
+
+
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
+  end
+
+
+
+
   -- HeroLib SplashData Tracking Update (used as fallback if pet abilities are not in action bars)
   if S.Stomp:IsAvailable() then
     HL.SplashEnemies.ChangeFriendTargetsTracking("Mine Only")

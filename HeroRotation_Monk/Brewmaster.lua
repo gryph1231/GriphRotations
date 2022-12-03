@@ -187,12 +187,20 @@ local function APL()
 
   Enemies20y = Player:GetEnemiesInRange(20)
 
-  if  S.CracklingJadeLightning:ID() ==  HR.queuedSpell[1]:ID() and Player:MovingFor()>Player:GCD() then
-    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-    end
 
 
-  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y) then 
+    if  (S.CracklingJadeLightning:ID() ==  HR.queuedSpell[1]:ID() 
+    or S.ChiBurst:ID() ==  HR.queuedSpell[1]:ID()   
+    or S.Vivify:ID() ==  HR.queuedSpell[1]:ID() 
+    or S.SoothingMist:ID() ==  HR.queuedSpell[1]:ID()) 
+    and Player:MovingFor()>Player:GCD() then
+      HR.queuedSpell = { HR.Spell[1].Empty, 0 }
+      end
+   
+
+
+
+  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
     HR.queuedSpell = { HR.Spell[1].Empty, 0 }
 end
 
@@ -406,6 +414,9 @@ if HR.QueuedSpell():IsReadyQueue() then
     end
     -- Manually added Pool filler
     -- if Cast(S.PoolEnergy) then return "Pool Energy"; end
+    if S.ExpelHarm:IsCastable() and (EnemiesCount8>=1 or Target:IsInRange(8))  then
+      return Cast(S.ExpelHarm)
+    end
   end
 end
   if  Player:IsMounted() then return HR.Cast(S.mounted)

@@ -89,7 +89,7 @@ Spell.Monk.Commons = {
   TheEmperorsCapacitorBuff              = Spell(235054),
   -- Misc
   PoolEnergy                            = Spell(999910),
-  StopFoF                               = Spell(363653)
+  StopFoF                               = Spell(59752), -- will to survive
 }
 
 Spell.Monk.Windwalker = MergeTableByKey(Spell.Monk.Commons, {

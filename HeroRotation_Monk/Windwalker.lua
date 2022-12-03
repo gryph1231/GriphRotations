@@ -706,22 +706,20 @@ end
 -- APL Main
 local function APL()
 
+  if Player:IsChanneling(S.FistsofFury) and Player:ChannelPercentage()<80 and Player:BuffRemains(S.SerenityBuff) < 1 and S.Serenity:IsAvailable() then
+    return (S.StopFoF)
+  end
+  
+   print(Player:ChannelPercentage())
+
   if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 
   Enemies20y = Player:GetEnemiesInRange(20)
 
-
-  Enemies5y = Player:GetEnemiesInMeleeRange(5) -- Multiple Abilities
-  Enemies8y = Player:GetEnemiesInMeleeRange(8) -- Multiple Abilities
-  if AoEON() then
-    EnemiesCount8y = #Enemies8y -- AOE Toogle
-  else
-    EnemiesCount8y = 1
-  end
-  EnemiesCount10y = Player:GetEnemiesInRange(10) -- Multiple Abilities
-
-  Enemies10y= #EnemiesCount10y -- AOE Toogle
-
+-- if Player:IsChanneling() then
+--   return print(Player:ChannelName())
+-- end
+-- local _,_,_,startFoF, endFOF = UnitChannelInfo('player')
 
 
   if  (S.CracklingJadeLightning:ID() ==  HR.queuedSpell[1]:ID() 
@@ -745,7 +743,7 @@ local function APL()
 
 
 
-  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y) then 
+  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
     HR.queuedSpell = { HR.Spell[1].Empty, 0 }
 end
 
@@ -753,9 +751,25 @@ if HR.QueuedSpell():IsReadyQueue() then
   return Cast(HR.QueuedSpell()) 
  end
 
+ IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+
+
+  Enemies5y = Player:GetEnemiesInMeleeRange(5) -- Multiple Abilities
+  Enemies8y = Player:GetEnemiesInMeleeRange(8) -- Multiple Abilities
+  if AoEON() then
+    EnemiesCount8y = #Enemies8y -- AOE Toogle
+  else
+    EnemiesCount8y = 1
+  end
+  EnemiesCount10y = Player:GetEnemiesInRange(10) -- Multiple Abilities
+
+  Enemies10y= #EnemiesCount10y -- AOE Toogle
+
+
 
     
- if S.TouchofKarma:IsCastable() and Enemies10y>=1 and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedMajorHealing() or Player:HealthPercentage()<75) then
+ if S.TouchofKarma:IsCastable() and Enemies10y>=1 and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedMajorHealing() or Player:HealthPercentage()<75 or CDsON() and Target:IsInRange(8) and IsTanking) then
   return Cast(S.TouchofKarma) 
 end
 
@@ -805,22 +819,22 @@ if S.DiffuseMagic:IsCastable() and Enemies10y>=1 and Player:BuffDown(S.TouchofKa
     VarHoldXuen = ((not S.InvokeXuenTheWhiteTiger:IsAvailable()) or S.InvokeXuenTheWhiteTiger:CooldownRemains() > FightRemains or FightRemains - S.InvokeXuenTheWhiteTiger:CooldownRemains() < 120 and ((S.Serenity:IsAvailable() and FightRemains > S.Serenity:CooldownRemains() and S.Serenity:CooldownRemains() > 10) or (S.StormEarthAndFire:FullRechargeTime() < FightRemains and S.StormEarthAndFire:FullRechargeTime() > 15) or (S.StormEarthAndFire:Charges() == 0 and S.StormEarthAndFire:CooldownRemains() < FightRemains)))
     -- variable,name=hold_sef,op=set,value=cooldown.bonedust_brew.up&cooldown.storm_earth_and_fire.charges<2&chi<3|buff.bonedust_brew.remains<8
     VarHoldSEF = (S.BonedustBrew:CooldownUp() and S.StormEarthAndFire:Charges() < 2 and Player:Chi() < 3 or Player:BuffRemains(S.BonedustBrew) < 8)
-    if Settings.Commons.Enabled.Potions then
-      local PotionSelected = Everyone.PotionSelected()
-      if PotionSelected and PotionSelected:IsReady() then
-        if S.InvokeXuenTheWhiteTiger:IsAvailable() then
-          -- potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&pet.xuen_the_white_tiger.active|fight_remains<=60
-          if (Player:BuffUp(S.SerenityBuff) or Player:BuffUp(S.StormEarthAndFireBuff)) and XuenActive or FightRemains <= 60 then
-            if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion with xuen main 4"; end
-          end
-        else
-          -- potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&fight_remains<=60
-          if (Player:BuffUp(S.SerenityBuff) or Player:BuffUp(S.StormEarthAndFireBuff)) or FightRemains <= 60 then
-            if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion without xuen main 6"; end
-          end
-        end
-      end
-    end
+    -- if Settings.Commons.Enabled.Potions then
+    --   local PotionSelected = Everyone.PotionSelected()
+    --   if PotionSelected and PotionSelected:IsReady() then
+    --     if S.InvokeXuenTheWhiteTiger:IsAvailable() then
+    --       -- potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&pet.xuen_the_white_tiger.active|fight_remains<=60
+    --       if (Player:BuffUp(S.SerenityBuff) or Player:BuffUp(S.StormEarthAndFireBuff)) and XuenActive or FightRemains <= 60 then
+    --         if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion with xuen main 4"; end
+    --       end
+    --     else
+    --       -- potion,if=(buff.serenity.up|buff.storm_earth_and_fire.up)&fight_remains<=60
+    --       if (Player:BuffUp(S.SerenityBuff) or Player:BuffUp(S.StormEarthAndFireBuff)) or FightRemains <= 60 then
+    --         if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion without xuen main 6"; end
+    --       end
+    --     end
+    --   end
+    -- end
     -- With Xuen: call_action_list,name=opener,if=time<4&chi<5&!pet.xuen_the_white_tiger.active&!talent.serenity
     -- Without Xuen: call_action_list,name=opener,if=time<4&chi<5&!talent.serenity
     if (HL.CombatTime() < 4 and Player:Chi() < 5 and (not S.Serenity:IsAvailable()) and ((not XuenActive) or not S.InvokeXuenTheWhiteTiger:IsAvailable())) then
@@ -870,6 +884,8 @@ if S.DiffuseMagic:IsCastable() and Enemies10y>=1 and Player:BuffDown(S.TouchofKa
 
 end
 
+local function Init()
+  HR.Print("WW Monk should be up to date. @griph#9817 on discord if any issues.")
+end
 
-
-HR.SetAPL(269, APL)
+HR.SetAPL(269, APL, Init)
