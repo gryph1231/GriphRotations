@@ -41,8 +41,8 @@ end
 
 -- Interrupt
 function Commons.Interrupt(Range, Spell, Setting, StunSpells)
-  if Settings.InterruptEnabled and Target:IsInterruptible() and Target:IsInRange(Range) then
-    if Spell:IsCastable() then
+  if Settings.InterruptEnabled and Target:IsInterruptible() then
+    if Spell:IsCastable() and Target:IsInRange(30) and Target:Exists() and Target:CastPercentage()>25 and Target:CastPercentage()<75 then
       if HR.Cast(Spell, Setting) then return "Cast " .. Spell:Name() .. " (Interrupt)"; end
     elseif Settings.InterruptWithStun and Target:CanBeStunned() then
       if StunSpells then
@@ -60,6 +60,8 @@ end
 function Commons.IsSoloMode()
   return Settings.SoloMode and not Player:IsInRaidArea() and not Player:IsInDungeonArea();
 end
+
+
 
 -- Cycle Unit Helper
 function Commons.CastCycle(Object, Enemies, Condition, OutofRange, OffGCD, DisplayStyle)
@@ -195,3 +197,24 @@ function Commons.PotionSelected()
     return nil
   end
 end
+
+
+
+
+
+function Commons.HealthPotionSelected()
+  local Class = Cache.Persistent.Player.Class[1]
+  Class = gsub(Class, "%s+", "")
+  local Spec = Cache.Persistent.Player.Spec[2]
+  local HealthPotionIDs = {
+    191380, 191379, 191378
+
+  }
+ 
+    for _, HealthPotionID in ipairs(HealthPotionIDs) do
+      if Item(HealthPotionID):IsUsable() then
+        return Item(HealthPotionID)
+      end
+    end
+end
+

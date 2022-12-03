@@ -83,7 +83,7 @@ local function UseItems()
   -- use_items
   local TrinketToUse = Player:GetUseableTrinkets(OnUseExcludes)
   if TrinketToUse then
-    if Cast(TrinketToUse, nil, Settings.Commons.DisplayStyle.Trinkets) then return "Generic use_items for " .. TrinketToUse:Name(); end
+    return Cast(S.trinket1) 
   end
 end
 
@@ -127,6 +127,8 @@ local function ShouldPurify()
 end
 
 local function Precombat()
+
+  
   -- -- flask
   -- -- food
   -- -- augmentation
@@ -162,18 +164,18 @@ local function Defensives()
     return Cast(S.PurifyingBrew)
    end
   
-  if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<50) then
+  if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage() <= Settings.Brewmaster.DampenHarmHP) then
     return Cast(S.DampenHarm)
   end
- 
   
-  if S.FortifyingBrew:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) then
+  if S.FortifyingBrew:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage() <= Settings.Brewmaster.FortifyingBrewHP) then
     return Cast(S.FortifyingBrew) 
   end
 
-   if S.DiffuseMagic:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedMajorHealing() or Player:HealthPercentage()<65) then
-    return Cast(S.DiffuseMagic)
-   end
+   if S.DiffuseMagic:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedMajorHealing() or Player:HealthPercentage() <= Settings.Brewmaster.DiffuseMagicHP) then
+    return Cast(S.DiffuseMagic) 
+  end
+
 
 
 end
@@ -212,8 +214,31 @@ if HR.QueuedSpell():IsReadyQueue() then
   -- Are we tanking?
   IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
+
+
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
+  end
+
+
   --- In Combat
   if Everyone.TargetIsValid() then
+
+    -- if Settings.Commons.Enabled.HealthPotion then
+    --   local HealthPotionSelected = Everyone.HealthPotionSelected()
+    --   if HealthPotionSelected and HealthPotionSelected:IsReady() then
+    --     print("testing")
+    --     -- if Cast(HealthPotionSelected, nil, Settings.Commons.DisplayStyle.HealthPotions) then return "I.HealthPotion"; end
+    --   end
+    -- end
+
     -- Precombat
     if not Player:AffectingCombat() then
       local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
@@ -243,41 +268,10 @@ if HR.QueuedSpell():IsReadyQueue() then
     if (Settings.Commons.Enabled.Trinkets) then
       local ShouldReturn = UseItems(); if ShouldReturn then return ShouldReturn; end
     end
-    -- gift_of_the_ox
-    -- TODO: Find a way to track gift orbs
-    -- dampen_harm,if=incoming_damage_1500ms&buff.fortifying_brew.down
-    -- Note: Handled via Defensives()
-    -- fortifying_brew,if=incoming_damage_1500ms&(buff.dampen_harm.down|buff.diffuse_magic.down)
-    -- Note: Handled via Defensives()
-    -- potion
-    --[[if I.PotionofPhantomFire:IsReady() and Settings.Commons.Enabled.Potions then
-      if Cast(I.PotionofPhantomFire, nil, Settings.Commons.DisplayStyle.Potions) then return "potion main 4"; end
-    end]]
+    
+
     if CDsON() then
-      -- blood_fury
-      -- if S.BloodFury:IsCastable() then
-      --   if Cast(S.BloodFury, Settings.Commons.OffGCDasOffGCD.Racials) then return "blood_fury main 6"; end
-      -- end
-      -- -- berserking
-      -- if S.Berserking:IsCastable() then
-      --   if Cast(S.Berserking, Settings.Commons.OffGCDasOffGCD.Racials) then return "berserking main 8"; end
-      -- end
-      -- -- lights_judgment
-      -- if S.LightsJudgment:IsCastable() then
-      --   if Cast(S.LightsJudgment, Settings.Commons.OffGCDasOffGCD.Racials, nil, not Target:IsInRange(40)) then return "lights_judgment main 10"; end
-      -- end
-      -- -- fireblood
-      -- if S.Fireblood:IsCastable() then
-      --   if Cast(S.Fireblood, Settings.Commons.OffGCDasOffGCD.Racials) then return "fireblood main 12"; end
-      -- end
-      -- -- ancestral_call
-      -- if S.AncestralCall:IsCastable() then
-      --   if Cast(S.AncestralCall, Settings.Commons.OffGCDasOffGCD.Racials) then return "ancestral_call main 14"; end
-      -- end
-      -- -- bag_of_tricks
-      -- if S.BagOfTricks:IsCastable() then
-      --   if Cast(S.BagOfTricks, Settings.Commons.OffGCDasOffGCD.Racials, nil, not Target:IsInRange(40)) then return "bag_of_tricks main 16"; end
-      -- end
+    
       -- invoke_niuzao_the_black_ox,if=buff.recent_purifies.value>=health.max*0.05&(target.cooldown.pause_action.remains>=20|time<=10|target.cooldown.pause_action.duration=0)
       -- APL Note: Cast Niuzao when we'll get at least 20 seconds of uptime. This is specific to the default enemy APL and will need adjustments for other enemies.
       -- Note: Using BossFilteredFightRemains instead of the above calculation
@@ -322,7 +316,7 @@ if HR.QueuedSpell():IsReadyQueue() then
       if Cast(S.Fleshcraft, nil, Settings.Commons.DisplayStyle.Covenant) then return "fleshcraft main 32"; end
     end
     -- keg_smash,if=spell_targets>=2
-    if S.KegSmash:IsCastable() and (EnemiesCount12>= 2 and Target:IsInRange(12)) then
+    if S.KegSmash:IsCastable() and (Target:IsInRange(15)) then
       if Cast(S.KegSmash, nil, nil, not Target:IsSpellInRange(S.KegSmash)) then return "keg_smash main 34"; end
     end
     -- faeline_stomp,if=spell_targets>=2
@@ -336,7 +330,7 @@ if HR.QueuedSpell():IsReadyQueue() then
     -- celestial_brew,if=buff.blackout_combo.down&incoming_damage_1999ms>(health.max*0.1+stagger.last_tick_damage_4)&buff.elusive_brawler.stack<2
     -- Handled via Defensives()
     -- exploding_keg
-    if S.ExplodingKeg:IsCastable() and EnemiesCount8>=1 then
+    if S.ExplodingKeg:IsCastable() and EnemiesCount8>=1 and CDsON() then
       if Cast(S.ExplodingKeg, nil, nil, not Target:IsInRange(40)) then return "exploding_keg 39"; end
     end
     -- tiger_palm,if=talent.rushing_jade_wind.enabled&buff.blackout_combo.up&buff.rushing_jade_wind.up
@@ -345,7 +339,7 @@ if HR.QueuedSpell():IsReadyQueue() then
      end
   
     -- breath_of_fire,if=buff.charred_passions.down&runeforge.charred_passions.equipped
-    if S.BreathOfFire:IsCastable() and (CharredPassionsEquipped and Player:BuffDown(S.CharredPassions)) and (EnemiesCount15>=1 or Target:IsInRange(15)) then
+    if S.BreathOfFire:IsCastable() and (CharredPassionsEquipped and Player:BuffDown(S.CharredPassions)) and (EnemiesCount12>=1 or Target:IsInRange(10)) then
       if Cast(S.BreathOfFire, nil, nil, not Target:IsInRange(12)) then return "breath_of_fire main 42"; end
     end
 
@@ -425,7 +419,7 @@ end
 end
 
 local function Init()
-  HR.Print("Brewmaster Monk rotation has not been updated for pre-patch 10.0. It may not function properly or may cause errors in-game.")
+  HR.Print("Brewmaster Monk should be up to date. @griph#9817 on discord if any issues")
 end
 
 HR.SetAPL(268, APL, Init)

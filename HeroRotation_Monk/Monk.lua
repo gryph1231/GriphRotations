@@ -31,6 +31,11 @@ Spell.Monk.Commons = {
   combat = Spell(999956),
   channeling = Spell(999957),
   mounted = Spell(999958),
+
+  -- trinket2 = Item(1030910),
+  trinket1 = Spell(999982),
+
+
   FaelineStomp                          = Spell(388193),
   SoothingMist = Spell(115175),
   AncestralCall                         = Spell(274738),
@@ -204,6 +209,10 @@ Spell.Monk.Mistweaver = MergeTableByKey(Spell.Monk.Commons, {
 -- Items
 if not Item.Monk then Item.Monk = {}; end
 Item.Monk.Commons = {
+   trinket2 = Item(1030910),
+   trinket1 = Item(999981),
+healthstone = Item(538745),
+-- HealthPotion = Item(169451),
 }
 
 Item.Monk.Windwalker = MergeTableByKey(Item.Monk.Commons, {

@@ -237,6 +237,10 @@ end
 
 -- APL Main
 local function APL()
+
+  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
+
+
   Enemies8y = Player:GetEnemiesInMeleeRange(8)
   Enemies30y = Player:GetEnemiesInRange(30)
   if AoEON() then
@@ -246,6 +250,19 @@ local function APL()
     EnemiesCount8y = 1
     EnemiesCount30y = 1
   end
+
+
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
+  end
+
 
   if Everyone.TargetIsValid() then
     -- Precombat

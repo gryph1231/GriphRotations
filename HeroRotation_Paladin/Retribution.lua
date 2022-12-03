@@ -526,45 +526,45 @@ local function ESFRPooling()
     if Cast(S.WakeofAshes, nil, nil, not Target:IsInRange(12)) then return "wake_of_ashes es_fr_pooling 7"; end
   end
   -- blade_of_justice,if=holy_power<=3
-  if S.BladeofJustice:IsCastable() and (Player:HolyPower() <= 3) then
+  if S.BladeofJustice:IsCastable() and (Player:HolyPower() <= 3) and Target:IsInRange(12) then
     if Cast(S.BladeofJustice, nil, nil, not Target:IsSpellInRange(S.BladeofJustice)) then return "blade_of_justice es_fr_pooling 8"; end
   end
   -- judgment,if=!debuff.judgment.up
-  if S.Judgment:IsCastable() and (Target:DebuffDown(S.JudgmentDebuff)) then
+  if S.Judgment:IsCastable() and (Target:DebuffDown(S.JudgmentDebuff)) and Target:IsInRange(30) then
     if Cast(S.Judgment, nil, nil, not Target:IsSpellInRange(S.Judgment)) then return "judgment es_fr_pooling 10"; end
   end
   -- hammer_of_wrath
-  if S.HammerofWrath:IsReady() then
+  if S.HammerofWrath:IsReady(30) then
     if Cast(S.HammerofWrath, Settings.Retribution.GCDasOffGCD.HammerOfWrath, nil, not Target:IsSpellInRange(S.HammerofWrath)) then return "hammer_of_wrath es_fr_pooling 12"; end
   end
   -- crusader_strike,if=cooldown.crusader_strike.charges_fractional>=1.75&(holy_power<=2|holy_power<=3&cooldown.blade_of_justice.remains>gcd*2|holy_power=4&cooldown.blade_of_justice.remains>gcd*2&cooldown.judgment.remains>gcd*2)
-  if S.CrusaderStrike:IsCastable() and (S.CrusaderStrike:ChargesFractional() >= 1.75 and (Player:HolyPower() <= 2 or Player:HolyPower() <= 3 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 or Player:HolyPower() == 4 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 and S.Judgment:CooldownRemains() > Player:GCD() * 2)) then
+  if S.CrusaderStrike:IsCastable() and Target:IsInRange(8) and (S.CrusaderStrike:ChargesFractional() >= 1.75 and (Player:HolyPower() <= 2 or Player:HolyPower() <= 3 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 or Player:HolyPower() == 4 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 and S.Judgment:CooldownRemains() > Player:GCD() * 2)) then
     if Cast(S.CrusaderStrike, nil, nil, not Target:IsInMeleeRange(5)) then return "crusader_strike es_fr_pooling 14"; end
   end
   -- seraphim,if=!talent.final_reckoning&cooldown.execution_sentence.remains<=gcd*3&(!covenant.kyrian|cooldown.divine_toll.remains<9)
-  if S.Seraphim:IsReady() and ((not S.FinalReckoning:IsAvailable()) and S.ExecutionSentence:CooldownRemains() <= Player:GCD() * 3 and (CovenantID ~= 1 or S.DivineToll:CooldownRemains() < 9)) then
+  if S.Seraphim:IsReady() and Target:IsInRange(12) and ((not S.FinalReckoning:IsAvailable()) and S.ExecutionSentence:CooldownRemains() <= Player:GCD() * 3 and (CovenantID ~= 1 or S.DivineToll:CooldownRemains() < 9)) then
     if Cast(S.Seraphim, Settings.Retribution.GCDasOffGCD.Seraphim) then return "seraphim es_fr_pooling 16"; end
   end
   -- call_action_list,name=finishers
   local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
   -- crusader_strike
-  if S.CrusaderStrike:IsCastable() then
+  if S.CrusaderStrike:IsCastable() and Target:IsInRange(8) then
     if Cast(S.CrusaderStrike, nil, nil, not Target:IsInMeleeRange(5)) then return "crusader_strike es_fr_pooling 18"; end
   end
   -- arcane_torrent,if=holy_power<=4
-  if S.ArcaneTorrent:IsCastable() and (Player:HolyPower() <= 4) then
+  if S.ArcaneTorrent:IsCastable() and (Player:HolyPower() <= 4) and Target:IsInRange(8) then
     if Cast(S.ArcaneTorrent, Settings.Commons.OffGCDasOffGCD.Racials, nil, not Target:IsInRange(8)) then return "arcane_torrent es_fr_pooling 20"; end
   end
   -- exorcism
-  if S.Exorcism:IsCastable() then
+  if S.Exorcism:IsCastable() and Target:IsInRange(30) then
     if Cast(S.Exorcism) then return "exorcism es_fr_pooling 22"; end
   end
   -- seraphim,if=(!talent.final_reckoning|cooldown.final_reckoning.remains<=gcd*3)&(!talent.execution_sentence|cooldown.execution_sentence.remains<=gcd*3|talent.final_reckoning)&(!covenant.kyrian|cooldown.divine_toll.remains<9)
-  if S.Seraphim:IsReady() and (((not S.FinalReckoning:IsAvailable()) or S.FinalReckoning:CooldownRemains() <= Player:GCD() * 3) and ((not S.ExecutionSentence:IsAvailable()) or S.ExecutionSentence:CooldownRemains() <= Player:GCD() * 3 or S.FinalReckoning:IsAvailable()) and (CovenantID ~= 1 or S.DivineToll:CooldownRemains() < 9)) then
+  if S.Seraphim:IsReady() and Target:IsInRange(12) and (((not S.FinalReckoning:IsAvailable()) or S.FinalReckoning:CooldownRemains() <= Player:GCD() * 3) and ((not S.ExecutionSentence:IsAvailable()) or S.ExecutionSentence:CooldownRemains() <= Player:GCD() * 3 or S.FinalReckoning:IsAvailable()) and (CovenantID ~= 1 or S.DivineToll:CooldownRemains() < 9)) then
     if Cast(S.Seraphim, Settings.Retribution.GCDasOffGCD.Seraphim) then return "seraphim es_fr_pooling 24"; end
   end
   -- consecration
-  if S.Consecration:IsCastable() then
+  if S.Consecration:IsCastable() and Target:IsInRange(8) then
     if Cast(S.Consecration, nil, nil, not Target:IsInMeleeRange(8)) then return "consecration es_fr_pooling 26"; end
   end
 end
@@ -579,7 +579,7 @@ local function ESFRActive()
     local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
   end
   -- divine_toll,if=holy_power<=2
-  if S.DivineToll:IsCastable() and CDsON() and Player:HolyPower() <= 2 and Target:IsInRange(12) then
+  if S.DivineToll:IsCastable() and CDsON() and Player:HolyPower() <= 2 and Target:IsInRange(30) then
     if Cast(S.DivineToll) then return "divine_toll es_fr_active 4"; end
   end
   -- vanquishers_hammer
@@ -591,11 +591,11 @@ local function ESFRActive()
     if Cast(S.WakeofAshes, nil, nil, not Target:IsInRange(12)) then return "wake_of_ashes es_fr_active 8"; end
   end
   -- blade_of_justice,if=conduit.expurgation&(!runeforge.divine_resonance&holy_power<=3|holy_power<=2)
-  if S.BladeofJustice:IsCastable() and (S.Expurgation:ConduitEnabled() and ((not DivineResonanceEquipped) and Player:HolyPower() <= 3 or Player:HolyPower() <= 2)) then
+  if S.BladeofJustice:IsCastable() and Target:IsInRange(12) and (S.Expurgation:ConduitEnabled() and ((not DivineResonanceEquipped) and Player:HolyPower() <= 3 or Player:HolyPower() <= 2)) then
     if Cast(S.BladeofJustice, nil, nil, not Target:IsSpellInRange(S.BladeofJustice)) then return "blade_of_justice es_fr_active 10"; end
   end
   -- judgment,if=!debuff.judgment.up&(holy_power>=1&runeforge.the_magistrates_judgment|holy_power>=2)
-  if S.Judgment:IsCastable() and (Target:DebuffDown(S.JudgmentDebuff) and (Player:HolyPower() >= 1 and MagistratesJudgmentEquipped or Player:HolyPower() >= 2)) then
+  if S.Judgment:IsCastable() and (Target:DebuffDown(S.JudgmentDebuff) and (Player:HolyPower() >= 1 and MagistratesJudgmentEquipped or Player:HolyPower() >= 2)) and Target:IsInRange(30) then
     if Cast(S.Judgment, nil, nil, not Target:IsSpellInRange(S.Judgment)) then return "judgment es_fr_active 12"; end
   end
   -- call_action_list,name=finishers
@@ -605,11 +605,11 @@ local function ESFRActive()
     if Cast(S.WakeofAshes, nil, nil, not Target:IsInRange(12)) then return "wake_of_ashes es_fr_active 14"; end
   end
   -- blade_of_justice,if=holy_power<=3
-  if S.BladeofJustice:IsCastable() and (Player:HolyPower() <= 3) then
+  if S.BladeofJustice:IsCastable() and (Player:HolyPower() <= 3) and Target:IsInRange(12) then
     if Cast(S.BladeofJustice, nil, nil, not Target:IsSpellInRange(S.BladeofJustice)) then return "blade_of_justice es_fr_active 16"; end
   end
   -- judgment,if=!debuff.judgment.up
-  if S.Judgment:IsCastable() and (Target:DebuffDown(S.Judgment)) then
+  if S.Judgment:IsCastable() and (Target:DebuffDown(S.Judgment)) and Target:IsInRange(30) then
     if Cast(S.Judgment, nil, nil, not Target:IsSpellInRange(S.Judgment)) then return "judgment es_fr_active 18"; end
   end
   -- hammer_of_wrath
@@ -617,25 +617,29 @@ local function ESFRActive()
     if Cast(S.HammerofWrath, Settings.Retribution.GCDasOffGCD.HammerOfWrath, nil, not Target:IsSpellInRange(S.HammerofWrath)) then return "hammer_of_wrath es_fr_active 20"; end
   end
   -- crusader_strike
-  if S.CrusaderStrike:IsCastable() then
+  if S.CrusaderStrike:IsCastable() and Target:IsInRange(8) then
     if Cast(S.CrusaderStrike, nil, nil, not Target:IsInMeleeRange(5)) then return "crusader_strike es_fr_active 22"; end
   end
   -- arcane_torrent
-  if S.ArcaneTorrent:IsCastable() then
+  if S.ArcaneTorrent:IsCastable() and Target:IsInRange(8) then
     if Cast(S.ArcaneTorrent, Settings.Commons.OffGCDasOffGCD.Racials, nil, not Target:IsInRange(8)) then return "arcane_torrent es_fr_active 24"; end
   end
   -- exorcism
-  if S.Exorcism:IsCastable() then
+  if S.Exorcism:IsCastable() and Target:IsInRange(30) then
     if Cast(S.Exorcism) then return "exorcism es_fr_active 26"; end
   end
   -- consecration
-  if S.Consecration:IsCastable() then
+  if S.Consecration:IsCastable() and Target:IsInRange(8) then
     if Cast(S.Consecration, nil, nil, not Target:IsInMeleeRange(8)) then return "consecration es_fr_active 28"; end
   end
 end
 
 --- ======= MAIN =======
 local function APL()
+
+  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
+
+
   Enemies8y = Player:GetEnemiesInRange(8) 
   Enemies10y = Player:GetEnemiesInRange(10) 
   Enemies15y = Player:GetEnemiesInRange(15) 
@@ -670,18 +674,17 @@ local function APL()
       FightRemains = HL.FightRemains(Enemies8y, false)
     end
   end
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 --BURST
-if S.Crusade:IsReady() and S.CrusadeTalent:IsAvailable() and #Enemies10y>=2 and CDsON() and Player:HolyPower()>2 then
+if S.Crusade:IsReady() and S.CrusadeTalent:IsAvailable() and #Enemies10y>=2 and CDsON() and Player:HolyPower()>2 and Target:IsInRange(8) then
   return Cast(S.Crusade) 
   end
-  if S.AvengingWrath:IsReady() and not S.CrusadeTalent:IsAvailable() and #Enemies10y>=2 and CDsON() then
+  if S.AvengingWrath:IsReady() and not S.CrusadeTalent:IsAvailable() and #Enemies10y>=2 and CDsON() and Target:IsInRange(8) then
     return Cast(S.AvengingWrath) 
     end
 
 
 
-  if S.Judgment:IsReady() and #Enemies10y>=2 and Target:DebuffDown(S.JudgmentDebuff)  then
+  if S.Judgment:IsReady(30) and #Enemies10y>=2 and Target:DebuffDown(S.JudgmentDebuff)  then
     return Cast(S.Judgment) 
     end
 
@@ -690,13 +693,13 @@ if S.FinalReckoning:IsReady() and #Enemies8y>=2 and CDsON() and AoEON() and Targ
   return Cast(S.FinalReckoning) 
   end
   
-    if S.DivineToll:IsReady() and #Enemies10y>=2 and Target:DebuffDown(S.JudgmentDebuff) and Player:HolyPower()<=2 and S.Judgment:CooldownRemains()>Player:GCD() then
+    if S.DivineToll:IsReady(30) and #Enemies10y>=2 and Target:DebuffDown(S.JudgmentDebuff) and Player:HolyPower()<=2 and S.Judgment:CooldownRemains()>Player:GCD() then
       return Cast(S.DivineToll) 
       end
-      if S.Consecration:IsReady() and #Enemies10y>=3 and Target:DebuffDown(S.ConsecrationDebuff)  then
+      if S.Consecration:IsReady() and Target:IsInRange(8) and #Enemies10y>=5 and Target:DebuffDown(S.ConsecrationDebuff)  then
         return Cast(S.Consecration) 
         end
-  if S.RadiantDecree:IsReady() and #Enemies10y>=2 then
+  if IsUsableSpell('Radiant Decree') and Target:IsInRange(8) and S.RadiantDecree:CooldownUp() and #Enemies10y>=2 then
     return Cast(S.RadiantDecree) 
     end
     if S.Seraphim:IsReady() and #Enemies10y>=2 then
@@ -713,9 +716,16 @@ if S.FinalReckoning:IsReady() and #Enemies8y>=2 and CDsON() and AoEON() and Targ
   --   return S.trinket:Cast()
   --   end	 
 
-  if Player:HealthPercentage() < 40 and Player:AffectingCombat() and IsUsableItem(187802) and GetItemCooldown(187802) == 0 and GetItemCount(187802) >= 1 
-then Cast(I.potion) end
-
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
+  end
 
   if S.ShieldofVengeance:IsCastable() and Player:HealthPercentage() <= 65 and Player:AffectingCombat() then
     return Cast(S.ShieldofVengeance)  

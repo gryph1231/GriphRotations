@@ -172,11 +172,12 @@ local function Cooldowns()
   end
   -- potion,if=buff.avenging_wrath.up
   if Settings.Commons.Enabled.Potions and (Player:BuffUp(S.AvengingWrathBuff)) then
-    local PotionSelected = Everyone.PotionSelected()
-    if PotionSelected and PotionSelected:IsReady() then
-      if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cooldowns 10"; end
+      local PotionSelected = Everyone.PotionSelected()
+      if PotionSelected and PotionSelected:IsReady() then
+        local DPSiconpotion = Spell(176108);
+        if Cast(DPSiconpotion, nil, Settings.Commons.DisplayStyle.Potions) then return "potion main 6"; end
+      end
     end
-  end
   -- use_items,if=buff.seraphim.up|!talent.seraphim.enabled
   if (Player:BuffUp(S.SeraphimBuff) or not S.Seraphim:IsAvailable()) then
     -- local TrinketToUse = Player:GetUseableTrinkets(OnUseExcludes)
@@ -284,11 +285,9 @@ end
 
 -- APL Main
 local function APL()
+  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 
-  -- if not Target:Exists() then 
-  --   return 0,"Interface\\Addons\\HeroRotation\\Textures\\999955.blp"
-  --   end
-  
+
   Enemies8y = Player:GetEnemiesInMeleeRange(8)
   Enemies10y = Player:GetEnemiesInMeleeRange(10)
 
@@ -312,16 +311,16 @@ local function APL()
   IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
 
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 
-
-
-
-
-
-  if Player:HealthPercentage() < 40 and Player:AffectingCombat() and IsUsableItem(187802) and GetItemCooldown(187802) == 0 and GetItemCount(187802) >= 1 
-then
-    if Cast(I.potion) then return "potion drank"; end
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
   end
 
   if not Player:BuffUp(S.DevotionAura) then 

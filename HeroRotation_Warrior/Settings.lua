@@ -18,16 +18,15 @@ local CreateARPanelOptions = HR.GUI.CreateARPanelOptions
 HR.GUISettings.APL.Warrior = {
   Commons = {
     Enabled = {
+      HealthPotion = true,
       Potions = true,
       Trinkets = true,
     },
     DisplayStyle = {
-      Potions = "Suggested",
-      Signature = "Suggested",
-      Trinkets = "Suggested",
-      Charge = "Suggested",
-      HeroicLeap = "Suggested",
+
     },
+    HealthPotionHealth = 30,
+
     VictoryRushHP = 80,
     -- {Display OffGCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
@@ -79,7 +78,6 @@ HR.GUISettings.APL.Warrior = {
       Selected = "Power",
     },
     DisplayStyle = {
-      Defensive = "Suggested"
     },
     -- {Display OffGCD as OffGCD, ForceReturn}
     OffGCDasOffGCD = {
@@ -102,6 +100,7 @@ local CP_Protection = CreateChildPanel(CP_Warrior, "Protection")
 
 CreateARPanelOptions(CP_Warrior, "APL.Warrior.Commons")
 CreatePanelOption("Slider", CP_Warrior, "APL.Warrior.Commons.VictoryRushHP", {0, 100, 1}, "Victory Rush HP", "Set the Victory Rush/Impending Victory HP threshold. Set to 0 to disable.")
+CreatePanelOption("Slider", CP_Warrior, "APL.Warrior.Commons.HealthPotionHealth", {0, 100, 1}, "Healing Potion HP Threshold", "Set the HP threshold for when to suggest Healing Potion use.)")
 
 -- Arms Settings
 CreateARPanelOptions(CP_Arms, "APL.Warrior.Arms")

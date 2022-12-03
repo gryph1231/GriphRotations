@@ -958,25 +958,25 @@ end
 --     return LOSCheck and InLOS[unit]["unit_LOS"] and HL.GetTime() < InLOS[unit]["unit_LOS"]
 -- end
 
--- --- Instance checker
--- -- @return boolean
--- function Player:InArena()
---     return select(2, IsInInstance()) == "arena"
--- end
+--- Instance checker
+-- @return boolean
+function Player:InArena()
+    return select(2, IsInInstance()) == "arena"
+end
 
--- function Player:InBattlegrounds()
---     return select(2, IsInInstance()) == "pvp"
--- end
+function Player:InBattlegrounds()
+    return select(2, IsInInstance()) == "pvp"
+end
 
--- function Player:InPvP()
---     return self:InArena() or self:InBattlegrounds()
--- end
+function Player:InPvP()
+    return self:InArena() or self:InBattlegrounds()
+end
 
--- function Player:InDungeon()
---     return select(2, IsInInstance()) == "party" or C_Map.GetBestMapForUnit("Player") == 480
--- end
+function Player:InDungeon()
+    return select(2, IsInInstance()) == "party" or C_Map.GetBestMapForUnit("Player") == 480
+end
 
--- function Player:InDungeonOrRaid()
---     return select(2, IsInInstance()) == "party" or select(2, IsInInstance()) == "raid" or
---             C_Map.GetBestMapForUnit("Player") == 480
--- end
+function Player:InDungeonOrRaid()
+    return select(2, IsInInstance()) == "party" or select(2, IsInInstance()) == "raid" or
+            C_Map.GetBestMapForUnit("Player") == 480
+end

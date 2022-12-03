@@ -359,30 +359,6 @@ local function APL()
 
   if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
 
--- print(Player:NeedPanicHealing())
-
-  if AoEON() then
-    Enemies8y = Player:GetEnemiesInMeleeRange(8) -- Multiple Abilities
-    EnemiesCount8 = #Enemies8y
-  else
-    EnemiesCount8 = 1
-  end
-
-  Enemies20y = Player:GetEnemiesInRange(20)
-
-  if HR.QueuedSpell():IsReadyQueue() then
-    if Cast(HR.QueuedSpell()) then return "Queue Spell Sent"; end
-  end
-
-	if not HR.queuedSpell[1]:CooldownUp() or Enemies20y==0 or not Player:AffectingCombat() then
-		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-	end
-
-
-  -- Range check
-  TargetInMeleeRange = Target:IsInMeleeRange(5)
-
-
   Enemies20y = Player:GetEnemiesInRange(20)
  
   if HR.QueuedSpell():IsReadyQueue() then
@@ -392,8 +368,29 @@ local function APL()
 	if not HR.queuedSpell[1]:CooldownUp() or #Enemies20y==0 or not Player:AffectingCombat() then
 		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
 	end
+  
+  if Settings.Commons.Enabled.HealthPotion 
+  and (not Player:InArena() and not Player:InBattlegrounds())  
+  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+     return Cast(HPicon)
+    end
+  end
 
+-- print(Player:NeedPanicHealing())
 
+  if AoEON() then
+    Enemies8y = Player:GetEnemiesInMeleeRange(8) -- Multiple Abilities
+    EnemiesCount8 = #Enemies8y
+  else
+    EnemiesCount8 = 1
+  end
+  
+  -- Range check
+  TargetInMeleeRange = Target:IsInMeleeRange(5)
 
 
 
@@ -407,7 +404,7 @@ local function APL()
       local ShouldReturn = Defensive(); if ShouldReturn then return ShouldReturn; end
     end
     -- Interrupt
-    local ShouldReturn = Everyone.Interrupt(5, S.Pummel, Settings.Commons.OffGCDasOffGCD.Pummel, StunInterrupts); if ShouldReturn then return ShouldReturn; end
+    local ShouldReturn = Everyone.Interrupt(5, S.Pummel, Settings.Commons.OffGCDasOffGCD.Pummel, StunInterrupts) and Target:IsInRange(5) and Target:CastPercentage()>25 and Target:CastPercentage()<75; if ShouldReturn then return ShouldReturn; end
     -- auto_attack
     -- shield_charge,if=time=0
     -- charge,if=time=0
@@ -441,11 +438,15 @@ local function APL()
     end
     -- potion,if=buff.avatar.up|target.time_to_die<25
     if Settings.Commons.Enabled.Potions and (Player:BuffUp(S.AvatarBuff) or Target:TimeToDie() < 25) then
-      local PotionSelected = Everyone.PotionSelected()
-      if PotionSelected and PotionSelected:IsReady() then
-        if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion main 10"; end
+      if Settings.Commons.Enabled.Potions then
+        local PotionSelected = Everyone.PotionSelected()
+        if PotionSelected and PotionSelected:IsReady() then
+          local DPSiconpotion = Spell(176108);
+          if Cast(DPSiconpotion, nil, Settings.Commons.DisplayStyle.Potions) then return "potion main 6"; end
+        end
       end
     end
+
     -- revenge,if=buff.revenge.up&(target.health.pct>20|spell_targets.thunder_clap>3)&cooldown.shield_slam.remains
     if S.Revenge:IsReady() and Target:IsInRange(8) and (Player:BuffUp(S.RevengeBuff) and (Target:HealthPercentage() > 20 or EnemiesCount8 > 3) and S.ShieldSlam:CooldownRemains() > 0) then
       if Cast(S.Revenge) then return "revenge main 12"; end

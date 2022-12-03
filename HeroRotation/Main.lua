@@ -594,7 +594,7 @@ function HR.Ready()
 
   -- HR.playSoundR(891);
 
-
+  -- print(tonumber(HR.MainIconFrame.Texture:GetTexture(Texture)))
 
 
   local AreWeReady

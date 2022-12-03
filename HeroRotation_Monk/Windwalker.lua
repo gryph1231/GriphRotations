@@ -161,9 +161,10 @@ local function Precombat()
     if Cast(S.ChiBurst, nil, nil, not Target:IsInRange(40)) then return "chi_burst precombat 6"; end
   end
   -- chi_wave
-  if S.ChiWave:IsReady() and Target:IsInRange(10) then
-    if Cast(S.ChiWave, nil, nil, not Target:IsInRange(40)) then return "chi_wave precombat 8"; end
-  end
+  if S.ChiWave:IsReady() and Target:AffectingCombat() and Target:IsInRange(40) then
+    return Cast(S.ChiWave)
+   end
+  
 end
 
 local function Opener()
@@ -176,7 +177,7 @@ local function Opener()
     if Everyone.CastTargetIf(S.TigerPalm, Enemies5y, "min", EvaluateTargetIfFilterMarkoftheCrane101, nil, not Target:IsInMeleeRange(5)) then return "tiger_palm opener 4"; end
   end
   -- chi_wave,if=chi.max-chi=2
-  if S.ChiWave:IsReady() and (Player:ChiDeficit() >= 2) and Target:IsInRange(15) then
+  if S.ChiWave:IsReady() and (Player:ChiDeficit() >= 2) and Target:AffectingCombat() and Target:IsInRange(40) then
     if Cast(S.ChiWave, nil, nil, not Target:IsInRange(40)) then return "chi_wave opener 6"; end
   end
   -- expel_harm
@@ -731,6 +732,18 @@ local function APL()
     HR.queuedSpell = { HR.Spell[1].Empty, 0 }
     end
  
+    if Settings.Commons.Enabled.HealthPotion 
+    and (not Player:InArena() and not Player:InBattlegrounds())  
+    and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+    then
+      local HPicon = Item(169451);
+      local HealthPotionSelected = Everyone.HealthPotionSelected()
+      if HealthPotionSelected and HealthPotionSelected:IsReady() then
+       return Cast(HPicon)
+      end
+    end
+
+
 
   if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y) then 
     HR.queuedSpell = { HR.Spell[1].Empty, 0 }
@@ -783,7 +796,7 @@ if S.DiffuseMagic:IsCastable() and Enemies10y>=1 and Player:BuffDown(S.TouchofKa
     --   if Cast(S.FlyingSerpentKickLand) then return "flying_serpent_kick land"; end
     -- end
     -- spear_hand_strike,if=target.debuff.casting.react
-    local ShouldReturn = Everyone.Interrupt(5, S.SpearHandStrike, Settings.Commons.OffGCDasOffGCD.SpearHandStrike, Stuns); if ShouldReturn then return ShouldReturn; end
+    local ShouldReturn = Everyone.Interrupt(5, S.SpearHandStrike, Settings.Commons.OffGCDasOffGCD.SpearHandStrike, Interrupts) and Target:IsInRange(5) and Target:CastPercentage()>25 and Target:CastPercentage()<75; if ShouldReturn then return ShouldReturn; end
     -- Fortifying Brew
     if S.FortifyingBrew:IsReady() and Settings.Windwalker.ShowFortifyingBrewCD and Player:HealthPercentage() <= Settings.Windwalker.FortifyingBrewHP then
       if Cast(S.FortifyingBrew, Settings.Windwalker.GCDasOffGCD.FortifyingBrew, nil, not Target:IsSpellInRange(S.FortifyingBrew)) then return "fortifying_brew main 2"; end

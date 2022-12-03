@@ -17,6 +17,8 @@ local CreateARPanelOptions = HR.GUI.CreateARPanelOptions
 HR.GUISettings.APL.Paladin = {
   Commons = {
     Enabled = {
+      HealthPotion = true,
+
       Trinkets = true,
       Potions = true,
       Items = true,
@@ -27,6 +29,8 @@ HR.GUISettings.APL.Paladin = {
       Potions = "Suggested",
       Items = "Suggested",
     },
+    HealthPotionHealth = 30,
+
     GCDasOffGCD = {
     },
     OffGCDasOffGCD = {
@@ -104,6 +108,7 @@ local CP_Holy = CreateChildPanel(CP_Paladin, "Holy")
 -- Shared Paladin settings
 CreateARPanelOptions(CP_Paladin, "APL.Paladin.Commons")
 
+CreatePanelOption("Slider", CP_Paladin, "APL.Paladin.Commons.HealthPotionHealth", {0, 100, 1}, "Healing Potion HP Threshold", "Set the HP threshold for when to suggest Healing Potion use.)")
 -- Protection
 CreatePanelOption("Slider", CP_Protection, "APL.Paladin.Protection.LoHHP", {0, 100, 1}, "Lay on Hands HP", "Set the Lay on Hands HP threshold.")
 CreatePanelOption("Slider", CP_Protection, "APL.Paladin.Protection.GoAKHP", {0, 100, 1}, "GoAK HP", "Set the Guardian of Ancient Kings HP threshold.")
