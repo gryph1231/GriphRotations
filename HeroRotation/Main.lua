@@ -101,15 +101,15 @@ BINDING_NAME_HEROROTATION_LOCK = "Lock the addon in place";
 HR.MainFrame = CreateFrame("Frame", "HeroRotation_MainFrame", UIParent);
 HR.MainFrame:SetFrameStrata(HR.GUISettings.General.MainFrameStrata);
 HR.MainFrame:SetFrameLevel(10);
-HR.MainFrame:SetWidth(112);
-HR.MainFrame:SetHeight(96);
+HR.MainFrame:SetWidth(64);
+HR.MainFrame:SetHeight(64);
 
 HR.MainFrame:SetClampedToScreen(true);
 -- Resize
 function HR.MainFrame:ResizeUI(Multiplier)
   local FramesToResize = {
     -- TODO: Put the Size in one Array in UI.lua and pull it out here
-    { HR.MainFrame, 112, 96 },
+    { HR.MainFrame, 64, 64 },
     { HR.MainIconFrame, 64, 64 },
     { HR.SmallIconFrame, 64, 32 },
     { HR.SmallIconFrame.Icon[1], HR.GUISettings.General.BlackBorderIcon and 30 or 32,
