@@ -295,16 +295,16 @@ end
 function Unit:IsInterruptible()			
 	local spellId = self:CastingInfo(9) or self:ChannelingInfo(8)
 	
-    -- Profils interrupts
-	if HR.db.profile.mainOption.activeList == "Mythic+" then
-	    currentList = HR.List.PvEInterrupts
-	elseif HR.db.profile.mainOption.activeList == "PvP" then
-	    currentList = HR.List.PvPInterrupts
-	elseif HR.db.profile.mainOption.activeList == "Mixed PvE PvP" then
-		currentList = HR.List.MixedInterrupts
-	else 
-	    currentList = HR.List.CustomInterrupts
-	end	
+    -- -- Profils interrupts
+	-- if HR.db.profile.mainOption.activeList == "Mythic+" then
+	--     currentList = HR.List.PvEInterrupts
+	-- elseif HR.db.profile.mainOption.activeList == "PvP" then
+	--     currentList = HR.List.PvPInterrupts
+	-- elseif HR.db.profile.mainOption.activeList == "Mixed PvE PvP" then
+	-- 	currentList = HR.List.MixedInterrupts
+	-- else 
+	--     currentList = HR.List.CustomInterrupts
+	-- end	
 	
 	if not self:IsCasting() and not self:IsChanneling() then
         return false
@@ -319,26 +319,26 @@ function Unit:IsInterruptible()
 	    return true
 	end
 	
-     -- Profils List	
-	if currentList[spellId] then
-        -- Instant cast interrupt with randomizer
-        -- if self:IsCasting() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
-           -- return true
-        -- end
-        -- -- Instant channel interrupt with randomizer
-        -- if self:IsChanneling() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
-            -- return true
-        -- end
-	    -- -- Cast interrupt with randomizer
-        -- if self:IsCasting() and not HR.InstantInterruptON() and self:CastPercentage() >= randomGenerator("Interrupt") then
-            -- return true
-        -- end
-        -- -- Channel interrupt with randomizer
-        -- if self:IsChanneling() and not HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Seconds") then
-            -- return true
-        -- end
+    --  -- Profils List	
+	-- if currentList[spellId] then
+    --     -- Instant cast interrupt with randomizer
+    --     -- if self:IsCasting() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
+    --        -- return true
+    --     -- end
+    --     -- -- Instant channel interrupt with randomizer
+    --     -- if self:IsChanneling() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
+    --         -- return true
+    --     -- end
+	--     -- -- Cast interrupt with randomizer
+    --     -- if self:IsCasting() and not HR.InstantInterruptON() and self:CastPercentage() >= randomGenerator("Interrupt") then
+    --         -- return true
+    --     -- end
+    --     -- -- Channel interrupt with randomizer
+    --     -- if self:IsChanneling() and not HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Seconds") then
+    --         -- return true
+    --     -- end
 	
-	end
+	-- end
 
     return false
 end
