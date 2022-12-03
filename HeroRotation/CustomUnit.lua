@@ -291,57 +291,57 @@ function Unit:CastSecondsRemaining()
     return 0
 end
 
---- Interruptible with random generator
-function Unit:IsInterruptible()			
-	local spellId = self:CastingInfo(9) or self:ChannelingInfo(8)
+-- --- Interruptible with random generator
+-- function Unit:IsInterruptible()			
+-- 	local spellId = self:CastingInfo(9) or self:ChannelingInfo(8)
 	
-    -- -- Profils interrupts
-	-- if HR.db.profile.mainOption.activeList == "Mythic+" then
-	--     currentList = HR.List.PvEInterrupts
-	-- elseif HR.db.profile.mainOption.activeList == "PvP" then
-	--     currentList = HR.List.PvPInterrupts
-	-- elseif HR.db.profile.mainOption.activeList == "Mixed PvE PvP" then
-	-- 	currentList = HR.List.MixedInterrupts
-	-- else 
-	--     currentList = HR.List.CustomInterrupts
-	-- end	
+--     -- -- Profils interrupts
+-- 	-- if HR.db.profile.mainOption.activeList == "Mythic+" then
+-- 	--     currentList = HR.List.PvEInterrupts
+-- 	-- elseif HR.db.profile.mainOption.activeList == "PvP" then
+-- 	--     currentList = HR.List.PvPInterrupts
+-- 	-- elseif HR.db.profile.mainOption.activeList == "Mixed PvE PvP" then
+-- 	-- 	currentList = HR.List.MixedInterrupts
+-- 	-- else 
+-- 	--     currentList = HR.List.CustomInterrupts
+-- 	-- end	
 	
-	if not self:IsCasting() and not self:IsChanneling() then
-        return false
-    end
+-- 	if not self:IsCasting() and not self:IsChanneling() then
+--         return false
+--     end
 
-    if self:CastingInfo(8) == true or self:ChannelingInfo(7) == true then
-        return false
-    end
+--     if self:CastingInfo(8) == true or self:ChannelingInfo(7) == true then
+--         return false
+--     end
 	
-	-- Interrupt Everything
-	if HR.InterruptEverythingON() and self:IsCasting() and self:CastPercentage() >= randomGenerator("Interrupt") then
-	    return true
-	end
+-- 	-- -- Interrupt Everything
+-- 	-- if HR.InterruptEverythingON() and self:IsCasting() and self:CastPercentage() >= randomGenerator("Interrupt") then
+-- 	--     return true
+-- 	-- end
 	
-    --  -- Profils List	
-	-- if currentList[spellId] then
-    --     -- Instant cast interrupt with randomizer
-    --     -- if self:IsCasting() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
-    --        -- return true
-    --     -- end
-    --     -- -- Instant channel interrupt with randomizer
-    --     -- if self:IsChanneling() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
-    --         -- return true
-    --     -- end
-	--     -- -- Cast interrupt with randomizer
-    --     -- if self:IsCasting() and not HR.InstantInterruptON() and self:CastPercentage() >= randomGenerator("Interrupt") then
-    --         -- return true
-    --     -- end
-    --     -- -- Channel interrupt with randomizer
-    --     -- if self:IsChanneling() and not HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Seconds") then
-    --         -- return true
-    --     -- end
+--     --  -- Profils List	
+-- 	-- if currentList[spellId] then
+--     --     -- Instant cast interrupt with randomizer
+--     --     -- if self:IsCasting() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
+--     --        -- return true
+--     --     -- end
+--     --     -- -- Instant channel interrupt with randomizer
+--     --     -- if self:IsChanneling() and HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Instant Interrupt") then
+--     --         -- return true
+--     --     -- end
+-- 	--     -- -- Cast interrupt with randomizer
+--     --     -- if self:IsCasting() and not HR.InstantInterruptON() and self:CastPercentage() >= randomGenerator("Interrupt") then
+--     --         -- return true
+--     --     -- end
+--     --     -- -- Channel interrupt with randomizer
+--     --     -- if self:IsChanneling() and not HR.InstantInterruptON() and self:CastSeconds() >= randomGenerator("Seconds") then
+--     --         -- return true
+--     --     -- end
 	
-	-- end
+-- 	-- end
 
-    return false
-end
+--     return false
+-- end
 
 -- Is the current unit a boss ?
 local function UnitIsBoss(unitID)
