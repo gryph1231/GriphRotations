@@ -154,7 +154,7 @@ local function Precombat()
   end
   -- expel_harm,if=chi<chi.max
   if S.ExpelHarm:IsReady() and Target:IsInRange(8) and (Player:Chi() < Player:ChiMax())  then
-    if Cast(S.ExpelHarm, nil, nil, not Target:IsInMeleeRange(8)) then return "expel_harm precombat 4"; end
+    return Cast(S.ExpelHarm)
   end
   -- chi_burst,if=!talent.faeline_stomp
   if S.ChiBurst:IsReady() and (not S.FaelineStomp:IsAvailable()) and Target:IsInRange(10) then
@@ -606,7 +606,7 @@ local function Fallthru()
     return Cast(S.TigerPalm)
   end
   -- expel_harm,if=chi.max-chi>=1
-  if S.ExpelHarm:IsReady() and (Player:ChiDeficit() >= 1) and Target:IsInRange(8) then
+  if S.ExpelHarm:IsReady() and Target:IsInRange(8) and (Player:ChiDeficit() >= 1)  then
     return Cast(S.ExpelHarm)
   end
   -- chi_burst,if=chi.max-chi>=1&active_enemies=1&raid_event.adds.in>20|chi.max-chi>=2&active_enemies>=2
@@ -694,7 +694,7 @@ end
 local function SpendEnergy()
   -- expel_harm,if=chi.max-chi>=1&(energy.time_to_max<1|cooldown.serenity.remains<2|energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5)&(!buff.bonedust_brew.up|buff.bloodlust.up|buff.invokers_delight.up)
   if S.ExpelHarm:IsReady() and Target:IsInRange(8) and (Player:ChiDeficit() >= 1 and (EnergyTimeToMaxRounded() < 1 or S.Serenity:CooldownRemains() < 2 or EnergyTimeToMaxRounded() < 4 and S.FistsofFury:CooldownRemains() < 1.5) and (Player:BuffDown(S.BonedustBrewBuff) or Player:BloodlustUp() or Player:BuffUp(S.InvokersDelightBuff))) then
-    if Cast(S.ExpelHarm, nil, nil, not Target:IsInMeleeRange(8)) then return "expel_harm spend_energy 2"; end
+    return Cast(S.ExpelHarm)
   end
   -- tiger_palm,target_if=min:debuff.mark_of_the_crane.remains+(debuff.skyreach_exhaustion.up*20),if=buff.teachings_of_the_monastery.stack<3&combo_strike&chi.max-chi>=(2+buff.power_strikes.up)&(energy.time_to_max<1|cooldown.serenity.remains<2|energy.time_to_max<4&cooldown.fists_of_fury.remains<1.5)
   if S.TigerPalm:IsReady() and (Target:IsInRange(10) and S.Skyreach:IsAvailable() or Target:IsInRange(8)) and (Player:BuffStack(S.TeachingsoftheMonasteryBuff) < 3 and ComboStrike(S.TigerPalm) and Player:ChiDeficit() >= (2 + num(Player:BuffUp(S.PowerStrikesBuff))) and (EnergyTimeToMaxRounded() < 1 or S.Serenity:CooldownRemains() < 2 or EnergyTimeToMaxRounded() < 4 and S.FistsofFury:CooldownRemains() < 1.5)) then

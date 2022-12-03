@@ -162,20 +162,16 @@ local function Defensives()
     return Cast(S.PurifyingBrew)
    end
   
-  if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) then
+  if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<50) then
     return Cast(S.DampenHarm)
   end
  
   
-  if S.FortifyingBrew:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<30) then
+  if S.FortifyingBrew:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) then
     return Cast(S.FortifyingBrew) 
   end
 
-  if S.DiffuseMagic:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) then
-    return Cast(S.DiffuseMagic)
-   end
-
-   if S.DiffuseMagic:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) then
+   if S.DiffuseMagic:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and Player:BuffDown(S.FortifyingBrewBuff) and (Player:NeedMajorHealing() or Player:HealthPercentage()<65) then
     return Cast(S.DiffuseMagic)
    end
 
