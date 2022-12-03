@@ -1,0 +1,49 @@
+{
+  "dbfiles": [
+    "Covenant",
+    "GarrTalent",
+    "GarrTalentRank",
+    "ItemEffect",
+    "ItemXItemEffect",
+    "ItemSparse",
+    "JournalEncounterItem",
+    "RuneforgeLegendaryAbility",
+    "Soulbind",
+    "SoulbindConduit",
+    "SoulbindConduitItem",
+    "SoulbindConduitRank",
+    "SpecSetMember",
+    "Spell",
+    "SpellAuraOptions",
+    "SpellCooldowns",
+    "SpellDuration",
+    "SpellEffect",
+    "SpellItemEnchantment",
+    "SpellMisc",
+    "SpellName",
+    "SpellProcsPerMinute",
+    "SpellProcsPerMinuteMod",
+    "SpellRange",
+    "Talent"
+  ],
+  "parsers": [
+    "Conduits",
+    "ItemData",
+    "ItemRange",
+    "ItemSpell",
+    "LegendaryItems",
+    "Soulbinds",
+    "SpellAuraStat",
+    "SpellDuration",
+    "SpellEnchant",
+    "SpellGCD",
+    "SpellMeleeRange",
+    "SpellProjectileSpeed",
+    "SpellRPPM",
+    "SpellTickTime",
+    "Talent"
+  ],
+  "filters": [
+    "ItemRange"
+  ]
+}
