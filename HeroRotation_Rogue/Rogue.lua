@@ -42,7 +42,13 @@ local Settings = {
 if not Spell.Rogue then Spell.Rogue = {} end
 
 Spell.Rogue.Commons = {
-  -- Racials
+  MPI        = Spell(999955),
+  combat     = Spell(999956),
+  channeling = Spell(999957),
+  mounted    = Spell(999958),
+  TRINKET1   = Spell(999988), -- garrison_blueweapon GetSpellTexture(179071)
+  TRINKET2   = Spell(999989), -- garrison_greenweapon
+
   AncestralCall           = Spell(274738),
   ArcanePulse             = Spell(260364),
   ArcaneTorrent           = Spell(25046),

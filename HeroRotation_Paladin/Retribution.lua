@@ -121,7 +121,7 @@ end, "PLAYER_REGEN_ENABLED")
 -- time_to_hpg_expr_t @ https://github.com/simulationcraft/simc/blob/shadowlands/engine/class_modules/paladin/sc_paladin.cpp#L3236
 local function ComputeTimeToHPG()
   local GCDRemains = Player:GCDRemains()
-  local ShortestHPGTime = mathmin(
+  local ShortestHPGTime = math.min(
     S.CrusaderStrike:CooldownRemains(),
     S.BladeofJustice:CooldownRemains(),
     S.Judgment:CooldownRemains(),

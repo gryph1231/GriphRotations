@@ -18,6 +18,18 @@ local CreateARPanelOptions = HR.GUI.CreateARPanelOptions
 -- Default settings
 HR.GUISettings.APL.Rogue = {
   Commons = {
+
+    Enabled = {
+
+      HealthPotion = true,
+
+       },
+       DisplayStyle = {
+         
+       HealthPotion = "Main Icon",
+
+       },
+       HealthPotionHealth = 30,
     PoisonRefresh = 15,
     PoisonRefreshCombat = 3,
     RangedMultiDoT = true, -- Suggest Multi-DoT at 10y Range
@@ -140,6 +152,8 @@ CreatePanelOption("Dropdown", CP_Rogue, "APL.Rogue.Commons.SerratedBoneSpikeDump
 CreatePanelOption("CheckButton", CP_Rogue, "APL.Rogue.Commons.ShowPooling", "Show Pooling", "Show pooling icon instead of pooling prediction.")
 CreatePanelOption("CheckButton", CP_Rogue, "APL.Rogue.Commons.STMfDAsDPSCD", "ST Marked for Death as DPS CD", "Enable if you want to put Single Target Marked for Death shown as Off GCD (top icons) instead of Suggested.")
 CreateARPanelOptions(CP_Rogue, "APL.Rogue.Commons")
+CreatePanelOption("Slider", CP_Rogue, "APL.Rogue.Commons.HealthPotionHealth", {0, 100, 1}, "Healing Potion HP Threshold", "Set the HP threshold for when to suggest Healing Potion use.)")
+
 -- Rogue 2
 CreatePanelOption("Slider", CP_Rogue2, "APL.Rogue.Commons2.CrimsonVialHP", {0, 100, 1}, "Crimson Vial HP", "Set the Crimson Vial HP threshold.")
 CreatePanelOption("Slider", CP_Rogue2, "APL.Rogue.Commons2.FeintHP", {0, 100, 1}, "Feint HP", "Set the Feint HP threshold.")

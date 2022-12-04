@@ -506,7 +506,42 @@ end
 
 --- ======= MAIN =======
 local function APL ()
-  -- Local Update
+
+  if (Player:IsCasting() or Player:IsChanneling()) and not Player:IsChanneling(S.SpinningCraneKick) then return HR.Cast(S.channeling) end
+
+
+  Enemies20y = Player:GetEnemiesInRange(20)
+
+
+
+  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y == 0) then
+    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
+  end
+
+  if HR.QueuedSpell():IsReadyQueue() then
+    return Cast(HR.QueuedSpell())
+  end
+
+
+
+
+
+  IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+
+
+  if Settings.Commons.Enabled.HealthPotion
+      and (not Player:InArena() and not Player:InBattlegrounds())
+      and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
+  then
+    local HPicon = Item(169451);
+    local HealthPotionSelected = Everyone.HealthPotionSelected()
+    if HealthPotionSelected and HealthPotionSelected:IsReady() then
+      return Cast(HPicon)
+    end
+  end
+
+
   BladeFlurryRange = S.AcrobaticStrikes:IsAvailable() and 9 or 6
   BetweenTheEyesDMGThreshold = S.Dispatch:Damage() * 1.25
   ComboPoints = Player:ComboPoints()
@@ -586,7 +621,7 @@ local function APL ()
         if HR.Cast(S.SinisterStrike) then return "Cast Sinister Strike (Opener)" end
       end
     end
-    return
+    return HR.Cast(S.MPI)
   end
 
   -- In Combat
@@ -653,15 +688,25 @@ local function APL ()
       if HR.Cast(S.BagofTricks, Settings.Commons.GCDasOffGCD.Racials) then return "Cast Bag of Tricks" end
     end
     -- OutofRange Pistol Shot
-    if S.PistolShot:IsCastable() and Target:IsSpellInRange(S.PistolShot) and not Target:IsInRange(BladeFlurryRange) and not Player:StealthUp(true, true)
-      and EnergyDeficit < 25 and (ComboPointsDeficit >= 1 or EnergyTimeToMax <= 1.2) then
-      if HR.Cast(S.PistolShot) then return "Cast Pistol Shot (OOR)" end
-    end
+    -- if S.PistolShot:IsCastable() and Target:IsSpellInRange(S.PistolShot) and not Target:IsInRange(BladeFlurryRange) and not Player:StealthUp(true, true)
+    --   and EnergyDeficit < 25 and (ComboPointsDeficit >= 1 or EnergyTimeToMax <= 1.2) then
+    --   if HR.Cast(S.PistolShot) then return "Cast Pistol Shot (OOR)" end
+    -- end
   end
+
+
+  if Player:IsMounted() then return HR.Cast(S.mounted)
+  elseif Player:AffectingCombat() then
+    return HR.Cast(S.combat)
+  else
+    return HR.Cast(S.MPI)
+  end
+
+
 end
 
 local function Init ()
-  -- Nothing
+  HR.Print("OL rogue should be up to date. @griph#9817 on discord if any issues")
 end
 
 HR.SetAPL(260, APL, Init)
