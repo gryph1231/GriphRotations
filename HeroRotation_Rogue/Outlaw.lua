@@ -509,7 +509,7 @@ local function APL ()
 
   if (Player:IsCasting() or Player:IsChanneling()) and not Player:IsChanneling(S.SpinningCraneKick) then return HR.Cast(S.channeling) end
 
-
+  if Player:IsMounted() then return HR.Cast(S.mounted) end 
   Enemies20y = Player:GetEnemiesInRange(20)
 
 
@@ -621,7 +621,12 @@ local function APL ()
         if HR.Cast(S.SinisterStrike) then return "Cast Sinister Strike (Opener)" end
       end
     end
-    return HR.Cast(S.MPI)
+    if Player:IsMounted() then return HR.Cast(S.mounted)
+    elseif Player:AffectingCombat() then
+      return HR.Cast(S.combat)
+    else
+      return HR.Cast(S.MPI)
+    end
   end
 
   -- In Combat
@@ -638,6 +643,7 @@ local function APL ()
         HR.CastSuggested(S.MarkedforDeath)
       end
     end
+ 
   end
 
   if Everyone.TargetIsValid() then
@@ -688,10 +694,10 @@ local function APL ()
       if HR.Cast(S.BagofTricks, Settings.Commons.GCDasOffGCD.Racials) then return "Cast Bag of Tricks" end
     end
     -- OutofRange Pistol Shot
-    -- if S.PistolShot:IsCastable() and Target:IsSpellInRange(S.PistolShot) and not Target:IsInRange(BladeFlurryRange) and not Player:StealthUp(true, true)
-    --   and EnergyDeficit < 25 and (ComboPointsDeficit >= 1 or EnergyTimeToMax <= 1.2) then
-    --   if HR.Cast(S.PistolShot) then return "Cast Pistol Shot (OOR)" end
-    -- end
+    if S.PistolShot:IsCastable() and Target:IsSpellInRange(S.PistolShot) and not Target:IsInRange(BladeFlurryRange) and not Player:StealthUp(true, true)
+      and EnergyDeficit < 25 and (ComboPointsDeficit >= 1 or EnergyTimeToMax <= 1.2) then
+      if HR.Cast(S.PistolShot) then return "Cast Pistol Shot (OOR)" end
+    end
   end
 
 
