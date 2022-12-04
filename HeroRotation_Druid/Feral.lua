@@ -262,7 +262,7 @@ end
 
 local function Clearcasting()
   -- thrash_cat,target_if=refreshable
-  if S.Thrash:IsReady() then
+  if thrashit then
     if Everyone.CastCycle(S.Thrash, Enemies11y, EvaluateCycleThrash, not Target:IsInMeleeRange(11)) then return "thrash clearcasting 2"; end
   end
   -- swipe_cat,if=spell_targets.swipe_cat>variable.swipe_v_shred
@@ -295,7 +295,7 @@ local function BuilderCycle()
   end
   -- pool_resource,for_next=1
   -- thrash_cat,target_if=refreshable
-  if S.Thrash:IsCastable() and (Target:DebuffRefreshable(S.ThrashDebuff)) then
+  if thrashit and (Target:DebuffRefreshable(S.ThrashDebuff)) then
     if CastPooling(S.Thrash, Player:EnergyTimeToX(40), not Target:IsInMeleeRange(11)) then return "thrash builder_cycle 6"; end
   end
   -- brutal_slash
@@ -422,7 +422,7 @@ local function Bloodtalons()
     if Cast(S.LIMoonfire, nil, nil, not Target:IsSpellInRange(S.LIMoonfire)) then return "moonfire bloodtalons 4"; end
   end
   -- thrash_cat,target_if=refreshable&buff.bt_thrash.down
-  if S.Thrash:IsReady() and (BTBuffDown(S.Thrash)) then
+  if thrashit and (BTBuffDown(S.Thrash)) then
     if Everyone.CastCycle(S.Thrash, Enemies11y, EvaluateCycleThrash, not Target:IsInMeleeRange(8)) then return "thrash bloodtalons 6"; end
   end
   -- brutal_slash,if=buff.bt_brutal_slash.down
@@ -442,7 +442,7 @@ local function Bloodtalons()
     if Cast(S.Swipe, nil, nil, not Target:IsInMeleeRange(8)) then return "swipe bloodtalons 14"; end
   end
   -- thrash_cat,if=buff.bt_thrash.down
-  if S.Thrash:IsReady() and (BTBuffDown(S.Thrash)) then
+  if thrashit and (BTBuffDown(S.Thrash)) then
     if Cast(S.Thrash, nil, nil, not Target:IsInMeleeRange(8)) then return "thrash bloodtalons 16"; end
   end
   -- rake,if=buff.bt_rake.down&combo_points>4
@@ -452,6 +452,21 @@ local function Bloodtalons()
 end
 
 local function APL()
+
+  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
+  thrashit = IsUsableSpell('Thrash') and S.Thrash:CooldownUp()
+  swipeit = IsUsableSpell('Swipe') and S.Swipe:CooldownUp()
+  Enemies20y = Player:GetEnemiesInRange(20)
+
+
+
+  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y == 0) then
+    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
+  end
+
+  if HR.QueuedSpell():IsReadyQueue() then
+    return Cast(HR.QueuedSpell())
+  end
   -- Update Enemies
   if AoEON() then
     EnemiesMelee = Player:GetEnemiesInMeleeRange(8)
@@ -542,10 +557,22 @@ local function APL()
       local ShouldReturn = Owlweaving(); if ShouldReturn then return ShouldReturn; end
     end
     -- Pool if nothing else to do
-    if (true) then
-      if Cast(S.Pool) then return "Pool Energy"; end
-    end
+    -- if (true) then
+    --   if Cast(S.Pool) then return "Pool Energy"; end
+    -- end
   end
+
+
+  
+  if (Player:IsMounted() or
+  (select(3, UnitClass("player")) == 11 and (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 5))) then return HR.Cast(S.mounted)
+  elseif Player:AffectingCombat() then
+    return HR.Cast(S.combat)
+  else
+  return HR.Cast(S.MPI)
+  end
+  
+
 end
 
 local function OnInit()

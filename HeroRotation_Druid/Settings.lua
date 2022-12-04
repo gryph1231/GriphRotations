@@ -18,21 +18,22 @@ local CreateARPanelOptions = HR.GUI.CreateARPanelOptions
 HR.GUISettings.APL.Druid = {
   Commons = {
     Enabled = {
+      HealthPotion = true,
+
       Potions = true,
       Trinkets = true,
-      Items = true,
     },
+    HealthPotionHealth = 30,
+
     DisplayStyle = {
       Potions = "Suggested",
       Trinkets = "Suggested",
-      Signature = "Suggested",
+      Covenant = "Suggested",
       Items = "Suggested",
     },
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
-      MarkOfTheWild = true,
-      WildCharge = true,
     },
     -- {Display OffGCD as OffGCD, ForceReturn}
     OffGCDasOffGCD = {
@@ -41,35 +42,29 @@ HR.GUISettings.APL.Druid = {
       -- Abilities
     }
   },
+
   Balance = {
     BarkskinHP = 50,
     RenewalHP = 40,
     ShowMoonkinFormOOC = false,
     DelayBerserking = false,
-    PotionType = {
-      Selected = "Power",
-    },
     GCDasOffGCD = {
-      AstralCommunion = true,
+      MoonkinForm = false,
       CaInc = true,
+      WarriorOfElune = true,
       ForceOfNature = true,
       FuryOfElune = true,
-      MoonkinForm = false,
       Starfall = false,
-      WarriorOfElune = true,
     },
     OffGCDasOffGCD = {
-      Barkskin = true,
       Renewal = true,
+      Barkskin = true,
     }
   },
   Feral = {
     FillerSpell = "Rake Non-Snapshot",
     ShowCatFormOOC = false,
     UseOwlweave = false,
-    PotionType = {
-      Selected = "Power",
-    },
     GCDasOffGCD = {
       BsInc = true,
     },
@@ -84,9 +79,6 @@ HR.GUISettings.APL.Druid = {
     FrenziedRegenHP = 70,
     SurvivalInstinctsHP = 30,
     BristlingFurRage = 50,
-    PotionType = {
-      Selected = "Power",
-    },
     DisplayStyle = {
       Defensives = "Suggested"
     },
@@ -97,14 +89,10 @@ HR.GUISettings.APL.Druid = {
     OffGCDasOffGCD = {
       Berserk = true,
       Incarnation = true,
-      Ironfur = true,
       SkullBash = true,
     }
   },
   Restoration = {
-    PotionType = {
-      Selected = "Power",
-    },
     GCDasOffGCD = {
       HeartOfTheWild = true,
     },
@@ -125,6 +113,7 @@ local CP_Restoration = CreateChildPanel(CP_Druid, "Restoration")
 
 -- Druid
 CreateARPanelOptions(CP_Druid, "APL.Druid.Commons")
+CreatePanelOption("Slider", CP_Druid, "APL.Druid.Commons.HealthPotionHealth", {0, 100, 1}, "Healing Potion HP Threshold", "Set the HP threshold for when to suggest Healing Potion use.)")
 
 -- Balance
 CreatePanelOption("Slider", CP_Balance, "APL.Druid.Balance.BarkskinHP", {0, 100, 1}, "Barkskin HP", "Set the Barkskin HP threshold.")
@@ -142,6 +131,7 @@ CreateARPanelOptions(CP_Feral, "APL.Druid.Feral")
 -- Guardian
 CreateARPanelOptions(CP_Guardian, "APL.Druid.Guardian")
 CreatePanelOption("CheckButton", CP_Guardian, "APL.Druid.Guardian.UseRageDefensively", "Use Rage Defensively", "Enable this if you want to save rage for defensive use, disabling Maul suggestions.")
+CreatePanelOption("CheckButton", CP_Guardian, "APL.Druid.Guardian.UseBarkskinDefensively", "Use Barkskin Defensively", "Enable this if you want to save Barkskin for defensive use, disabling offensive Barkskin with Brambles.")
 CreatePanelOption("Slider", CP_Guardian, "APL.Druid.Guardian.BarkskinHP", {0, 100, 1}, "Barkskin Threshold", "Set the HP percentage threshold of when to use Barkskin.")
 CreatePanelOption("Slider", CP_Guardian, "APL.Druid.Guardian.FrenziedRegenHP", {0, 100, 1}, "Frenzied Regen Threshold", "Set the HP percentage threshold of when to use Frenzied Regeneration.")
 CreatePanelOption("Slider", CP_Guardian, "APL.Druid.Guardian.SurvivalInstinctsHP", {0, 100, 1}, "Survival Instincts Threshold", "Set the HP percentage threshold of when to use Survival Instincts.")

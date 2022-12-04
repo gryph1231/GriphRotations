@@ -183,7 +183,7 @@ end
 --- ======= ACTION LISTS =======
 local function APL()
 
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
+  if (Player:IsCasting() or Player:IsChanneling()) and not Player:IsChanneling(S.SpinningCraneKick) then return HR.Cast(S.channeling) end
 
   Enemies20y = Player:GetEnemiesInRange(20)
 
@@ -273,9 +273,9 @@ if HR.QueuedSpell():IsReadyQueue() then
       if Cast(I.Jotungeirr, nil, Settings.Commons.DisplayStyle.Items) then return "jotungeirr_destinys_call main 3"; end
     end]]
     -- use_items
-    if (Settings.Commons.Enabled.Trinkets) then
-      local ShouldReturn = UseItems(); if ShouldReturn then return ShouldReturn; end
-    end
+    -- if (Settings.Commons.Enabled.Trinkets) then
+    --   local ShouldReturn = UseItems(); if ShouldReturn then return ShouldReturn; end
+    -- end
     
 
     if CDsON() then

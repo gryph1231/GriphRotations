@@ -1,25 +1,26 @@
---- ============================ HEADER ============================
+-- ----- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
 local addonName, addonTable = ...
 -- HeroDBC
-local DBC = HeroDBC.DBC
+local DBC                   = HeroDBC.DBC
 -- HeroLib
-local HL         = HeroLib
-local Cache      = HeroCache
-local Unit       = HL.Unit
-local Player     = Unit.Player
-local Target     = Unit.Target
-local Pet        = Unit.Pet
-local Spell      = HL.Spell
-local Item       = HL.Item
+local HL                    = HeroLib
+local Cache                 = HeroCache
+local Unit                  = HL.Unit
+local Player                = Unit.Player
+local Target                = Unit.Target
+local Pet                   = Unit.Pet
+local Spell                 = HL.Spell
+local MultiSpell            = HL.MultiSpell
+local Item                  = HL.Item
 -- HeroRotation
-local HR         = HeroRotation
-local AoEON      = HR.AoEON
-local CDsON      = HR.CDsON
-local Cast       = HR.Cast
+local HR                    = HeroRotation
+local AoEON                 = HR.AoEON
+local CDsON                 = HR.CDsON
+local Cast                  = HR.Cast
 -- Lua
-local mathmin = math.min
+local pairs                 = pairs
 
 --- ============================ CONTENT ============================
 --- ======= APL LOCALS =======

@@ -186,7 +186,7 @@ local function Opener()
     if Cast(S.ChiWave, nil, nil, not Target:IsInRange(40)) then return "chi_wave opener 6"; end
   end
   -- expel_harm
-  if S.ExpelHarm:IsReady() then
+  if S.ExpelHarm:IsReady() and Target:IsInRange(8) then
     if Cast(S.ExpelHarm, nil, nil, not Target:IsInMeleeRange(8)) then return "expel_harm opener 10"; end
   end
   -- tiger_palm,target_if=min:debuff.mark_of_the_crane.remains+(debuff.skyreach_exhaustion.up*20),if=chi.max-chi>=(2+buff.power_strikes.up)
@@ -860,6 +860,7 @@ local function APL()
     return Cast(S.StopFoF)
   end
 
+  if (Player:IsCasting() or Player:IsChanneling()) and not Player:IsChanneling(S.SpinningCraneKick) then return HR.Cast(S.channeling) end
 
 
   if (S.CracklingJadeLightning:ID() == HR.queuedSpell[1]:ID()
@@ -951,6 +952,36 @@ local function APL()
   end
 
 
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   if Everyone.TargetIsValid() then
     -- Out of Combat
@@ -1035,25 +1066,268 @@ local function APL()
       local ShouldReturn = Serenity();
       if ShouldReturn then return ShouldReturn; end
     end
-    -- call_action_list,name=aoe,if=active_enemies>=3
-    if (AoEON() and Enemies10y >= 3) then
-      local ShouldReturn = Aoe();
-      if ShouldReturn then return ShouldReturn; end
-    end
-    -- call_action_list,name=st_cleave,if=active_enemies<3
-    if (Enemies10y < 3) then
-      local ShouldReturn = STCleave();
-      if ShouldReturn then return ShouldReturn; end
-    end
-    -- call_action_list,name=fallthru
-    if (true) then
-      local ShouldReturn = Fallthru();
-      if ShouldReturn then return ShouldReturn; end
-    end
-    -- call_action_list,name=fallthru
 
-    -- Manually added Pool filler
-    if Cast(S.PoolEnergy) then return "Pool Energy"; end
+
+--5 targets
+
+  -- Strike of the Windlord
+  if Enemies10y>=5 then
+    
+    if S.StrikeoftheWindlord:IsReady() and Target:IsInRange(8) and CDsON() then
+      return Cast(S.StrikeoftheWindlord) 
+    end
+    
+    -- Blackout Kick with 3 stacks of Teachings of the Monastery
+    if S.BlackoutKick:IsReady() and ComboStrike(S.BlackoutKick) and Player:BuffStack(S.TeachingsoftheMonasteryBuff)==3 and Target:IsInRange(8) then
+      return Cast(S.BlackoutKick) 
+    end
+  
+  
+    -- Spinning Crane Kick with Dance of Chi-Ji proc
+    if S.SpinningCraneKick:IsReady() and ComboStrike(S.SpinningCraneKick) and Player:BuffUp(S.DanceofChijiBuff) and Target:IsInRange(10) then
+      return Cast(S.SpinningCraneKick) 
+    end
+  
+  
+    -- Fists of Fury
+    if S.FistsofFury:IsReady() and ComboStrike(S.FistsofFury) and Target:IsInRange(8) then
+      return Cast(S.FistsofFury) 
+    end
+  
+    -- Faeline Stomp if targets don’t have Faeline Harmony debuff
+    if S.FaelineStomp:IsReady() and ComboStrike(S.FaelineStomp) and Target:IsInRange(8) and Target:DebuffDown(S.FaelineHarmony) then
+      return Cast(S.FaelineStomp) 
+    end
+  
+    -- Whirling Dragon Punch
+    if S.WhirlingDragonPunch:IsReady() and ComboStrike(S.WhirlingDragonPunch) and Target:IsInRange(8) then
+      return Cast(S.WhirlingDragonPunch) 
+    end
+  
+    -- Rushing Jade Wind
+    if S.RushingJadeWind:IsReady() and Target:IsInRange(8) then
+      return Cast(S.RushingJadeWind) 
+    end
+  
+    -- Spinning Crane Kick
+    if S.SpinningCraneKick:IsReady() and ComboStrike(S.SpinningCraneKick) and Target:IsInRange(10) then
+      return Cast(S.SpinningCraneKick) 
+    end
+  
+    -- Blackout Kick
+    if S.BlackoutKick:IsReady() and ComboStrike(S.BlackoutKick) and Target:IsInRange(8) then
+      return Cast(S.BlackoutKick) 
+    end
+  
+    -- Rising Sun Kick with Xuen's Battlegear crit buff
+    if S.RisingSunKick:IsReady() and ComboStrike(S.RisingSunKick) and Player:BuffUp(S.XuensBattlegear) and Target:IsInRange(8) then
+      return Cast(S.RisingSunKick) 
+    end
+  
+    -- Rising Sun Kick ONLY to trigger Whirling Dragon Punch
+    if S.RisingSunKick:IsReady()  and ComboStrike(S.RisingSunKick) and S.WhirlingDragonPunch:CooldownRemains()<1 and Target:IsInRange(8) then
+      return Cast(S.RisingSunKick) 
+    end
+  
+    -- Faeline Stomp
+    if S.FaelineStomp:IsReady() and ComboStrike(S.FaelineStomp) and Target:IsInRange(8) then
+      return Cast(S.FaelineStomp) 
+    end
+  
+    -- Chi Burst
+    if S.ChiBurst:IsReady() and ComboStrike(S.ChiBurst) and Target:IsInRange(8) then
+      return Cast(S.ChiBurst) 
+    end
+  
+    -- Chi Wave
+    if S.ChiWave:IsReady() and ComboStrike(S.ChiWave) and Target:IsInRange(8) then
+      return Cast(S.ChiWave) 
+    end
+  
+    
+if S.ExpelHarm:IsReady() and Player:Chi() < Player:ChiMax() and Target:IsInRange(8) then
+  return Cast(S.ExpelHarm)
+ end
+
+  
+  end
+  
+  -- 2-4 targets
+  if Enemies10y>2 and Enemies10y<5 then 
+  -- Blackout Kick with 3 stacks of Teachings of the Monastery
+  if S.BlackoutKick:IsReady() and ComboStrike(S.BlackoutKick) and Player:BuffStack(S.TeachingsoftheMonasteryBuff)==3 and Target:IsInRange(8) then
+    return Cast(S.BlackoutKick) 
+  end
+  
+  -- Strike of the Windlord
+  if S.StrikeoftheWindlord:IsReady() and Target:IsInRange(8) and CDsON() then
+    return Cast(S.StrikeoftheWindlord) 
+  end
+  
+  -- Fists of Fury
+  if S.FistsofFury:IsReady() and ComboStrike(S.FistsofFury) and Target:IsInRange(8) then
+    return Cast(S.FistsofFury) 
+  end
+  
+  -- Faeline Stomp if targets don’t have Faeline Harmony debuff
+  if S.FaelineStomp:IsReady() and ComboStrike(S.FaelineStomp) and Target:IsInRange(8) and Target:DebuffDown(S.FaelineHarmony) then
+    return Cast(S.FaelineStomp) 
+  end
+  
+  
+  -- Spinning Crane Kick with Dance of Chi-Ji proc
+  if S.SpinningCraneKick:IsReady() and ComboStrike(S.SpinningCraneKick) and Player:BuffUp(S.DanceofChijiBuff) and Target:IsInRange(10) then
+    return Cast(S.SpinningCraneKick) 
+  end
+  
+  -- Whirling Dragon Punch
+  if S.WhirlingDragonPunch:IsReady()  and ComboStrike(S.WhirlingDragonPunch) and Target:IsInRange(8) then
+    return Cast(S.WhirlingDragonPunch) 
+  end
+  
+  -- Blackout Kick
+  if S.BlackoutKick:IsReady() and ComboStrike(S.BlackoutKick) and Target:IsInRange(8) then
+    return Cast(S.BlackoutKick) 
+  end
+  
+  -- Rising Sun Kick with Xuen's Battlegear crit buff
+  if S.RisingSunKick:IsReady()  and ComboStrike(S.RisingSunKick) and Player:BuffUp(S.XuensBattlegear) and Target:IsInRange(8) then
+    return Cast(S.RisingSunKick) 
+  end
+  
+  -- Rushing Jade Wind
+  if S.RushingJadeWind:IsReady() and Target:IsInRange(8) then
+    return Cast(S.RushingJadeWind) 
+  end
+  
+  -- Rising Sun Kick ONLY to trigger Whirling Dragon Punch
+  if S.RisingSunKick:IsReady()  and ComboStrike(S.RisingSunKick) and S.WhirlingDragonPunch:CooldownRemains()<1 and Target:IsInRange(8) then
+    return Cast(S.RisingSunKick) 
+  end
+  
+  -- Spinning Crane Kick
+  if S.SpinningCraneKick:IsReady() and ComboStrike(S.SpinningCraneKick) and Target:IsInRange(10) then
+    return Cast(S.SpinningCraneKick) 
+  end
+  
+  -- Faeline Stomp
+  if S.FaelineStomp:IsReady() and ComboStrike(S.FaelineStomp) and Target:IsInRange(8) then
+    return Cast(S.FaelineStomp) 
+  end
+  
+    -- Chi Burst
+    if S.ChiBurst:IsReady() and ComboStrike(S.ChiBurst) and Target:IsInRange(8) then
+      return Cast(S.ChiBurst) 
+    end
+  
+    -- Chi Wave
+    if S.ChiWave:IsReady() and ComboStrike(S.ChiWave) and Target:IsInRange(8) then
+      return Cast(S.ChiWave) 
+    end
+  
+if S.ExpelHarm:IsReady() and Player:Chi() < Player:ChiMax() and Target:IsInRange(8) then
+  return Cast(S.ExpelHarm)
+ end
+
+  
+  end
+  
+  -- ST
+  if Enemies10y==1 then
+  -- Blackout Kick with 3 stacks of Teachings of the Monastery
+  if S.BlackoutKick:IsReady() and Player:BuffStack(S.TeachingsoftheMonasteryBuff)==3 and Target:IsInRange(8) then
+    return Cast(S.BlackoutKick) 
+  end
+  -- Strike of the Windlord
+  if S.StrikeoftheWindlord:IsReady() and Target:IsInRange(8) and CDsON() then
+    return Cast(S.StrikeoftheWindlord) 
+  end
+  -- Faeline Stomp if targets don’t have Faeline Harmony debuff
+  if S.FaelineStomp:IsReady() and ComboStrike(S.FaelineStomp) and Target:IsInRange(8) and Target:DebuffDown(S.FaelineHarmony) then
+    return Cast(S.FaelineStomp) 
+  end
+  
+  -- Rising Sun Kick with Xuen's Battlegear crit buff
+  if S.RisingSunKick:IsReady() and ComboStrike(S.RisingSunKick) and Player:BuffUp(S.XuensBattlegear) and Target:IsInRange(8) then
+    return Cast(S.RisingSunKick) 
+  end
+  
+  -- Fists of Fury
+  if S.FistsofFury:IsReady() and ComboStrike(S.FistsofFury) and Target:IsInRange(8) then
+    return Cast(S.FistsofFury) 
+  end
+  
+  -- Rising Sun Kick
+  if S.RisingSunKick:IsReady() and ComboStrike(S.RisingSunKick) and Target:IsInRange(8) then
+    return Cast(S.RisingSunKick) 
+  end
+  
+  -- Whirling Dragon Punch
+  if S.WhirlingDragonPunch:IsReady()  and ComboStrike(S.WhirlingDragonPunch) and Target:IsInRange(8) then
+    return Cast(S.WhirlingDragonPunch) 
+  end
+  
+  -- Spinning Crane Kick with Dance of Chi-Ji proc
+  if S.SpinningCraneKick:IsReady() and ComboStrike(S.SpinningCraneKick) and Player:BuffUp(S.DanceofChijiBuff) and Target:IsInRange(10) then
+    return Cast(S.SpinningCraneKick) 
+  end
+  
+  -- Blackout Kick
+  if S.BlackoutKick:IsReady() and ComboStrike(S.BlackoutKick) and Target:IsInRange(8) then
+    return Cast(S.BlackoutKick) 
+  end
+  
+  -- Rushing Jade Wind
+  if S.RushingJadeWind:IsReady() and ComboStrike(S.RushingJadeWind) and Target:IsInRange(8) then
+    return Cast(S.RushingJadeWind) 
+  end
+  
+  -- Spinning Crane Kick
+  if S.SpinningCraneKick:IsReady() and ComboStrike(S.SpinningCraneKick) and Target:IsInRange(10) then
+    return Cast(S.SpinningCraneKick) 
+  end
+  
+  -- Chi Wave
+    if S.ChiWave:IsReady() and ComboStrike(S.ChiWave) and Target:IsInRange(8) then
+      return Cast(S.ChiWave) 
+    end
+  
+  -- Faeline Stomp
+  if S.FaelineStomp:IsReady() and ComboStrike(S.FaelineStomp) and Target:IsInRange(8) then
+    return Cast(S.FaelineStomp) 
+  end
+  
+  -- Chi Burst
+    if S.ChiBurst:IsReady() and ComboStrike(S.ChiBurst) and Target:IsInRange(8) then
+      return Cast(S.ChiBurst) 
+    end
+  
+  
+if S.ExpelHarm:IsReady() and Player:Chi() < Player:ChiMax() and Target:IsInRange(8) then
+  return Cast(S.ExpelHarm)
+ end
+
+  end
+
+    -- -- call_action_list,name=aoe,if=active_enemies>=3
+    -- if (AoEON() and Enemies10y >= 3) then
+    --   local ShouldReturn = Aoe();
+    --   if ShouldReturn then return ShouldReturn; end
+    -- end
+    -- -- call_action_list,name=st_cleave,if=active_enemies<3
+    -- if (Enemies10y < 3) then
+    --   local ShouldReturn = STCleave();
+    --   if ShouldReturn then return ShouldReturn; end
+    -- end
+    -- -- call_action_list,name=fallthru
+    -- if (true) then
+    --   local ShouldReturn = Fallthru();
+    --   if ShouldReturn then return ShouldReturn; end
+    -- end
+    -- -- call_action_list,name=fallthru
+
+    -- -- Manually added Pool filler
+    -- if Cast(S.PoolEnergy) then return "Pool Energy"; end
   end
 
   if Player:IsMounted() then return HR.Cast(S.mounted)

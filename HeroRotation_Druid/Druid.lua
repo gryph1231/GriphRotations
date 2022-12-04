@@ -23,6 +23,14 @@ local HR         = HeroRotation
 -- Spell
 if not Spell.Druid then Spell.Druid = {} end
 Spell.Druid.Commons = {
+
+  MPI        = Spell(999955),
+  combat     = Spell(999956),
+  channeling = Spell(999957),
+  mounted    = Spell(999958),
+  TRINKET1   = Spell(999988), -- garrison_blueweapon GetSpellTexture(179071)
+  TRINKET2   = Spell(999989), -- garrison_greenweapon
+
   -- Racials
   Berserking                            = Spell(26297),
   Shadowmeld                            = Spell(58984),
@@ -52,7 +60,10 @@ Spell.Druid.Commons = {
   Sunfire                               = Spell(93402),
   SurvivalInstincts                     = Spell(61336),
   Swipe                                 = MultiSpell(213764,213771),
-  Thrash                                = MultiSpell(77758,106830),
+  ThrashDebuff                          = MultiSpell(192090,106830), -- bear
+  Thrash                               = MultiSpell(77758,106830), -- cat
+
+
   WildCharge                            = MultiSpell(16979,49376),
   -- Buffs
   FrenziedRegenerationBuff              = Spell(22842),
@@ -64,7 +75,6 @@ Spell.Druid.Commons = {
   RakeDebuff                            = Spell(155722),
   RipDebuff                             = Spell(1079),
   SunfireDebuff                         = Spell(164815),
-  ThrashDebuff                          = MultiSpell(106830,192090),
   -- Covenant Abilities
   AdaptiveSwarmCov                      = Spell(325727),
   AdaptiveSwarmCovDebuff                = Spell(325733),
@@ -103,6 +113,7 @@ Spell.Druid.Commons = {
 }
 
 Spell.Druid.Balance = MergeTableByKey(Spell.Druid.Commons, {
+
   -- Abilities
   EclipseLunar                          = Spell(48518),
   EclipseSolar                          = Spell(48517),
@@ -168,6 +179,7 @@ Spell.Druid.Balance = MergeTableByKey(Spell.Druid.Commons, {
 
 Spell.Druid.Feral = MergeTableByKey(Spell.Druid.Commons, {
   -- Abilties
+
   -- Talents
   AdaptiveSwarm                         = Spell(391888),
   ApexPredatorsCraving                  = Spell(391881),
@@ -198,6 +210,7 @@ Spell.Druid.Feral = MergeTableByKey(Spell.Druid.Commons, {
 
 Spell.Druid.Guardian = MergeTableByKey(Spell.Druid.Commons, {
   -- Abilities
+
   Mangle                                = Spell(33917),
   -- Talents
   Berserk                               = Spell(50334),
