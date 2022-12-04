@@ -222,12 +222,12 @@ local function Cds()
     if Cast(S.LightsJudgment, Settings.Commons.GCDasOffGCD.Racials, nil, not Target:IsSpellInRange(S.LightsJudgment)) then return "lights_judgment cds 10"; end
   end
   -- potion,if=buff.trueshot.up&(buff.bloodlust.up|target.health.pct<20)|fight_remains<26
-  -- if Settings.Commons.Enabled.Potions and (Player:BuffUp(S.TrueshotBuff) and (Player:BloodlustUp() or Target:HealthPercentage() < 20) or FightRemains < 26) then
-  --   local PotionSelected = Everyone.PotionSelected()
-  --   if PotionSelected and PotionSelected:IsReady() then
-  --     if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cds 12"; end
-  --   end
-  -- end
+  if Settings.Commons.Enabled.Potions and (Player:BuffUp(S.TrueshotBuff) and (Player:BloodlustUp() or Target:HealthPercentage() < 20) or FightRemains < 26) then
+    local PotionSelected = Everyone.PotionSelected()
+    if PotionSelected and PotionSelected:IsReady() then
+      if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cds 12"; end
+    end
+  end
 end
 
 local function St()
@@ -419,32 +419,6 @@ end
 
 --- ======= ACTION LISTS =======
 local function APL()
-
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
-
-  Enemies20y = Player:GetEnemiesInRange(20)
-
-  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
-    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-end
-
-if HR.QueuedSpell():IsReadyQueue() then
-  return Cast(HR.QueuedSpell()) 
- end
-
-
-
-  if Settings.Commons.Enabled.HealthPotion 
-  and (not Player:InArena() and not Player:InBattlegrounds())  
-  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
-  then
-    local HPicon = Item(169451);
-    local HealthPotionSelected = Everyone.HealthPotionSelected()
-    if HealthPotionSelected and HealthPotionSelected:IsReady() then
-     return Cast(HPicon)
-    end
-  end
-
   TargetInRange40y = Target:IsSpellInRange(S.AimedShot) -- Ranged abilities; Distance varies by Mastery
   Enemies40y = Player:GetEnemiesInRange(S.AimedShot.MaximumRange)
   Enemies10ySplash = Target:GetEnemiesInSplashRange(10)
@@ -506,15 +480,12 @@ if HR.QueuedSpell():IsReadyQueue() then
       local ShouldReturn = Trickshots(); if ShouldReturn then return ShouldReturn; end
     end
     -- Pool Focus if nothing else to do
-    -- if HR.CastAnnotated(S.PoolFocus, false, "WAIT") then return "Pooling Focus"; end
-  end
-  if  Player:IsMounted() then return HR.Cast(S.mounted)
-  elseif Player:AffectingCombat() then
-    return HR.Cast(S.combat)
-  else
-return HR.Cast(S.MPI)
+    if HR.CastAnnotated(S.PoolFocus, false, "WAIT") then return "Pooling Focus"; end
   end
 end
 
+local function Init()
+  HR.Print("Marksmanship Hunter rotation is currently a work in progress, but has been updated for patch 10.0.")
+end
 
-HR.SetAPL(254, APL)
+HR.SetAPL(254, APL, Init)

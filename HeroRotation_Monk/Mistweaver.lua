@@ -52,13 +52,13 @@ local Settings = {
   Mistweaver = HR.GUISettings.APL.Monk.Mistweaver
 }
 
--- local function UseItems()
---   -- use_items
---   local TrinketToUse = Player:GetUseableTrinkets(OnUseExcludes)
---   if TrinketToUse then
---     if Cast(TrinketToUse, nil, Settings.Commons.DisplayStyle.Trinkets) then return "Generic use_items for " .. TrinketToUse:Name(); end
---   end
--- end
+local function UseItems()
+  -- use_items
+  local TrinketToUse = Player:GetUseableTrinkets(OnUseExcludes)
+  if TrinketToUse then
+    if Cast(TrinketToUse, nil, Settings.Commons.DisplayStyle.Trinkets) then return "Generic use_items for " .. TrinketToUse:Name(); end
+  end
+end
 
 local function Defensives()
   -- Dampen Harm
@@ -143,18 +143,6 @@ local function APL()
     EnemiesCount8 = #Enemies8y -- AOE Toogle
   else
     EnemiesCount8 = 1
-  end
-
-
-  if Settings.Commons.Enabled.HealthPotion 
-  and (not Player:InArena() and not Player:InBattlegrounds())  
-  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
-  then
-    local HPicon = Item(169451);
-    local HealthPotionSelected = Everyone.HealthPotionSelected()
-    if HealthPotionSelected and HealthPotionSelected:IsReady() then
-     return Cast(HPicon)
-    end
   end
 
   --- In Combat

@@ -37,22 +37,6 @@ local I = Item.Mage.Fire
 
 -- Create table to exclude above trinkets from On Use function
 local OnUseExcludes = {
-  I.DreadfireVessel:ID(),
-  I.EmpyrealOrdnance:ID(),
-  I.FlameofBattle:ID(),
-  I.GlyphofAssimilation:ID(),
-  I.GrimEclipse:ID(),
-  I.InscrutableQuantumDevice:ID(),
-  I.InstructorsDivineBell:ID(),
-  I.MacabreSheetMusic:ID(),
-  I.MoonlitPrism:ID(),
-  I.ScarsofFraternalStrife:ID(),
-  I.SinfulAspirantsBadge:ID(),
-  I.SinfulGladiatorsBadge:ID(),
-  I.SoulIgniter:ID(),
-  I.SunbloodAmethyst:ID(),
-  I.TheFirstSigil:ID(),
-  I.WakenersFrond:ID()
 }
 
 -- GUI Settings
@@ -77,7 +61,7 @@ local var_kindling_reduction = (S.Kindling:IsAvailable()) and 0.4 or 1
 local var_skb_duration = 6
 local var_skb_delay = 0.1
 local var_mot_recharge_amount = 6
-local var_combustion_on_use = (I.SinfulGladiatorsBadge:IsEquipped() or I.SinfulAspirantsBadge:IsEquipped() or I.MacabreSheetMusic:IsEquipped() or I.InscrutableQuantumDevice:IsEquipped() or I.SunbloodAmethyst:IsEquipped() or I.EmpyrealOrdnance:IsEquipped() or I.FlameofBattle:IsEquipped() or I.WakenersFrond:IsEquipped() or I.InstructorsDivineBell:IsEquipped() or I.ShadowedOrbofTorment:IsEquipped())
+local var_combustion_on_use = false
 local var_empyreal_ordnance_delay = 18
 local var_on_use_cutoff = 0
 local var_use_shifting_power = false
@@ -870,28 +854,6 @@ local function APL()
   if not Player:AffectingCombat() then
     local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
   end
-
-
-
-  Enemies40y = Player:GetEnemiesInRange(40)
- 
-  if HR.QueuedSpell():IsReadyQueue() then
-    if Cast(HR.QueuedSpell()) then return "Queue Spell Sent"; end
-  end
-
-	if not HR.queuedSpell[1]:CooldownUp() or #Enemies40y==0 or not Player:AffectingCombat() then
-		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-	end
-
-  
-  if HR.CastAnnotated(S.channeling, false) and (Player:IsCasting() or Player:IsChanneling()) then return "casting/channeling"; end
-
-  if HR.CastAnnotated(S.mounted, false) and Player:IsMounted() then return "main icon"; end
-
-  if HR.CastAnnotated(S.MPI, false) and not Player:AffectingCombat() then return "main icon"; end
-
-
-
   if Everyone.TargetIsValid() then
     -- counterspell,if=!runeforge.disciplinary_command
     -- TODO : manage for solo ?

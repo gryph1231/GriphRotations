@@ -41,8 +41,8 @@ end
 
 -- Interrupt
 function Commons.Interrupt(Range, Spell, Setting, StunSpells)
-  if Settings.InterruptEnabled and Target:IsInterruptible() then
-    if Spell:IsCastable() and Target:IsInRange(30) and Target:Exists() and Target:CastPercentage()>25 and Target:CastPercentage()<75 then
+  if Settings.InterruptEnabled and Target:IsInterruptible() and Target:IsInRange(Range) then
+    if Spell:IsCastable() then
       if HR.Cast(Spell, Setting) then return "Cast " .. Spell:Name() .. " (Interrupt)"; end
     elseif Settings.InterruptWithStun and Target:CanBeStunned() then
       if StunSpells then
@@ -60,8 +60,6 @@ end
 function Commons.IsSoloMode()
   return Settings.SoloMode and not Player:IsInRaidArea() and not Player:IsInDungeonArea();
 end
-
-
 
 -- Cycle Unit Helper
 function Commons.CastCycle(Object, Enemies, Condition, OutofRange, OffGCD, DisplayStyle)
@@ -105,6 +103,7 @@ end
 
 function Commons.GroupBuffMissing(spell)
   local range = 40
+  local buffIDs = { 381732, 381741, 381746, 381748, 381749, 381750, 381751, 381752, 381753, 381754, 381756, 381757, 381758 }
   if spell:Name() == "Battle Shout" then range = 100 end
   local Group
   if UnitInRaid("player") then
@@ -115,8 +114,17 @@ function Commons.GroupBuffMissing(spell)
     return false
   end
   for _, Char in pairs(Group) do
-    if Char:Exists() and Char:IsInRange(range) and Char:BuffDown(spell, true) then
-      return true
+    if spell:Name() == "Blessing of the Bronze" then
+      if Char:Exists() and Char:IsInRange(range) then
+        for _, v in pairs(buffIDs) do
+          if Char:BuffUp(HL.Spell(v)) then return false end
+        end
+        return true
+      end
+    else
+      if Char:Exists() and Char:IsInRange(range) and Char:BuffDown(spell, true) then
+        return true
+      end
     end
   end
   return false
@@ -152,9 +160,41 @@ end
 
 -- Check if player's selected potion type is ready
 function Commons.PotionSelected()
-  local Class = Cache.Persistent.Player.Class[1]
-  Class = gsub(Class, "%s+", "")
-  local Spec = Cache.Persistent.Player.Spec[2]
+  local Classes = { "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "DeathKnight", "Shaman", "Mage", "Warlock", "Monk", "Druid", "DemonHunter", "Evoker" }
+  local ClassNum = Cache.Persistent.Player.Class[3]
+  local Class = Classes[ClassNum]
+
+  local Specs = {
+    -- DeathKnight
+    [250] = "Blood", [251] = "Frost", [252] = "Unholy",
+    -- DemonHunter
+    [577] = "Havoc", [581] = "Vengeance",
+    -- Druid
+    [102] = "Balance", [103] = "Feral", [104] = "Guardian", [105] = "Restoration", 
+    -- Evoker
+    [1467] = "Devastation", [1468] = "Preservation",
+    -- Hunter
+    [253] = "BeastMastery", [254] = "Marksmanship", [255] = "Survival",
+    -- Mage
+    [62] = "Arcane", [63] = "Fire", [64] = "Frost",
+    -- Monk
+    [268] = "Brewmaster", [269] = "Windwalker", [270] = "Mistweaver",
+    -- Paladin
+    [65] = "Holy", [66] = "Protection", [70] = "Retribution",
+    --Priest
+    [256] = "Discipline", [257] = "Holy", [258] = "Shadow",
+    -- Rogue
+    [259] = "Assassination", [260] = "Outlaw", [261] = "Subtlety",
+    -- Shaman
+    [262] = "Elemental", [263] = "Enhancement", [264] = "Restoration",
+    -- Warlock
+    [265] = "Affliction", [266] = "Demonology", [267] = "Destruction",
+    -- Warrior
+    [71] = "Arms", [72] = "Fury", [73] = "Protection",
+  }
+  local SpecNum = Cache.Persistent.Player.Spec[1]
+  local Spec = Specs[SpecNum]
+
   local PotionType = HR.GUISettings.APL[Class][Spec].PotionType.Selected
   local PowerPotionIDs = {
     -- Fleeting Ultimate Power
@@ -200,8 +240,6 @@ end
 
 
 
-
-
 function Commons.HealthPotionSelected()
   local Class = Cache.Persistent.Player.Class[1]
   Class = gsub(Class, "%s+", "")
@@ -217,4 +255,3 @@ function Commons.HealthPotionSelected()
       end
     end
 end
-

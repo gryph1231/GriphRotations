@@ -33,20 +33,6 @@ local I = Item.Mage.Arcane;
 
 -- Create table to exclude above trinkets from On Use function
 local OnUseExcludes = {
-  I.ArchitectsIngenuityCore:ID(),
-  I.DreadfireVessel:ID(),
-  I.EbonsoulVise:ID(),
-  I.EmpyrealOrdnance:ID(),
-  I.GlyphofAssimilation:ID(),
-  I.GrimEclipse:ID(),
-  I.MacabreSheetMusic:ID(),
-  I.MoonlitPrism:ID(),
-  I.MrrgriasFavor:ID(),
-  I.ResonantReservoir:ID(),
-  I.ScarsofFraternalStrife:ID(),
-  I.SinfulGladiatorsBadge:ID(),
-  I.SoulIgniter:ID(),
-  I.SoullettingRuby:ID(),
 }
 
 -- Rotation Var
@@ -1438,28 +1424,6 @@ local function APL()
 
   -- Set which cast function to use for ArcaneExplosion
   CastAE = (Settings.Arcane.StayDistance and not Target:IsInRange(10)) and CastLeft or Cast
-
-
-
-
-  Enemies40y = Player:GetEnemiesInRange(40)
- 
-  if HR.QueuedSpell():IsReadyQueue() then
-    if Cast(HR.QueuedSpell()) then return "Queue Spell Sent"; end
-  end
-
-	if not HR.queuedSpell[1]:CooldownUp() or #Enemies40y==0 or not Player:AffectingCombat() then
-		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-	end
-
-  
-  if HR.CastAnnotated(S.channeling, false) and (Player:IsCasting() or Player:IsChanneling()) then return "casting/channeling"; end
-
-  if HR.CastAnnotated(S.mounted, false) and Player:IsMounted() then return "main icon"; end
-
-  if HR.CastAnnotated(S.MPI, false) and not Player:AffectingCombat() then return "main icon"; end
-
-
 
   if Everyone.TargetIsValid() then
     -- call precombat

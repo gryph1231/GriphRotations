@@ -23,12 +23,6 @@ local HR         = HeroRotation
 -- Spells
 if not Spell.Hunter then Spell.Hunter = {} end
 Spell.Hunter.Commons = {
-
-
-  MPI = Spell(999955),
-  combat = Spell(999956),
-  channeling = Spell(999957),
-  mounted = Spell(999958),
   -- Racials
   AncestralCall                         = Spell(274738),
   ArcanePulse                           = Spell(260364),

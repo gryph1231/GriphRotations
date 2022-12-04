@@ -449,21 +449,6 @@ end
 
 local function APL()
   -- Target Count Checking
-
-  Enemies20y = Player:GetEnemiesInRange(20)
- 
-  if HR.QueuedSpell():IsReadyQueue() then
-    if Cast(HR.QueuedSpell()) then return "Queue Spell Sent"; end
-  end
-
-	if not HR.queuedSpell[1]:CooldownUp() or #Enemies20y==0 or not Player:AffectingCombat() then
-		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-	end
-
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
-
-
-
   local EagleUp = Player:BuffUp(S.AspectoftheEagle)
   if EagleUp and not Target:IsInMeleeRange(8) then
     EnemyCount8ySplash = Target:GetEnemiesInSplashRangeCount(8)
@@ -537,18 +522,12 @@ local function APL()
       if Cast(S.ArcaneTorrent, true, nil, not Target:IsInRange(8)) then return "arcane_torrent main 888"; end
     end
     -- PoolFocus if nothing else to do
+    if Cast(S.PoolFocus) then return "Pooling Focus"; end
   end
-
-  if  Player:IsMounted() then return HR.Cast(S.mounted)
-  elseif Player:AffectingCombat() then
-    return HR.Cast(S.combat)
-  else
-return HR.Cast(S.MPI)
-  end
-
-
 end
 
+local function OnInit ()
+  HR.Print("This is a modified custom APL based on Yoda's Survival Guide.")
+end
 
-
-HR.SetAPL(255, APL)
+HR.SetAPL(255, APL, OnInit)

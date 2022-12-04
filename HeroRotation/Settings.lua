@@ -20,10 +20,10 @@
       -- Nameplate Icon Anchor
       NamePlateIconAnchor = "Clickable Area",
       -- Show while mounted
-      ShowWhileMounted = true,
+      ShowWhileMounted = false,
       -- Black Border Icon (Enable if you want clean black borders)
       BlackBorderIcon = false,
-      HideKeyBinds = true,
+      HideKeyBinds = false,
       -- Interrupt
       InterruptEnabled = false,
       InterruptWithStun = false, -- EXPERIMENTAL

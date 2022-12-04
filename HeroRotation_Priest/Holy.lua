@@ -90,29 +90,6 @@ local function APL()
   if not Player:AffectingCombat() then
     local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
   end
-
-
-
-  Enemies20y = Player:GetEnemiesInRange(20)
- 
-  if HR.QueuedSpell():IsReadyQueue() then
-    if Cast(HR.QueuedSpell()) then return "Queue Spell Sent"; end
-  end
-
-	if not HR.queuedSpell[1]:CooldownUp() or #Enemies20y==0 or not Player:AffectingCombat() then
-		HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-	end
-
-  
-  if HR.CastAnnotated(S.channeling, false) and (Player:IsCasting() or Player:IsChanneling()) then return "casting/channeling"; end
-
-  if HR.CastAnnotated(S.mounted, false) and Player:IsMounted() then return "main icon"; end
-
-  if HR.CastAnnotated(S.MPI, false) and not Player:AffectingCombat() then return "main icon"; end
-
-
-
-
   if Everyone.TargetIsValid() then
     -- use_items
     if (Settings.Commons.Enabled.Trinkets) then

@@ -34,7 +34,7 @@ local S = Spell.Hunter.Survival
 
 -- Items
 local I = Item.Hunter.Survival
-local TrinketsOnUseExcludes = {
+local OnUseExcludes = {
   -- I.Trinket:ID(),
 }
 
@@ -112,8 +112,8 @@ local function EvaluateTargetIfRaptorStrikeCleave(TargetUnit)
 end
 
 local function EvaluateTargetIfSerpentStingCleave(TargetUnit)
-  -- if=refreshable&target.time_to_die>8
-  return (TargetUnit:DebuffRefreshable(S.SerpentStingDebuff) and TargetUnit:TimeToDie() > 8)
+  -- if=refreshable&target.time_to_die>12&(!talent.vipers_venom|talent.hydras_bite)
+  return (TargetUnit:DebuffRefreshable(S.SerpentStingDebuff) and TargetUnit:TimeToDie() > 12 and ((not S.VipersVenom:IsAvailable()) or S.HydrasBite:IsAvailable()))
 end
 
 local function EvaluateTargetIfSerpentStingST(TargetUnit)
@@ -187,12 +187,12 @@ local function CDs()
   -- muzzle
   -- Handled via Interrupt in APL()
   -- potion,if=target.time_to_die<30|buff.coordinated_assault.up|buff.spearhead.up|!talent.spearhead&!talent.coordinated_assault
-  -- if Settings.Commons.Enabled.Potions and (FightRemains < 30 or Player:BuffUp(S.CoordinatedAssault) or Player:BuffUp(S.SpearheadBuff) or (not S.Spearhead:IsAvailable()) and not S.CoordinatedAssault:IsAvailable()) then
-  --   local PotionSelected = Everyone.PotionSelected()
-  --   if PotionSelected and PotionSelected:IsReady() then
-  --     if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cds 16"; end
-  --   end
-  -- end
+  if Settings.Commons.Enabled.Potions and (FightRemains < 30 or Player:BuffUp(S.CoordinatedAssault) or Player:BuffUp(S.SpearheadBuff) or (not S.Spearhead:IsAvailable()) and not S.CoordinatedAssault:IsAvailable()) then
+    local PotionSelected = Everyone.PotionSelected()
+    if PotionSelected and PotionSelected:IsReady() then
+      if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cds 16"; end
+    end
+  end
   -- use_items
   local TrinketToUse = Player:GetUseableTrinkets(OnUseExcludes)
   if TrinketToUse then
@@ -291,7 +291,7 @@ local function Cleave()
   if S.SteelTrap:IsCastable() and (CheckFocusCap(S.SteelTrap:ExecuteTime())) then
     if Cast(S.SteelTrap, Settings.Commons2.GCDasOffGCD.SteelTrap, nil, not Target:IsInRange(40)) then return "steel_trap cleave 40"; end
   end
-  -- serpent_sting,target_if=min:remains,if=refreshable&target.time_to_die>8
+  -- serpent_sting,target_if=min:remains,if=refreshable&target.time_to_die>12&(!talent.vipers_venom|talent.hydras_bite)
   if S.SerpentSting:IsReady() then
     if Everyone.CastTargetIf(S.SerpentSting, EnemyList, "min", EvaluateTargetIfFilterSerpentStingRemains, EvaluateTargetIfSerpentStingCleave, not Target:IsSpellInRange(S.SerpentSting)) then return "serpent_sting cleave 42"; end
   end
@@ -431,33 +431,6 @@ local function ST()
 end
 
 local function APL()
-
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
-
-  Enemies20y = Player:GetEnemiesInRange(20)
-
-  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
-    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-end
-
-if HR.QueuedSpell():IsReadyQueue() then
-  return Cast(HR.QueuedSpell()) 
- end
-
-
-
-  if Settings.Commons.Enabled.HealthPotion 
-  and (not Player:InArena() and not Player:InBattlegrounds())  
-  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
-  then
-    local HPicon = Item(169451);
-    local HealthPotionSelected = Everyone.HealthPotionSelected()
-    if HealthPotionSelected and HealthPotionSelected:IsReady() then
-     return Cast(HPicon)
-    end
-  end
-
-
   -- Target Count Checking
   local EagleUp = Player:BuffUp(S.AspectoftheEagle)
   if AoEON() then
@@ -534,18 +507,12 @@ if HR.QueuedSpell():IsReadyQueue() then
       if Cast(S.ArcaneTorrent, Settings.Commons.OffGCDasOffGCD.Racials, nil, not Target:IsInRange(8)) then return "arcane_torrent main 888"; end
     end
     -- PoolFocus if nothing else to do
-    -- if HR.CastAnnotated(S.PoolFocus, false, "WAIT") then return "Pooling Focus"; end
+    if HR.CastAnnotated(S.PoolFocus, false, "WAIT") then return "Pooling Focus"; end
   end
-
-  if  Player:IsMounted() then return HR.Cast(S.mounted)
-  elseif Player:AffectingCombat() then
-    return HR.Cast(S.combat)
-  else
-return HR.Cast(S.MPI)
-  end
-
 end
 
+local function OnInit ()
+  HR.Print("Survival Hunter rotation is currently a work in progress, but has been updated for patch 10.0.")
+end
 
-
-HR.SetAPL(255, APL)
+HR.SetAPL(255, APL, OnInit)

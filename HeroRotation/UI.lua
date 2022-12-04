@@ -10,8 +10,6 @@
   local Target = Unit.Target;
   local Spell = HL.Spell;
   local Item = HL.Item;
-  local StdUi = LibStub('StdUi')
-  local AceGUI = LibStub("AceGUI-3.0")
   -- Lua
   local pairs = pairs;
   local stringlower = string.lower;
@@ -35,13 +33,13 @@
 
 --- ======= MISC =======
   -- Reset Textures
-  local IdleSpellTexture = HR.GetTexture(Spell(999955));
+  local IdleSpellTexture = HR.GetTexture(Spell(999900));
   function HR.ResetIcons ()
     -- Main Icon
-    HR.MainIconFrame:Show();
-    -- if HR.GUISettings.General.BlackBorderIcon then HR.MainIconFrame.Backdrop:Hide(); end
-    -- HR.MainIconPartOverlayFrame:Hide();
-    -- HR.MainIconFrame:HideParts();
+    HR.MainIconFrame:Hide();
+    if HR.GUISettings.General.BlackBorderIcon then HR.MainIconFrame.Backdrop:Hide(); end
+    HR.MainIconPartOverlayFrame:Hide();
+    HR.MainIconFrame:HideParts();
 
     -- Small Icons
     HR.SmallIconFrame:HideIcons();
@@ -73,8 +71,8 @@
     local Backdrop = CreateFrame("Frame", nil, Frame, BackdropTemplateMixin and "BackdropTemplate");
     Frame.Backdrop = Backdrop;
     Backdrop:ClearAllPoints();
-    Backdrop:SetPoint("BOTTOM", Frame, "BOTTOM", -1, 1);
-    Backdrop:SetPoint("BOTTOM", Frame, "BOTTOM", 1, -1);
+    Backdrop:SetPoint("TOPLEFT", Frame, "TOPLEFT", -1, 1);
+    Backdrop:SetPoint("BOTTOMRIGHT", Frame, "BOTTOMRIGHT", 1, -1);
 
     Backdrop:SetBackdrop({
       bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
@@ -189,9 +187,10 @@
   function HR.MainIconFrame:SetCooldown (Start, Duration)
     if Start == 0 or Duration == 0 then
       self.CooldownFrame:SetCooldown(0, 0);
-      -- self.CooldownFrame:Hide();
+      self.CooldownFrame:Hide();
       return;
     end
+
     self.CooldownFrame:SetCooldown(Start, Duration);
   end
   function HR.MainIconFrame:InitParts ()
@@ -251,8 +250,8 @@
       PartFrame.Texture:SetAllPoints(PartFrame);
       if PartFrame.Backdrop then
         if HR.MainIconPartOverlayFrame.__MSQ_NormalColor then
-        --   PartFrame.Backdrop:Hide();
-        -- else
+          PartFrame.Backdrop:Hide();
+        else
           PartFrame.Backdrop:Show();
         end
       end
@@ -284,16 +283,16 @@
       end
     end
   end
-  -- function HR.MainIconFrame:HideParts()
-  --   self.ID = nil
-  --   HR.MainIconPartOverlayFrame:Hide();
-  --   for i = 1, #self.Part do
-  --     self.Part[i].Keybind:SetText("");
-  --     self.Part[i]:Hide();
-  --   end
-  -- end
+  function HR.MainIconFrame:HideParts ()
+    self.ID = nil
+    HR.MainIconPartOverlayFrame:Hide();
+    for i = 1, #self.Part do
+      self.Part[i].Keybind:SetText("");
+      self.Part[i]:Hide();
+    end
+  end
   -- Get Icon spell ID
-  function HR.MainIconFrame:getIconID()
+  function HR.MainIconFrame:getIconID ()
     if self.ID then
       return self.ID
     end
@@ -687,22 +686,24 @@
   function HR.ToggleIconFrame:Init ()
     -- Frame Init
     self:SetFrameStrata(HR.MainFrame:GetFrameStrata());
-    self:SetFrameLevel(HR.MainFrame:GetFrameLevel() - 1);
+    self:SetFrameLevel(HR.MainFrame:GetFrameLevel());
     self:SetWidth(64);
     self:SetHeight(20);
+    self:SetPoint("BOTTOMRIGHT", HR.MainFrame, "BOTTOMRIGHT", 10, 0);
+
 
     -- Reset the Anchor if saved data are not valid (i.e. data saved before 7.1.5843)
     -- TODO: Remove this part later.
-    if HeroRotationDB and HeroRotationDB.ButtonsFramePos and type(HeroRotationDB.ButtonsFramePos[2]) ~= "string" then
-      self:ResetAnchor();
-    end
+    -- if HeroRotationDB and HeroRotationDB.ButtonsFramePos and type(HeroRotationDB.ButtonsFramePos[2]) ~= "string" then
+    --   self:ResetAnchor();
+    -- end
 
-    -- Anchor based on Settings
-    if HeroRotationDB and HeroRotationDB.ButtonsFramePos then
-      self:SetPoint(HeroRotationDB.ButtonsFramePos[1], HeroRotationDB.ButtonsFramePos[2]);
-    else
-      self:SetPoint("BOTTOM", HR.MainIconFrame, "BOTTOM", 0, 0);
-    end
+    -- -- Anchor based on Settings
+    -- if HeroRotationDB and HeroRotationDB.ButtonsFramePos then
+    --   self:SetPoint(HeroRotationDB.ButtonsFramePos[1], _G[HeroRotationDB.ButtonsFramePos[2]], HeroRotationDB.ButtonsFramePos[3], HeroRotationDB.ButtonsFramePos[4], HeroRotationDB.ButtonsFramePos[5]);
+    -- else
+    --   self:SetPoint("TOPLEFT", HR.MainIconFrame, "BOTTOMLEFT", 0, HR.GUISettings.General.BlackBorderIcon and -3 or 0);
+    -- end
 
     -- Start Move
     local function StartMove (self)
@@ -738,20 +739,23 @@
     self:AddButton("AoE", 2, "AoE", "aoe");
     -- self:AddButton("O", 3, "On/Off", "toggle");
   end
-  -- Reset Anchor
-  function HR.ToggleIconFrame:ResetAnchor ()
-    self:SetPoint("BOTTOM", HR.MainIconFrame, "BOTTOM", 0,0);
-    HeroRotationDB.ButtonsFramePos = false;
-  end
+  ---- Reset Anchor
+  -- function HR.ToggleIconFrame:ResetAnchor ()
+  --   self:SetPoint("TOPLEFT", HR.MainIconFrame, "BOTTOMLEFT", 0, HR.GUISettings.General.BlackBorderIcon and -3 or 0);
+  --   HeroRotationDB.ButtonsFramePos = false;
+  -- end
+  
   -- Add a button
   function HR.ToggleIconFrame:AddButton (Text, i, Tooltip, CmdArg)
     local ButtonFrame = CreateFrame("Button", "$parentButton"..tostring(i), self);
     ButtonFrame:SetFrameStrata(self:GetFrameStrata());
-    ButtonFrame:SetFrameLevel(self:GetFrameLevel()+1);
+    ButtonFrame:SetFrameLevel(self:GetFrameLevel());
     ButtonFrame:SetWidth(20);
     ButtonFrame:SetHeight(20);
-    ButtonFrame:SetPoint("BOTTOM", self, "BOTTOM", 0, -44);
+    ButtonFrame:SetPoint("LEFT", self, "LEFT", 20*(i-1)+i, 0);
 
+
+      
     -- Button Tooltip (Optional)
     if Tooltip then
       ButtonFrame:SetScript("OnEnter",

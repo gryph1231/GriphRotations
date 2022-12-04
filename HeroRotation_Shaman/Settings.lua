@@ -20,33 +20,40 @@ HR.GUISettings.APL.Shaman = {
     Enabled = {
       Potions = true,
       Trinkets = true,
+      Items = true,
     },
     DisplayStyle = {
       Potions = "Suggested",
       Trinkets = "Suggested",
-      Covenant = "Suggested",
+      Items = "Suggested",
+      Signature = "Suggested",
       SpiritwalkersGrace = "SuggestedRight",
     },
     UseBloodlust = false,
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
-      EarthElemental = true
+      Ascendance = true,
+      EarthElemental = true,
+      NaturesSwiftness = true,
+      TotemicRecall = true,
+      -- Racials
+      Racials = true,
     },
     -- {Display OffGCD as OffGCD, ForceReturn}
     OffGCDasOffGCD = {
-      -- Racials
-      Racials = true,
       -- Abilities
       WindShear = true
     }
   },
   Enhancement = {
     PreferEarthShield = false,
+    PotionType = {
+      Selected = "Power",
+    },
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
-      Ascendance = true,
       CrashLightning = false,
       FeralSpirit = true,
       Shield = false,
@@ -62,6 +69,9 @@ HR.GUISettings.APL.Shaman = {
   },
   Elemental = {
     PreferEarthShield = false,
+    PotionType = {
+      Selected = "Power",
+    },
     DisplayStyle = {
       Meteor = "Suggested",
       EyeOfTheStorm = "Suggested",
@@ -83,6 +93,9 @@ HR.GUISettings.APL.Shaman = {
     }
   },
   Restoration = {
+    PotionType = {
+      Selected = "Power",
+    },
     GCDasOffGCD = {
 
     },

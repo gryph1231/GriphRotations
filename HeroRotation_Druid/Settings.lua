@@ -20,16 +20,19 @@ HR.GUISettings.APL.Druid = {
     Enabled = {
       Potions = true,
       Trinkets = true,
+      Items = true,
     },
     DisplayStyle = {
       Potions = "Suggested",
       Trinkets = "Suggested",
-      Covenant = "Suggested",
+      Signature = "Suggested",
       Items = "Suggested",
     },
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
+      MarkOfTheWild = true,
+      WildCharge = true,
     },
     -- {Display OffGCD as OffGCD, ForceReturn}
     OffGCDasOffGCD = {
@@ -43,23 +46,30 @@ HR.GUISettings.APL.Druid = {
     RenewalHP = 40,
     ShowMoonkinFormOOC = false,
     DelayBerserking = false,
+    PotionType = {
+      Selected = "Power",
+    },
     GCDasOffGCD = {
-      MoonkinForm = false,
+      AstralCommunion = true,
       CaInc = true,
-      WarriorOfElune = true,
       ForceOfNature = true,
       FuryOfElune = true,
+      MoonkinForm = false,
       Starfall = false,
+      WarriorOfElune = true,
     },
     OffGCDasOffGCD = {
-      Renewal = true,
       Barkskin = true,
+      Renewal = true,
     }
   },
   Feral = {
     FillerSpell = "Rake Non-Snapshot",
     ShowCatFormOOC = false,
     UseOwlweave = false,
+    PotionType = {
+      Selected = "Power",
+    },
     GCDasOffGCD = {
       BsInc = true,
     },
@@ -74,6 +84,9 @@ HR.GUISettings.APL.Druid = {
     FrenziedRegenHP = 70,
     SurvivalInstinctsHP = 30,
     BristlingFurRage = 50,
+    PotionType = {
+      Selected = "Power",
+    },
     DisplayStyle = {
       Defensives = "Suggested"
     },
@@ -84,10 +97,14 @@ HR.GUISettings.APL.Druid = {
     OffGCDasOffGCD = {
       Berserk = true,
       Incarnation = true,
+      Ironfur = true,
       SkullBash = true,
     }
   },
   Restoration = {
+    PotionType = {
+      Selected = "Power",
+    },
     GCDasOffGCD = {
       HeartOfTheWild = true,
     },
@@ -125,7 +142,6 @@ CreateARPanelOptions(CP_Feral, "APL.Druid.Feral")
 -- Guardian
 CreateARPanelOptions(CP_Guardian, "APL.Druid.Guardian")
 CreatePanelOption("CheckButton", CP_Guardian, "APL.Druid.Guardian.UseRageDefensively", "Use Rage Defensively", "Enable this if you want to save rage for defensive use, disabling Maul suggestions.")
-CreatePanelOption("CheckButton", CP_Guardian, "APL.Druid.Guardian.UseBarkskinDefensively", "Use Barkskin Defensively", "Enable this if you want to save Barkskin for defensive use, disabling offensive Barkskin with Brambles.")
 CreatePanelOption("Slider", CP_Guardian, "APL.Druid.Guardian.BarkskinHP", {0, 100, 1}, "Barkskin Threshold", "Set the HP percentage threshold of when to use Barkskin.")
 CreatePanelOption("Slider", CP_Guardian, "APL.Druid.Guardian.FrenziedRegenHP", {0, 100, 1}, "Frenzied Regen Threshold", "Set the HP percentage threshold of when to use Frenzied Regeneration.")
 CreatePanelOption("Slider", CP_Guardian, "APL.Druid.Guardian.SurvivalInstinctsHP", {0, 100, 1}, "Survival Instincts Threshold", "Set the HP percentage threshold of when to use Survival Instincts.")

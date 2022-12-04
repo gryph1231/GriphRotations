@@ -18,14 +18,10 @@ local CreateARPanelOptions = HR.GUI.CreateARPanelOptions
 HR.GUISettings.APL.Hunter = {
   Commons = {
     Enabled = {
-      HealthPotion = true,
-
       Potions = true,
       Trinkets = true,
       Items = true,
     },
-    HealthPotionHealth = 30,
-
     DisplayStyle = {
       Signature = "Suggested",
       Potions = "Suggested",
@@ -121,7 +117,6 @@ local CP_Survival = CreateChildPanel(ARPanel, "Survival")
 
 -- Hunter
 CreateARPanelOptions(CP_Hunter, "APL.Hunter.Commons")
-CreatePanelOption("Slider", CP_Hunter, "APL.Hunter.Commons.HealthPotionHealth", {0, 100, 1}, "Healing Potion HP Threshold", "Set the HP threshold for when to suggest Healing Potion use.)")
 
 -- Hunter 2
 CreatePanelOption("Slider", CP_Hunter2, "APL.Hunter.Commons2.ExhilarationHP", {0, 100, 1}, "Exhilaration HP", "Set the Exhilaration HP threshold. Set to 0 to disable.")

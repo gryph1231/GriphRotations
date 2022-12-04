@@ -73,7 +73,6 @@
     end
   end
 
-
 --- ======= CASTS =======
   local GCDSpell = Spell(61304);
   local CooldownSpell, CooldownSpellDisplayTime, CooldownSpellCastDuration;
@@ -141,7 +140,6 @@
         Object.LastDisplayTime = GetTime();
         return false;
       end
-
     elseif DisplayStyle == "Suggested" then
       HR.CastSuggested(Object, OutofRange);
     elseif DisplayStyle == "SuggestedRight" then
@@ -159,7 +157,6 @@
     end
     return nil;
   end
-
   -- Overload for Main Cast (with text)
   function HR.CastAnnotated (Object, OffGCD, Text)
     local Result = HR.Cast(Object, OffGCD);
@@ -273,28 +270,25 @@
   function HR.CmdHandler (Message)
     local Argument1, Argument2, Argument3 = strsplit(" ", stringlower(Message));
     if Argument1 == "cds" then
+      HR.playSoundR(891);
       HeroRotationCharDB.Toggles[1] = not HeroRotationCharDB.Toggles[1];
       HR.ToggleIconFrame:UpdateButtonText(1);
-        HR.playSoundR(891);
-
       HR.Print("CDs are now "..(HeroRotationCharDB.Toggles[1] and "|cff00ff00enabled|r." or "|cffff0000disabled|r."));
     elseif Argument1 == "aoe" then
+      HR.playSoundR(891);
       HeroRotationCharDB.Toggles[2] = not HeroRotationCharDB.Toggles[2];
       HR.ToggleIconFrame:UpdateButtonText(2);
-      HR.playSoundR(891);
-      
       HR.Print("AoE is now "..(HeroRotationCharDB.Toggles[2] and "|cff00ff00enabled|r." or "|cffff0000disabled|r."));
-
-    -- elseif Argument1 == "toggle" then
-    --   HeroRotationCharDB.Toggles[3] = not HeroRotationCharDB.Toggles[3];
-    --   HR.ToggleIconFrame:UpdateButtonText(3);
-    --   HR.Print("HeroRotation is now "..(HeroRotationCharDB.Toggles[3] and "|cff00ff00enabled|r." or "|cffff0000disabled|r."));
-    elseif Argument1 == "unlock" then
-      HR.MainFrame:Unlock();
-      HR.Print("HeroRotation UI is now |cff00ff00unlocked|r.");
-    elseif Argument1 == "lock" then
-      HR.MainFrame:Lock();
-      HR.Print("HeroRotation UI is now |cffff0000locked|r.");
+    elseif Argument1 == "toggle" then
+      HeroRotationCharDB.Toggles[3] = not HeroRotationCharDB.Toggles[3];
+      HR.ToggleIconFrame:UpdateButtonText(3);
+      HR.Print("HeroRotation is now "..(HeroRotationCharDB.Toggles[3] and "|cff00ff00enabled|r." or "|cffff0000disabled|r."));
+    -- elseif Argument1 == "unlock" then
+    --   HR.MainFrame:Unlock();
+    --   HR.Print("HeroRotation UI is now |cff00ff00unlocked|r.");
+    -- elseif Argument1 == "lock" then
+    --   HR.MainFrame:Lock();
+    --   HR.Print("HeroRotation UI is now |cffff0000locked|r.");
     elseif Argument1 == "scale" then
       if Argument2 and Argument3 then
         Argument3 = tonumber(Argument3);
@@ -374,4 +368,3 @@
   function HR.Locked ()
     return HeroRotationDB.Locked;
   end
-

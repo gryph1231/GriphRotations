@@ -25,9 +25,7 @@ HL.AddCoreOverride ("Player.AstralPowerP",
     if not Player:IsCasting() then
       return AP
     else
-      if Player:IsCasting(SpellBalance.Wrath) then
-        return AP + 6
-      elseif Player:IsCasting(SpellBalance.Starfire) or Player:IsCasting(SpellBalance.StellarFlare) then
+      if Player:IsCasting(SpellBalance.Wrath) or Player:IsCasting(SpellBalance.Starfire) or Player:IsCasting(SpellBalance.StellarFlare) then
         return AP + 8
       elseif Player:IsCasting(SpellBalance.NewMoon) then
         return AP + 10
@@ -57,6 +55,10 @@ BalOldSpellIsCastable = HL.AddCoreOverride ("Spell.IsCastable",
       return BaseCheck and not Player:IsCasting(self)
     elseif self == SpellBalance.Wrath or self == SpellBalance.Starfire then
       return BaseCheck and not (Player:IsCasting(self) and self:Count() == 1)
+    elseif self == SpellBalance.WarriorofElune then
+      return BaseCheck and Player:BuffDown(self)
+    elseif self == SpellBalance.NewMoon or self == SpellBalance.HalfMoon or self == SpellBalance.FullMoon then
+      return BaseCheck and not Player:IsCasting(self)
     else
       return BaseCheck
     end
@@ -85,6 +87,10 @@ GuardianOldSpellIsCastable = HL.AddCoreOverride ("Spell.IsCastable",
     local BaseCheck = GuardianOldSpellIsCastable(self, Range, AoESpell, ThisUnit, BypassRecovery, Offset)
     if self == SpellGuardian.Thrash then
       return BaseCheck and (Player:Rage() <= 95 and Target:DebuffRemains(SpellGuardian.ThrashDebuff) > Player:GCD() * 2 or Target:DebuffStack(SpellGuardian.ThrashDebuff) < 3)
+    elseif self == SpellGuardian.BearForm then
+      return BaseCheck and Player:BuffDown(self)
+    elseif self == SpellGuardian.WildCharge then
+      return BaseCheck and Target:IsInRange(28) and not Target:IsInRange(8)
     else
       return BaseCheck
     end

@@ -27,18 +27,20 @@ HR.GUISettings.APL.Monk = {
       
     HealthPotion = "Main Icon",
       Potions = "Suggested",
-      Covenant = "Suggested",
+      -- Covenant = "Suggested",
       Trinkets = "Suggested",
       Items = "Suggested"
     },
     HealthPotionHealth = 30,
-
+    DampenHarmHP = 60,
+    FortifyingBrewHP = 40,
+    DiffuseMagicHP = 65,
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
       LegSweep = true,
-      RingOfPeace = true,
-      Paralysis = true,
+      -- RingOfPeace = true,
+      -- Paralysis = true,
     },
     -- {Display OffGCD as OffGCD, ForceReturn}
     OffGCDasOffGCD = {
@@ -49,9 +51,9 @@ HR.GUISettings.APL.Monk = {
     }
   },
   Brewmaster = {
-    DampenHarmHP = 60,
-    FortifyingBrewHP = 40,
-    DiffuseMagicHP = 60,
+    PotionType = {
+      Selected = "Power",
+    },
     -- DisplayStyle
     DisplayStyle = {
 
@@ -71,15 +73,16 @@ HR.GUISettings.APL.Monk = {
     }
   },
   Windwalker = {
-    DampenHarmHP = 60,
-    FortifyingBrewHP = 40,
-    DiffuseMagicHP = 65,
+    PotionType = {
+      Selected = "Power",
+    },
+TouchofKarmaHP = 65,
     -- DisplayStyle
     DisplayStyle = {
   
     },
     IgnoreToK = false,
-    IgnoreFSK = true,
+    -- IgnoreFSK = true,
     -- {Display GCD as OffGCD, ForceReturn}
     GCDasOffGCD = {
       -- Abilities
@@ -98,9 +101,11 @@ HR.GUISettings.APL.Monk = {
 
   },
   Mistweaver = {
+    PotionType = {
+      Selected = "Power",
+    },
     -- Defensives
-    DampenHarmHP = 60,
-    FortifyingBrewHP = 40,
+
     -- DisplayStyle
     DisplayStyle = {
 
@@ -134,24 +139,23 @@ local CP_Mistweaver = CreateChildPanel(CP_Monk, "Mistweaver")
 -- Monk
 CreateARPanelOptions(CP_Monk, "APL.Monk.Commons")
 CreatePanelOption("Slider", CP_Monk, "APL.Monk.Commons.HealthPotionHealth", {0, 100, 1}, "Healing Potion HP Threshold", "Set the HP threshold for when to suggest Healing Potion use.)")
+CreatePanelOption("Slider", CP_Monk, "APL.Monk.Commons.DampenHarmHP", {0, 100, 1}, "Dampen Harm HP Threshold", "Set the HP threshold for when to suggest Dampen Harm use.)")
+CreatePanelOption("Slider", CP_Monk, "APL.Monk.Commons.FortifyingBrewHP", {0, 100, 1}, "Fortifying Brew HP Threshold", "Set the HP threshold for when to suggest Fortifying Brew use.)")
+CreatePanelOption("Slider", CP_Monk, "APL.Monk.Commons.DiffuseMagicHP", {0, 100, 1}, "Diffuse Magic HP Threshold", "Set the HP threshold for when to suggest Diffuse Magic use.)")
 
 
 
 -- Windwalker
 CreateARPanelOptions(CP_Windwalker, "APL.Monk.Windwalker")
 CreatePanelOption("CheckButton", CP_Windwalker, "APL.Monk.Windwalker.IgnoreToK", "Ignore Touch of Karma", "Enable this setting to allow you to ignore Touch of Karma without stalling the rotation. (NOTE: Touch of Karma will never be suggested if this is enabled)")
-CreatePanelOption("CheckButton", CP_Windwalker, "APL.Monk.Windwalker.IgnoreFSK", "Ignore Flying Serpent Kick", "Enable this setting to allow you to ignore Flying Serpent Kick without stalling the rotation. (NOTE: Flying Serpent Kick will never be suggested if this is enabled)")
-CreatePanelOption("Slider", CP_Windwalker, "APL.Monk.Mistweaver.DampenHarmHP", {1, 100, 1}, "Dampen Harm HP Threshold", "Set the HP threshold for when to suggest Dampen Harm.)")
-CreatePanelOption("Slider", CP_Windwalker, "APL.Monk.Windwalker.FortifyingBrewHP", {1, 100, 1}, "Fortifying Brew HP Threshold", "Set the HP threshold for when to suggest Fortifying Brew.)")
-CreatePanelOption("Slider", CP_Windwalker, "APL.Monk.Windwalker.DiffuseMagicHP", {1, 100, 1}, "Diffuse Magic HP Threshold", "Set the HP threshold for when to suggest Diffuse Magic.)")
+-- CreatePanelOption("CheckButton", CP_Windwalker, "APL.Monk.Windwalker.IgnoreFSK", "Ignore Flying Serpent Kick", "Enable this setting to allow you to ignore Flying Serpent Kick without stalling the rotation. (NOTE: Flying Serpent Kick will never be suggested if this is enabled)")
+CreatePanelOption("Slider", CP_Windwalker, "APL.Monk.Windwalker.TouchofKarmaHP", {0, 100, 1}, "Touch of Karma HP Threshold", "Set the HP threshold for when to suggest Touch of Karma use.)")
+
 
 -- Brewmaster
 CreateARPanelOptions(CP_Brewmaster, "APL.Monk.Brewmaster")
-CreatePanelOption("Slider", CP_Brewmaster, "APL.Monk.Brewmaster.DampenHarmHP", {1, 100, 1}, "Dampen Harm HP Threshold", "Set the HP threshold for when to suggest Dampen Harm.)")
-CreatePanelOption("Slider", CP_Brewmaster, "APL.Monk.Brewmaster.FortifyingBrewHP", {1, 100, 1}, "Fortifying Brew HP Threshold", "Set the HP threshold for when to suggest Fortifying Brew.)")
-CreatePanelOption("Slider", CP_Brewmaster, "APL.Monk.Brewmaster.DiffuseMagicHP", {1, 100, 1}, "Diffuse Magic HP Threshold", "Set the HP threshold for when to suggest Diffuse Magic.)")
+
 
 -- Mistweaver
 CreateARPanelOptions(CP_Mistweaver, "APL.Monk.Mistweaver")
-CreatePanelOption("Slider", CP_Mistweaver, "APL.Monk.Mistweaver.DampenHarmHP", {1, 100, 1}, "Dampen Harm HP Threshold", "Set the HP threshold for when to suggest Dampen Harm.)")
-CreatePanelOption("Slider", CP_Mistweaver, "APL.Monk.Mistweaver.FortifyingBrewHP", {1, 100, 1}, "Fortifying Brew HP Threshold", "Set the HP threshold for when to suggest Fortifying Brew.)")
+

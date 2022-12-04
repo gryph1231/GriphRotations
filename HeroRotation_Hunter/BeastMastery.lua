@@ -207,12 +207,12 @@ local function CDs()
     if Cast(S.Fireblood, Settings.Commons.GCDasOffGCD.Racials) then return "fireblood cds 12"; end
   end
   -- potion,if=buff.call_of_the_wild.up|!talent.call_of_the_wild&(buff.bestial_wrath.up&(buff.bloodlust.up|target.health.pct<20))|fight_remains<31
-  -- if Settings.Commons.Enabled.Potions and (Player:BuffUp(S.CalloftheWildBuff) or (not S.CalloftheWild:IsAvailable()) and (Player:BuffUp(S.BestialWrathBuff) and (Player:BloodlustUp() or Target:HealthPercentage() < 20)) or FightRemains < 31) then
-  --   local PotionSelected = Everyone.PotionSelected()
-  --   if PotionSelected and PotionSelected:IsReady() then
-  --     if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cds 14"; end
-  --   end
-  -- end
+  if Settings.Commons.Enabled.Potions and (Player:BuffUp(S.CalloftheWildBuff) or (not S.CalloftheWild:IsAvailable()) and (Player:BuffUp(S.BestialWrathBuff) and (Player:BloodlustUp() or Target:HealthPercentage() < 20)) or FightRemains < 31) then
+    local PotionSelected = Everyone.PotionSelected()
+    if PotionSelected and PotionSelected:IsReady() then
+      if Cast(PotionSelected, nil, Settings.Commons.DisplayStyle.Potions) then return "potion cds 14"; end
+    end
+  end
 end
 
 local function Trinkets()
@@ -418,36 +418,6 @@ end
 
 --- ======= MAIN =======
 local function APL()
-
-
-  if (Player:IsCasting() or Player:IsChanneling()) then return HR.Cast(S.channeling) end
-
-  Enemies20y = Player:GetEnemiesInRange(20)
-
-  if (not HR.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or #Enemies20y==0) then 
-    HR.queuedSpell = { HR.Spell[1].Empty, 0 }
-end
-
-if HR.QueuedSpell():IsReadyQueue() then
-  return Cast(HR.QueuedSpell()) 
- end
-
-
-
-  if Settings.Commons.Enabled.HealthPotion 
-  and (not Player:InArena() and not Player:InBattlegrounds())  
-  and Player:HealthPercentage() <= Settings.Commons.HealthPotionHealth
-  then
-    local HPicon = Item(169451);
-    local HealthPotionSelected = Everyone.HealthPotionSelected()
-    if HealthPotionSelected and HealthPotionSelected:IsReady() then
-     return Cast(HPicon)
-    end
-  end
-
-
-
-
   -- HeroLib SplashData Tracking Update (used as fallback if pet abilities are not in action bars)
   if S.Stomp:IsAvailable() then
     HL.SplashEnemies.ChangeFriendTargetsTracking("Mine Only")
@@ -532,21 +502,18 @@ if HR.QueuedSpell():IsReadyQueue() then
       if Cast(S.MendPet) then return "Mend Pet Low Priority (w/ Target)"; end
     end
     -- Pool Focus if nothing else to do
-    -- if HR.CastAnnotated(S.PoolFocus, false, "WAIT") then return "Pooling Focus"; end
+    if HR.CastAnnotated(S.PoolFocus, false, "WAIT") then return "Pooling Focus"; end
   end
 
   -- Note: We have to put it again in case we don't have a target but our pet is dying.
   if not Pet:IsDeadOrGhost() and S.MendPet:IsCastable() and Pet:HealthPercentage() <= Settings.Commons2.MendPetLowHP then
     if Cast(S.MendPet) then return "Mend Pet Low Priority (w/o Target)"; end
   end
-
-  if  Player:IsMounted() then return HR.Cast(S.mounted)
-  elseif Player:AffectingCombat() then
-    return HR.Cast(S.combat)
-  else
-return HR.Cast(S.MPI)
-  end
-
 end
 
-HR.SetAPL(253, APL)
+local function OnInit ()
+  HR.Print("Beast Mastery can use pet abilities to better determine AoE. Make sure you have Growl and Blood Bolt / Bite / Claw / Smack in your player action bars.")
+  HR.Print("Beast Mastery Hunter rotation is currently a work in progress, but has been updated for patch 10.0.")
+end
+
+HR.SetAPL(253, APL, OnInit)
