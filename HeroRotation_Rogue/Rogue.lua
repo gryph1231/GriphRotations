@@ -48,8 +48,26 @@ Spell.Rogue.Commons = {
   mounted    = Spell(999958),
   TRINKET1   = Spell(999988), -- garrison_blueweapon GetSpellTexture(179071)
   TRINKET2   = Spell(999989), -- garrison_greenweapon
-
-  AncestralCall           = Spell(274738),
+  WoundPoison = Spell(8679),
+  CripplingPoison = Spell(3408),
+  Flagellation            = Spell(384631),
+  FlagellationPersistBuff = Spell(394758),
+  GreenSkinsWickers = Spell(386823), --386823 --394131
+  GreenSkinsWickersBuff = Spell(394131),
+  lustAT = Spell(155145),
+  lust1 = Spell(57724),
+  lust2 = Spell(57723),
+  lust3 = Spell(80354),
+  lust4 = Spell(95809),
+  lust5 = Spell(264689),
+  lust6 = Spell(390386),
+  mantle = Spell(340094),
+  -- EchoingReprimand = Spell(323547), --385616
+  EchoingReprimandCP2 = Spell(323558),
+  EchoingReprimandCP3 = Spell(323559),
+  EchoingReprimandCP4 = Spell(323560),
+  EchoingReprimandCP5 = Spell(354838),
+  autoattack           = Spell(274738), --ancestral call
   ArcanePulse             = Spell(260364),
   ArcaneTorrent           = Spell(25046),
   BagofTricks             = Spell(312411),
@@ -161,6 +179,8 @@ Spell.Rogue.Assassination = MergeTableByKey(Spell.Rogue.Commons, {
 
 Spell.Rogue.Outlaw = MergeTableByKey(Spell.Rogue.Commons, {
   -- Abilities
+  InstantPoison = Spell(315584),
+  NumbingPoison = Spell(5761),
   AdrenalineRush          = Spell(13750),
   Ambush                  = Spell(8676),
   BetweentheEyes          = Spell(315341),
@@ -226,8 +246,7 @@ Spell.Rogue.Subtlety = MergeTableByKey(Spell.Rogue.Commons, {
   FinalityBlackPowderBuff = Spell(385948),
   FinalityEviscerateBuff  = Spell(385949),
   FinalityRuptureBuff     = Spell(385951),
-  Flagellation            = Spell(384631),
-  FlagellationPersistBuff = Spell(394758),
+
   Gloomblade              = Spell(200758),
   LingeringShadow         = Spell(382524),
   LingeringShadowBuff     = Spell(385960),

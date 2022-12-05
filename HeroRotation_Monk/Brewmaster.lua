@@ -180,6 +180,17 @@ local function Defensives()
 
 end
 
+local function UseItems()
+  -- use_items
+  local TrinketToUse = Player:GetUseableTrinkets(OnUseExcludes)
+  -- print(TrinketToUse:ID())
+  if TrinketToUse and tonumber(TrinketToUse:ID()) == GetInventoryItemID("player", 13) then
+    return Cast(S.TRINKET1, nil, Settings.Commons.DisplayStyle.Trinkets)
+  elseif TrinketToUse and tonumber(TrinketToUse:ID()) == GetInventoryItemID("player", 14) then
+    return Cast(S.TRINKET2, nil, Settings.Commons.DisplayStyle.Trinkets)
+  end
+end
+
 --- ======= ACTION LISTS =======
 local function APL()
 
@@ -279,7 +290,10 @@ if HR.QueuedSpell():IsReadyQueue() then
     
 
     if CDsON() then
-    
+      if Settings.Commons.Enabled.Trinkets and Target:IsInRange(8) then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
+      end
       -- invoke_niuzao_the_black_ox,if=buff.recent_purifies.value>=health.max*0.05&(target.cooldown.pause_action.remains>=20|time<=10|target.cooldown.pause_action.duration=0)
       -- APL Note: Cast Niuzao when we'll get at least 20 seconds of uptime. This is specific to the default enemy APL and will need adjustments for other enemies.
       -- Note: Using BossFilteredFightRemains instead of the above calculation
@@ -301,7 +315,7 @@ if HR.QueuedSpell():IsReadyQueue() then
         if Cast(S.FallenOrder, nil, Settings.Commons.DisplayStyle.Covenant) then return "fallen_order main 24"; end
       end
       -- bonedust_brew,if=!debuff.bonedust_brew_debuff.up
-      if S.BonedustBrew:IsCastable() and (Target:DebuffDown(S.BonedustBrew)) and (EnemiesCount12>=1 or Target:IsInRange(12)) then
+      if S.BonedustBrew:IsCastable() and (Target:DebuffDown(S.BonedustBrew)) and (EnemiesCount8>=1 or Target:IsInRange(5)) then
         if Cast(S.BonedustBrew, nil, Settings.Commons.DisplayStyle.Covenant) then return "bonedust_brew main 26"; end
       end
     end
