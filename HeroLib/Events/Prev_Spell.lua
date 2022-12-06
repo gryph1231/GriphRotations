@@ -2,8 +2,6 @@
 --- ======= LOCALIZE =======
 -- Addon
 local addonName, HL = ...
--- HeroDBC
-local DBC = HeroDBC.DBC
 -- HeroLib
 local Cache = HeroCache
 local Unit = HL.Unit
@@ -16,9 +14,8 @@ local Item = HL.Item
 local pairs = pairs
 local tableinsert = table.insert
 local mathmax = math.max
-local GetTime = GetTime
 -- File Locals
-local TriggerGCD = DBC.SpellGCD -- TriggerGCD table until it has been filtered.
+local TriggerGCD = HL.Enum.TriggerGCD -- TriggerGCD table until it has been filtered.
 local LastRecord = 15
 local PrevGCDPredicted = 0
 local PrevGCDCastTime = 0
@@ -60,65 +57,53 @@ local function RemoveOldRecords()
 end
 
 -- Player On Cast Success Listener
-HL:RegisterForSelfCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    HL.Timer.LastCastSuccess = GetTime()
-    if TriggerGCD[SpellID] ~= nil then
-      if TriggerGCD[SpellID] then
-        -- HL.Print(GetTime() .. " Self SPELL_CAST_SUCCESS " .. SpellID)
-        tableinsert(Prev.GCD, 1, SpellID)
-        PrevGCDCastTime = GetTime()
-        Prev.OffGCD = {}
-        PrevOffGCDCastTime = 0
-        PrevGCDPredicted = 0
-      else -- Prevents unwanted spells to be registered as OffGCD.
-        tableinsert(Prev.OffGCD, 1, SpellID)
-        PrevOffGCDCastTime = GetTime()
-        PrevGCDCastTime = 0
-      end
-    end
-    RemoveOldRecords()
-  end,
-  "SPELL_CAST_SUCCESS"
-)
-
-HL:RegisterForSelfCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  HL.Timer.LastCastSuccess = HL.GetTime()
+  if TriggerGCD[SpellID] ~= nil then
     if TriggerGCD[SpellID] then
-      PrevGCDPredicted = SpellID
-    end
-  end,
-  "SPELL_CAST_START"
-)
-HL:RegisterForSelfCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    if PrevGCDPredicted == SpellID then
+      -- HL.Print(HL.GetTime() .. " Self SPELL_CAST_SUCCESS " .. SpellID)
+      tableinsert(Prev.GCD, 1, SpellID)
+      PrevGCDCastTime = HL.GetTime()
+      Prev.OffGCD = {}
+      PrevOffGCDCastTime = 0
       PrevGCDPredicted = 0
+    else -- Prevents unwanted spells to be registered as OffGCD.
+      tableinsert(Prev.OffGCD, 1, SpellID)
+      PrevOffGCDCastTime = HL.GetTime()
+      PrevGCDCastTime = 0
     end
-  end,
-  "SPELL_CAST_FAILED"
-)
+  end
+  RemoveOldRecords()
+end, "SPELL_CAST_SUCCESS")
+
+HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  if TriggerGCD[SpellID] then
+    PrevGCDPredicted = SpellID
+  end
+end, "SPELL_CAST_START")
+HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  if PrevGCDPredicted == SpellID then
+    PrevGCDPredicted = 0
+  end
+end, "SPELL_CAST_FAILED")
 
 -- Pet On Cast Success Listener
-HL:RegisterForPetCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    if TriggerGCD[SpellID] ~= nil then
-      if TriggerGCD[SpellID] then
-        tableinsert(Prev.PetGCD, 1, SpellID)
-        Prev.PetOffGCD = {}
-      else -- Prevents unwanted spells to be registered as OffGCD.
-        tableinsert(Prev.PetOffGCD, 1, SpellID)
-      end
+HL:RegisterForPetCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  if TriggerGCD[SpellID] ~= nil then
+    if TriggerGCD[SpellID] then
+      tableinsert(Prev.PetGCD, 1, SpellID)
+      Prev.PetOffGCD = {}
+    else -- Prevents unwanted spells to be registered as OffGCD.
+      tableinsert(Prev.PetOffGCD, 1, SpellID)
     end
-    RemoveOldRecords()
-  end,
-  "SPELL_CAST_SUCCESS"
-)
+  end
+  RemoveOldRecords()
+end, "SPELL_CAST_SUCCESS")
 
 -- Filter the Enum TriggerGCD table to keep only registered spells for a given class (based on SpecID).
 function Player:FilterTriggerGCD(SpecID)
   local RegisteredSpells = {}
-  local BaseTriggerGCD = DBC.SpellGCD -- In case FilterTriggerGCD is called multiple time, we take the Enum table as base.
+  local BaseTriggerGCD = HL.Enum.TriggerGCD -- In case FilterTriggerGCD is called multiple time, we take the Enum table as base.
   -- Fetch registered spells during the init
   for Spec, Spells in pairs(HL.Spell[HL.SpecID_ClassesSpecs[SpecID][1]]) do
     for _, Spell in pairs(Spells) do
@@ -194,7 +179,7 @@ function Player:SetPrevSuggestedSpell(SuggestedSpell)
       return
     end
     PrevSuggested.Spell = SuggestedSpell
-    PrevSuggested.Time = GetTime()
+    PrevSuggested.Time = HL.GetTime()
   end
 end
 

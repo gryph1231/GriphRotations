@@ -12,285 +12,161 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local GetRuneforgeLegendaryComponentInfo = C_LegendaryCrafting.GetRuneforgeLegendaryComponentInfo
-local IsRuneforgeLegendary = C_LegendaryCrafting.IsRuneforgeLegendary
-local GetInventoryItemID = GetInventoryItemID
-local ItemLocation = ItemLocation
+local pairs = pairs
 local select = select
-local wipe = wipe
 -- File Locals
-local Equipment = {}
-local UseableTrinkets = {}
-local ActiveLegendaryEffects = {}
 
---- ============================ CONTENT =============================
--- Retrieve the current player's equipment.
-function Player:GetEquipment()
-  return Equipment
-end
 
+--- ============================ CONTENT ============================
 -- Save the current player's equipment.
-function Player:UpdateEquipment()
-  wipe(Equipment)
-  wipe(UseableTrinkets)
+HL.Equipment = {}
+function HL.GetEquipment()
+  local ItemID
+  HL.Equipment = {}
+  HL.OnUseTrinkets = {}
 
   for i = 1, 19 do
-    local ItemID = select(1, GetInventoryItemID("player", i))
+    ItemID = select(1, GetInventoryItemID("player", i))
     -- If there is an item in that slot
     if ItemID ~= nil then
-      -- Equipment
-      Equipment[i] = ItemID
-      -- Useable Trinkets
-      if i == 13 or i == 14 then
-        local TrinketItem = Item(ItemID, {i})
+      HL.Equipment[i] = ItemID
+      if (i == 13 or i == 14) then
+        local TrinketItem = HL.Item(ItemID, {i})
         if TrinketItem:IsUsable() then
-          table.insert(UseableTrinkets, TrinketItem)
+          table.insert(HL.OnUseTrinkets, TrinketItem)
         end
       end
     end
   end
 end
 
-do
-  -- Global Custom Trinkets
-  -- Note: Can still be overriden on a per-module basis by passing in to ExcludedTrinkets
-  local CustomTrinketItems = {
-    FlayedwingToxin                 = Item(178742, {13, 14}),
-    MistcallerOcarina               = Item(178715, {13, 14}),
-    SoulIgniter                     = Item(184019, {13, 14}),
-    DarkmoonDeckIndomitable         = Item(173096, {13, 14}),
-    ShardofAnnhyldesAegis           = Item(186424, {13, 14}),
-    TomeofMonstruousConstructions   = Item(186422, {13, 14}),
-    SoleahsSecretTechnique          = Item(185818, {13, 14}),
-    SoleahsSecretTechnique2         = Item(190958, {13, 14}),
-    RubyWhelpShell                  = Item(193757, {13, 14}),
+-- Check player set bonuses (call HL.GetEquipment before to refresh the current gear)
+HasTierSets = {
+  ["T18"] = {
+    [0] = function(Count) return Count > 1, Count > 3 end, -- Return Function
+    [1] = { [5] = 124319, [10] = 124329, [1] = 124334, [7] = 124340, [3] = 124346 }, --  Warrior:      Chest, Hands, Head, Legs, Shoulder
+    [2] = { [5] = 124318, [10] = 124328, [1] = 124333, [7] = 124339, [3] = 124345 }, --  Paladin:      Chest, Hands, Head, Legs, Shoulder
+    [3] = { [5] = 124284, [10] = 124292, [1] = 124296, [7] = 124301, [3] = 124307 }, --  Hunter:       Chest, Hands, Head, Legs, Shoulder
+    [4] = { [5] = 124248, [10] = 124257, [1] = 124263, [7] = 124269, [3] = 124274 }, --  Rogue:        Chest, Hands, Head, Legs, Shoulder
+    [5] = { [5] = 124172, [10] = 124155, [1] = 124161, [7] = 124166, [3] = 124178 }, --  Priest:       Chest, Hands, Head, Legs, Shoulder
+    [6] = { [5] = 124317, [10] = 124327, [1] = 124332, [7] = 124338, [3] = 124344 }, --  Death Knight: Chest, Hands, Head, Legs, Shoulder
+    [7] = { [5] = 124303, [10] = 124293, [1] = 124297, [7] = 124302, [3] = 124308 }, --  Shaman:       Chest, Hands, Head, Legs, Shoulder
+    [8] = { [5] = 124171, [10] = 124154, [1] = 124160, [7] = 124165, [3] = 124177 }, --  Mage:         Chest, Hands, Head, Legs, Shoulder
+    [9] = { [5] = 124173, [10] = 124156, [1] = 124162, [7] = 124167, [3] = 124179 }, --  Warlock:      Chest, Hands, Head, Legs, Shoulder
+    [10] = { [5] = 124247, [10] = 124256, [1] = 124262, [7] = 124268, [3] = 124273 }, -- Monk:         Chest, Hands, Head, Legs, Shoulder
+    [11] = { [5] = 124246, [10] = 124255, [1] = 124261, [7] = 124267, [3] = 124272 }, -- Druid:        Chest, Hands, Head, Legs, Shoulder
+    [12] = nil -- Demon Hunter: Chest, Hands, Head, Legs, Shoulder
+  },
+  ["T18_ClassTrinket"] = {
+    [0] = function(Count) return Count > 0 end, -- Return Function
+    [1] = { [13] = 124523, [14] = 124523 }, --  Warrior:      Worldbreaker's Resolve
+    [2] = { [13] = 124518, [14] = 124518 }, --  Paladin:      Libram of Vindication
+    [3] = { [13] = 124515, [14] = 124515 }, --  Hunter:       Talisman of the Master Tracker
+    [4] = { [13] = 124520, [14] = 124520 }, --  Rogue:        Bleeding Hollow Toxin Vessel
+    [5] = { [13] = 124519, [14] = 124519 }, --  Priest:       Repudiation of War
+    [6] = { [13] = 124513, [14] = 124513 }, --  Death Knight: Reaper's Harvest
+    [7] = { [13] = 124521, [14] = 124521 }, --  Shaman:       Core of the Primal Elements
+    [8] = { [13] = 124516, [14] = 124516 }, --  Mage:         Tome of Shifting Words
+    [9] = { [13] = 124522, [14] = 124522 }, --  Warlock:      Fragment of the Dark Star
+    [10] = { [13] = 124517, [14] = 124517 }, -- Monk:         Sacred Draenic Incense
+    [11] = { [13] = 124514, [14] = 124514 }, -- Druid:        Seed of Creation
+    [12] = { [13] = 139630, [14] = 139630 } --  Demon Hunter: Etching of Sargeras
+  },
+  ["T19"] = {
+    [0] = function(Count) return Count > 1, Count > 3 end, -- Return Function
+    [1] = { [5] = 138351, [15] = 138374, [10] = 138354, [1] = 138357, [7] = 138360, [3] = 138363 }, --  Warrior:      Chest, Back, Hands, Head, Legs, Shoulder
+    [2] = { [5] = 138350, [15] = 138369, [10] = 138353, [1] = 138356, [7] = 138359, [3] = 138362 }, --  Paladin:      Chest, Back, Hands, Head, Legs, Shoulder
+    [3] = { [5] = 138339, [15] = 138368, [10] = 138340, [1] = 138342, [7] = 138344, [3] = 138347 }, --  Hunter:       Chest, Back, Hands, Head, Legs, Shoulder
+    [4] = { [5] = 138326, [15] = 138371, [10] = 138329, [1] = 138332, [7] = 138335, [3] = 138338 }, --  Rogue:        Chest, Back, Hands, Head, Legs, Shoulder
+    [5] = { [5] = 138319, [15] = 138370, [10] = 138310, [1] = 138313, [7] = 138316, [3] = 138322 }, --  Priest:       Chest, Back, Hands, Head, Legs, Shoulder
+    [6] = { [5] = 138349, [15] = 138364, [10] = 138352, [1] = 138355, [7] = 138358, [3] = 138361 }, --  Death Knight: Chest, Back, Hands, Head, Legs, Shoulder
+    [7] = { [5] = 138346, [15] = 138372, [10] = 138341, [1] = 138343, [7] = 138345, [3] = 138348 }, --  Shaman:       Chest, Back, Hands, Head, Legs, Shoulder
+    [8] = { [5] = 138318, [15] = 138365, [10] = 138309, [1] = 138312, [7] = 138315, [3] = 138321 }, --  Mage:         Chest, Back, Hands, Head, Legs, Shoulder
+    [9] = { [5] = 138320, [15] = 138373, [10] = 138311, [1] = 138314, [7] = 138317, [3] = 138323 }, --  Warlock:      Chest, Back, Hands, Head, Legs, Shoulder
+    [10] = { [5] = 138325, [15] = 138367, [10] = 138328, [1] = 138331, [7] = 138334, [3] = 138337 }, -- Monk:         Chest, Back, Hands, Head, Legs, Shoulder
+    [11] = { [5] = 138324, [15] = 138366, [10] = 138327, [1] = 138330, [7] = 138333, [3] = 138336 }, -- Druid:        Chest, Back, Hands, Head, Legs, Shoulder
+    [12] = { [5] = 138376, [15] = 138375, [10] = 138377, [1] = 138378, [7] = 138379, [3] = 138380 } --  Demon Hunter: Chest, Back, Hands, Head, Legs, Shoulder
+  },
+  ["T20"] = {
+    [0] = function(Count) return Count > 1, Count > 3 end, -- Return Function
+    [1] = { [5] = 147187, [15] = 147188, [10] = 147189, [1] = 147190, [7] = 147191, [3] = 147192 }, --  Warrior:      Chest, Back, Hands, Head, Legs, Shoulder
+    [2] = { [5] = 147157, [15] = 147158, [10] = 147159, [1] = 147160, [7] = 147161, [3] = 147162 }, --  Paladin:      Chest, Back, Hands, Head, Legs, Shoulder
+    [3] = { [5] = 147139, [15] = 147140, [10] = 147141, [1] = 147142, [7] = 147143, [3] = 147144 }, --  Hunter:       Chest, Back, Hands, Head, Legs, Shoulder
+    [4] = { [5] = 147169, [15] = 147170, [10] = 147171, [1] = 147172, [7] = 147173, [3] = 147174 }, --  Rogue:        Chest, Back, Hands, Head, Legs, Shoulder
+    [5] = { [5] = 147167, [15] = 147163, [10] = 147164, [1] = 147165, [7] = 147166, [3] = 147168 }, --  Priest:       Chest, Back, Hands, Head, Legs, Shoulder
+    [6] = { [5] = 147121, [15] = 147122, [10] = 147123, [1] = 147124, [7] = 147125, [3] = 147126 }, --  Death Knight: Chest, Back, Hands, Head, Legs, Shoulder
+    [7] = { [5] = 147175, [15] = 147176, [10] = 147177, [1] = 147178, [7] = 147179, [3] = 147180 }, --  Shaman:       Chest, Back, Hands, Head, Legs, Shoulder
+    [8] = { [5] = 147149, [15] = 147145, [10] = 147146, [1] = 147147, [7] = 147148, [3] = 147150 }, --  Mage:         Chest, Back, Hands, Head, Legs, Shoulder
+    [9] = { [5] = 147185, [15] = 147181, [10] = 147182, [1] = 147183, [7] = 147184, [3] = 147186 }, --  Warlock:      Chest, Back, Hands, Head, Legs, Shoulder
+    [10] = { [5] = 147151, [15] = 147152, [10] = 147153, [1] = 147154, [7] = 147155, [3] = 147156 }, -- Monk:         Chest, Back, Hands, Head, Legs, Shoulder
+    [11] = { [5] = 147133, [15] = 147134, [10] = 147135, [1] = 147136, [7] = 147137, [3] = 147138 }, -- Druid:        Chest, Back, Hands, Head, Legs, Shoulder
+    [12] = { [5] = 147127, [15] = 147128, [10] = 147129, [1] = 147130, [7] = 147131, [3] = 147132 } --  Demon Hunter: Chest, Back, Hands, Head, Legs, Shoulder
+  },
+  ["T21"] = {
+    [0] = function(Count) return Count > 1, Count > 3 end, -- Return Function
+    [1] = { [5] = 152178, [15] = 152179, [10] = 152180, [1] = 152181, [7] = 152182, [3] = 152183 }, --  Warrior:      Chest, Back, Hands, Head, Legs, Shoulder
+    [2] = { [5] = 152148, [15] = 152149, [10] = 152150, [1] = 152151, [7] = 152152, [3] = 152153 }, --  Paladin:      Chest, Back, Hands, Head, Legs, Shoulder
+    [3] = { [5] = 152130, [15] = 152131, [10] = 152132, [1] = 152133, [7] = 152134, [3] = 152135 }, --  Hunter:       Chest, Back, Hands, Head, Legs, Shoulder
+    [4] = { [5] = 152160, [15] = 152161, [10] = 152162, [1] = 152163, [7] = 152164, [3] = 152165 }, --  Rogue:        Chest, Back, Hands, Head, Legs, Shoulder
+    [5] = { [5] = 152158, [15] = 152154, [10] = 152155, [1] = 152156, [7] = 152157, [3] = 152159 }, --  Priest:       Chest, Back, Hands, Head, Legs, Shoulder
+    [6] = { [5] = 152112, [15] = 152113, [10] = 152114, [1] = 152115, [7] = 152116, [3] = 152117 }, --  Death Knight: Chest, Back, Hands, Head, Legs, Shoulder
+    [7] = { [5] = 152166, [15] = 152167, [10] = 152168, [1] = 152169, [7] = 152170, [3] = 152171 }, --  Shaman:       Chest, Back, Hands, Head, Legs, Shoulder
+    [8] = { [5] = 152140, [15] = 152136, [10] = 152137, [1] = 152138, [7] = 152139, [3] = 152141 }, --  Mage:         Chest, Back, Hands, Head, Legs, Shoulder
+    [9] = { [5] = 152176, [15] = 152172, [10] = 152173, [1] = 152174, [7] = 152175, [3] = 152177 }, --  Warlock:      Chest, Back, Hands, Head, Legs, Shoulder
+    [10] = { [5] = 152142, [15] = 152143, [10] = 152144, [1] = 152145, [7] = 152146, [3] = 152147 }, -- Monk:         Chest, Back, Hands, Head, Legs, Shoulder
+    [11] = { [5] = 152124, [15] = 152125, [10] = 152126, [1] = 152127, [7] = 152128, [3] = 152129 }, -- Druid:        Chest, Back, Hands, Head, Legs, Shoulder
+    [12] = { [5] = 152118, [15] = 152119, [10] = 152120, [1] = 152121, [7] = 152122, [3] = 152123 } --  Demon Hunter: Chest, Back, Hands, Head, Legs, Shoulder
   }
-  local CustomTrinketsSpells = {
-    FlayedwingToxinBuff               = Spell(345545),
-    MistcallerVers                    = Spell(330067),
-    MistcallerCrit                    = Spell(332299),
-    MistcallerHaste                   = Spell(332300),
-    MistcallerMastery                 = Spell(332301),
-    SoulIgniterBuff                   = Spell(345211),
-    IndomitableFive                   = Spell(311496),
-    IndomitableSix                    = Spell(311497),
-    IndomitableSeven                  = Spell(311498),
-    IndomitableEight                  = Spell(311499),
-    TomeofMonstruousConstructionsBuff = Spell(357163),
-    SoleahsSecretTechniqueBuff        = Spell(351952),
-    SoleahsSecretTechnique2Buff       = Spell(368512),
-  }
-
-  -- Check if the trinket is coded as blacklisted by the user or not.
-  local function IsUserTrinketBlacklisted(TrinketItem)
-    if not TrinketItem then return false end
-
-    local TrinketItemID = TrinketItem:ID()
-    if HL.GUISettings.General.Blacklist.TrinketUserDefined[TrinketItemID] then
-      if type(HL.GUISettings.General.Blacklist.TrinketUserDefined[TrinketItemID]) == "boolean" then
-        return true
-      else
-        return HL.GUISettings.General.Blacklist.TrinketUserDefined[TrinketItemID](TrinketItem)
+}
+function HL.HasTier(Tier)
+  -- Set Bonuses are disabled in Challenge Mode (Diff = 8) and in Proving Grounds (Map = 1148).
+  local DifficultyID, _, _, _, _, MapID = select(3, GetInstanceInfo())
+  if DifficultyID == 8 or MapID == 1148 then return false end
+  -- Check gear
+  if HasTierSets[Tier][Cache.Persistent.Player.Class[3]] then
+    local Count = 0
+    local SlotItem
+    for Slot, ItemID in pairs(HasTierSets[Tier][Cache.Persistent.Player.Class[3]]) do
+      SlotItem = HL.Equipment[Slot]
+      if SlotItem and SlotItem == ItemID then
+        Count = Count + 1
       end
     end
-
+    return HasTierSets[Tier][0](Count)
+  else
     return false
   end
+end
 
-  function Player:GetUseableTrinkets(ExcludedTrinkets, slotID)
-    for _, TrinketItem in ipairs(UseableTrinkets) do
-      local TrinketItemID = TrinketItem:ID()
-      local IsExcluded = false
-
-      -- Did we specify a slotID? If so, mark as excluded if this trinket isn't in that slot
-      if slotID and Equipment[slotID] ~= TrinketItemID then
-        IsExcluded = true
-      -- Check if the trinket is ready, unless it's blacklisted
-      elseif TrinketItem:IsReady() and not IsUserTrinketBlacklisted(TrinketItem) then
-        for i=1, #ExcludedTrinkets do
-          if ExcludedTrinkets[i] == TrinketItemID then
-            IsExcluded = true
-            break
-          end
-        end
-
-        if not IsExcluded then
-          -- Global custom trinket handlers
-          if TrinketItemID == CustomTrinketItems.FlayedwingToxin:ID() then
-            if not Player:AuraInfo(CustomTrinketsSpells.FlayedwingToxinBuff) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.MistcallerOcarina:ID() then
-            if not (Player:BuffUp(CustomTrinketsSpells.MistcallerCrit) or Player:BuffUp(CustomTrinketsSpells.MistcallerHaste) or Player:BuffUp(CustomTrinketsSpells.MistcallerMastery) or Player:BuffUp(CustomTrinketsSpells.MistcallerVers)) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.SoulIgniter:ID() then
-            if Player:BuffDown(CustomTrinketsSpells.SoulIgniterBuff) and Target:IsInRange(40) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.DarkmoonDeckIndomitable:ID() then
-            if (Player:BuffUp(CustomTrinketsSpells.IndomitableFive) or Player:BuffUp(CustomTrinketsSpells.IndomitableSix) or Player:BuffUp(CustomTrinketsSpells.IndomitableSeven) or Player:BuffUp(CustomTrinketsSpells.IndomitableEight)) and (Player:IsTankingAoE(8) or Player:IsTanking(Target)) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.ShardofAnnhyldesAegis:ID() then
-            if (Player:IsTankingAoE(8) or Player:IsTanking(Target)) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.TomeofMonstruousConstructions:ID() then
-            if not Player:AuraInfo(CustomTrinketsSpells.TomeofMonstruousConstructionsBuff) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.SoleahsSecretTechnique:ID() or TrinketItemID == CustomTrinketItems.SoleahsSecretTechnique2:ID() then
-            if not (Player:BuffUp(CustomTrinketsSpells.SoleahsSecretTechniqueBuff) or Player:BuffUp(CustomTrinketsSpells.SoleahsSecretTechnique2Buff)) then return TrinketItem end
-          elseif TrinketItemID == CustomTrinketItems.RubyWhelpShell:ID() then
-            -- Just return nil because Ruby Whelp Shell will never be used rotationally
-            return nil
-          else
-            return TrinketItem
-          end
-        end
-      end
+-- Check if the trinket is coded as blacklisted by the user or not.
+local function IsUserTrinketBlacklisted(TrinketItem)
+  if not TrinketItem then return false end
+  if HL.GUISettings.General.Blacklist.TrinketUserDefined[TrinketItem:ID()] then
+    if type(HL.GUISettings.General.Blacklist.TrinketUserDefined[TrinketItem:ID()]) == "boolean" then
+      return true
+    else
+      return HL.GUISettings.General.Blacklist.TrinketUserDefined[TrinketItem:ID()](TrinketItem)
     end
-
-    return nil
-  end
-end
-
--- Create a table of active Shadowlands legendaries
-function Player:UpdateActiveLegendaryEffects()
-  wipe(ActiveLegendaryEffects)
-
-  for i = 1, 15, 1 do
-    if i ~= 13 and i ~= 14 then -- Skip trinket slots since there is no trinket legendary
-      local SlotItem = ItemLocation:CreateFromEquipmentSlot(i)
-      if SlotItem:IsValid() and IsRuneforgeLegendary(SlotItem) then
-        local LegendaryInfo = GetRuneforgeLegendaryComponentInfo(SlotItem)
-        ActiveLegendaryEffects[LegendaryInfo.powerID] = true
-      end
-    end
-  end
-end
-
--- Check if a specific legendary is active, using the effect's ID
--- See HeroDBC/scripts/DBC/parsed/Legendaries.lua for a reference of Legendary Effect IDs
-function Player:HasLegendaryEquipped(LegendaryID)
-  return ActiveLegendaryEffects[LegendaryID] ~= nil
-end
-
-local UnityLegendaryIDs = {
-  264,
-  267,
-  268,
-  269,
-  270,
-  271,
-  272,
-  273,
-  274,
-  275,
-  276,
-  277
-}
-
-local UnityBeltIDs = {
-  -- mage
-  190464,
-  -- druid
-  190465,
-  -- hunter
-  190466,
-  -- death knight
-  190467,
-  -- priest
-  190468,
-  -- warlock
-  190469,
-  -- demon hunter
-  190470,
-  -- rogue
-  190471,
-  -- monk
-  190472,
-  -- shaman
-  190473,
-  -- paladin
-  190474,
-  -- warrior
-  190475
-}
-
-function Player:HasUnity()
-  for _,LegendaryID in pairs(UnityLegendaryIDs) do
-    if Player:HasLegendaryEquipped(LegendaryID) then return true end
-  end
-  local Belt = Equipment[6]
-  for _,BeltID in pairs(UnityBeltIDs) do
-    if Belt and Belt == BeltID then return true end
   end
   return false
 end
 
-local TierSets = {
-  -- Item Slot IDs: 1 - Head, 3 - Shoulders, 5 - Chest, 7 - Legs, 10 - Hands
-  [28] = {
-    -- Warrior
-    [1]  = {[1] = 188942, [3] = 188941, [5] = 188938, [7] = 188940, [10] = 188937},
-    -- Paladin
-    [2]  = {[1] = 188933, [3] = 188932, [5] = 188929, [7] = 188931, [10] = 188928},
-    -- Hunter
-    [3]  = {[1] = 188859, [3] = 188856, [5] = 188858, [7] = 188860, [10] = 188861},
-    -- Rogue
-    [4]  = {[1] = 188901, [3] = 188905, [5] = 188903, [7] = 188902, [10] = 188907},
-    -- Priest
-    [5]  = {[1] = 188880, [3] = 188879, [5] = 188875, [7] = 188878, [10] = 188881},
-    -- Death Knight
-    [6]  = {[1] = 188868, [3] = 188867, [5] = 188864, [7] = 188866, [10] = 188863},
-    -- Shaman
-    [7]  = {[1] = 188923, [3] = 188920, [5] = 188922, [7] = 188924, [10] = 188925},
-    -- Mage
-    [8]  = {[1] = 188844, [3] = 188843, [5] = 188839, [7] = 188842, [10] = 188845},
-    -- Warlock
-    [9]  = {[1] = 188889, [3] = 188888, [5] = 188884, [7] = 188887, [10] = 188890},
-    -- Monk
-    [10] = {[1] = 188910, [3] = 188914, [5] = 188912, [7] = 188911, [10] = 188916},
-    -- Druid
-    [11] = {[1] = 188847, [3] = 188851, [5] = 188849, [7] = 188848, [10] = 188853},
-    -- Demon Hunter
-    [12] = {[1] = 188892, [3] = 188896, [5] = 188894, [7] = 188893, [10] = 188898},
-    -- Evoker
-    [13] = {[1] = nil,    [3] = nil,    [5] = nil,    [7] = nil,    [10] = nil}
-  },
-  [29] = {
-    -- Warrior
-    [1]  = {[1] = 200426, [3] = 200428, [5] = 200423, [7] = 200427, [10] = 200425},
-    -- Paladin
-    [2]  = {[1] = 200417, [3] = 200419, [5] = 200414, [7] = 200418, [10] = 200416},
-    -- Hunter
-    [3]  = {[1] = 200390, [3] = 200392, [5] = 200387, [7] = 200391, [10] = 200389},
-    -- Rogue
-    [4]  = {[1] = 200372, [3] = 200374, [5] = 200369, [7] = 200373, [10] = 200371},
-    -- Priest
-    [5]  = {[1] = 200327, [3] = 200329, [5] = 200324, [7] = 200328, [10] = 200326},
-    -- Death Knight
-    [6]  = {[1] = 200408, [3] = 200410, [5] = 200405, [7] = 200409, [10] = 200407},
-    -- Shaman
-    [7]  = {[1] = 200399, [3] = 200401, [5] = 200396, [7] = 200400, [10] = 200398},
-    -- Mage
-    [8]  = {[1] = 200318, [3] = 200320, [5] = 200315, [7] = 200319, [10] = 200317},
-    -- Warlock
-    [9]  = {[1] = 200336, [3] = 200338, [5] = 200333, [7] = 200337, [10] = 200335},
-    -- Monk
-    [10] = {[1] = 200363, [3] = 200365, [5] = 200360, [7] = 200364, [10] = 200362},
-    -- Druid
-    [11] = {[1] = 200354, [3] = 200356, [5] = 200351, [7] = 200355, [10] = 200353},
-    -- Demon Hunter
-    [12] = {[1] = 200345, [3] = 200347, [5] = 200342, [7] = 200346, [10] = 200344},
-    -- Evoker
-    [13] = {[1] = 200381, [3] = 200383, [5] = 200378, [7] = 200382, [10] = 200380}
-  }
-}
-
--- Check if a tier set bonus is equipped
-function Player:HasTier(Tier, Pieces)
-  if TierSets[Tier][Cache.Persistent.Player.Class[3]] then
-    local Count = 0
-    local Item
-    for Slot, ItemID in pairs(TierSets[Tier][Cache.Persistent.Player.Class[3]]) do
-      Item = Equipment[Slot]
-      if Item and Item == ItemID then
-        Count = Count + 1
+-- Function to be called against SimC's use_items
+function HL.UseTrinkets(ExcludedTrinkets)
+  for _, TrinketItem in ipairs(HL.OnUseTrinkets) do
+  local isExcluded = false
+    -- Check if the trinket is ready, unless it's blacklisted
+    if TrinketItem:IsReady() and not IsUserTrinketBlacklisted(TrinketItem) then
+      for i=1,#ExcludedTrinkets do
+        if (ExcludedTrinkets[i] == TrinketItem:ID()) then
+          isExcluded = true
+          break
+        end
+      end
+      if (not isExcluded) then
+        return TrinketItem
       end
     end
-    return Count >= Pieces
-  else
-    return false
   end
+  return nil
 end

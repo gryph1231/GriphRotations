@@ -12,15 +12,7 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local CR_VERSATILITY_DAMAGE_DONE = CR_VERSATILITY_DAMAGE_DONE
-local GetCombatRatingBonus = GetCombatRatingBonus
-local GetCritChance = GetCritChance
-local GetHaste = GetHaste
-local GetMasteryEffect = GetMasteryEffect
-local GetVersatilityBonus = GetVersatilityBonus
-local UnitAttackPower = UnitAttackPower
-local UnitAttackSpeed = UnitAttackSpeed
-local UnitDamage = UnitDamage
+
 -- File Locals
 
 
@@ -34,28 +26,21 @@ do
     [260] = true, -- Outlaw
     [261] = true, -- Subtlety
     [268] = true, -- Brewmaster
-    [269] = true, -- Windwalker
+    [269] = true -- Windwalker
   }
   function Player:GCD()
     local GUID = self:GUID()
     if GUID then
-      local UnitInfo = Cache.UnitInfo[GUID]
-      if not UnitInfo then
-        UnitInfo = {}
-        Cache.UnitInfo[GUID] = UnitInfo
-      end
-
-      local GCD = UnitInfo.GCD
-      if not GCD then
+      local UnitInfo = Cache.UnitInfo[GUID] if not UnitInfo then UnitInfo = {} Cache.UnitInfo[GUID] = UnitInfo end
+      if not UnitInfo.GCD then
         if GCD_OneSecond[Cache.Persistent.Player.Spec[1]] then
-          GCD = 1
+          UnitInfo.GCD = 1
         else
           local GCD_Value = 1.5 / (1 + self:HastePct() / 100)
-          GCD = GCD_Value > 0.75 and GCD_Value or 0.75
+          UnitInfo.GCD = GCD_Value > 0.75 and GCD_Value or 0.75
         end
-        UnitInfo.GCD = GCD
       end
-      return GCD
+      return UnitInfo.GCD
     end
   end
 end
@@ -66,11 +51,13 @@ do
   function Player:GCDRemains()
     return GCDSpell:CooldownRemains(true)
   end
-
+  
   function Player:GCDStartTime()
-    local StartTime = GCDSpell:CooldownInfo()
-
-    return StartTime
+    local GCDStartTime, GCDDuration = GCDSpell:CooldownInfo()
+    if GCDDuration > 0 then
+      return GCDStartTime
+    end
+    return 0
   end
 end
 

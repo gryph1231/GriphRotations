@@ -148,7 +148,7 @@ do
     local Buffer = TrackerBuffer[SpellID][SourceGUID]
     if not Buffer then
       -- Buffer are created only on SPELL_DAMAGE event, it should always be the case since it's triggered before the AURA ones though.
-      if Event ~= "SPELL_DAMAGE" and Event ~= "SPELL_PERIODIC_DAMAGE" then return end
+      if Event ~= "SPELL_DAMAGE" then return end
 
       -- HL.Print("[SplashEnemies] Creating buffer for SpellID '" .. SpellID .. "' from SourceGUID '" .. SourceGUID .. "'.")
       Buffer = { FirstTime = GetTime(), FriendTargetGUID = FriendTargetGUID, FirstDestGUID = DestGUID, Enemies = { { GUID = DestGUID, LastTime = GetTime(), LastSpellID = SpellID } } }
@@ -179,7 +179,7 @@ do
     end
   end
 
-  HL:RegisterForCombatEvent(UpdateSplashes, "SPELL_DAMAGE", "SPELL_PERIODIC_DAMAGE", "SPELL_AURA_APPLIED", "SPELL_AURA_REFRESH", "SPELL_AURA_APPLIED_DOSE")
+  HL:RegisterForCombatEvent(UpdateSplashes, "SPELL_DAMAGE", "SPELL_AURA_APPLIED", "SPELL_AURA_REFRESH", "SPELL_AURA_APPLIED_DOSE")
 end
 
 -- Process the tracker buffer every 50ms.
@@ -378,8 +378,6 @@ function Splash.RegisterNucleusAbilities()
   -- Trinkets
   RegisterNucleusAbility("DirectDamage", 313088, 8)               -- Torment in Jar (Buff)
   RegisterNucleusAbility("DirectDamage", 313089, 8)               -- Torment in Jar (Explosion)
-  -- Covenants
-  RegisterNucleusAbility("PeriodicDamage", 325640, 8)             -- Soul Rot (Warlock, not working)
 
   -- Death Knight
   -- Commons
@@ -388,41 +386,32 @@ function Splash.RegisterNucleusAbilities()
   RegisterNucleusAbility("DirectDamage", 50842, 10)               -- Blood Boil
   RegisterNucleusAbility("DirectDamage", 194844, 8)               -- Bonestorm
   -- Frost
-  RegisterNucleusAbility("DirectDamage", 196771, 8)               -- Remorseless Winter
+  RegisterNucleusAbility("DirectDamage", 196770, 8)               -- Remorseless Winter
   RegisterNucleusAbility("DirectDamage", 207230, 8)               -- Frostscythe
   RegisterNucleusAbility("DirectDamage", 49184, 10)               -- Howling Blast
-  RegisterNucleusAbility("GroundDirectDamage", 52212, 8)          -- Death and Decay
-  RegisterNucleusAbility("DirectDamage", 204167, 6)               -- Chill Streak
   -- Unholy
   --RegisterNucleusAbility("GroundMultipleDirectDamage", 152280, 8) -- Defile
   --RegisterNucleusAbility("TO_INVESTIGATE", 115989, 8)             -- Unholy Blight
-  RegisterNucleusAbility("GroundDirectDamage", 52212, 8)            -- Death and Decay
-  RegisterNucleusAbility("DirectDamage", 212739, 8)                 -- Epidemic
 
   -- Demon Hunter
   -- Commons
   --RegisterNucleusAbility("ChainDirectDamage", 204157, 10)         -- Throw Glaive
-  RegisterNucleusAbility("DirectDamage", 258921, 8)               -- Immolation Aura 1
-  RegisterNucleusAbility("DirectDamage", 258922, 8)               -- Immolation Aura 2
-  RegisterNucleusAbility("GroundDirectDamage", 204598, 8)         -- Sigil of Flame
   -- Havoc
-  RegisterNucleusAbility("GroundDirectDamage", 200166, 8)         -- Metamorphosis
-  RegisterNucleusAbility("DirectDamage", 198030, 20)              -- Eye Beam
-  RegisterNucleusAbility("DirectDamage", 391374, 8)               -- Blade Dance 1
-  RegisterNucleusAbility("DirectDamage", 391378, 8)               -- Blade Dance 2
-  RegisterNucleusAbility("DirectDamage", 200685, 8)               -- Blade Dance 3
-  RegisterNucleusAbility("DirectDamage", 199552, 8)               -- Blade Dance 4
-  RegisterNucleusAbility("DirectDamage", 393054, 8)               -- Death Sweep 1
-  RegisterNucleusAbility("DirectDamage", 393055, 8)               -- Death Sweep 2
+  RegisterNucleusAbility("GroundDirectDamage", 191427, 8)         -- Metamorphosis
+  RegisterNucleusAbility("DirectDamage", 198013, 20)              -- Eye Beam
+  RegisterNucleusAbility("DirectDamage", 188499, 8)               -- Blade Dance
+  RegisterNucleusAbility("DirectDamage", 210152, 8)               -- Death Sweep
+  RegisterNucleusAbility("DirectDamage", 258920, 8)               -- Immolation Aura
   RegisterNucleusAbility("DirectDamage", 179057, 8)               -- Chaos Nova
   -- Vengeance
   RegisterNucleusAbility("DirectDamage", 247455, 8)               -- Spirit Bomb
   RegisterNucleusAbility("DirectDamage", 189112, 6)               -- Infernal Strike
+  RegisterNucleusAbility("DirectDamage", 258921, 8)               -- Immolation Aura 1
+  RegisterNucleusAbility("DirectDamage", 258922, 8)               -- Immolation Aura 2
   RegisterNucleusAbility("DirectDamage", 228478, 5)               -- Soul Cleave
+  --RegisterNucleusAbility("GroundMultipleDirectDamage", 204598, 8) -- Sigil of Flame
   RegisterNucleusAbility("DirectDamage", 212105, 13)              -- Fel Devastation
   RegisterNucleusAbility("DirectDamage", 320341, 8)               -- Bulk Extraction
-  RegisterNucleusAbility("GroundDirectDamage", 307046, 8)         -- Elysian Decree (Covenant) 1
-  RegisterNucleusAbility("GroundDirectDamage", 339894, 8)         -- Elysian Decree (Covenant) 2
 
   -- Druid
   -- Commons
@@ -439,17 +428,6 @@ function Splash.RegisterNucleusAbilities()
   RegisterNucleusAbility("DirectDamage", 77758, 8)                -- Thrash (Bear)
   RegisterNucleusAbility("DirectDamage", 213771, 8)               -- Swipe (Bear)
   -- Restoration
-
-  -- Evoker
-  -- Commons
-  -- Devastation
-  RegisterNucleusAbility("DirectDamage", 357212, 8)               -- Pyre (Check spell ID)
-  RegisterNucleusAbility("DirectDamage", 357209, 12)              -- Fire Breath (Check spell ID; Range? It's a cone up to 25y(?))
-  RegisterNucleusAbility("DirectDamage", 359077, 12)              -- Eternity Surge (Check spell ID; Range? Could technically be out to 25y)
-  RegisterNucleusAbility("DirectDamage", 362969, 6)               -- Azure Strike (Check spell ID, as it could also be 355627)
-  RegisterNucleusAbility("GroundDirectDamage", 369374, 8)         -- Firestorm (Check spell ID; Should be GroundMultipleDirectDamage?)
-  RegisterNucleusAbility("GroundDirectDamage", 353759, 12)        -- Deep Breath (Check spell ID; Range? Spell range is listed 20-50y)
-  -- Preservation
 
   -- Hunter
   -- Commons
@@ -484,8 +462,8 @@ function Splash.RegisterNucleusAbilities()
   RegisterNucleusAbility("DirectDamage", 257542, 8)               -- Phoenix Flames
   --RegisterNucleusAbility("TO_INVESTIGATE", 12654, 8)              -- AoE Ignite
   -- Frost
-  RegisterNucleusAbility("GroundDirectDamage", 84721, 8)  -- Frozen Orb
-  RegisterNucleusAbility("GroundDirectDamage", 190357, 8) -- Blizzard
+  --RegisterNucleusAbility("GroundMultipleDirectDamage", 84721, 8)  -- Frozen Orb
+  --RegisterNucleusAbility("GroundMultipleDirectDamage", 190357, 8) -- Blizzard
   RegisterNucleusAbility("DirectDamage", 153596, 6)               -- Comet Storm
   RegisterNucleusAbility("DirectDamage", 120, 12)                 -- Cone of Cold
   RegisterNucleusAbility("DirectDamage", 228600, 8)               -- Glacial Spike
@@ -510,10 +488,8 @@ function Splash.RegisterNucleusAbilities()
   --RegisterNucleusAbility("GroundMultipleDirectDamage", 204301, 8) -- Blessed Hammer (Usable? Spirals outward from caster)
   RegisterNucleusAbility("DirectDamage", 53600, 6)       -- Shield of the Righteous
   -- Retribution
-  RegisterNucleusAbility("DirectDamage", 53385, 8)          -- Divine Storm
-  RegisterNucleusAbility("GroundDirectDamage", 81297, 8)    -- Consecration
-  RegisterNucleusAbility("GroundDirectDamage", 343721, 8)   -- Final Reckoning
-  RegisterNucleusAbility("DirectDamage", 385816, 8)         -- Incandescence
+  RegisterNucleusAbility("DirectDamage", 53385, 8)       -- Divine Storm
+  --RegisterNucleusAbility("GroundDirectDamage", 343721, 8) -- Final Reckoning
 
   -- Priest
   -- Discipline
@@ -561,10 +537,8 @@ function Splash.RegisterNucleusAbilities()
   RegisterNucleusAbility("DirectDamage", 196278, 8)               -- Implosion
   -- Destruction
   --RegisterNucleusAbility("GroundMultipleDirectDamage", 42223, 8)  -- Rain of Fire
-  RegisterNucleusAbility("GroundDirectDamage", 42223, 8)          -- Rain of Fire (temp, since Destruction has very few AoEs)
   RegisterNucleusAbility("GroundDirectDamage", 152108, 8)         -- Cataclysm
   RegisterNucleusAbility("GroundDirectDamage", 22703, 10)         -- Summon Infernal
-  RegisterNucleusAbility("PeriodicDamage", 20153, 12)             -- Infernal/Blasphemy AoE Immolation pulse (not working... minion vs pet issue?)
 
   -- Warrior
   -- Arms

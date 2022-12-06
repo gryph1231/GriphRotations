@@ -16,13 +16,15 @@ local wipe = table.wipe
 
 
 --- ======= GLOBALIZE =======
+-- Addon
 HeroLib = HL
+HL.Enum = {} -- Constant Infos Enum
 HL.MAXIMUM = 40 -- Max # Buffs and Max # Nameplates.
 
 
 --- ============================ CONTENT ============================
 --- Build Infos
-local LiveVersion, PTRVersion, BetaVersion = "9.1.0", "9.1.0", "9.1.0"
+local LiveVersion, PTRVersion, BetaVersion = "7.3.0", "7.3.0", "7.3.2"
 -- version, build, date, tocversion
 HL.BuildInfo = { GetBuildInfo() }
 -- Get the current build version.
@@ -43,6 +45,15 @@ end
 -- Get if we are on the Beta or not.
 function HL.BetaRealm()
   return HL.BuildVersion() == BetaVersion
+end
+
+-- Get the GetTime and cache it.
+function HL.GetTime(Reset)
+  if not Cache.MiscInfo then Cache.MiscInfo = {} end
+  if not Cache.MiscInfo.GetTime or Reset then
+    Cache.MiscInfo.GetTime = GetTime()
+  end
+  return Cache.MiscInfo.GetTime
 end
 
 -- Print with HL Prefix
@@ -73,9 +84,6 @@ HL.SpecID_ClassesSpecs = {
   [103] = { "Druid", "Feral" },
   [104] = { "Druid", "Guardian" },
   [105] = { "Druid", "Restoration" },
-  -- Evoker
-  [1467] = { "Evoker", "Devastation" },
-  --[1468] = { "Evoker", "Preservation" },
   -- Hunter
   [253] = { "Hunter", "Beast Mastery" },
   [254] = { "Hunter", "Marksmanship" },

@@ -371,4 +371,3 @@ end
 function HL.BossFilteredFightRemains(Operator, Value, CheckIfValid)
   return HL.FilteredFightRemains(nil, Operator, Value, CheckIfValid, true)
 end
-

@@ -10,6 +10,9 @@ HL.GUISettings = {
   General = {
     -- Debug Mode
     DebugMode = false,
+    -- Recovery Timer
+    RecoveryMode = "GCD", -- "GCD" to always display the next ability, "Custom" for Custom RecoveryTimer
+    RecoveryTimer = 950,
     -- Reduce CPU Usage (decrease a little bit Rotation potential performance but saves FPS)
     ReduceCPULoad = false,
     ReduceCPULoadOffset = 0.034, -- Default:34ms | It'll be added to the default 66ms, can be positive or negative
@@ -73,34 +76,10 @@ HL.GUISettings = {
         [157229] = true,
         ----- Corrupted Gear (8.3 Patch) -----
         -- Thing From Beyond
-        [160966] = true,
-        ----- SL Dungeons -----
-        -- Mists of Tirna Scythe - Illusionary Vulpin (Mistcaller)
-        [165251] = true,
-        -- Sanguine Depths - Animated Weapon (Noble Skirmisher)
-        [166589] = true,
+        [160966] = true
       },
       -- Custom Use Trinket Ignore List
       TrinketUserDefined = {
-        --- Shadowlands
-        ----- PvP -----
-        --- Rated
-        -- Sinful Gladiator's Medallion
-        [181333] = true,
-        -- Corrupted Gladiator's Medallion
-        [184055] = true,
-        -- Unchained Gladiator's Medallion
-        [185304] = true,
-        --- Unrated
-        -- Sinful Aspirant's Medallion
-        [184052] = true,
-        -- Corrupted Aspirant's Medallion
-        [184058] = true,
-        -- Unchained Aspirant's Medallion
-        [185309] = true,
-        --- Battle for Azeroth
-        ----- Raid -----
-        --- Ny'alotha, The Waking City
         -- Humming Black Dragonscale
         [174044] = true
       }

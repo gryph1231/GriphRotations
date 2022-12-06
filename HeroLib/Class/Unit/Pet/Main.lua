@@ -12,13 +12,14 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local IsPetActive = IsPetActive
+
 -- File Locals
 
 
 
 --- ============================ CONTENT ============================
--- Get if there is a pet currently active or not.
+-- Get if there is a pet currently active or not
+-- TODO: Cache
 function Pet:IsActive()
   return IsPetActive()
 end

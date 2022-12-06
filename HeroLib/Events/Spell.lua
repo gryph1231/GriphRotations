@@ -14,7 +14,6 @@ local Item = HL.Item
 -- Lua
 local pairs = pairs
 local tableinsert = table.insert
-local GetTime = GetTime
 -- File Locals
 local PlayerSpecs = {}
 local ListenedSpells = {}
@@ -26,58 +25,46 @@ local MultiSpells = {}
 --- ============================ CONTENT ============================
 
 -- Player On Cast Success Listener
-HL:RegisterForSelfCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    for i = 1, #PlayerSpecs do
-      local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
-      if ListenedSpell then
-        ListenedSpell.LastCastTime = GetTime()
-        ListenedSpell.LastHitTime = GetTime() + ListenedSpell:TravelTime()
-      end
+HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  for i = 1, #PlayerSpecs do
+    local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
+    if ListenedSpell then
+      ListenedSpell.LastCastTime = HL.GetTime()
+      ListenedSpell.LastHitTime = HL.GetTime() + ListenedSpell:TravelTime()
     end
-  end,
-  "SPELL_CAST_SUCCESS"
-)
+  end
+end, "SPELL_CAST_SUCCESS")
 
 -- Pet On Cast Success Listener
-HL:RegisterForPetCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    for i = 1, #PlayerSpecs do
-      local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
-      if ListenedSpell then
-        ListenedSpell.LastCastTime = GetTime()
-        ListenedSpell.LastHitTime = GetTime() + ListenedSpell:TravelTime()
-      end
+HL:RegisterForPetCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  for i = 1, #PlayerSpecs do
+    local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
+    if ListenedSpell then
+      ListenedSpell.LastCastTime = HL.GetTime()
+      ListenedSpell.LastHitTime = HL.GetTime() + ListenedSpell:TravelTime()
     end
-  end,
-  "SPELL_CAST_SUCCESS"
-)
+  end
+end, "SPELL_CAST_SUCCESS")
 
 -- Player Aura Applied Listener
-HL:RegisterForSelfCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    for i = 1, #PlayerSpecs do
-      local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
-      if ListenedSpell then
-        ListenedSpell.LastAppliedOnPlayerTime = GetTime()
-      end
+HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  for i = 1, #PlayerSpecs do
+    local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
+    if ListenedSpell then
+      ListenedSpell.LastAppliedOnPlayerTime = HL.GetTime()
     end
-  end,
-  "SPELL_AURA_APPLIED"
-)
+  end
+end, "SPELL_AURA_APPLIED")
 
 -- Player Aura Removed Listener
-HL:RegisterForSelfCombatEvent(
-  function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
-    for i = 1, #PlayerSpecs do
-      local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
-      if ListenedSpell then
-        ListenedSpell.LastRemovedFromPlayerTime = GetTime()
-      end
+HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+  for i = 1, #PlayerSpecs do
+    local ListenedSpell = ListenedSpells[PlayerSpecs[i]][SpellID]
+    if ListenedSpell then
+      ListenedSpell.LastRemovedFromPlayerTime = HL.GetTime()
     end
-  end,
-  "SPELL_AURA_REMOVED"
-)
+  end
+end, "SPELL_AURA_REMOVED")
 
 -- Register spells to listen for a given class (based on SpecID).
 function Player:RegisterListenedSpells(SpecID)
@@ -124,11 +111,8 @@ function MultiSpell:AddToMultiSpells()
   tableinsert(MultiSpells, self)
 end
 
-HL:RegisterForEvent(
-  function(Event, Arg1)
-    for _, ThisMultiSpell in pairs(MultiSpells) do
-      ThisMultiSpell:Update()
-    end
-  end,
-  "PLAYER_LOGIN", "SPELLS_CHANGED"
-)
+HL:RegisterForEvent(function(Event, Arg1)
+  for _, MultiSpell in pairs(MultiSpells) do
+    MultiSpell:Update()
+  end
+end, "PLAYER_LOGIN", "SPELLS_CHANGED")

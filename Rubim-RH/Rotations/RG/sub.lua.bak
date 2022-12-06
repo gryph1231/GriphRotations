@@ -1,0 +1,460 @@
+--- Localize Vars
+-- Addon
+local addonName, addonTable = ...;
+-- HeroLib
+local HL = HeroLib;
+local Cache = HeroCache;
+local Unit = HL.Unit;
+local Player = Unit.Player;
+local Target = Unit.Target;
+local Spell = HL.Spell;
+local Item = HL.Item;
+local MouseOver = Unit.MouseOver;
+-- Lua
+local pairs = pairs;
+local tableconcat = table.concat;
+local tostring = tostring;
+local tableinsert = table.insert;
+
+if not Spell.Rogue then
+    Spell.Rogue = {};
+end
+
+RubimRH.Spell[261] = {
+	trink2z = Spell(260364), --arcane pulse
+	EchoingReprimand = Spell(323547),
+	BlackPowderz = Spell(20589), --escape artist
+	EchoingReprimandz = Spell(265221), --fireblood
+	EchoingReprimandCP2 = Spell(323558),
+	EchoingReprimandCP3 = Spell(323559),
+	EchoingReprimandCP4 = Spell(323560),
+	NumbingPoison = Spell(5761),
+	BlackPowder = Spell(319175),
+	ShadowyDuel = Spell(207736),
+	ColdBlood = Spell(213981),
+	ShadowBlades = Spell(121471),
+	Shadowstrike = Spell(185438),
+	Backstab = Spell(53),
+	Rupture = Spell(1943),
+	ShadowDance = Spell(185313),
+	ShurikenToss = Spell(114014),
+	ShurikenStorm = Spell(197835),
+	SymbolsofDeath = Spell(212283),
+	ShurikenTornado = Spell(277925),
+	SecretTechnique = Spell(280719),
+	ColdBlood = Spell(213981),
+	Eviscerate = Spell(196819),
+	Perforate = Spell(277673),
+	Nightstalker = Spell(14062),
+	DarkShadow = Spell(245687),
+	ShadowDanceBuff = Spell(185422),
+	stopcasting = Spell(291944), --regeneratin
+	WoundPoison = Spell(8679),
+	CripplingPoison = Spell(3408),
+	InstantPoison = Spell(315584),
+	lust1 = Spell(57724),
+	lust2 = Spell(57723),
+	lust3 = Spell(80354),
+	lust4 = Spell(95809),
+	lust5 = Spell(264689),
+	shadowyduel = Spell(207736),
+	trink = Spell(155145), -- arcane torrent
+	ConcentratedFlamedebuff     = Spell(295368),
+	FocusedAzeriteBeam = Spell(295258),
+	KidneyShot = Spell(408),
+    Berserking = Spell(26297),
+    Darkflight = Spell(68992),
+	Distract = Spell(1725),
+    WaterStrider = Spell(118089),
+    BugMount = Spell(243795),
+	razorcoral = Spell(303568),
+	ConductiveInk = Spell(302565),
+    DeeperStratagem = Spell(193531),
+    Stealth = Spell(1784),
+    Vanish = Spell(1856),
+	smokebomb = Spell(212182),
+	smokebombz = Spell(274738), --ancestral call
+    VanishBuff = Spell(11327),
+    Shiv = Spell(5938),  
+    WilloftheForsaken = Spell(7744),
+    CloakofShadows = Spell(31224),
+    DeathfromAbove = Spell(269513),
+    DeeperStratagem = Spell(193531),
+    GhostlyStrike = Spell(196937),
+    MarkedforDeath = Spell(137619),
+    SliceandDice = Spell(315496),
+    Vigor = Spell(14983),
+	Exhaustion = Spell(57723),
+	Blind = Spell(2094),
+    CurseoftheDreadblades = Spell(202665),
+	CheapShot = Spell(1833),
+	Dismantle= Spell(207777),
+    CrimsonVial = Spell(185311),
+    Feint = Spell(1966),
+    Kick = Spell(1766),
+    Sprint = Spell(2983),
+	Evasion = Spell(5277),
+	mantle = Spell(340094),
+	CrimsonVialz = Spell(26297), --berserking
+	Steward = Spell(324739),
+	-- healingpot = Item(176108),
+}
+
+local S = RubimRH.Spell[261] 
+
+if not Item.Rogue then Item.Rogue = {}; end
+
+Item.Rogue.Sub = {
+	trink2 = Item(178811, { 13, 14 }),
+	trink = Item(184016, { 13, 14 }),
+	lust = Item(164978),
+	mantle = Item(178926, {12}),
+	phialofserenity = Item(177278),
+	-- healingpot = Item(171267)
+};
+
+local I = Item.Rogue.Sub;
+
+local RtB_BuffsList = {
+    S.Broadside,
+    S.BuriedTreasure,
+    S.GrandMelee,
+    S.SkullandCrossbones,
+    S.RuthlessPrecision,
+    S.TrueBearing
+};
+
+local function num(val)
+    if val then
+        return 1
+    else
+        return 0
+    end
+end
+
+local function CPMaxSpend()
+    return RubimRH.Spell[261].DeeperStratagem:IsAvailable() and 6 or 5;
+end
+
+local function EnergyTimeToMaxRounded()
+    return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
+end
+
+local function shouldShiv()
+local namex, iconx, stacksx, debuffClassx, durationx, expirationTimex, unitCasterx, isStealablex, spellIdx, isBossDebuffx, isCastByPlayerx = UnitAura("target", 1)
+
+
+	if debuffClassx == nil then
+        debuffClassx = "none"
+    elseif debuffClassx == "" then
+        debuffClassx = "enrage"
+    else
+        debuffClassx = string.lower(debuffClassx)
+    end
+
+	if debuffClassx == "enrage" then 
+		return true
+	else
+		return false
+	end
+
+end 
+
+local function APL()
+local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
+	HL.GetEnemies("Melee");
+	HL.GetEnemies(5, true);
+    HL.GetEnemies(8, true);
+    HL.GetEnemies(10, true);
+	HL.GetEnemies(11, true);
+	HL.GetEnemies(12, true);
+	HL.GetEnemies(15, true);
+	HL.GetEnemies(17, true);
+	HL.GetEnemies(20, true);
+	HL.GetEnemies(22, true);
+	HL.GetEnemies(25, true);
+	HL.GetEnemies(30, true);
+ 
+ 	if notInterruptible == false and Target:CastPercentage() > 43 and RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() then
+		return S.Kick:Cast()
+	end
+	
+		if (shouldShiv() 
+     or AuraUtil.FindAuraByName("Undying Rage", "target") 
+     or AuraUtil.FindAuraByName("Enrage", "target") 
+     or AuraUtil.FindAuraByName("Unholy Frenzy", "target")
+     or AuraUtil.FindAuraByName("Angering Shriek", "target")
+     or AuraUtil.FindAuraByName("Loyal Beasts", "target")
+     or AuraUtil.FindAuraByName("Frenzy", "target")
+     or AuraUtil.FindAuraByName("Motivational Clubbing", "target")
+     or AuraUtil.FindAuraByName("Motivated", "target")
+     or AuraUtil.FindAuraByName("Seething Rage", "target")
+     or AuraUtil.FindAuraByName("Vengeful Rage", "target")
+     or AuraUtil.FindAuraByName("Raging Tantrum", "target")
+     or AuraUtil.FindAuraByName("Death Wish", "target")
+     or AuraUtil.FindAuraByName("Battle Trance", "target")
+     ) 
+     and RubimRH.InterruptsON() and S.Shiv:IsReady(8) and Player:AffectingCombat() and Target:TimeToDie() > 4 then
+        return S.Shiv:Cast()
+    end
+
+ 
+-- PvP
+	if Player:IsChanneling() or Player:IsCasting() then
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+    end
+	
+	if S.MarkedforDeath:IsReady(15) and Player:ComboPoints() == 0 and Player:AffectingCombat() then
+        return S.MarkedforDeath:Cast()
+    end
+
+    -- if S.CloakofShadows:IsReady() and  Player:HealthPercentage()<=30 then
+		-- return S.CloakofShadows:Cast()
+    -- end
+	
+    -- if S.shadowyduel:IsReady() and  Target:HealthPercentage()<=50 and Target:IsInRange(10) and RubimRH.CDsON() then
+		-- return S.shadowyduel:Cast()
+    -- end
+	
+    -- if S.smokebomb:IsCastable() and (Player:HealthPercentage() <= 70 or Target:HealthPercentage()<=50) and Cache.EnemiesCount[12] >= 1 then
+		-- return S.smokebomb:Cast()
+    -- end
+
+	-- if S.ColdBlood:IsCastable() and Player:Buff(S.Stealth) and not Player:Buff(S.ColdBlood) then
+    	-- return S.ColdBlood:Cast()
+    -- end
+	
+    -- if S.Evasion:IsCastable() and Player:HealthPercentage() <= 70 and Cache.EnemiesCount[20] >= 1 then
+		-- return S.Evasion:Cast()
+    -- end
+	
+	-- if S.CheapShot:IsReady("Melee") and HL.CombatTime() <= 3 and Player:AffectingCombat() and not Target:Buff(S.Evasion) and not Target:Debuff(S.KidneyShot) and not Target:Debuff(S.CheapShot) and not Target:Debuff(S.Blind) then
+    	-- return S.CheapShot:Cast()
+    -- end
+	
+	-- if S.KidneyShot:IsReady("Melee") and not Target:Debuff(S.CheapShot) and not Target:Buff(S.Evasion) and not Target:Debuff(S.KidneyShot) and Player:ComboPoints() >= 5 and not Target:Debuff(S.Blind) then
+        -- return S.KidneyShot:Cast()
+    -- end
+	
+	if S.CrimsonVial:IsCastable() and Player:HealthPercentage() <= 60 then
+        return S.CrimsonVial:Cast()
+    end
+
+ 
+-- Out of Combat
+
+if not Player:AffectingCombat() then
+	
+	if Player:BuffP(S.mantle) and Player:BuffP(S.VanishBuff) then
+
+	if (Player:ComboPoints() == 2 and Player:Buff(S.EchoingReprimandCP2)) or (Player:ComboPoints() == 3 and Player:Buff(S.EchoingReprimandCP3)) or (Player:ComboPoints() == 4 and Player:Buff(S.EchoingReprimandCP4)) then
+	    
+		if S.Eviscerate:IsReady(10) then
+			return S.Eviscerate:Cast()
+		end
+	
+	end
+	
+	if Player:ComboPoints() >= CPMaxSpend() then
+ 
+		if S.Eviscerate:IsReady(10) then
+			return S.Eviscerate:Cast()
+		end
+
+	end
+ 
+	if S.Shadowstrike:IsCastable(10) then
+		return S.Shadowstrike:Cast()
+	end
+	
+end
+	
+	if S.InstantPoison:IsCastable() and Player:BuffRemainsP(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) then
+    	return S.InstantPoison:Cast()
+    end
+	
+	if S.NumbingPoison:IsCastable() and Player:BuffRemainsP(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) then
+    	return S.NumbingPoison:Cast()
+    end
+	
+	-- if S.WoundPoison:IsCastable() and Player:BuffRemainsP(S.WoundPoison) < 300 and not Player:IsCasting(S.WoundPoison) then
+    	-- return S.WoundPoison:Cast()
+    -- end
+	
+	-- if S.CripplingPoison:IsCastable() and Player:BuffRemainsP(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) then
+    	-- return S.CripplingPoison:Cast()
+    -- end
+  
+
+    if Player:ComboPoints() >= 1 then
+		if S.SliceandDice:IsCastable() and Cache.EnemiesCount[25] >= 1 and not Player:BuffP(S.SliceandDice) then
+			return S.SliceandDice:Cast()
+		end
+	end
+
+    if S.Stealth:IsCastable() and not Player:Buff(S.Stealth) and not Player:Buff(S.VanishBuff) and IsResting("player") == false then
+		return S.Stealth:Cast()
+    end
+	
+	if S.Steward:IsCastable() and I.phialofserenity:Count() <= 1 and Cache.EnemiesCount[20] == 0 then
+        return S.Steward:Cast()
+    end	
+  
+    if S.CrimsonVial:IsCastable() and Cache.EnemiesCount[25] == 0 and Player:HealthPercentage() <= 75 and Player:EnergyDeficit() == 0 then
+		return S.CrimsonVial:Cast()
+    end
+
+	if not RubimRH.queuedSpell[1]:CooldownUp() or not Target:IsInRange(10) or not Player:AffectingCombat() then
+		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+	end
+	
+	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+end 
+
+-- Spell Queue
+
+	if RubimRH.QueuedSpell():IsReadyQueue() then
+        return RubimRH.QueuedSpell():Cast()
+    end
+	
+	if not RubimRH.queuedSpell[1]:CooldownUp() or not Target:IsInRange(10) or not Player:AffectingCombat() then
+		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+	end
+
+--General Rotation
+
+if Player:AffectingCombat() then
+
+	-- if I.healingpot:IsReady() and Player:HealthPercentage() <= 35 and (not Player:InArena() and not Player:InBattlegrounds()) then
+		-- return S.healingpot:Cast()
+    -- end
+
+	if (Player:ComboPoints() == 2 and Player:Buff(S.EchoingReprimandCP2)) or (Player:ComboPoints() == 3 and Player:Buff(S.EchoingReprimandCP3)) or (Player:ComboPoints() == 4 and Player:Buff(S.EchoingReprimandCP4)) then
+
+		if S.BlackPowder:IsReady() and Cache.EnemiesCount[10] >= 3 then
+			return S.BlackPowder:Cast()
+		end
+
+		if S.Eviscerate:IsReady("Melee") and Cache.EnemiesCount[10] < 3 then
+			return S.Eviscerate:Cast()
+		end 
+		
+	end
+
+
+	if (Player:InDungeonOrRaid() or Player:InArena() or Player:InBattlegrounds()) then
+		if S.Vanish:IsReady() and not Player:BuffP(S.Stealth) and Player:BuffRemainsP(S.mantle) == 0 and I.mantle:IsEquipped() and Target:IsInRange(10)
+		and RubimRH.CDsON() and Target:TimeToDie() > 6 and Player:GCDRemains() < 0.2 
+		and (Player:ComboPoints() >= 5 or (Player:ComboPoints() == 2 and Player:Buff(S.EchoingReprimandCP2)) or (Player:ComboPoints() == 3 and Player:Buff(S.EchoingReprimandCP3)) or (Player:ComboPoints() == 4 and Player:Buff(S.EchoingReprimandCP4))) then
+			return S.Vanish:Cast()
+		end
+	end
+end
+
+--AoE
+
+if Cache.EnemiesCount[10] >= 3 and Player:AffectingCombat() then
+
+    if (S.SliceandDice:IsAvailable() and not Player:BuffP(S.ShadowDanceBuff)) and S.SliceandDice:IsReady() and (Target:FilteredTimeToDie(">", Player:BuffRemainsP(S.SliceandDice)) or Player:BuffRemainsP(S.SliceandDice) == 0)
+    and Player:BuffRemainsP(S.SliceandDice) < (1 + Player:ComboPoints()) * 1.8 and Cache.EnemiesCount[12] <= 6 then
+        return S.SliceandDice:Cast()
+    end
+
+	if (S.Rupture:IsReady("Melee") and not Player:BuffP(S.ShadowDanceBuff)) and (UnitExists("boss1") == true or UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "rare")
+	and not Target:DebuffP(S.Rupture) and (Target:FilteredTimeToDie(">", 27, -Target:DebuffRemainsP(S.Rupture)) or Target:TimeToDieIsNotValid()) and Player:ComboPoints() >= 5 then
+		return S.Rupture:Cast()
+	end 
+
+ 	if S.SecretTechnique:IsReady() and (((Player:BuffP(S.SymbolsofDeath) and Player:BuffP(S.ShadowDanceBuff))
+	or (Cache.EnemiesCount[12] >= 2 and Player:BuffP(S.ShadowDanceBuff) and S.SymbolsofDeath:CooldownRemainsP() >= 4)) and Player:ComboPoints() >= 5) then
+		return S.SecretTechnique:Cast()
+	end
+	
+	if S.ShurikenTornado:IsReady() and Player:BuffRemainsP(S.ShadowDanceBuff) >= 4 and Player:BuffP(S.SymbolsofDeath) and RubimRH.CDsON() then
+		return S.ShurikenTornado:Cast()
+	end
+	
+	--and Player:ComboPointsDeficit() >= 3 
+ 	if S.ShadowDance:IsReady("Melee") and RubimRH.CDsON() and not Player:BuffP(S.ShadowDanceBuff) then
+		return S.ShadowDance:Cast()
+	end
+	
+ 	if S.SymbolsofDeath:IsReady() and Player:BuffRemainsP(S.ShadowDanceBuff) >= 5 and not Player:BuffP(S.SymbolsofDeath) then
+		return S.SymbolsofDeath:Cast()
+	end
+
+    if S.BlackPowder:IsReady() and Player:ComboPoints() >= 5 and (EnergyTimeToMaxRounded() <= Player:GCD() * 1.5 or Player:BuffP(S.ShadowDanceBuff) or S.ShadowDance:CooldownRemainsP() >= 15) then
+        return S.BlackPowder:Cast()
+    end 	
+
+ 	if S.ShurikenStorm:IsReady() and (EnergyTimeToMaxRounded() <= Player:GCD() * 1.5 or Player:BuffP(S.ShadowDanceBuff) or S.ShadowDance:CooldownRemainsP() >= 15) then
+		return S.ShurikenStorm:Cast()
+	end
+
+end
+
+--ST
+
+if Cache.EnemiesCount[10] < 3 and Player:AffectingCombat() then
+
+ 	-- if S.ShadowBlades:IsReady() and RubimRH.CDsON() then
+		-- return S.ShadowBlades:Cast()
+	-- end
+
+    if (S.SliceandDice:IsAvailable() and not Player:BuffP(S.ShadowDanceBuff)) and S.SliceandDice:IsReady() and (Target:FilteredTimeToDie(">", Player:BuffRemainsP(S.SliceandDice)) or Player:BuffRemainsP(S.SliceandDice) == 0)
+    and Player:BuffRemainsP(S.SliceandDice) < (1 + Player:ComboPoints()) * 1.8 and Cache.EnemiesCount[12] <= 6 then
+        return S.SliceandDice:Cast()
+    end
+
+	if (S.Rupture:IsReady("Melee") and not Player:BuffP(S.ShadowDanceBuff)) and (UnitExists("boss1") == true or UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "rare")
+	and not Target:DebuffP(S.Rupture) and (Target:FilteredTimeToDie(">", 6, -Target:DebuffRemainsP(S.Rupture)) or Target:TimeToDieIsNotValid()) then
+		return S.Rupture:Cast()
+	end 
+
+ 	if S.SecretTechnique:IsReady() and ((Player:BuffP(S.SymbolsofDeath) and Player:BuffP(S.ShadowDanceBuff))
+	or (Cache.EnemiesCount[12] >= 2 and Player:BuffP(S.ShadowDanceBuff) and S.SymbolsofDeath:CooldownRemainsP() >= 4) and Player:ComboPoints() >= 5) then
+		return S.SecretTechnique:Cast()
+	end
+	
+	--and Player:ComboPointsDeficit() >= 3 
+ 	if S.ShadowDance:IsReady("Melee") and RubimRH.CDsON() and not Player:BuffP(S.ShadowDanceBuff) and Target:TimeToDie() >= 4 then
+		return S.ShadowDance:Cast()
+	end
+	
+ 	if S.SymbolsofDeath:IsReady() and Player:BuffRemainsP(S.ShadowDanceBuff) >= 5 and not Player:BuffP(S.SymbolsofDeath) then
+		return S.SymbolsofDeath:Cast()
+	end
+	
+    if S.Eviscerate:IsReady("Melee") and Player:ComboPoints() >= 5 and (EnergyTimeToMaxRounded() <= Player:GCD() * 1.5 or Player:BuffP(S.ShadowDanceBuff) or S.ShadowDance:CooldownRemainsP() >= 15) then
+        return S.Eviscerate:Cast()
+    end 	
+
+ 	if S.Shadowstrike:IsReady() and (EnergyTimeToMaxRounded() <= Player:GCD() * 1.5 or Player:BuffP(S.ShadowDanceBuff) or S.ShadowDance:CooldownRemainsP() >= 15) then
+		return S.Shadowstrike:Cast()
+	end
+
+ 	if (S.Backstab:IsReady() and not Player:BuffP(S.ShadowDanceBuff)) and (EnergyTimeToMaxRounded() <= Player:GCD() * 1.5 or Player:BuffP(S.ShadowDanceBuff) or S.ShadowDance:CooldownRemainsP() >= 15) then
+		return S.Backstab:Cast()
+	end
+
+end
+
+-- Echoing Reprimand
+
+    if S.EchoingReprimand:IsReady("Melee") and Player:AffectingCombat() and (Player:Energy() <= 25 or not Player:BuffP(S.ShadowDanceBuff)) then
+		return S.EchoingReprimand:Cast()
+    end
+	
+    return 0, 135328
+end
+
+
+
+
+RubimRH.Rotation.SetAPL(261, APL);
+
+local function PASSIVE()
+    
+end
+
+RubimRH.Rotation.SetPASSIVE(261, PASSIVE);

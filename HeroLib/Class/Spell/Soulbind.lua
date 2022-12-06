@@ -3,8 +3,7 @@
 -- Addon
 local addonName, HL = ...
 -- HeroDBC
-local DBC = HeroDBC.DBC
--- HeroLib
+
 local Cache, Utils = HeroCache, HL.Utils
 local Unit = HL.Unit
 local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target

@@ -3,7 +3,7 @@
 -- Addon
 local addonName, Cache = ...;
 -- Lua
-local wipe = wipe
+
 -- File Locals
 if not HeroCacheDB then
   _G.HeroCacheDB = {};
@@ -13,12 +13,12 @@ end
 -- Addon
 HeroCache = Cache;
 
-
 --- ============================ CONTENT ============================
 -- Defines our cached tables.
 -- Temporary
 Cache.APLVar = {};
-Cache.Enemies = { ItemAction = {}, Melee = {}, Ranged = {}, Spell = {}, SpellAction = {} };
+Cache.Enemies = {};
+Cache.EnemiesCount = {};
 Cache.GUIDInfo = {};
 Cache.MiscInfo = {};
 Cache.SpellInfo = {};
@@ -43,11 +43,8 @@ Cache.HasBeenReset = false;
 function Cache.Reset()
   if not Cache.HasBeenReset then
     wipe(Cache.APLVar);
-    wipe(Cache.Enemies.ItemAction);
-    wipe(Cache.Enemies.Melee);
-    wipe(Cache.Enemies.Ranged);
-    wipe(Cache.Enemies.Spell);
-    wipe(Cache.Enemies.SpellAction);
+    wipe(Cache.Enemies);
+    wipe(Cache.EnemiesCount);
     wipe(Cache.GUIDInfo);
     wipe(Cache.MiscInfo);
     wipe(Cache.SpellInfo);
@@ -173,23 +170,18 @@ end]=],
   --[[
     Main cache creation function
     Returns a table with 3 functions:
-
       Get(...)
         Returns the value or nil if it's not cached
-
       Set(..., val)
         Sets the value at given path to @val, returns @val
-
       GetSet(..., [func])
         Special getter that can also *set* the value if it's nil, calling @func in the process (lazily)
         The behavior is triggered only if the last argument to it is a function, works as Get otherwise
-
     Calling
       .Set('A', 'B', 2, 'C', 42)
     is basically equivalent to
       cache['A']['B'][2]['C'] = 42
     which creates tables as needed
-
     Typical usage is:
       .GetSet('A', 53, 'B',
               function() return GetSpellPowerCost(53)[1] end)

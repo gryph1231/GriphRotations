@@ -27,7 +27,7 @@ do
       -- T20 ToS
       Spell(239932) -- Felclaws (KJ)
     },
-    Debuff = {}, -- TODO ?
+    Debuff = {},
     Cast = {
       -- PR Legion
       197810, -- Wicked Slam (ARC - 3rd)
@@ -52,23 +52,19 @@ do
       248499, -- Sweeping Scythe (Argus)
       258039 -- Deadly Scythe (Argus)
     },
-    Channel = {} -- TODO ?
+    Channel = {}
   }
   function Player:ActiveMitigationNeeded()
-    if not Player:IsTanking(Target) then return false end
-
-    -- Check casts
-    if ActiveMitigationSpells.Cast[Target:CastSpellID()] then
-      return true
-    end
-
-    -- Check buffs
-    for _, Buff in pairs(ActiveMitigationSpells.Buff) do
-      if Target:BuffUp(Buff, true) then
+    if Player:IsTanking(Target) then
+      if ActiveMitigationSpells.Cast[Target:CastID()] then
         return true
       end
+      for _, Buff in pairs(ActiveMitigationSpells.Buff) do
+        if Target:Buff(Buff, nil, true) then
+          return true
+        end
+      end
     end
-
     return false
   end
 end
@@ -82,11 +78,10 @@ do
   }
   function Player:HealingAbsorbed()
     for _, Debuff in pairs(HealingAbsorbedSpells.Debuff) do
-      if Player:DebuffUp(Debuff, true) then
+      if Player:Debuff(Debuff, nil, true) then
         return true
       end
     end
-
     return false
   end
 end

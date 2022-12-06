@@ -12,22 +12,12 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local UnitInVehicle = UnitInVehicle
-local UnitInParty = UnitInParty
-local UnitInRaid = UnitInRaid
-local IsMounted = IsMounted
-local UnitRace = UnitRace -- race, raceEn, raceId
-local Covenants = _G.C_Covenants
+
 -- File Locals
 
 
 
 --- ============================ CONTENT ============================
-
--- Get if the player is mounted on a non-combat mount.
-function Player:IsMounted()
-  return IsMounted() and not self:IsOnCombatMount()
-end
 
 -- Get if the player is in a party.
 function Player:IsInParty()
@@ -39,37 +29,27 @@ function Player:IsInRaid()
   return UnitInRaid(self.UnitID)
 end
 
+function Player:IsMounted()
+  return IsMounted() and not self:IsOnCombatMount()
+end
+
+
 -- Get the player race.
 -- Dwarf, Draenei, Gnome, Human, NightElf, Worgen
 -- BloodElf, Goblin, Orc, Tauren, Troll, Scourge
 -- Pandaren
-function Player:Race()
-  local _, Race = UnitRace(self.UnitID)
-  return Race
-end
-
--- Test if the unit is of the given race.
-function Player:IsRace(ThisRace)
-  return ThisRace and self:Race() == ThisRace or false
-end
-
--- Get the player covenant ID
--- 0: none, 1: Kyrian, 2: Venthyr, 3: Night Fae, 4: Necrolord
-function Player:CovenantID()
-  return Covenants.GetActiveCovenantID()
-end
-
--- Get the player covenant
-function Player:Covenant()
-  local covenantName
-  local activeCovenantID = Covenants.GetActiveCovenantID()
-  if activeCovenantID > 0 then
-    local covenantData =  Covenants.GetCovenantData(activeCovenantID)
-    if covenantData then
-      covenantName = covenantData.name
-    end
+do
+  -- race, raceEn, raceId
+  local UnitRace = UnitRace
+  function Player:Race()
+    local _, race = UnitRace(self.UnitID)
+    return race
   end
-  return covenantName
+
+  -- Test if the unit is of race unit_race
+  function Player:IsRace(unit_race)
+    return unit_race and self:Race() == unit_race or false
+  end
 end
 
 do
@@ -88,7 +68,6 @@ do
     Spell(254472), -- Paladin Divine Steed
     Spell(254473), -- Paladin Divine Steed
     Spell(254474), -- Paladin Divine Steed
-
     --- Legion
     -- Class Order Hall
     Spell(220480), -- Death Knight Ebon Blade Deathcharger
@@ -104,15 +83,14 @@ do
     Spell(221672), -- Storm's Reach Greatstag
     Spell(221673), -- Storm's Reach Worg
     Spell(218964), -- Stormtalon
-
-    --- Warlord of Draenor
+    --- Warlord of Draenor (WoD)
     -- Nagrand
     Spell(164222), -- Frostwolf War Wolf
     Spell(165803) -- Telaari Talbuk
   }
   function Player:IsOnCombatMount()
     for i = 1, #CombatMountBuff do
-      if self:BuffUp(CombatMountBuff[i], true) then
+      if self:Buff(CombatMountBuff[i], nil, true) then
         return true
       end
     end
@@ -128,77 +106,63 @@ end
 do
   -- Get if the player is in a vhehicle that is not really a vehicle.
   local InVehicleWhitelist = {
-    Spells = {
-      --- Shadowlands
-      -- Plaguefall
-      Spell(328429), -- Crushing Embrace (Slime Tentacle)
-      -- The Maw
-      Spell(346835), -- Soul Brand (Winged Abductors)
-
-      --- Warlord of Draenor
-      -- Hellfire Citadel
+    Spell = {
+      --- Warlord of Draenor (WoD)
+      -- Hellfire Citadel (T18 - 6.2 Patch)
       Spell(187819), -- Crush (Kormrok's Hands)
       Spell(181345), -- Foul Crush (Kormrok's Tank Hand)
-      -- Blackrock Foundry
-      Spell(157059), -- Rune of Grasping Earth (Kromog's Hand)
+      -- Blackrock Foundry (T17 - 6.0 Patch)
+      Spell(157059) -- Rune of Grasping Earth (Kromog's Hand)
     },
-    PetMounts = {
-      --- Legion
-      -- Karazhan
-      116802, -- Rodent of Usual Size
-
-      --- Warlord of Draenor
-      -- Garrison Stables Quest
+    PetMount = {
+      --- Warlord of Draenor (WoD)
+      -- Garrison Stables Quest (6.0 Patch)
       87082, -- Silverperlt
       87078, -- Icehoof
       87081, -- Rocktusk
       87080, -- Riverwallow
       87079, -- Meadowstomper
       87076, -- Snarler
+      --- Legion
+      -- Karazhan
+      116802 -- Rodent of Usual Size
     }
   }
   function Player:IsInWhitelistedVehicle()
     -- Spell
-    local VehicleSpells = InVehicleWhitelist.Spells
-    for i = 1, #VehicleSpells do
-      local VehicleSpell = VehicleSpells[i]
-      if self:DebuffUp(VehicleSpell, nil, true) then
+    for i = 1, #InVehicleWhitelist.Spell do
+      if self:Debuff(InVehicleWhitelist.Spell[i], nil, true) then
         return true
       end
     end
-
     -- PetMount
-    local PetMounts = InVehicleWhitelist.PetMounts
     if Pet:IsActive() then
-      for i = 1, #PetMounts do
-        local PetMount = PetMounts[i]
-        if Pet:NPCID() == PetMount then
+      for i = 1, #InVehicleWhitelist.PetMount do
+        if Pet:NPCID() == InVehicleWhitelist.PetMount[i] then
           return true
         end
       end
     end
-
     return false
   end
 end
 
 do
   local StopCast = {
-    Debuffs = {
+    Debuff = {
       { Spell(240447), 1 } -- Quake (M+ Affix)
     }
   }
   function Player:ShouldStopCasting()
-    local Debuffs = StopCast.Debuffs
-    for i = 1, #Debuffs do
-      local Record = Debuffs[i]
+    for i = 1, #StopCast.Debuff do
+      local Record = StopCast.Debuff[i]
       local Debuff, Duration
       if type(Record) == "table" then
         Debuff, Duration = Record[1], Record[2]
       else
         Debuff = Record
       end
-      if self:DebuffUp(Debuff, nil, true) and (not Duration or self:DebuffRemains(Debuff, nil, true) <= Duration) then
+      if self:Debuff(Debuff, nil, true) and (not Duration or self:DebuffRemains(Debuff, nil, true) <= Duration) then
         return true
       end
     end

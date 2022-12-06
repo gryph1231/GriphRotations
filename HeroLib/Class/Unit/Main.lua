@@ -12,27 +12,26 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local GetUnitSpeed = GetUnitSpeed
-local strsplit = strsplit
 local tonumber = tonumber
-local UnitAffectingCombat = UnitAffectingCombat
-local UnitCanAttack = UnitCanAttack
-local UnitClassification = UnitClassification
-local UnitExists = UnitExists
+-- File Locals
+
+-- Blizzard API Mappings
 local UnitGUID = UnitGUID
+local UnitName = UnitName
+local UnitExists = UnitExists
+local UnitIsVisible = UnitIsVisible
+local UnitLevel = UnitLevel
+local UnitCanAttack = UnitCanAttack
+local UnitIsPlayer = UnitIsPlayer
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitIsPlayer = UnitIsPlayer
+local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsUnit = UnitIsUnit
-local UnitIsVisible = UnitIsVisible
-local UnitLevel = UnitLevel
-local UnitName = UnitName
+local UnitClassification = UnitClassification
 local UnitThreatSituation = UnitThreatSituation
--- File Locals
+local GetUnitSpeed = GetUnitSpeed
 
-
---- ============================ CONTENT ============================
 function Unit:Cache()
   self:RemoveUnitGUIDMapEntry()
   self.UnitExists = UnitExists(self.UnitID) or false
@@ -49,6 +48,7 @@ function Unit:Cache()
   -- Classification?
 end
 
+--- ============================ CONTENT ============================
 -- Get the unit ID.
 function Unit:ID()
   return self.UnitID
@@ -59,7 +59,6 @@ function Unit:GUID()
   if self.UseCache then
     return self.UnitGUID
   end
-
   return UnitGUID(self.UnitID)
 end
 
@@ -68,7 +67,6 @@ function Unit:Name()
   if self.UseCache then
     return self.UnitName
   end
-
   return UnitName(self.UnitID)
 end
 
@@ -77,7 +75,6 @@ function Unit:Exists()
   if self.UseCache then
     return self.UnitExists and UnitIsVisible(self.UnitID)
   end
-
   return UnitExists(self.UnitID) and UnitIsVisible(self.UnitID)
 end
 
@@ -88,26 +85,23 @@ function Unit:NPCID(BypassCache)
   end
 
   local GUID = self:GUID()
-  if not GUID then return -1 end
-
-  local UnitInfo = Cache.UnitInfo[GUID]
-  if not UnitInfo then
-    UnitInfo = {}
-    Cache.UnitInfo[GUID] = UnitInfo
-  end
-
-  local NPCID = UnitInfo.NPCID
-  if not NPCID then
-    local Type, _, _, _, _, NPCIDFromGUID = strsplit('-', GUID)
-    if Type == "Creature" or Type == "Pet" or Type == "Vehicle" then
-      NPCID = tonumber(NPCIDFromGUID)
-    else
-      NPCID = -2
+  if GUID then
+    local UnitInfo = Cache.UnitInfo[GUID]
+    if not UnitInfo then
+      UnitInfo = {}
+      Cache.UnitInfo[GUID] = UnitInfo
     end
-    UnitInfo.NPCID = NPCID
+    if not UnitInfo.NPCID then
+      local type, _, _, _, _, npcid = strsplit('-', GUID)
+      if type == "Creature" or type == "Pet" or type == "Vehicle" then
+        UnitInfo.NPCID = tonumber(npcid)
+      else
+        UnitInfo.NPCID = -2
+      end
+    end
+    return UnitInfo.NPCID
   end
-
-  return NPCID
+  return -1
 end
 
 -- Get the level of the unit
@@ -115,41 +109,25 @@ function Unit:Level()
   return UnitLevel(self.UnitID)
 end
 
--- Get if the unit (or a given NPC ID) is in the Boss list.
-function Unit:IsInBossList(NPCID)
-  local ThisNPCID = NPCID or self:NPCID()
-
+-- Get if an unit with a given NPC ID is in the Boss list and has less HP than the given ones.
+function Unit:IsInBossList(NPCID, HP)
+  local NPCID = NPCID or self:NPCID()
+  local HP = HP or 100
+  local ThisUnit
   for _, ThisUnit in pairs(Boss) do
-    if ThisUnit:Exists() and ThisUnit:NPCID() == ThisNPCID then
+    if ThisUnit:Exists() and ThisUnit:NPCID() == NPCID and ThisUnit:HealthPercentage() <= HP then
       return true
     end
   end
-
-  return false
-end
-
--- Get if the unit (or a given NPC ID) is in the Boss list and has less HP than the given ones.
-function Unit:CheckHPFromBossList(NPCID, HP)
-  local ThisNPCID = NPCID or self:NPCID()
-  local ThisHP = HP or 100
-
-  for _, ThisUnit in pairs(Boss) do
-    if ThisUnit:Exists() and ThisUnit:NPCID() == ThisNPCID and ThisUnit:HealthPercentage() <= ThisHP then
-      return true
-    end
-  end
-
   return false
 end
 
 -- Get if the unit CanAttack the other one.
 function Unit:CanAttack(Other)
-  local UnitID = self:ID()
-  if UnitID == "player" and Other.UseCache then
+  if self.UnitID == "player" and Other.UseCache then
     return Other.UnitCanBeAttacked
   end
-
-  return UnitCanAttack(UnitID, Other:ID())
+  return UnitCanAttack(self.UnitID, Other.UnitID)
 end
 
 local DummyUnits = {
@@ -159,9 +137,6 @@ local DummyUnits = {
   [32666] = true, -- Training Dummy
   [32667] = true, -- Training Dummy
   [46647] = true, -- Training Dummy
-  [114832] = true, -- PvP Training Dummy
-  [153285] = true, -- Training Dummy
-  [153292] = true, -- Training Dummy
   -- MoP Shrine of Two Moons
   [67127] = true, -- Training Dummy
   -- WoD Alliance Garrison
@@ -176,25 +151,25 @@ local DummyUnits = {
   [87762] = true, -- Mage Tower Damage Raider's Training Dummy
   [88288] = true, -- Tanking Dungeoneer's Training Dummy
   [88289] = true, -- Healing Training Dummy ----> FRIENDLY
-  -- Legion Druid Class Order Hall
-  [113964] = true, -- Raider's Training Dummy
-  [113966] = true, -- Dungeoneer's Training Dummy
-  -- Legion Mage Class Order Hall
-  [103397] = true, -- Greater Bullwark Construct
-  [103404] = true, -- Bullwark Construct
-  [103402] = true, -- Lesser Bullwark Construct
-  -- Legion Priest Class Order Hall
-  [107555] = true, -- Bound void Wraith
-  [107556] = true, -- Bound void Walker
   -- Legion Rogue Class Order Hall
   [92164] = true, -- Training Dummy
   [92165] = true, -- Dungeoneer's Training Dummy
   [92166] = true, -- Raider's Training Dummy
+  -- Legion Priest Class Order Hall
+  [107555] = true, -- Bound void Wraith
+  [107556] = true, -- Bound void Walker
+  -- Legion Druid Class Order Hall
+  [113964] = true, -- Raider's Training Dummy
+  [113966] = true, -- Dungeoneer's Training Dummy
   -- Legion Warlock Class Order Hall
-  [101956] = true, -- Rebellious Fel Lord
-  [102045] = true, -- Rebellious WrathGuard
-  [102048] = true, -- Rebellious Felguard
   [102052] = true, -- Rebellious imp
+  [102048] = true, -- Rebellious Felguard
+  [102045] = true, -- Rebellious WrathGuard
+  [101956] = true, -- Rebellious Fel Lord
+  -- Legion Mage Class Order Hall
+  [103397] = true, -- Greater Bullwark Construct
+  [103404] = true, -- Bullwark Construct
+  [103402] = true, -- Lesser Bullwark Construct
   -- BfA Dazar'Alor
   [144081] = true, -- Training Dummy
   [144082] = true, -- Training Dummy
@@ -204,52 +179,10 @@ local DummyUnits = {
   [126781] = true, -- Training Dummy
   [131983] = true, -- Raider's Training Dummy
   [131989] = true, -- Training Dummy
-  [131992] = true, -- Dungeoneer's Training Dummy
-  -- Shadowlands Kyrian
-  [154564] = true, -- Valiant's Humility
-  [154567] = true, -- Purity's Cleaning
-  [154580] = true, -- Reinforced Guardian
-  [154583] = true, -- Starlwart Guardian
-  [154585] = true, -- Valiant's Resolve
-  [154586] = true, -- Stalwart Phalanx
-  [160325] = true, -- Humility's Obedience
-  -- Shadowlands Venthyr
-  [173942] = true, -- Training Dummy
-  [175449] = true, -- Raider's Training Dummy
-  [175450] = true, -- Dungeoneer's Training Dummy
-  [175451] = true, -- Dungeoneer's Tanking Dummy
-  [175452] = true, -- Raider's Tanking Dummy
-  [175455] = true, -- Cleave Training Dummy
-  [175456] = true, -- Swarm Training Dummy
-  [175462] = true, -- Sinfall Fiend
-  -- Shadowlands Night Fae
-  [174565] = true, -- Dungeoneer's Tanking Dummy
-  [174566] = true, -- Raider's Tanking Dummy
-  [174567] = true, -- Raider's Training Dummy
-  [174568] = true, -- Dungeoneer's Training Dummy
-  [174569] = true, -- Training Dummy
-  [174570] = true, -- Swarm Training Dummy
-  [174571] = true, -- Cleave Training Dummy
-  -- Shadowlands Necrolord
-  [174484] = true, -- Dungeoneer's Training Dummy
-  [174487] = true, -- Training Dummy
-  [174488] = true, -- Raider's Training Dummy
-  [174491] = true, -- Tanking Dummy
-  -- DargonFlight Valdrakken
-  [198594] = true, -- Cleave Training Dummy
-  [194648] = true, -- Training Dummy
-  [189632] = true, -- Animated Duelist
-  [194643] = true, -- Dungeoneer's Training Dummy
-  [194644] = true, -- Dungeoneer's Training Dummy
-  [197833] = true, -- PvP Training Dummy
-  [189617] = true, -- Boulderfist
-  [194649] = true, -- Normal Tank Dummy
-  -- Other
-  [65310] = true, -- Turnip Punching Bag
+  [131992] = true  -- Dungeoneer's Training Dummy
 }
 function Unit:IsDummy()
   local NPCID = self:NPCID()
-
   return NPCID >= 0 and DummyUnits[NPCID] == true
 end
 
@@ -270,10 +203,7 @@ end
 
 -- Get the unit Health Percentage
 function Unit:HealthPercentage()
-  local Health = self:Health()
-  local MaxHealth = self:MaxHealth()
-
-  return Health > 0 and MaxHealth > 0 and Health / MaxHealth * 100 or -1
+  return self:Health() ~= -1 and self:MaxHealth() ~= -1 and self:Health() / self:MaxHealth() * 100
 end
 
 -- Get if the unit Is Dead Or Ghost.
@@ -298,20 +228,20 @@ end
 
 -- Get if we are Tanking or not the Unit.
 function Unit:IsTanking(Other, ThreatThreshold)
-  if (UnitGroupRolesAssigned("player") == "TANK" and Unit:IsInBossList(164407)) then return true end
-  local ThreatSituation = UnitThreatSituation(self:ID(), Other:ID())
-
-  return (ThreatSituation and ThreatSituation >= (ThreatThreshold or 2)) or false
+  local ThreatThreshold = ThreatThreshold or 2
+  local ThreatSituation = UnitThreatSituation(self.UnitID, Other.UnitID)
+  return ThreatSituation and ThreatSituation >= ThreatThreshold or false
 end
 
 function Unit:IsTankingAoE(Radius, ThreatSituation)
+  local Radius = Radius or 8
+  HL.GetEnemies(Radius, true)
   local IsTankingAOE = false
-  for _, ThisUnit in pairs(Player:GetEnemiesInRange(Radius or 6.5)) do
-    if self:IsTanking(ThisUnit, ThreatSituation) then
+  for _, Unit in pairs(Cache.Enemies[Radius]) do
+    if self:IsTanking(Unit, ThreatSituation) then
       IsTankingAOE = true
     end
   end
-
   return IsTankingAOE
 end
 

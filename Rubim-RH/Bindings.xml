@@ -1,0 +1,14 @@
+<Bindings>
+<Binding category="Rubim RH" name="Cooldown Toggle" header="RRH">
+  RubimRH.CDToggle()
+</Binding>
+<Binding category="Rubim RH" name="Interrupt Toggle">
+  RubimRH.InterruptsToggle()
+</Binding>
+<Binding category="Rubim RH" name="AoE Toggle">
+  RubimRH.AoEToggle()
+</Binding>
+<Binding category="Rubim RH" name="HEAL Force Rejuvenation">
+  RubimRH.ForceRejuv()
+</Binding>
+</Bindings>
