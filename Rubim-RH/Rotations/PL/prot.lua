@@ -402,7 +402,10 @@ local function APL()
     end
 
 
-
+    if S.EyeofTyr:IsCastable() and (Player:NeedMajorHealing() or Player:HealthPercentage()<85) and (Cache.EnemiesCount[8]>= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKingsBuff) then
+        return S.EyeofTyr:Cast()
+      end
+    
 
     if S.LayonHands:IsReadyP() and Player:HealthPercentage() <= 25 and not Player:Debuff(S.Forbearance) and
         not Player:InArena() and Cache.EnemiesCount[30] >= 1 then
