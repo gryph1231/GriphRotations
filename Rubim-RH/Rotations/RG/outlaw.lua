@@ -169,7 +169,7 @@ AudacityBuff = Spell(381845),
     DecayingFilth = Spell(330703),
     Discharge = Spell(332196),
     Steward = Spell(324739),
-    EchoingReprimand = Spell(323547), --385616
+    EchoingReprimand = Spell(385616), --385616
     EchoingReprimandCP2 = Spell(323558),
     EchoingReprimandCP3 = Spell(323559),
     EchoingReprimandCP4 = Spell(323560),
@@ -347,6 +347,36 @@ end
 local function EnergyTimeToMaxRounded()
     return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
 end
+local function UseItems()
+
+    local trinket1 = GetInventoryItemID("player", 13) 
+    local trinket2 = GetInventoryItemID("player", 14) 
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+    
+      if trinket1ready then
+          return I.tx1:Cast()      
+        end
+      if trinket2ready then
+          return I.tx2:Cast()
+      end
+  end
+
+
+function HealthPotionSelected()
+
+    local HealthPotionIDs = {
+        191380, 191379, 191378
+
+    }
+
+    for _, HealthPotionID in ipairs(HealthPotionIDs) do
+        if Item(HealthPotionID):IsUsable() then
+            return Item(HealthPotionID)
+        end
+    end
+end
+
 
 local function APL()
     HL.GetEnemies(10, true);
@@ -585,6 +615,21 @@ local function APL()
         Player:CanAttack(Target)
         and Target:AffectingCombat() and Target:IsInRange(20) then
         return S.autoattack:Cast()
+    end
+
+
+    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+end
+
+
+    if  Target:IsInRange(8) then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
     end
 
     -- if IsEquippedItem("Ring of Collapsing Futures") and not Player:DebuffP(S.Temptation) and Player:CanAttack(Target) and
