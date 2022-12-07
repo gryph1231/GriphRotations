@@ -309,6 +309,33 @@ if Player:CanAttack(Target) and Target:AffectingCombat() or (Player:AffectingCom
 -- In the last 2 seconds of  Dragonrage, use  Burnout procs or  Azure Strike to exit with 2 stacks of  Essence Burst
 -- Proceed with normal rotation when  Dragonrage fades
 
+--cds
+
+
+-- Devastation Evoker Cooldown Basics
+--  Dragonrage is your main cooldown as Devastation. This buff guarantees  Essence Burst procs and provides the full effect of  Mastery: Giantkiller with  Tyranny. Empowering  Fire Breath and  Eternity Surge during  Dragonrage extends the duration of the buff thanks to  Animosity. For this reason, we always want to enter  Dragonrage with both cooldowns available for empowering right away. Your priorities in  Dragonrage are:
+-- Maintain  Fire Breath damage over time on the enemy. Use  Fire Breath on cooldown.
+-- Use  Shattering Star to prime the target for  Disintegrate and  Eternity Surge (when it lines up).
+-- Use  Eternity Surge on cooldown.
+-- In AoE: Spend  Essence Burst and Essence on  Pyre.
+-- In Single Target / Cleave: Spend  Essence Burst and Essence on  Disintegrate.
+-- Generate  Essence Burst with:
+-- Instant  Living Flame ( Burnout Buff) or
+--  Azure Strike (If talented into  Feed the Flames or  Engulfing Blaze) or
+--  Living Flame casts (without  Feed the Flames or  Engulfing Blaze)
+-- End  Dragonrage with two stacks of  Essence Burst
+--  Tip the Scales is a minor cooldown, but it is a bit flexible.  Tip the Scales is mainly used in  Dragonrage to instantly cast  Eternity Surge but it can also be used for  Fire Breath in situations where targets will not live the full duration of the dot. Remember that using  Fire Breath this way has a step cost to your boss damage, since it means you will go at least 10 seconds without  Burnout procs and  Fire Breath damage, making  Catalyze ineffective.
+
+--  Deep Breath is another notable cooldown. This spell is mainly used in AoE but it can also be used for movement or to avoid crowd control. For most players, using  Deep Breath at minimum range is DPS neutral (the same damage as your rotation or higher) at 50% Health on the target or lower (depends on Mastery).  Deep Breath should only be prioritized in the rotation in AoE, in Single Target it is only worth using for damage if you would otherwise be casting  Living Flame as filler.
+
+
+
+
+
+
+
+
+
 
 
 

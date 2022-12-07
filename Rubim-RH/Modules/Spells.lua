@@ -410,6 +410,7 @@ RubimRH.Spell[102] = {
 --- APL Local Vars
 -- Spells
 RubimRH.Spell[65] = {
+    BlessingofFreedom = Spell(1044),
 
 
     autoattack = Spell(291944), -- regeneratin
@@ -529,10 +530,12 @@ RubimRH.Spell[65] = {
     -- Racials
 -- Spells
 RubimRH.Spell[66] = {
-
     autoattack = Spell(291944), -- regeneratin
     wristsx = Spell(255647), -- lights judgmenet
     tempestofthelightbringer = Spell(383396),
+    BlessingofFreedom = Spell(1044),
+    BlindingLight = Spell(115750),
+    SenseUndead = Spell(5502),
 
     BastionofLight = Spell(378974),
    
@@ -598,7 +601,6 @@ RubimRH.Spell[66] = {
     RetributionAura          = Spell(183435),
     -- Buffs
     Intercession             = Spell(391054),
-    Intercessionz            = Spell(215661),
     trinket                  = Spell(59547), -- gift of narru
 
     AvengingWrathBuff           = Spell(31884),
@@ -757,9 +759,10 @@ RubimRH.Spell[268] = {
 
 --Retribution
 RubimRH.Spell[70] = {
+    BlindingLight = Spell(115750),
 
 
-
+BlessingofFreedom = Spell(1044),
     lust1                    = Spell(57724),
     lust2                    = Spell(57723),
     lust3                    = Spell(80354),
@@ -828,7 +831,7 @@ RubimRH.Spell[70] = {
     RetributionAura          = Spell(183435),
     -- Buffs
     Intercession             = Spell(391054),
-    Intercessionz            = Spell(215661),
+
     trinket                  = Spell(59547), -- gift of narru
 
     AvengingWrathBuff           = Spell(31884),
@@ -848,7 +851,7 @@ RubimRH.Spell[70] = {
 
     -- Pool                                  = Spell(999910),
     Pool = Spell(397799),
-
+SenseUndead = Spell(5502),
 
 
     -- Talents

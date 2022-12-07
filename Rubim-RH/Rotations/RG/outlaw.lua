@@ -426,13 +426,12 @@ local function APL()
 
     --Reroll BT + GM or single buffs early other than Broadside, TB with Shadowdust, or SnC with Blunderbuss
     if true then
-        rtb_reroll = (
-            RtB_Buffs() < 2 and
-                (
-                not Player:BuffP(S.Broadside) and
-                    (not S.FanTheHammer:IsAvailable() or not Player:BuffP(S.SkullandCrossbones)) and
-                    (not IsEquippedItem("Shadowdust Locket") or not Player:BuffP(S.TrueBearing))))
-            or (RtB_Buffs() == 2 and Player:BuffP(S.BuriedTreasure) and Player:BuffP(S.GrandMelee))
+        -- variable,name=rtb_reroll,value=rtb_buffs<2&(!buff.broadside.up&(!talent.fan_the_hammer|!buff.skull_and_crossbones.up)
+        -- &!buff.true_bearing.up|buff.loaded_dice.up)|rtb_buffs=2
+        -- &(buff.buried_treasure.up&buff.grand_melee.up|!buff.broadside.up&!buff.true_bearing.up&buff.loaded_dice.up)
+        rtb_reroll = RtB_Buffs() < 2 and (not Player:Buff(S.Broadside) and (not S.FanTheHammer:IsAvailable() or not Player:Buff(S.SkullandCrossbones)) and
+                    not Player:Buff(S.TrueBearing) or Player:Buff(S.LoadedDice)) or RtB_Buffs() == 2 
+                    and (Player:Buff(S.BuriedTreasure) and Player:Buff(S.GrandMelee) or not Player:Buff(S.Broadside) and not Player:Buff(S.TrueBearing) and Player:Buff(S.LoadedDice))
 
         --Ensure we get full Ambush CP gains and aren't rerolling Count the Odds buffs away
         ambush_condition = Player:ComboPointsDeficit() >= 2 + num(Player:BuffP(S.Broadside)) and

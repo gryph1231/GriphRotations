@@ -22,8 +22,9 @@ end
 
 RubimRH.Spell[65] = {
 
-
-
+    BlessingofFreedom = Spell(1044),
+    BlindingLight = Spell(115750),
+    SenseUndead = Spell(5502),
 
     autoattack = Spell(291944), -- regeneratin
     wristsx = Spell(255647), -- lights judgmenet
@@ -52,7 +53,6 @@ RubimRH.Spell[65] = {
     FlashofLight             = Spell(19750),
     HammerofJustice          = Spell(853),
     HandofReckoning          = Spell(62124),
-    Judgment                 = Spell(20271),
     Rebuke                   = Spell(96231),
     ShieldoftheRighteous     = Spell(53600),
     WordofGlory              = Spell(85673),
@@ -108,7 +108,6 @@ RubimRH.Spell[65] = {
     -- Legendary Effects
     DivineResonanceBuff         = Spell(355455),
     FinalVerdictBuff            = Spell(337228),
-    JudgmentDebuff              = Spell(197277),
     -- Pool
 
     -- Pool                                  = Spell(999910),

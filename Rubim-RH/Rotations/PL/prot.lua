@@ -19,7 +19,9 @@ local Item = HL.Item
 -- Spells
 RubimRH.Spell[66] = {
 
-
+    BlessingofFreedom = Spell(1044),
+    BlindingLight = Spell(115750),
+    SenseUndead = Spell(5502),
 
 
     autoattack = Spell(291944), -- regeneratin
@@ -56,7 +58,6 @@ RubimRH.Spell[66] = {
     HolyAvenger              = Spell(105809),
     HolyAvengerBuff          = Spell(105809),
     LayonHands               = Spell(633),
-    SanctifiedWrath          = Spell(53376),
     Seraphim                 = Spell(152262),
     SeraphimBuff             = Spell(152262),
     -- Covenants (Shadowlands)
@@ -103,6 +104,7 @@ RubimRH.Spell[66] = {
     DivineResonanceBuff         = Spell(355455),
     FinalVerdictBuff            = Spell(337228),
     -- Pool
+
 
     -- Pool                                  = Spell(999910),
     Pool = Spell(397799),
@@ -302,16 +304,10 @@ local function APL()
     end
 
 
-    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() and UnitExists("mouseover") then
-        return S.Intercession:Cast() -- BIND brez to stoneform
-    end
 
-    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and
-        (not S.Intercession:CooldownUp() or not UnitExists("mouseover") or not UnitIsDeadOrGhost("mouseover")) then
-        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-    end
 
-    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() 
+    and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
         not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
         return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
     end
@@ -323,10 +319,6 @@ local function APL()
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
-    if I.trink:IsReady() and Cache.EnemiesCount[5] >= 1 and Target:IsInRange(8) and I.trink:IsEquipped() and
-        RubimRH.CDsON() then
-        return S.trinket:Cast()
-    end
 
     if S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving() then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }

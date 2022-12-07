@@ -24,7 +24,9 @@ RubimRH.Spell[70] = {
 
 
 
-
+    BlessingofFreedom = Spell(1044),
+    BlindingLight = Spell(115750),
+    SenseUndead = Spell(5502),
 
 
 
