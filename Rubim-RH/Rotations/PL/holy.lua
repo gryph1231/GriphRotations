@@ -7,485 +7,373 @@ local Cache = HeroCache;
 local Unit = HL.Unit;
 local Player = Unit.Player;
 local Target = Unit.Target;
-local MouseOver = Unit.MouseOver;
 local Spell = HL.Spell;
 local Item = HL.Item;
+local MouseOver = Unit.MouseOver;
 -- Lua
 local pairs = pairs;
+local tableconcat = table.concat;
+local tostring = tostring;
+local tableinsert = table.insert;
 
-
---- APL Local Vars
--- Spells
-RubimRH.Spell[65] = {
-    -- Racials
-    ArcaneTorrent = Spell(25046),
-    GiftoftheNaaru = Spell(59547),
-
-    --Spells
-    Cleanse = Spell(4987),
-    Judgement = Spell(275773),
-    CrusaderStrike = Spell(35395),
-    Consecration = Spell(26573),
-    LightoftheMartyr = Spell(183998),
-    LightoftheMartyrStack = Spell(223316),
-    FlashofLight = Spell(19750),
-    HolyShock = Spell(20473),
-    InfusionofLight = Spell(54149),
-    BeaconofLight = Spell(53563),
-    BeaconofVirtue = Spell(200025),
-    LightofDawn = Spell(85222),
-	AuraMastery = Spell(31821),
-	AvengingWrath = Spell(31884),
-	HolyAvenger = Spell(105809),
-	BestowFaith = Spell(223306),
-	AvengingCrusader = Spell(216331),
-	JudgmentOfLightHoly = Spell(183778),
-	BlessingOfSacrifice = Spell(6940),
-	BeaconOfFaith = Spell(156910),
-	JudgementofLight = Spell(183778),
-	CrusadersMight = Spell(196926),
-	ConsecrationUp = Spell(204242),
-	JudgmentUp = Spell(214222),
-	HolyPrism = Spell(114165),
-	LightsHammer = Spell(114158),
-
-    --Azerite
-    DivineRevelations = Spell(275469),
-	GlimmerofLight = Spell(287268),
-	
-	--Heart Essences
-	ConcentratedFlameHeal = Spell(295373),
-	ConcentratedFlameHeal2 = Spell(168612),
-	ConcentratedFlameHeal3 = Spell(168613),
-	LifeBindersInvocation = Spell(293032),
-	LifeBindersInvocation2 = Spell(299943),
-	LifeBindersInvocation3 = Spell(299944),
-	OverchargeMana = Spell(296072),
-	OverchargeMana2 = Spell(299875),
-	OverchargeMana3 = Spell(299876),
-	Refreshment = Spell(296197),
-	Refreshment2 = Spell(299932),
-	Refreshment3 = Spell(299933),
-	UnleashHeartofAzeroth = Spell(280431),
-	VitalityConduit = Spell(296230),
-	VitalityConduit2 = Spell(299958),
-	VitalityConduit3 = Spell(299959),
-	MemoryOfLucidDreams = Spell(298357),
-	MemoryOfLucidDreams2 = Spell(299372),
-	MemoryOfLucidDreams3 = Spell(299374),
-
-    --Healing
-    BlessingofProtection = Spell(1022),
-    HolyLight = Spell(82326),
-    LayOnHands = Spell(633),
-    Forbearance = Spell(25771),
-    DivineProtection = Spell(498),
-    DivineShield = Spell(642),
-    -- Raid
-	DarkestDepths = Spell(292127),
-};
-local S = RubimRH.Spell[65]
--- Items
-if not Item.Paladin then
-    Item.Paladin = {};
+if not Spell.Paladin then
+    Spell.Paladin = {};
 end
+
+RubimRH.Spell[65] = {
+
+
+
+
+    autoattack = Spell(291944), -- regeneratin
+    wristsx = Spell(255647), -- lights judgmenet
+    tempestofthelightbringer = Spell(383396),
+
+    BastionofLight = Spell(378974),
+   
+    DivineSteedBuff          = Spell(221883),
+    BlessingofProtection     = Spell(1022),
+    Forbearance              = Spell(25771),
+    -- Racials
+    AncestralCall            = Spell(274738),
+    ArcanePulse              = Spell(260364),
+    ArcaneTorrent            = Spell(155145),
+    BagofTricks              = Spell(312411),
+    Berserking               = Spell(26297),
+    BloodFury                = Spell(20572),
+    -- Fireblood                             = Spell(265221),
+    GiftoftheNaaru           = Spell(59542),
+    -- LightsJudgment                        = Spell(255647),
+    -- Abilities
+    Consecration             = Spell(26573),
+    CrusaderStrike           = Spell(35395),
+    DivineShield             = Spell(642),
+    DivineSteed              = Spell(190784),
+    FlashofLight             = Spell(19750),
+    HammerofJustice          = Spell(853),
+    HandofReckoning          = Spell(62124),
+    Judgment                 = Spell(20271),
+    Rebuke                   = Spell(96231),
+    ShieldoftheRighteous     = Spell(53600),
+    WordofGlory              = Spell(85673),
+    -- Talents
+    AvengingWrath            = Spell(31884),
+    HammerofWrath            = Spell(24275),
+    HolyAvenger              = Spell(105809),
+    HolyAvengerBuff          = Spell(105809),
+    LayonHands               = Spell(633),
+    SanctifiedWrath          = Spell(53376),
+    Seraphim                 = Spell(152262),
+    SeraphimBuff             = Spell(152262),
+    -- Covenants (Shadowlands)
+    AshenHallow              = Spell(316958),
+    BlessingofAutumn         = Spell(328622),
+    BlessingofSpring         = Spell(328282),
+    BlessingofSummer         = Spell(328620),
+    BlessingofWinter         = Spell(328281),
+    DivinePurpose            = Spell(223817),
+    -- DivineTollCov                         = Spell(304971),
+    DoorofShadows            = Spell(300728),
+    Fleshcraft               = Spell(324631),
+    Soulshape                = Spell(310143),
+    SummonSteward            = Spell(324739),
+    VanquishersHammer        = Spell(328204),
+    VanquishersHammerBuff    = Spell(328204),
+    -- Soulbinds/Conduits (Shadowlands)
+    Expurgation              = Spell(339371),
+    PustuleEruption          = Spell(351094),
+    VengefulShock            = Spell(340006),
+    VengefulShockDebuff      = Spell(340007),
+    VolatileSolvent          = Spell(323074),
+    VolatileSolventHumanBuff = Spell(323491),
+    -- Auras
+    ConcentrationAura        = Spell(317920),
+    CrusaderAura             = Spell(32223),
+    DevotionAura             = Spell(465),
+    RetributionAura          = Spell(183435),
+    -- Buffs
+    Intercession             = Spell(391054),
+    Intercessionz            = Spell(215661),
+    trinket                  = Spell(59547), -- gift of narru
+
+    AvengingWrathBuff           = Spell(31884),
+    ConsecrationBuff            = Spell(188370),
+    DivinePurposeBuff           = Spell(223819),
+    ScarsofFraternalStrifeBuff4 = Spell(368638),
+    ShieldoftheRighteousBuff    = Spell(132403),
+    TemptationBuff              = Spell(234143),
+    -- Debuffs
+    ConsecrationDebuff          = Spell(204242),
+    CruelGarroteDebuff          = Spell(230011),
+    -- Legendary Effects
+    DivineResonanceBuff         = Spell(355455),
+    FinalVerdictBuff            = Spell(337228),
+    JudgmentDebuff              = Spell(197277),
+    -- Pool
+
+    -- Pool                                  = Spell(999910),
+    Pool = Spell(397799),
+
+
+    lust1 = Spell(57724),
+    lust2 = Spell(57723),
+    lust3 = Spell(80354),
+    lust4 = Spell(95809),
+    lust5 = Spell(264689),
+    lustAT = Spell(265221), -- fireblood
+    DivineProtection                      = Spell(498),
+    HolyShock                             = Spell(20473),
+    Judgment                              = Spell(275773),
+    JudgmentDebuff                        = Spell(197277),
+    LightofDawn                           = Spell(85222),
+    InfusionofLightBuff                   = Spell(54149),
+    -- Talents
+    AvengingCrusader                      = Spell(216331),
+    Awakening                             = Spell(248033),
+    BestowFaith                           = Spell(223306),
+    CrusadersMight                        = Spell(196926),
+    GlimmerofLight                        = Spell(325966),
+    GlimmerofLightDebuff                  = Spell(325966),
+    HolyPrism                             = Spell(114165),
+    LightsHammer                          = Spell(114158),
+
+
+
+
+
+}
+
+local S = RubimRH.Spell[65]
+local G = RubimRH.Spell[1] -- General Skills
+
+S.AvengingWrath.TextureSpellID = { 55748 }
+S.Crusade.TextureSpellID = { 55748 }
+
+
+
+-- Items
+if not Item.Paladin then Item.Paladin = {} end
+
 Item.Paladin.Holy = {
-    -- Legendaries
-    JusticeGaze = Item(137065, { 1 }),
-    LiadrinsFuryUnleashed = Item(137048, { 11, 12 }),
-    WhisperoftheNathrezim = Item(137020, { 15 }),
-	RevitalizingVoodooTotem = Item(158320, { 14 })
+
+    HPIcon = Item(169451),
+    tx1 = Item(118330),
+    tx2 = Item(114616),
+
+
 };
 local I = Item.Paladin.Holy;
--- Rotation Var
 
--- APL Action Lists (and Variables)
-local function BadDebuffOnTarget()    
-    local DarkestDepths = Spell(292127)
-	
-	if Target:DebuffRemainsP(DarkestDepths) > 0 then 
-        return true
-    end
-    return false
-end	
 
--- Trinket var
-local trinket2 = 1030910
-local trinket1 = 1030902
 
--- Trinket Ready
-local function trinketReady(trinketPosition)
-    local inventoryPosition
-    
-	if trinketPosition == 1 then
-        inventoryPosition = 13
-    end
-    
-	if trinketPosition == 2 then
-        inventoryPosition = 14
-    end
-    
-	local start, duration, enable = GetInventoryItemCooldown("Player", inventoryPosition)
-    if enable == 0 then
-        return false
-    end
 
-    if start + duration - GetTime() > 0 then
-        return false
+local function num(val)
+    if val then
+        return 1
+    else
+        return 0
     end
-	
-	if RubimRH.db.profile.mainOption.useTrinkets[1] == false then
-	    return false
-	end
-	
-   	if RubimRH.db.profile.mainOption.useTrinkets[2] == false then
-	    return false
-	end	
-	
-    if RubimRH.db.profile.mainOption.trinketsUsage == "Everything" then
-        return true
-    end
-	
-	if RubimRH.db.profile.mainOption.trinketsUsage == "Boss Only" then
-        if not UnitExists("boss1") then
-            return false
-        end
-
-        if UnitExists("target") and not (UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "rare") then
-            return false
-        end
-    end	
-    return true
 end
 
--- APL Main
-function ShouldDispell()
-    -- Do not dispel these spells
-    local blacklist = {
-        33786,
-        131736,
-        30108,
-        124465,
-        34914
-    }
-
-    local dispelTypes = {
-        "Poison",
-        "Disease",
-        "Magic"
-    }
-    for i = 1, 40 do
-        for x = 1, #dispelTypes do
-            if select(5, UnitDebuff("mouseover", i)) == dispelTypes[x] then
-                for i = 1, #blacklist do
-                    if UnitDebuff("mouseover", blacklist[i]) then
-                        return false
-                    end
-                end
-                return true
-            end
-        end
-    end
-    return false
+local function bool(val)
+    return val ~= 0
 end
 
-local function DetermineEssenceRanks()
-	S.ConcentratedFlameHeal = S.ConcentratedFlameHeal2:IsAvailable() and S.ConcentratedFlameHeal2 or S.ConcentratedFlameHeal;
-	S.ConcentratedFlameHeal = S.ConcentratedFlameHeal3:IsAvailable() and S.ConcentratedFlameHeal3 or S.ConcentratedFlameHeal;
-	S.LifeBindersInvocation = S.LifeBindersInvocation2:IsAvailable() and S.LifeBindersInvocation2 or S.OverchargeMana;
-	S.LifeBindersInvocation = S.LifeBindersInvocation3:IsAvailable() and S.LifeBindersInvocation3 or S.OverchargeMana;
-	S.OverchargeMana = S.OverchargeMana2:IsAvailable() and S.OverchargeMana2 or S.OverchargeMana;
-	S.OverchargeMana = S.OverchargeMana3:IsAvailable() and S.OverchargeMana3 or S.OverchargeMana;
-	S.Refreshment = S.Refreshment2:IsAvailable() and S.Refreshment2 or S.Refreshment;
-	S.Refreshment = S.Refreshment3:IsAvailable() and S.Refreshment3 or S.Refreshment;
-	S.OverchargeMana = S.OverchargeMana2:IsAvailable() and S.OverchargeMana2 or S.OverchargeMana;
-	S.OverchargeMana = S.OverchargeMana3:IsAvailable() and S.OverchargeMana3 or S.OverchargeMana;
-	S.MemoryOfLucidDreams = S.MemoryOfLucidDreams2:IsAvailable() and S.MemoryOfLucidDreams2 or S.MemoryOfLucidDreams;
-	S.MemoryOfLucidDreams = S.MemoryOfLucidDreams3:IsAvailable() and S.MemoryOfLucidDreams3 or S.MemoryOfLucidDreams;
+
+
+
+
+
+local function UseItems()
+
+    local trinket1 = GetInventoryItemID("player", 13)
+    local trinket2 = GetInventoryItemID("player", 14)
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+    if trinket1ready then
+        return I.tx1:Cast()
+    end
+    if trinket2ready then
+        return I.tx2:Cast()
+    end
+end
+
+function HealthPotionSelected()
+
+    local HealthPotionIDs = {
+        191380, 191379, 191378
+
+    }
+
+    for _, HealthPotionID in ipairs(HealthPotionIDs) do
+        if Item(HealthPotionID):IsUsable() then
+            return Item(HealthPotionID)
+        end
+    end
 end
 
 local function APL()
-    local DPS, Healing
-    --- Out of Combat    LeftCtrl = IsLeftControlKeyDown();
-    HL.GetEnemies("Melee"); -- Melee
-    HL.GetEnemies(6, true); --
-    LeftCtrl = IsLeftControlKeyDown();
-    LeftShift = IsLeftShiftKeyDown();
-    LeftAlt = IsLeftAltKeyDown();
-	
-    local DPS = function()
 
-		if S.Judgement:IsReady(30) and not Player:Buff(S.AvengingCrusader) then
-			return S.Judgement:Cast()
-		end
+    HL.GetEnemies(5);
+    HL.GetEnemies("Melee");
+    HL.GetEnemies(8);
+    HL.GetEnemies(10);
+    HL.GetEnemies(12);
+    HL.GetEnemies(15);
+    HL.GetEnemies(20);
+    HL.GetEnemies(25);
+    HL.GetEnemies(30);
+    HL.GetEnemies(35);
+    HL.GetEnemies(40);
+    Enemies5y = Cache.EnemiesCount[5]
+    Enemies8y = Cache.EnemiesCount[8]
+    Enemies10y = Cache.EnemiesCount[10]
+    Enemies12y = Cache.EnemiesCount[12]
+    Enemies15y = Cache.EnemiesCount[15]
+    Enemies20y = Cache.EnemiesCount[20]
+    Enemies25y = Cache.EnemiesCount[25]
+    Enemies30y = Cache.EnemiesCount[30]
+    Enemies35y = Cache.EnemiesCount[35]
+    Enemies40y = Cache.EnemiesCount[40]
 
-		if S.HolyShock:IsReady(40) and not Player:Buff(S.AvengingCrusader) then
-			return S.HolyShock:Cast()
-		end
-		
-		if S.CrusaderStrike:IsReady("Melee") and not Player:Buff(S.AvengingCrusader) then
-			return S.CrusaderStrike:Cast()
-		end
-		
-		if S.Consecration:IsReady("Melee") and not Player:Buff(S.AvengingCrusader) and not Target:Debuff(S.ConsecrationUp) then
-			return S.Consecration:Cast()
-		end
-		
-		if S.Judgement:IsReady(30) and Player:Buff(S.AvengingCrusader) then
-			return S.Judgement:Cast()
-		end
 
-		if S.CrusaderStrike:IsReady() and Player:Buff(S.AvengingCrusader) then
-			return S.CrusaderStrike:Cast()
-		end
-
-        return 0, 135328
-    end
-
-    local Healing = function()
-	
-		DetermineEssenceRanks()
-	
-		--Save yourself
-		if S.DivineShield:IsReady() and Player:HealthPercentage() <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["divine_shield"]["value"] and not Player:Debuff(S.Forbearance) then
-			return S.DivineShield:Cast()
-		end	
-
-        --Tank Emergency
-        if S.LayOnHands:IsReady() and not Target:Debuff(S.Forbearance) then
-            if LowestAlly("TANK", "HP") < RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["tank_layonhands"]["value"] then
-                ForceHealingTarget("TANK")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("TANK", "GUID") and Target:HealthPercentage() < RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["tank_layonhands"]["value"] then
-                return S.LayOnHands:Cast()
-            end
-        end
-		
-		--Custom Beacon
-        if S.BeaconofLight:IsReady() and not Target:BuffRemainsP(S.BeaconofLight) then
-            if LowestAlly(RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["beacon_option"]["value"], "HP") < 99 then
-                ForceHealingTarget(RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["beacon_option"]["value"])
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly(RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["beacon_option"]["value"], "GUID") and Target:HealthPercentage() < 99 then
-                return S.BeaconofLight:Cast()
-            end
-        end
-		--Dispell
-		--if not Player:CanAttack(Target) and S.Cleanse:IsReady() and Target:HasDispelableDebuff("Magic", "Poison", "Disease") then
-			--return S.Cleanse:Cast()
-		--end
-
-    --Manuel Cooldown and not Glimmer of Light
-	if RubimRH.CDsON() and not S.GlimmerofLight:AzeriteEnabled(3) then
-		if S.AvengingWrath:IsReady() and not Player:Buff(S.AuraMastery) and not Player:Buff(S.HolyAvenger) then
-            return S.AvengingWrath:Cast()
-        end
-
-		if S.AvengingCrusader:IsReady() and not Player:Buff(S.AuraMastery) and not Player:Buff(S.HolyAvenger) then
-            return S.AvengingCrusader:Cast()
-        end		
-		
-		if S.HolyAvenger:IsReady() and not Player:Buff(S.AuraMastery) and not Player:Buff(S.AvengingWrath) and not Player:Buff(S.AvengingCrusader) then
-            return S.HolyAvenger:Cast()
-        end
-
-		if S.AuraMastery:IsReady() and not Player:Buff(S.AvengingWrath) and not Player:Buff(S.AvengingCrusader) and not Player:Buff(S.HolyAvenger) then
-			return S.AuraMastery:Cast()
-		end
-		
-		if S.LifeBindersInvocation:IsReady() and RubimRH.AoEHP(85) >= 5 then
-			return S.UnleashHeartofAzeroth:Cast()
-		end
-		
-		if S.OverchargeMana:IsReady() then
-			return S.UnleashHeartofAzeroth:Cast()
-		end
-	end
-		
-		if S.MemoryOfLucidDreams:IsReady() and Player:Mana() < Player:ManaMax() * 0.85 then
-			return S.UnleashHeartofAzeroth:Cast()
-		end
-		
-	--Manuel Cooldown and Glimmer of Light
-	if RubimRH.CDsON() and S.GlimmerofLight:AzeriteEnabled(3) then
-		if S.AvengingWrath:IsReady() and not Player:Buff(S.AuraMastery) and not Player:Buff(S.HolyAvenger) then
-            return S.AvengingWrath:Cast()
-        end
-		
-		if S.HolyAvenger:IsReady() and not Player:Buff(S.AuraMastery) then
-            return S.HolyAvenger:Cast()
-        end
-
-		if S.AuraMastery:IsReady() and not Player:Buff(S.AvengingWrath) and not Player:Buff(S.AvengingCrusader) and not Player:Buff(S.HolyAvenger) then
-			return S.AuraMastery:Cast()
-		end
-		
-		if S.LifeBindersInvocation:IsReady() and RubimRH.AoEHP(85) >= 5 then
-			return S.UnleashHeartofAzeroth:Cast()
-		end
-		
-		if S.OverchargeMana:IsReady() then
-			return S.UnleashHeartofAzeroth:Cast()
-		end
-	end
-		
-		if S.MemoryOfLucidDreams:IsReady() and Player:Mana() < Player:ManaMax() * 0.85 then
-			return S.UnleashHeartofAzeroth:Cast()
-		end
-		
-		--AuraMastery settings
-        if S.AuraMastery:IsReady() and RubimRH.CDsON() and not Player:Buff(S.AvengingWrath) and not Player:Buff(S.AvengingCrusader) and not Player:Buff(S.HolyAvenger) then
-            if RubimRH.AoEHP(RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["health_auramastery"]["value"]) >= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["nb_auramastery"]["value"] then
-                return S.AuraMastery:Cast()
-            end
-        end
-		
-		--Use Trinkets
-        --if I.RevitalizingVoodooTotem:IsReady() then
-            --if LowestAlly("TANK", "HP") < 75 then
-                --ForceHealingTarget("TANK")
-            --end
-            --if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("TANK", "GUID") and Target:HealthPercentage() < 75 then
-                --return S.GiftoftheNaaru:Cast()
-            --end
-        --end
-
-        --Beacon of Virtue
-        if S.BeaconofVirtue:IsReady() and RubimRH.AoEHP(85) >= 3 then
-			return S.BeaconofVirtue:Cast()
-		end
-
-        --Light of Dawn
-        if S.LightofDawn:IsReady() and RubimRH.AoEHP(85) >= 3 then
-			return S.LightofDawn:Cast()
-        end
-
-		--Holy Shock
-        if S.HolyShock:IsReady() then
-            if LowestAlly("ALL", "HP") <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_holyshock"]["value"] then
-                ForceHealingTarget("ALL")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("ALL", "GUID") and Target:HealthPercentage() <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_holyshock"]["value"] then
-                return S.HolyShock:Cast()
-            end
-
-        end
-
-        --Judgment Of Light
-        if RubimRH.AoEON() and S.Judgement:IsReady() and S.JudgementofLight:IsAvailable() and Player:AffectingCombat() then
-            return S.Judgement:Cast()
-        end
-		
-		if RubimRH.AoEON() and S.LightsHammer:IsReady() and RubimRH.AoEHP(75) >= 5 then
-			return S.LightsHammer:Cast()
-		end
-		
-		--Holy Prism
-		if RubimRH.AoEON() and S.HolyPrism:IsReady() and RubimRH.AoEHP(75) >= 3 then
-			return S.HolyPrism:Cast()
-		end
-		
-        --Bestow Faith
-        if S.BestowFaith:IsAvailable() and S.BestowFaith:IsReady() then
-            if LowestAlly("TANK", "HP") <= 95 then
-                ForceHealingTarget("TANK")
-            end
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("TANK", "GUID") and Target:HealthPercentage() <= 95 then
-                return S.BestowFaith:Cast()
-            end
-        end
-		
-		--Concentrated Flame Heal
-        if S.ConcentratedFlameHeal:IsReady() then
-            if LowestAlly("ALL", "HP") <= 75 then
-                ForceHealingTarget("ALL")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("ALL", "GUID") and Target:HealthPercentage() <= 75 then
-                return S.UnleashHeartofAzeroth:Cast()
-            end
-        end
-		
-		--Vitality Conduit
-        if S.VitalityConduit:IsReady() then
-            if LowestAlly("TANK", "HP") <= 75 then
-                ForceHealingTarget("TANK")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("TANK", "GUID") and Target:HealthPercentage() <= 75 then
-                return S.UnleashHeartofAzeroth:Cast()
-            end
-        end
-		
-        --Flash of Light
-        if S.FlashofLight:IsReady() and not Player:IsMoving() then
-            if LowestAlly("ALL", "HP") <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_flashlight"]["value"] then
-                ForceHealingTarget("ALL")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("ALL", "GUID") and Target:HealthPercentage() <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_flashlight"]["value"] then
-                return S.FlashofLight:Cast()
-            end
-        end
-
-        --Crusader Strike
-        if RubimRH.AoEON() and S.CrusaderStrike:IsReady() and S.CrusadersMight:IsAvailable() and not S.HolyShock:IsReady() and Player:AffectingCombat() then
-            return S.CrusaderStrike:Cast()
-        end
-
-        --Holy Light
-        if S.HolyLight:IsReady() and not Player:IsMoving() then
-            if LowestAlly("ALL", "HP") <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_holylight"]["value"] then
-                ForceHealingTarget("ALL")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("ALL", "GUID") and Target:HealthPercentage() <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_holylight"]["value"] then
-                return S.HolyLight:Cast()
-            end
-        end
-		
-        --Light of the Martyr
-        if S.LightoftheMartyr:IsReady() and Player:IsMoving() and Player:HealthPercentage() > 75 then
-            if LowestAlly("ALL", "HP") <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_martyr"]["value"] then
-                ForceHealingTarget("ALL")
-            end
-
-            if not BadDebuffOnTarget() and Target:GUID() == LowestAlly("ALL", "GUID") and Target:HealthPercentage() < RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["raid_martyr"]["value"] then
-                return S.LightoftheMartyr:Cast()
-            end
-        end
-
-    end
-	
-    if QueueSkill() ~= nil then
-		return QueueSkill()
-    end
-
+    -- Spell Queue
     if Player:IsChanneling() or Player:IsCasting() then
-        return 0, 236353
-    end
-	
-    if not UnitIsDead("target") and Player:CanAttack(Target) then
-        return DPS()
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     end
 
-    if Healing() ~= nil then
-        return Healing()
+
+    if S.LayonHands:IsReady() and Player:HealthPercentage() <= 20 and not Player:Debuff(S.Forbearance) and
+        S.DivineShield:CooldownRemains() > Player:GCD() then
+        return S.LayonHands:Cast()
+    end
+
+    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+    end
+
+
+
+    if RubimRH.CDsON() and Target:IsInRange(8) then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
+    end
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if S.FlashofLight:IsCastable() and (Player:InArena() or Player:InBattlegrounds()) and Player:HealthPercentage() < 50
+        and Player:BuffStackP(S.SelfLessHealerBuff) == 4 then
+        return S.FlashofLight:Cast()
+    end
+
+    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+        return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+    end
+
+    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+        (
+        Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
+            Player:Debuff(S.lust5)) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
+
+
+
+    if S.DivineShield:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+    if S.BlessingofProtection:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+    if S.LayonHands:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) or
+        S.LayonHands:ID() == RubimRH.queuedSpell[1]:ID() and Player:InArena() then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
+    if S.DivineSteed:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffP(S.DivineSteedBuff) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
+    if RubimRH.QueuedSpell():IsReadyQueue() then
+        return RubimRH.QueuedSpell():Cast()
+    end
+
+    if not RubimRH.queuedSpell[1]:CooldownUp() or Cache.EnemiesCount[20] == 0 or not Player:AffectingCombat() then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
+
+
+
+    if S.DivineShield:IsReady() and Player:HealthPercentage() <= 50 and not Player:Debuff(S.Forbearance) and Player:InArena() then
+        return S.DivineShield:Cast()
+    end
+
+    if S.DivineShield:IsReady() and Player:HealthPercentage() <= 40 and not Player:Debuff(S.Forbearance) then
+        return S.DivineShield:Cast()
+    end
+
+    if S.LayonHands:IsReady() and Player:HealthPercentage() <= 20 and not Player:Debuff(S.Forbearance) and
+        not Player:InArena() and S.DivineShield:CooldownRemains() > Player:GCD() then
+        return S.LayonHands:Cast()
+    end
+
+
+
+
+
+        if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
+            RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() then
+            return S.Rebuke:Cast()
+        end
+
+
+
+
+
+    -- Out of Combat
+    if not Player:AffectingCombat() then
+
+
+        if RubimRH.QueuedSpell():IsReadyQueue() then
+            return RubimRH.QueuedSpell():Cast()
+        end
+
+        if not RubimRH.queuedSpell[1]:CooldownUp() or Cache.EnemiesCount[20] == 0 or not Player:AffectingCombat() then
+            RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\prot.tga"
+
     end
 
     return 0, 135328
 end
+
 RubimRH.Rotation.SetAPL(65, APL);
 
 local function PASSIVE()
 
-    if S.DivineShield:IsReady() and Player:HealthPercentage() <= RubimRH.db.profile.mainOption.classprofiles[65][RubimRH.db.profile.mainOption.selectedProfile]["divine_shield"]["value"] and not Player:Debuff(S.Forbearance) then
-        return S.DivineShield:Cast()
-    end
-
-    return RubimRH.Shared()
 end
+
 RubimRH.Rotation.SetPASSIVE(65, PASSIVE);

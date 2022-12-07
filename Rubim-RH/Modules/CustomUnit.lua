@@ -356,12 +356,12 @@ function RubimRH.UNITBoss(unitID)
 end 
 
 local HealerSpecs = {
-    [105] = true, -- Restoration(druid)
-    [270] = true, -- Mistweaver
-    [65] = true, -- Holy
-    [256] = true, -- Discipline
-    [257] = true, -- Holy
-    [264] = true -- Restoration(shaman)
+    -- [105] = true, -- Restoration(druid)
+    -- [270] = true, -- Mistweaver
+    -- [65] = true, -- Holy
+    -- [256] = true, -- Discipline
+    -- [257] = true, -- Holy
+    -- [264] = true -- Restoration(shaman)
 }
 
 -- @return boolean
@@ -608,7 +608,7 @@ local RangedSpecs = {
     [63] = true, -- Fire
     [64] = true, -- Frost
     [270] = true, -- Mistweaver
-    [65] = true, -- Holy
+    -- [65] = true, -- Holy
     [256] = true, -- Discipline
     [257] = true, -- Holy
     [258] = true, -- Shadow

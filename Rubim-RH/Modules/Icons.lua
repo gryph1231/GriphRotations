@@ -44,18 +44,18 @@ UIDropDownMenu_Initialize(dropDown, function(self, level, menuList)
         end
         UIDropDownMenu_AddButton(info)
         --
-        if RubimRH.playerSpec == 65 then
-            info.text, info.hasArrow = "Pure DPS", nil
-            info.checked = RubimRH.db.profile[65].dps
-            info.func = function(self)
-                if RubimRH.db.profile[65].dps then
-                    RubimRH.db.profile[65].dps = false
-                else
-                    RubimRH.db.profile[65].dps = true
-                end
-            end
-            UIDropDownMenu_AddButton(info)
-        end
+        -- if RubimRH.playerSpec == 65 then
+        --     info.text, info.hasArrow = "Pure DPS", nil
+        --     info.checked = RubimRH.db.profile[65].dps
+        --     info.func = function(self)
+        --         if RubimRH.db.profile[65].dps then
+        --             RubimRH.db.profile[65].dps = false
+        --         else
+        --             RubimRH.db.profile[65].dps = true
+        --         end
+        --     end
+        --     UIDropDownMenu_AddButton(info)
+        -- end
         --
         if RubimPvP ~= nil then
             info.text, info.hasArrow = "PVP: Smart Cleave", nil
@@ -295,16 +295,18 @@ local function createIcon(loopVar, xOffset, description)
             SkillFramesArray[loopVar]:SetAlpha(0.2)
         end
     else
-        local newIcon = CreateFrame("Frame", "SkillFrame" .. loopVar, Icons.MainIcon)
+        -- Icons.MainIcon = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+
+        local newIcon = CreateFrame("Frame",nil,UIParent, "BackdropTemplate")
         table.insert(SkillFramesArray, newIcon)
         RubimRH.appendTooltip(SkillFramesArray[#SkillFramesArray], description)
         newIcon:Hide()
         newIcon:SetBackdrop(nil)
         newIcon:SetFrameStrata("BACKGROUND")
-        --IconRotation:SetSize(18, 18)
+        -- IconRotation:SetSize(18, 18)
         newIcon:SetSize(40, 40)
-        --IconRotation:SetPoint("TOPLEFT", 19, 6)
-        --IconRotation:SetPoint("TOPLEFT", 50, 6)
+        -- IconRotation:SetPoint("TOPLEFT", 19, 6)
+        -- IconRotation:SetPoint("TOPLEFT", 50, 6)
         newIcon:SetPoint("LEFT", xOffset, 0)
         newIcon.texture = newIcon:CreateTexture(nil, "BACKGROUND")
         newIcon.texture:SetAllPoints(true)

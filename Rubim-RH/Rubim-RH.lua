@@ -282,27 +282,27 @@ local defaults = {
 			    [105] = {	
 						["Default"] = {
 						
-						              ["raid_rejuv"] = {value = 97},
-						              ["raid_germi"] = {value = 95},
-						              ["raid_wildg"] = {value = 96},
-						              ["raid_cenar"] = {value = 40},
-						              ["raid_efflo"] = {value = 80},
-						              ["raid_regro"] = {value = 40},
-						              ["raid_swift"] = {value = 50},
+						            --   ["raid_rejuv"] = {value = 97},
+						            --   ["raid_germi"] = {value = 95},
+						            --   ["raid_wildg"] = {value = 96},
+						            --   ["raid_cenar"] = {value = 40},
+						            --   ["raid_efflo"] = {value = 80},
+						            --   ["raid_regro"] = {value = 40},
+						            --   ["raid_swift"] = {value = 50},
  						              
-									  ["tank_rejuv"] = {value = 97},
-						              ["tank_germi"] = {value = 95},
-						              ["tank_cenar"] = {value = 40},
-						              ["tank_regro"] = {value = 40},
-						              ["tank_swift"] = {value = 50},
- 						              ["tank_bark"] = {value = 30},
-   						              ["tank_lifebloom"] = {value = 95},									  
-									  ["nb_flourish"] = {value = 5},
-									  ["health_flourish"] = {value = 40},
-									  ["nb_tranqui"] = {value = 8},
-									  ["health_tranqui"] = {value = 35},
-									  ["lifebloom"] = {value = "TANK"},	
-						              --["cd_flourish"] = {value = 5},									  
+									--   ["tank_rejuv"] = {value = 97},
+						            --   ["tank_germi"] = {value = 95},
+						            --   ["tank_cenar"] = {value = 40},
+						            --   ["tank_regro"] = {value = 40},
+						            --   ["tank_swift"] = {value = 50},
+ 						            --   ["tank_bark"] = {value = 30},
+   						            --   ["tank_lifebloom"] = {value = 95},									  
+									--   ["nb_flourish"] = {value = 5},
+									--   ["health_flourish"] = {value = 40},
+									--   ["nb_tranqui"] = {value = 8},
+									--   ["health_tranqui"] = {value = 35},
+									--   ["lifebloom"] = {value = "TANK"},	
+						            --   --["cd_flourish"] = {value = 5},									  
 									  
 						              },							
 						
@@ -311,23 +311,23 @@ local defaults = {
 			    [65] = {	
 						["Default"] = {
 						
-						              ["raid_flashlight"] = {value = 75},
-						              ["raid_holylight"] = {value = 90},
-						              ["raid_holyshock"] = {value = 90},
-						              ["raid_martyr"] = {value = 75},
- 						              ["raid_lightofdawn"] = {value = 85},
+						            --   ["raid_flashlight"] = {value = 75},
+						            --   ["raid_holylight"] = {value = 90},
+						            --   ["raid_holyshock"] = {value = 90},
+						            --   ["raid_martyr"] = {value = 75},
+ 						            --   ["raid_lightofdawn"] = {value = 85},
 									  
-									  ["tank_flashlight"] = {value = 97},
-						              ["tank_holylight"] = {value = 95},
-						              ["tank_holyshock"] = {value = 40},
-						              ["tank_martyr"] = {value = 40},									  
-						              ["tank_layonhands"] = {value = 25},	
-									  ["divine_shield"] = {value = 25},	
-									  ["beacon_option"] = {value = "TANK"},	
-									  ["nb_auramastery"] = {value = 5},	
-									  ["health_auramastery"] = {value = 50},
-									  ["divine_protection"] = {value = 50},
-									  ["lay_on_hands"] = {value = 15},
+									--   ["tank_flashlight"] = {value = 97},
+						            --   ["tank_holylight"] = {value = 95},
+						            --   ["tank_holyshock"] = {value = 40},
+						            --   ["tank_martyr"] = {value = 40},									  
+						            --   ["tank_layonhands"] = {value = 25},	
+									--   ["divine_shield"] = {value = 25},	
+									--   ["beacon_option"] = {value = "TANK"},	
+									--   ["nb_auramastery"] = {value = 5},	
+									--   ["health_auramastery"] = {value = 50},
+									--   ["divine_protection"] = {value = 50},
+									--   ["lay_on_hands"] = {value = 15},
 									  
 						              },							
 						
@@ -541,19 +541,19 @@ local defaults = {
             SoVOpener = false,
         },
         [Holy] = {
-            dps = false,
-            cooldown = true,
-            sk1 = 50,
-            sk1id = 498,
-            sk1tooltip = "Percent HP to use Divine Protection",
+            -- dps = false,
+            -- cooldown = true,
+            -- sk1 = 50,
+            -- sk1id = 498,
+            -- sk1tooltip = "Percent HP to use Divine Protection",
 			
-            sk2 = 30,
-            sk2id = 642,
-            sk2tooltip = "Percent HP to use Divine Shield",
+            -- sk2 = 30,
+            -- sk2id = 642,
+            -- sk2tooltip = "Percent HP to use Divine Shield",
 
-            sk3 = 15, --
-            sk3id = 633, --Lay on HAnds
-            sk3tooltip = "Percent HP to use Lay on Hands",
+            -- sk3 = 15, --
+            -- sk3id = 633, --Lay on HAnds
+            -- sk3tooltip = "Percent HP to use Lay on Hands",
 
 
         },
@@ -1025,9 +1025,9 @@ updateClassVariables:SetScript("OnEvent", function(self, event, ...)
         return
     end
 
-    --if RubimRH.playerSpec ~= 0 then
-    --        Player:RegisterListenedSpells(RubimRH.playerSpec)
-    --    end
+    if RubimRH.playerSpec ~= 0 then
+           Player:RegisterListenedSpells(RubimRH.playerSpec)
+       end
     RubimRH.config = {}
     RubimRH.allSpells = {}
     if RubimRH.playerSpec ~= 0 then
@@ -1098,7 +1098,8 @@ if RubimRH.playerSpec == 105 or RubimRH.playerSpec == 65 or RubimRH.playerSpec =
         RubimRH.db.profile[RubimRH.playerSpec] = RubimRH.db.profile.mainOption.classprofiles[RubimRH.playerSpec][RubimRH.db.profile.mainOption.selectedProfile]
 	end
 end
-    --endd
+    --end
+    
     if UnitInVehicle("Player") then
         return 0, 236254
     end
@@ -1127,7 +1128,7 @@ end
         return 0, 975746
     end
 
-    --
+    
     --UpdateCleave()
     --UpdateCD()
 

@@ -26,12 +26,6 @@ RubimRH.Spell[66] = {
     wristsx = Spell(255647), -- lights judgmenet
     tempestofthelightbringer = Spell(383396),
 
-    lust1                    = Spell(57724),
-    lust2                    = Spell(57723),
-    lust3                    = Spell(80354),
-    lust4                    = Spell(95809),
-    lust5                    = Spell(264689),
-    lustAT                   = Spell(265221), -- fireblood
     DivineSteedBuff          = Spell(221883),
     BlessingofProtection     = Spell(1022),
     Forbearance              = Spell(25771),
@@ -53,7 +47,6 @@ RubimRH.Spell[66] = {
     FlashofLight             = Spell(19750),
     HammerofJustice          = Spell(853),
     HandofReckoning          = Spell(62124),
-    Judgment                 = Spell(20271),
     Rebuke                   = Spell(96231),
     ShieldoftheRighteous     = Spell(53600),
     WordofGlory              = Spell(85673),
@@ -109,7 +102,6 @@ RubimRH.Spell[66] = {
     -- Legendary Effects
     DivineResonanceBuff         = Spell(355455),
     FinalVerdictBuff            = Spell(337228),
-    JudgmentDebuff              = Spell(197277),
     -- Pool
 
     -- Pool                                  = Spell(999910),
@@ -130,7 +122,7 @@ RubimRH.Spell[66] = {
     ArdentDefenderBuff         = Spell(31850),
     AvengersShield             = Spell(31935),
     GuardianofAncientKings     = Spell(86659),
-    GuardianofAncientKingsBuff = Spell(86659),
+
     HammeroftheRighteous       = Spell(53595),
     Judgment                   = Spell(275779),
     JudgmentDebuff             = Spell(197277),
@@ -257,20 +249,31 @@ end
 --- ======= ACTION LISTS =======
 local function APL()
 
+    ActiveMitigationNeeded = Player:ActiveMitigationNeeded()
+    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+  
 
-    HL.GetEnemies("Melee");
     HL.GetEnemies(5);
-    HL.GetEnemies(6);
+    HL.GetEnemies("Melee");
     HL.GetEnemies(8);
-    HL.GetEnemies(9);
     HL.GetEnemies(10);
-    HL.GetEnemies(11);
     HL.GetEnemies(12);
-    HL.GetEnemies(14);
-    HL.GetEnemies(16);
+    HL.GetEnemies(15);
     HL.GetEnemies(20);
     HL.GetEnemies(25);
     HL.GetEnemies(30);
+    HL.GetEnemies(35);
+    HL.GetEnemies(40);
+    Enemies5y = Cache.EnemiesCount[5]
+    Enemies8y = Cache.EnemiesCount[8]
+    Enemies10y = Cache.EnemiesCount[10]
+    Enemies12y = Cache.EnemiesCount[12]
+    Enemies15y = Cache.EnemiesCount[15]
+    Enemies20y = Cache.EnemiesCount[20]
+    Enemies25y = Cache.EnemiesCount[25]
+    Enemies30y = Cache.EnemiesCount[30]
+    Enemies35y = Cache.EnemiesCount[35]
+    Enemies40y = Cache.EnemiesCount[40]
     allMobsinRange()
     tarSpeed, _, _, _ = GetUnitSpeed('target')
 
@@ -291,7 +294,6 @@ local function APL()
         if ShouldReturn then return ShouldReturn; end
     end
 
-    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
     if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
         GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
@@ -373,9 +375,56 @@ local function APL()
         return S.autoattack:Cast()
     end
 
+if Player:AffectingCombat() then 
+
+        if Player:HealthPercentage() <= 20  and not Player:Debuff(S.Forbearance) and S.LayonHands:IsCastable() and Cache.EnemiesCount[30] >= 1 then
+            return S.LayonHands:Cast()
+    end
+      
+        if S.GuardianofAncientKings:IsCastable() and
+        Cache.EnemiesCount[10] >= 1 and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) 
+        and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
+            return S.GuardianofAncientKings:Cast()
+    end
+        if S.ArdentDefender:IsCastable() and
+        Cache.EnemiesCount[10] >= 1 and (Player:NeedMajorHealing() or Player:HealthPercentage()<50) 
+        and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
+            return S.ArdentDefender:Cast()
+    end
+
+        if S.EyeofTyr:IsCastable() and
+        Cache.EnemiesCount[10] >= 1  and (Player:NeedMajorHealing() or Player:HealthPercentage()<85 
+        or ActiveMitigationNeeded and not Player:Buff(S.ShieldoftheRighteousBuff)) 
+        and (Cache.EnemiesCount[8] >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
+           return S.EyeofTyr:Cast()
+    end
+
+    if S.DivineShield:IsCastable() and
+        Cache.EnemiesCount[10] >= 1  and (Player:NeedPanicHealing() or Player:HealthPercentage()<20) and not Player:Buff(S.ArdentDefenderBuff) 
+        and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
+        and S.ArdentDefender:CooldownRemains()>Player:GCD() and S.LayonHands:CooldownRemains()>Player:GCD() then
+      return S.DivineShield:Cast()
+    end
+      
+        -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
+        if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and 
+          (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLightFreeBuff)) then
+        return S.WordofGlory:Cast()
+        end
+        
+      
+        if S.ShieldoftheRighteous:IsReady() and Target:IsInRange(5) 
+        and (Player:BuffRefreshable(S.ShieldoftheRighteousBuff) 
+        and (ActiveMitigationNeeded 
+        or Player:HealthPercentage() <=80)) then
+            return S.ShieldoftheRighteous:Cast()
+        end
+
+    end
 
 
-    if S.ArdentDefender:IsReadyP() and Player:AffectingCombat() and not Player:Buff(S.GuardianofAncientKings) and
+    if S.ArdentDefender:IsReadyP() and Player:AffectingCombat() and
+    not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and
         (Player:NeedPanicHealing() or Player:NeedMajorHealing()) and Player:HealthPercentage() <= 35 and
         Cache.EnemiesCount[10] >= 1 then
         return S.ArdentDefender:Cast()
@@ -383,12 +432,14 @@ local function APL()
 
 
     if S.ArdentDefender:IsReadyP() and not Player:Buff(S.GuardianofAncientKings) and
+    not Player:Buff(S.DivineShield) and
         (Player:NeedPanicHealing() or Player:NeedMajorHealing()) and Player:HealthPercentage() <= 25 and
         (S.LayonHands:CooldownRemains() > 1 or not Player:InArena()) and Cache.EnemiesCount[10] >= 1 then
         return S.ArdentDefender:Cast()
     end
 
     if S.ArdentDefender:IsReadyP() and Cache.EnemiesCount[10] >= 1 and Player:HealthPercentage() <= 60 and
+    not Player:Buff(S.DivineShield) and
         not Player:Buff(S.GuardianofAncientKings) and (Player:NeedPanicHealing() or Player:NeedMajorHealing()) then
         return S.ArdentDefender:Cast()
     end
@@ -402,7 +453,7 @@ local function APL()
     end
 
 
-    if S.EyeofTyr:IsCastable() and (Player:NeedMajorHealing() or Player:HealthPercentage()<85) and (Cache.EnemiesCount[8]>= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKingsBuff) then
+    if S.EyeofTyr:IsCastable() and (Player:NeedMajorHealing() or Player:HealthPercentage()<85) and (Cache.EnemiesCount[8]>= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
         return S.EyeofTyr:Cast()
       end
     
@@ -463,7 +514,7 @@ local function APL()
         end
 
 
-        if S.AvengingWrath:IsReadyP() and Player:BuffDownP(S.AvengingWrathBuff) then
+        if S.AvengingWrath:IsReadyP() and not Player:BuffP(S.AvengingWrathBuff) then
             return S.AvengingWrath:Cast()
         end
 
@@ -553,12 +604,12 @@ local function APL()
     end
     -- divine_toll
 
-    if S.DivineToll:IsReadyP() and Cache.EnemiesCount[16] >= 3 and Target:IsInRange(30) and RubimRH.CDsON() and
+    if S.DivineToll:IsReadyP() and Cache.EnemiesCount[15] >= 3 and Target:IsInRange(30) and RubimRH.CDsON() and
         (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 0) then
         return S.DivineToll:Cast()
     end
 
-    if S.AvengersShield:IsReadyP() and Cache.EnemiesCount[16] >= 3 and Target:IsInRange(30) then
+    if S.AvengersShield:IsReadyP() and Cache.EnemiesCount[15] >= 3 and Target:IsInRange(30) then
         return S.AvengersShield:Cast()
     end
 
@@ -609,7 +660,7 @@ local function APL()
     end
 
     -- hammer_of_the_righteous,if=charges=2
-    if S.HammeroftheRighteous:IsReadyP() and Cache.EnemiesCount[12] >= 1 and
+    if S.HammeroftheRighteous:IsReadyP() and Cache.EnemiesCount[10] >= 1 and Target:IsInRange(8) and 
         S.HammeroftheRighteous:ChargesFractional() >= 2.9 then
         return S.HammeroftheRighteous:Cast()
     end
@@ -623,7 +674,7 @@ local function APL()
 
 
     -- hammer_of_the_righteous
-    if S.HammeroftheRighteous:IsReadyP() and Cache.EnemiesCount[10] >= 1 then
+    if S.HammeroftheRighteous:IsReadyP() and Cache.EnemiesCount[10] >= 1 and Target:IsInRange(8) then
         return S.HammeroftheRighteous:Cast()
     end
 

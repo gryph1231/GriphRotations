@@ -288,20 +288,28 @@ end
 local function APL()
     ConsecrationTime()
     ComputeTimeToHPG()
-    HL.GetEnemies("Melee");
     HL.GetEnemies(5);
-    HL.GetEnemies(6);
+    HL.GetEnemies("Melee");
     HL.GetEnemies(8);
-    HL.GetEnemies(9);
     HL.GetEnemies(10);
-    HL.GetEnemies(11);
     HL.GetEnemies(12);
     HL.GetEnemies(15);
-    HL.GetEnemies(14);
-    HL.GetEnemies(16);
     HL.GetEnemies(20);
     HL.GetEnemies(25);
     HL.GetEnemies(30);
+    HL.GetEnemies(35);
+    HL.GetEnemies(40);
+    Enemies5y = Cache.EnemiesCount[5]
+    Enemies8y = Cache.EnemiesCount[8]
+    Enemies10y = Cache.EnemiesCount[10]
+    Enemies12y = Cache.EnemiesCount[12]
+    Enemies15y = Cache.EnemiesCount[15]
+    Enemies20y = Cache.EnemiesCount[20]
+    Enemies25y = Cache.EnemiesCount[25]
+    Enemies30y = Cache.EnemiesCount[30]
+    Enemies35y = Cache.EnemiesCount[35]
+    Enemies40y = Cache.EnemiesCount[40]
+
     allMobsinRange()
     tarSpeed, _, _, _ = GetUnitSpeed('target')
     consecrationdrop = Target:IsInRange(8) and
@@ -619,7 +627,7 @@ local function APL()
                         S.ExecutionSentence:CooldownRemainsP() > Player:GCD() * 3 and
                         (
                         (
-                            Cache.EnemiesCount[14] <= 3 and I.tempest:IsEquipped() or
+                            Cache.EnemiesCount[15] <= 3 and I.tempest:IsEquipped() or
                                 Cache.EnemiesCount[10] <= 3 and not I.tempest:IsEquipped()) or not RubimRH.AoEON()))
                     -- and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemainsP()>Player:GCD()*3 or not RubimRH.CDsON())
                     --	and (and not S.Necrolord:Convenant or S.VanquishersHammer:CooldownRemainsP()>Player:GCD())
@@ -640,18 +648,18 @@ local function APL()
                 if S.AvengingWrath:IsReadyP() and Player:BuffDownP(S.AvengingWrath) and RubimRH.CDsON()
                     and (Player:HolyPower() >= 3 or S.HolyAvenger:IsAvailable() and S.HolyAvenger:CooldownRemainsP() == 0
                     )
-                    and Cache.EnemiesCount[14] >= 3 then
+                    and Cache.EnemiesCount[15] >= 3 then
                     return S.AvengingWrath:Cast()
                 end
 
                 if S.Crusade:IsReadyP() and Player:BuffDownP(S.Crusade) and RubimRH.CDsON()
                     and (Player:HolyPower() >= 3 or S.HolyAvenger:IsAvailable()
-                        and S.HolyAvenger:CooldownRemainsP() == 0) and Cache.EnemiesCount[14] >= 3 then
+                        and S.HolyAvenger:CooldownRemainsP() == 0) and Cache.EnemiesCount[15] >= 3 then
                     return S.Crusade:Cast()
                 end
 
                 if S.DivineToll:IsCastable() and RubimRH.CDsON() and Player:HolyPower() <= 2 and
-                    Cache.EnemiesCount[14] >= 3
+                    Cache.EnemiesCount[15] >= 3
                     and not Player:PrevGCD(1, S.Judgment) then
                     return S.DivineToll:Cast()
                 end
@@ -706,9 +714,9 @@ local function APL()
             if S.DivineToll:IsCastable() and RubimRH.CDsON() and (
                 Player:HolyPower() <= 2 and not Target:Debuff(S.JudgmentDebuff) and
                     (not S.Seraphim:IsAvailable() or Player:Buff(S.Seraphim))
-                    and Cache.EnemiesCount[14] >= 1
+                    and Cache.EnemiesCount[15] >= 1
                     and not S.FinalReckoning:IsAvailable() and
-                    (not S.ExecutionSentence:IsAvailable() or Target:TimeToDie() < 8 or Cache.EnemiesCount[14] >= 5)
+                    (not S.ExecutionSentence:IsAvailable() or Target:TimeToDie() < 8 or Cache.EnemiesCount[15] >= 5)
                     and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15 or
                         Target:TimeToDie() < 8)) then
                 return S.DivineToll:Cast()

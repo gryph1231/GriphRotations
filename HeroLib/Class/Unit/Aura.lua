@@ -156,49 +156,11 @@ function Unit:BuffStackP(Spell, AnyCaster, Offset)
 end
 
 -- buff.foo.refreshable (doesn't exists on SimC atm tho)
-function Unit:BuffRefreshable(Spell, PandemicThreshold, AnyCaster, Offset)
-  return self:BuffRemains(Spell, AnyCaster, Offset) <= PandemicThreshold
-end
+function Unit:BuffRefreshable(ThisSpell, AnyCaster, BypassRecovery)
+  local PandemicThreshold = ThisSpell:PandemicThreshold()
 
---[[*
-  * @function Unit:BuffRefreshableP
-  * @override Unit:BuffRefreshable
-  * @desc Offset defaulted to "Auto" which is ideal in most cases to improve the prediction.
-  *
-  * @param {string|number} [Offset="Auto"]
-  *
-  * @returns {number}
-  *]]
-function Unit:BuffRefreshableP(Spell, PandemicThreshold, AnyCaster, Offset)
-  return self:BuffRefreshable(Spell, PandemicThreshold, AnyCaster, Offset or "Auto")
+  return self:BuffRemains(ThisSpell, AnyCaster, BypassRecovery) <= PandemicThreshold
 end
-
---[[*
-  * @function Unit:BuffRefreshableC
-  * @override Unit:BuffRefreshable
-  * @desc Automaticaly calculates the pandemicThreshold from enum table.
-  *
-  * @param
-  *
-  * @returns {number}
-  *]]
-function Unit:BuffRefreshableC(Spell, AnyCaster, Offset)
-  return self:BuffRefreshable(Spell, Spell:PandemicThreshold(), AnyCaster, Offset)
-end
-
---[[*
-  * @function Unit:BuffRefreshableCP
-  * @override Unit:BuffRefreshableP
-  * @desc Automaticaly calculates the pandemicThreshold from enum table with prediction.
-  *
-  * @param
-  *
-  * @returns {number}
-  *]]
-function Unit:BuffRefreshableCP(Spell, AnyCaster, Offset)
-  return self:BuffRefreshableP(Spell, Spell:PandemicThreshold(), AnyCaster, Offset)
-end
-
 -- hot.foo.ticks_remain
 function Unit:BuffTicksRemainP(Spell)
   local Remains = self:BuffRemainsP(Spell)

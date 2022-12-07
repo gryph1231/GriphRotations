@@ -101,14 +101,10 @@ local S = RubimRH.Spell[1467]
 
 if not Item.Evoker then Item.Evoker = {}; end
 Item.Evoker.Balance = {
-    -- Legendaries
-	trink2 = Item(159617, { 13, 14 }),
+    HPIcon = Item(169451),
+    tx1 = Item(118330),
+    tx2 = Item(114616),
 
-	trink = Item(169311, { 13, 14 }),
-
-	lust = Item(164978),
-       healingpot = Item(169451), --astral healing pot
-    healthstone = Item(5512), --health stone
 	
 };
 local I = Item.Evoker.Balance;
@@ -140,132 +136,35 @@ local function bool(val)
     return val
 end
 
+function HealthPotionSelected()
 
-local function GetEnemiesCount(range)
-  -- Unit Update - Update differently depending on if splash data is being used
-  if RubimRH.AoEON() then
-    if RubimRH.db.profile[1467].useSplashData == "Enabled" then
-      HL.GetEnemies(range, nil, true, Target)
-      return Cache.EnemiesCount[range]
-    else
-      UpdateRanges()
-      return active_enemies()
-    end
-  else
-    return 1
-  end
-end
+    local HealthPotionIDs = {
+        191380, 191379, 191378
 
-local function FutureAstralPower()
-    local AstralPower = Player:AstralPower()
-    if not Player:IsCasting() then
-        return AstralPower
-    else
-        if Player:IsCasting(S.NewnMoon) then
-            return AstralPower + 10
-        elseif Player:IsCasting(S.HalfMoon) then
-            return AstralPower + 20
-        elseif Player:IsCasting(S.FullMoon) then
-            return AstralPower + 40
-        elseif Player:IsCasting(S.StellarFlare) then
-            return AstralPower + 8
-        elseif Player:IsCasting(S.Wrath) then
-            return AstralPower + 8
-        elseif Player:IsCasting(S.Starfire) then
-            return AstralPower + 12
-        else
-            return AstralPower
+    }
+
+    for _, HealthPotionID in ipairs(HealthPotionIDs) do
+        if Item(HealthPotionID):IsUsable() then
+            return Item(HealthPotionID)
         end
     end
 end
 
+local function UseItems()
 
-
-local function CaInc()
-  return S.Incarnation:IsAvailable() and S.Incarnation or S.CelestialAlignment
-end
-
-local function AP_Check(spell)
-  local APGen = 0
-  local CurAP = Player:AstralPower()
-  if spell == S.Sunfire or spell == S.Moonfire then 
-    APGen = 3
-  elseif spell == S.StellarFlare or spell == S.Wrath then
-    APGen = 8
-  elseif spell == S.Incarnation or spell == S.CelestialAlignment then
-    APGen = 40
-  elseif spell == S.ForceofNature then
-    APGen = 20
-  elseif spell == S.Starfire then
-    APGen = 12
+    local trinket1 = GetInventoryItemID("player", 13) 
+    local trinket2 = GetInventoryItemID("player", 14) 
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+    
+      if trinket1ready then
+          return I.tx1:Cast()      
+        end
+      if trinket2ready then
+          return I.tx2:Cast()
+      end
   end
-  
-  if S.ShootingStars:IsAvailable() then 
-    APGen = APGen + 4
-  end
-  if S.NaturesBalance:IsAvailable() then
-    APGen = APGen + 2
-  end
-  
-  if CurAP + APGen < Player:AstralPowerMax() then
-    return true
-  else
-    return false
-  end
-end
 
--- Variables
-local VarAzSs = 0;
-local VarAzAp = 0;
-local VarSfTargets = 0;
-
-HL:RegisterForEvent(function()
-  VarAzSs = 0
-  VarAzAp = 0
-  VarSfTargets = 0
-end, "PLAYER_REGEN_ENABLED")
-
--- Enrage debuff function
-local function HasDispellableEnrage()
-    if Target:HasBuffList(RubimRH.List.PvEEnragePurge) then
-        return true
-	else 
-	    return false
-    end
-end
-
-local function GetEnemiesCount(range)
-    if range == nil then range = 10 end
-	 -- Unit Update - Update differently depending on if splash data is being used
-	if RubimRH.AoEON() then       
-	        if RubimRH.db.profile[62].useSplashData == "Enabled" then	
-                HL.GetEnemies(range, nil, true, Target)
-                return Cache.EnemiesCount[range]
-            else
-                return active_enemies()
-            end
-    else
-        return 1
-    end
-end
-
-
-
-
-
-local function EvaluateCycleSunfire(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.SunfireDebuff)) and (AP_Check(S.Sunfire) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) * EnemiesCount >= math.ceil (math.floor (2 / EnemiesCount) * 1.5) + 2 * EnemiesCount and (EnemiesCount > 1 + num(S.TwinMoons:IsAvailable()) or TargetUnit:DebuffP(S.MoonfireDebuff)) and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.Sunfire)) and (Player:BuffRemainsP(CaInc()) > TargetUnit:DebuffRemainsP(S.SunfireDebuff) or not Player:BuffP(CaInc())))
-end
-
-local function EvaluateCycleMoonfire(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.MoonfireDebuff)) and (AP_Check(S.Moonfire) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) * EnemiesCount >= 6 and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.Moonfire)) and (Player:BuffRemainsP(CaInc()) > TargetUnit:DebuffRemainsP(S.MoonfireDebuff) or not Player:BuffP(CaInc())))
-end
-
-local function EvaluateCycleStellarFlare(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.StellarFlareDebuff)) and (AP_Check(S.StellarFlare) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) >= 5 and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.StellarFlare)) and not Player:IsCasting(S.StellarFlare))
-end
-
-local dotrequirements
 
 local function APL()
 
@@ -285,39 +184,26 @@ local function APL()
     LeftAlt = IsLeftAltKeyDown();
 
 
-    if I.healingpot:IsReady() and Player:HealthPercentage() <= 35 and Player:AffectingCombat() then
-        return S.healingpot:Cast()
-    end
 
-	-- if (Player:IsCasting(S.Wrath) or Player:IsCasting(S.Starfire)) and Player:AstralPower()>90 then
-		-- return S.stopcasting:Cast()
-    -- end	
-	
-	-- if Player:IsCasting(S.Starfire) and not Player:BuffP(S.EclipseLunar) and Player:BuffP(S.EclipseSolar) then
-        -- return S.stopcasting:Cast()
-    -- end
-	-- if Player:IsCasting(S.Wrath) and not Player:BuffP(S.EclipseSolar) and Player:BuffP(S.EclipseLunar) then
-		-- return S.stopcasting:Cast()
-    -- end	
-	
-		-- if Player:IsCasting(S.StellarFlare) and Target:DebuffRemains(S.StellarFlare)>5.5 then
-		-- return S.stopcasting:Cast()
-    -- end	
 
-	if   IsLeftAltKeyDown() then
-		return S.stopcasting:Cast()
-    end	
+    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
- if Player:IsChanneling() or Player:IsCasting() then
-        return 0, 136213
-    end
+    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+end
 
-    if GetShapeshiftForm() ~= 4 and not Player:BuffP(S.CatForm) and not Player:BuffP(S.TravelForm) and not Player:BuffP(S.BearForm) then
-        return S.MoonkinForm:Cast()
-    end
-	
-	
-	
+
+
+
+if Player:IsCasting() or Player:IsChanneling() and not Player:IsChanneling(S.SpinningCraneKick) then
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or
+    AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+end
+
 	
 		if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) then
     	return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
@@ -332,28 +218,6 @@ local function APL()
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 	
-		if S.Cyclone:ID() ==  RubimRH.queuedSpell[1]:ID() and Target:IsInRange(45) then
-		return S.cyclone:Cast()
-	end
-	
-			if S.Cyclone:ID() ==  RubimRH.queuedSpell[1]:ID() and not Target:IsInRange(45) then
-		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-	end
-	
-			if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() and Target:IsInRange(45) then
-		return S.typhoon:Cast()
-	end
-	
-			if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() and not Target:IsInRange(45) then
-		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-	end
-	
-		-- if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() then
-		-- return S.typhoon:Cast()
-	-- end	
-		if S.Vortex:ID() ==  RubimRH.queuedSpell[1]:ID() then
-		return S.vortex:Cast()
-	end
 
 	if RubimRH.QueuedSpell():IsReadyQueue() then
         return RubimRH.QueuedSpell():Cast()
@@ -361,414 +225,163 @@ local function APL()
 	
 	
 	
+
 	
-	
-	   if S.Barkskin:IsCastableP() and Player:HealthPercentage() < 35 then
-        return S.Barkskin:Cast()
-    end	
-	
-	
+
 
 
 	
 if Player:CanAttack(Target) and Target:AffectingCombat() or (Player:AffectingCombat() or Target:IsDummy()) then 
 
-
-
-
-
-if S.GaurdianAffinity:IsAvailable() and Player:BuffP(S.BearForm) then
-
-
-if S.FrenziedRegeneration:IsReady()  and Player:HealthPercentage()<80 then
-return S.FrenziedRegeneration:Cast()
-end
-
-if S.IncapacitatingRoar:IsReady()  and Cache.EnemiesCount[10]>=1 and Player:HealthPercentage()<20 then
-return S.incapacitatingroar:Cast()
-end
-
-  if S.Ironfur:IsReadyP() and Cache.EnemiesCount[10]>=1 then
-        return S.Ironfur:Cast()
-    end
-	
-if (not Target:Debuff(S.ThrashDebuff) or Target:DebuffRemainsP(S.ThrashDebuff)<13 and Target:Debuff(S.ThrashDebuff)) and Cache.EnemiesCount[12]>=1  then
-		return S.Thrash:Cast()
-	end
-	
-  if S.Mangle:IsReadyP() and Target:IsInRange(10) then
-        return S.Mangle:Cast()
-    end
- 
-end
-
-
-
-
-  if S.Berserking:IsCastableP() and Target:IsInRange(40) and Player:BuffP(S.CelestialAlignmentBuff) then
-        return S.Berserking:Cast()
-    end
-
-
-
-	
-	
-	
-if Player:BuffP(S.MoonkinForm) then	
-
-	--AOE------------------------------------
-
-
-if HL.CombatTime()<3 and Player:AstralPower()<90 and (not Player:BuffP(S.EclipseLunar) and not Player:BuffP(S.EclipseSolar)) then
-
-
--- Apply and maintain  Moonfire, Sunfire Icon Sunfire on all targets if they will live longer than 8-seconds.
-	    if S.Sunfire:IsCastableP(40) and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 12  and active_enemies()>=2 then
-        return S.Sunfire:Cast()
-    end
-	
-
-
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
-	
-    if S.Wrath:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-
-    if S.Wrath:IsCastableP(40) and S.Wrath:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-
-   if S.Starfire:IsCastableP(40) and S.Starfire:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
-	
-end
-
-
-if active_enemies() >=2 then
-	
-if S.CelestialAlignment:IsReadyP() and RubimRH.CDsON() and Player:AstralPower()>=45 and Target:IsInRange(40) and (not Player:BuffP(S.EclipseLunar) or not Player:BuffP(S.EclipseSolar)) then
-return S.CelestialAlignment:Cast()
-end
-	
-	
--- Maintain Starfall to consume Astral Power.
-    if S.Starfall:IsReadyP() and Cache.EnemiesCount[45]>=2 and Player:BuffRemainsP(S.StarfallBuff)<Player:GCD()*1.5 then
-        return S.Starfall:Cast()
-    end
-	
-
-	
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.WarriorofEluneBuff) then
-        return S.Starfire:Cast()
-    end
-	
-
--- Apply and maintain  Moonfire, Sunfire Icon Sunfire on all targets if they will live longer than 8-seconds.
-	    if S.Sunfire:IsCastableP(40) and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 14  then
-        return S.Sunfire:Cast()
-    end
-	
-
-    if S.Moonfire:IsCastableP(40) and Target:DebuffRemainsP(S.MoonfireDebuff) < 6.6 and Target:TimeToDie()> 14 and Player:BuffP(S.EclipseSolar) then
-        return S.Moonfire:Cast()
-    end
-	
-    if S.StellarFlare:IsCastableP(40) and Target:DebuffRemainsP(S.StellarFlareDebuff)<5.5 and Target:TimeToDie()> 14 then
-        return S.StellarFlare:Cast()
-    end
-
-
-	-- if RubimRH.AoEON() and Target:DebuffRemainsP(S.MoonfireDebuff) >= S.Moonfire:BaseDuration() * 0.90  and Target:DebuffRemainsP(S.SunfireDebuff)>= S.Sunfire:BaseDuration() * 0.90 and not Player:IsChanneling() and active_enemies() >= 2 and active_enemies() < 100 and CombatTime("player") > 0 and Player:BuffP(S.EclipseSolar) and 
--- (
-    -- not IsSpellInRange(8921, "target") or   
-    -- (
-        -- CombatTime("target") == 0 and
-        -- not Player:InPvP()
-    -- ) 
--- ) and
--- (
-    -- MultiDots(30, S.SunfireDebuff, 14, 1) >= 1 or MultiDots(30, S.MoonfireDebuff, 14, 1) >= 1 or
-    -- (
-        -- CombatTime("target") == 0 and
-        -- not Player:InPvP()
-    -- ) 
--- ) then 
-    -- return 133015 
-   -- end
-
-
--- Keep Fury of Elune (if talented) on cooldown.
-
-
-    if S.WarriorofElune:IsReadyP() and RubimRH.CDsON() and Target:IsInRange(40) then
-        return S.WarriorofElune:Cast()
-    end
-
-
-    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and Target:IsInRange(40) then
-        return S.FuryofElune:Cast()
-    end
-
-
-    if S.Wrath:IsCastableP(40) and S.Wrath:Count()>=1 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-
-   if S.Starfire:IsCastableP(40) and S.Starfire:Count()>=1 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
-
--- Cast Starsurge when available. Try to keep enough Astral Power for Starfall when its low duration.
-  -- if S.Starsurge:IsReadyP(40) and ((Player:BuffP(S.EclipseLunar) or Player:BuffP(S.EclipseSolar)) and (Player:BuffP(S.Starfall) and Player:AstralPower()>=75 or Player:AstralPower()>=90))  then
-        -- return S.Starsurge:Cast()
-    -- end
-	
-
-	-- if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and active_enemies()>4 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        -- return S.Starfire:Cast()
-    -- end 
-	
--- Cast the Eclipse appropriate filler to try to fill up your Astral Power for the next Eclipse.	
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
-	
-    if S.Wrath:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-
-
-end	
-	
-	
-
-
-
-
-
-        if (true) then
-		    variableaoe = RubimRH.AoEON() and (active_enemies()>1 and (not S.Starlord:IsAvailable() or S.StellarDrift:IsAvailable()) or active_enemies()>2)
-			end
-
--- variable,name=dot_requirements,value=
--- (buff.ca_inc.remains>5
--- &(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)
--- &(!buff.kindred_empowerment_energize.up|astral_power<30)
--- &(buff.eclipse_solar.remains>gcd.max|buff.eclipse_lunar.remains>gcd.max)
-
-        if (true) then
-		    dotrequirements = ((Player:BuffRemainsP(S.CelestialAlignmentBuff)>5
-			and (Player:BuffRemainsP(S.RavenousFrenzy)>5 or not Player:BuffP(S.RavenousFrenzy)) or not Player:BuffP(S.CelestialAlignmentBuff) or Player:AstralPower()<30)
-			and (not Player:BuffP(S.KindredEmpowermentEnergize) or Player:AstralPower()<30)
-			and (Player:BuffRemainsP(S.EclipseSolar)>Player:GCD() or Player:BuffRemainsP(S.EclipseLunar)>Player:GCD()))
-			end
-
--- moonfire,target_if=refreshable&target.time_to_die>12,if=ap_check&variable.dot_requirements
-
-    if S.Moonfire:IsCastableP(40) and Target:DebuffRemainsP(S.MoonfireDebuff) < 6.6 and Target:TimeToDie()> 12 and dotrequirements then
-        return S.Moonfire:Cast()
-    end
-	
-
-
--- sunfire,target_if=refreshable&target.time_to_die>12,if=ap_check&variable.dot_requirements
-
-	    if S.Sunfire:IsCastableP(40) and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 12 and dotrequirements then
-        return S.Sunfire:Cast()
-    end
-
-
--- stellar_flare,target_if=refreshable&target.time_to_die>16,if=ap_check&variable.dot_requirements
-    if S.StellarFlare:IsCastableP(40) and Target:DebuffRemainsP(S.StellarFlareDebuff)<5.5 and Target:TimeToDie()> 12 and dotrequirements then
-        return S.StellarFlare:Cast()
-    end
-
-
-
--- force_of_nature,if=ap_check
-    if S.ForceofNature:IsCastableP(40) then
-        return S.ForceofNature:Cast()
-    end
-
-
-
--- kindred_spirits,if=((buff.eclipse_solar.remains>10|buff.eclipse_lunar.remains>10)
--- &cooldown.ca_inc.remains>30
--- &(buff.primordial_arcanic_pulsar.value<240|!runeforge.primordial_arcanic_pulsar.equipped))|buff.primordial_arcanic_pulsar.value>=270|cooldown.ca_inc.ready
--- &(astral_power>90|variable.is_aoe)
-
-    -- if S.KindredSpirits:IsCastableP(40) and
-	-- (((Player:BuffRemainsP(S.EclipseSolar)>10 or Player:BuffRemainsP(S.EclipseLunar)>10)
-	-- and S.CelestialAlignment:CooldownRemainsP()>30 and RubimRH.CDsON()
-	-- and ( Player:CanAttack(Target))) or S.CelestialAlignment:CooldownRemainsP()==0
-	-- and (Player:AstralPower()>90 or variableaoe))
-	
-	-- then
-        -- return S.KindredSpirits:Cast()
-    -- end
-
-
--- celestial_alignment,if=(astral_power>90
--- &(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|variable.is_aoe|
-
-if S.CelestialAlignment:IsReadyP() and (RubimRH.CDsON() and Player:AstralPower()>=90 and Target:IsInRange(40) or variableaoe and RubimRH.CDsON()) then
-return S.CelestialAlignment:Cast()
-end	
-
-
--- incarnation,if=(astral_power>90&(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|variable.is_aoe|buff.bloodlust.up&buff.bloodlust.remains<30+((9*runeforge.primordial_arcanic_pulsar.equipped)+(conduit.precise_alignment.time_value)))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|interpolated_fight_remains<cooldown.convoke_the_spirits.remains+6|interpolated_fight_remains%%180<30+(conduit.precise_alignment.time_value))
-if S.Incarnation:IsReadyP() and (RubimRH.CDsON() and Player:AstralPower()>=90 and Target:IsInRange(40) or variableaoe and RubimRH.CDsON()) then
-return S.Incarnation:Cast()
-end	
-
-
--- fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pulsar.value<240&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord)&variable.save_for_ca_inc
-if S.FuryofElune:IsReadyP() and (Player:BuffP(S.EclipseLunar) or Player:BuffP(S.EclipseSolar)) then
-return S.FuryofElune:Cast()
-end	
-
-
-
--- starsurge,if=buff.oneths_clear_vision.up|buff.kindred_empowerment_energize.up|buff.ca_inc.up&(buff.ravenous_frenzy.remains<gcd.max*ceil(astral_power%30)&buff.ravenous_frenzy.up|!buff.ravenous_frenzy.up&!cooldown.ravenous_frenzy.ready|!covenant.venthyr)|astral_power>90&eclipse.in_any
-  if S.Starsurge:IsReadyP(40) and Player:AstralPower()>90 and (Player:BuffP(S.EclipseLunar) or Player:BuffP(S.EclipseSolar))  then
-        return S.Starsurge:Cast()
-    end
-
-
--- starsurge,if=talent.starlord.enabled
--- &(buff.starlord.up|astral_power>90)&buff.starlord.stack<3
--- &(buff.eclipse_solar.up|buff.eclipse_lunar.up)&buff.primordial_arcanic_pulsar.value<270
--- &(cooldown.ca_inc.remains>10|!variable.convoke_desync&covenant.night_fae)
-  if S.Starsurge:IsReadyP(40) and (S.Starlord:IsAvailable() and  Player:AstralPower()>90 and Player:BuffStackP(S.StarlordBuff)<3) then
-        return S.Starsurge:Cast()
-    end
-  if S.Starsurge:IsReadyP(40) and (S.Starlord:IsAvailable() and Player:BuffP(S.StarlordBuff) and Player:BuffStackP(S.StarlordBuff)<3) then
-        return S.Starsurge:Cast()
+    if  Target:IsInRange(8) then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
     end
 
 
 
 
--- new_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_time<5)|charges=3)&ap_check&variable.save_for_ca_inc
+
+--- opener
 
 
 
--- half_moon,if=(buff.eclipse_lunar.up&!covenant.kyrian|(buff.kindred_empowerment_energize.up&covenant.kyrian)|(charges=2&recharge_time<5)|charges=3|buff.ca_inc.up)&ap_check&variable.save_for_ca_inc
+-- In this Dragonflight rotation guide, we provide the best Devastation Evoker rotation for for all talent builds in both dungeons and raids for the Dragonflight Launch.
+-- NEW Dragonflight
+-- NEW Infographic
+-- Overview
+-- Gear
+-- Talent Builds
+-- Abilities & Talents
+-- Rotation
+-- Stats
+-- Consumables
+-- Macros & Addons
+-- WeakAuras
+-- Common Terms
+-- Common Questions
+-- Leveling
+-- Hotfixes
+-- About the Author
+
+-- This guide is written and maintained by Preheat, previously a World First raider and founding member of Liquid. Preheat plays Evoker and Mage and has participated in the MDI and multiple Race to World First events over the years. He has also commentated multiple community events such as the Keystone Masters, numerous charity events, and the Team Liquid Race to World First. For all things Evoker and Mage, you can find him in his Discord, on Twitter, posting videos to YouTube, and streaming on Twitch.
 
 
+-- A note from the Author
+-- Devastation Evoker Rotations in Dragonflight
+-- In the simplest terms, Devastation Evoker primarily deals damage by applying  Fire Breath to deal damage over time, spending Essence and  Essence Burst on  Disintegrate, and casting  Living Flame as filler.  Dragonrage is the primary cooldown and  Eternity Surge is a short cooldown that deals heavy damage, increasing in targets as you empower it.
+-- Devastation Evoker Rotation Basics
+-- There are two main builds for Devastation Evoker:  Feed the Flames and  Everburning Flame.  Everburning Flame uses  Firestorm in single target, which makes it very prone to losing damage when a target moves. For this reason, I only recommend it for sustained cleave. The aim of both builds is to maintain the  Fire Breath damage over time on the enemy while spending Essence on  Disintegrate.
 
--- full_moon,if=(buff.eclipse_lunar.up&!covenant.kyrian|(buff.kindred_empowerment_energize.up&covenant.kyrian)|(charges=2&recharge_time<5)|charges=3|buff.ca_inc.up)&ap_check&variable.save_for_ca_inc
-
-
-
--- warrior_of_elune
-
-
-
--- starfire,if=eclipse.in_lunar|eclipse.solar_next|eclipse.any_next|buff.warrior_of_elune.up&buff.eclipse_lunar.up|(buff.ca_inc.remains<action.wrath.execute_time&buff.ca_inc.up)
-
-
-
--- wrath
-
-
-
-
-
-
-	--ST------------------------------------
-	
-
-
-		
--- Get to 90 Astral Power and then press Celestial Alignment Icon Celestial Alignment / Incarnation: Chosen of Elune Icon Incarnation: Chosen of Elune (if talented).
-
-	
-
-
--- Apply and maintain Moonfire Icon Moonfire, Sunfire Icon Sunfire, and Stellar Flare Icon Stellar Flare (if talented) on the target(s).
-
-	
-
--- Cast two unempowered fillers (Wrath Icon Wrath or Starfire Icon Starfire) to enter the appropriate Eclipse Icon Eclipse state.
-    if S.Wrath:IsCastableP(40) and S.Wrath:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-
-   if S.Starfire:IsCastableP(40) and S.Starfire:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
-	
-
-
-
-
--- Cast any remaining short Cooldowns such as Fury of Elune Icon Fury of Elune, Warrior of Elune Icon Warrior of Elune, or Force of Nature Icon Force of Nature.
-   if S.WarriorofElune:IsReadyP() and RubimRH.CDsON() and Target:IsInRange(40) then
-        return S.WarriorofElune:Cast()
-    end
-
-
-    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and Target:IsInRange(40) then
-        return S.FuryofElune:Cast()
-    end
-
-
--- Cast the  Eclipse appropriate filler to try to fill up your Astral Power for the next Eclipse Icon Eclipse.
-   if S.Wrath:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-	
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
-	
- 
+-- The overall rotation of both builds can be oversimplified as the following steps:
+-- Use  Dragonrage
+-- Maintain  Fire Breath damage over time on the enemy. Use  Fire Breath on cooldown.
+-- Use  Shattering Star to amplify  Eternity Surge (when it lines up) and  Disintegrate.
+-- Use  Eternity Surge on cooldown.
+-- In AoE: Spend  Essence Burst and Essence on  Pyre.
+-- In Single Target / Cleave: Spend  Essence Burst and Essence on  Disintegrate.
+-- Generate  Essence Burst while waiting on Essence (Two sources for  Essence Burst:  Living Flame,  Azure Strike)
+-- Note: In some cases you will want to delay your first use of  Dragonrage. More information on this later.
+-- Devastation Evoker Opener
+-- The rotations below are based off of the  Feed the Flames Cooldown Reduction Build. To see the rotation for the  Everburning Flame Build, select the associated toggle.
+-- Devastation Evoker Opener Rotation
+-- Alternate Talent Builds:
+-- Everburning Flame Fire Breath Extension Build
+-- Individual Talent Changes:
+-- No  Shattering Star
+-- Precast  Living Flame
+-- Precast  Firestorm
+-- Use normal rotation if delaying  Dragonrage (See Single Target Rotation and Priority)
+-- Use  Dragonrage with trinkets.
+-- Without  Bloodlust, your first  Dragonrage of the fight should be delayed as long as possible without losing a usage during the encounter.
+-- Rank 1 Empower  Fire Breath. For the duration of  Dragonrage, Empower  Fire Breath at rank 1 on cooldown
+-- Rank 3 Empower  Fire Breath. For the duration of  Dragonrage, Empower  Fire Breath at rank 3 on cooldown
+--  Firestorm on cooldown regardless of  Snapfire procs if  Fire Breath will remain on the target by the time the cast finishes, unless the  Fire Breath damage over time will last until the next  Fire Breath cooldown is available. Basically we just want enough extensions to last until the next  Fire Breath.
+--  Shattering Star to apply the damage increase debuff on cooldown. During  Dragonrage and  Bloodlust, hold it until you have enough Essence and  Essence Burst to chain 3  Disintegrate casts or  Eternity Surge and 2  Disintegrate casts.
+--  Tip the Scales - Instant  Fire Breath (Can be delayed for the 2nd  Fire Breath as needed to fit it inside of  Dragonrage)
+--  Tip the Scales - Instant  Eternity Surge (Can be delayed for the 2nd  Eternity Surge as needed to fit it inside of  Dragonrage)
+--  Disintegrate with  Essence Burst. Use up all  Essence Burst procs. You can cast  Disintegrate again after the 3rd tick of  Disintegrate to overlap them without losing damage
+--  Disintegrate if Essence is capped or nearing cap. You can cast  Disintegrate again after the 3rd tick of  Disintegrate to overlap them without losing damage.
+-- Instant cast  Living Flame with  Burnout to gain  Essence Burst if not capped on Essence and  Essence Burst to gain  Essence Burst
+-- Without  Burnout, use  Azure Strike to gain  Essence Burst
+-- Cast  Living Flame to gain  Essence Burst when  Burnout is unavailable ( Azure Strike instead if talented into  Engulfing Blaze)
+-- At this point, things repeat during  Dragonrage
+-- In the last 2 seconds of  Dragonrage, use  Burnout procs or  Azure Strike to exit with 2 stacks of  Essence Burst
+-- Proceed with normal rotation when  Dragonrage fades
 
 
 
 
--- Apply and maintain Moonfire Icon Moonfire, Sunfire Icon Sunfire, and Stellar Flare Icon Stellar Flare (if talented) on the target(s).
-    if S.Sunfire:IsCastableP(40) and Target:DebuffRemains(S.MoonfireDebuff)>Target:DebuffRemains(S.SunfireDebuff) and not Player:PrevGCD(1, S.Sunfire) then
-        return S.Sunfire:Cast()
-    end
-	
-	    if S.Moonfire:IsCastableP(40) then
-        return S.Moonfire:Cast()
-    end
-	    if S.Sunfire:IsCastableP(40) then
-        return S.Sunfire:Cast()
-    end
-
-
-	
-
-end
-
-end
-  -- Out of Combat
-if not Player:AffectingCombat() then
+--aoe
 
 
 
 
+    -- Everburning Flame Fire Breath Extension Build
+    -- Individual Talent Changes:
+    -- No  Shattering Star
+    -- No  Volatility
+    -- In preparation for AoE, try to quickly build  Charged Blast stacks with  Disintegrate and  Azure Strike.
+    -- Use  Dragonrage with stacks of  Charged Blast depending on the length of the pull, it can be worthwhile to hold until 18+ stacks of  Charged Blast.
+    -- Empower  Fire Breath on cooldown. Empower rank depends on target count and how long targets will live. Generally speaking, you can use Rank 1 for 1-2 targets Rank 2 for 3 targets, Rank 3 for 4 targets, Rank 3 (or 4 with  Font of Magic) for 5 targets. For more information, click here.
+    -- Rank 3 Empower  Fire Breath on cooldown
+    --  Firestorm on cooldown regardless of  Snapfire procs if  Fire Breath will remain on the target by the time the cast finishes, unless the  Fire Breath damage over time will last until the next  Fire Breath cooldown is available
+    --  Deep Breath at 2 or more targets. Delay your first use for when the lowest target reaches 30% or less health, so long as you get the same amount of total uses since  Tyranny makes it get the full effect of  Mastery: Giantkiller.
+    --  Shattering Star to apply the damage increase debuff on cooldown
+    -- Empower  Eternity Surge on cooldown. Empower level depends on targets within 12 yards of the target:
+    --  Eternity Surge at Rank 2 for 3-4 targets - With  Eternity's Span
+    --  Eternity Surge at Rank 3 for 5-6 targets - With  Eternity's Span
+    --  Eternity Surge at Rank 4 for 7 or more targets - With  Eternity's Span
+    -- Instant cast  Living Flame with  Burnout and  Leaping Flames if  Essence Burst is not capped at 2 stacks. In  Dragonrage, spend all  Essence Burst and use Essence to give yourself time to avoid capping because  Leaping Flames will provide 2  Essence Bursts.
+    -- Use  Pyre in AoE with  Volatility:
+    -- At 2 targets: Spend  Essence Burst and Essence on  Pyre with >=16  Charged Blast stacks (20 outside of  Dragonrage).
+    -- At 3 targets: Spend  Essence Burst and Essence on  Pyre full time.
+    -- Use  Pyre in AoE without  Volatility:
+    -- At 3 targets: Spend  Essence Burst and Essence on  Pyre with >=10  Charged Blast stacks.
+    -- At 4 targets: Spend  Essence Burst and Essence on  Pyre full time.
+    -- Spend  Essence Burst and Essence on  Disintegrate at 2 targets.  Disintegrate high health targets (targets with 50-60% higher health percent than the average health percent of the pack) to make use of  Mastery: Giantkiller and gain  Charged Blast stacks
+    -- At 3 or less targets: Instant cast  Living Flame with  Burnout
+    -- At 3 or more targets: Cast  Azure Strike with  Protracted Talons
+    -- When  Dragonrage is available in less than 10 seconds, stop casting  Pyre. For 3 or more targets, always build 18+ stacks of  Charged Blast for  Dragonrage
+    -- When the pull is wrapping up (last 8 or so seconds of AoE), fully empower  Fire Breath to increase the upfront damage at the cost of damage over time.
+    -- Avoid casting  Living Flame to save  Leaping Flames for the next pull, if it is happening in 30 seconds or less.
+    -- Avoid casting  Pyre to save  Charged Blast for the next pull, if it is happening in 60 seconds or less.
 
 
-	if    IsLeftAltKeyDown() then
-		return S.stopcasting:Cast()
-    end	
 
- -- if Player:IsChanneling() or Player:IsCasting() then
-        -- return 0, 136213
-    -- end
 
-	if not RubimRH.queuedSpell[1]:CooldownUp() or not Target:IsInRange(10) or not Player:AffectingCombat() then
-		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-	end
+
+
+
+
+--ST
+
+
+
+
+
+-- Everburning Flame Fire Breath Extension Build
+-- Individual Talent Changes:
+-- No  Shattering Star
+-- Rank 1 Empower  Fire Breath on cooldown, as long as  Dragonrage cooldown is longer than 10 seconds.
+-- Rank 3 Empower  Fire Breath on cooldown, as long as  Dragonrage cooldown is longer than 10 seconds.
+--  Firestorm on cooldown regardless of  Snapfire procs if  Fire Breath will remain on the target by the time the cast finishes, unless the  Fire Breath damage over time will last until the next  Fire Breath cooldown is available
+--  Shattering Star to apply the damage increase debuff on cooldown
+-- Empower  Eternity Surge at rank 1 on cooldown, as long as  Dragonrage cooldown is longer than 15 seconds.
+-- Instant cast  Living Flame with  Burnout. Avoid capping Essence and  Essence Burst over  Burnout
+-- Spend Essence and  Essence Burst on  Disintegrate. You can cast  Disintegrate again after the 3rd tick of  Disintegrate to overlap them without losing damage
+-- Cast  Living Flame
+-- Use  Azure Strike on the move
+-- Use  Dragonrage when  Fire Breath and  Eternity Surge are ready, or if the fight has less than 30 seconds left. See opener for  Dragonrage rotation
+-- Devastation Evoker Multi Ta
+
+
+
+
+
+
+
+
 	
 	return 0, 625999
 end 
