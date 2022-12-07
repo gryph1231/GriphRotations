@@ -587,11 +587,11 @@ local function APL()
         return S.autoattack:Cast()
     end
 
-    if IsEquippedItem("Ring of Collapsing Futures") and not Player:DebuffP(S.Temptation) and Player:CanAttack(Target) and
-        Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and not Player:Buff(S.Stealth)
-        and Target:IsInRange(20) and IsUsableItem(142173) and GetItemCooldown(142173) == 0 then
-        return S.Temptation:Cast()
-    end
+    -- if IsEquippedItem("Ring of Collapsing Futures") and not Player:DebuffP(S.Temptation) and Player:CanAttack(Target) and
+    --     Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and not Player:Buff(S.Stealth)
+    --     and Target:IsInRange(20) and IsUsableItem(142173) and GetItemCooldown(142173) == 0 then
+    --     return S.Temptation:Cast()
+    -- end
 
     if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(187802) and
         GetItemCooldown(187802) == 0 and GetItemCount(187802) >= 1

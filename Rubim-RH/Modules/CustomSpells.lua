@@ -742,3 +742,114 @@ function RubimRH.GetDescription(spellID)
     return numbers
 end
 
+
+-- Stagger Tracker
+local StaggerSpellID = 115069
+local StaggerDoTID = 124255
+local BobandWeave = Spell(280515)
+local StaggerFull = 0
+local StaggerDamage = {}
+local IncomingDamage = {}
+
+local function RegisterStaggerFullAbsorb(Amount)
+  local StaggerDuration = 10 + (BobandWeave:IsAvailable() and 3 or 0)
+  StaggerFull = StaggerFull + Amount
+  C_Timer.After(StaggerDuration, function() StaggerFull = StaggerFull - Amount; end)
+end
+
+local function RegisterStaggerDamageTaken(Amount)
+  if #StaggerDamage == 10 then
+    table.remove(StaggerDamage, 10)
+  end
+  table.insert(StaggerDamage, 1, Amount)
+end
+
+local function RegisterIncomingDamageTaken(Amount)
+  while #IncomingDamage > 0 and IncomingDamage[#IncomingDamage][1] < GetTime() - 6 do
+    table.remove(IncomingDamage, #IncomingDamage)
+  end
+  table.insert(IncomingDamage, 1, {GetTime(), Amount})
+end
+
+function Player:StaggerFull()
+  return StaggerFull
+end
+
+function Player:StaggerLastTickDamage(Count)
+  local TickDamage = 0
+  if Count > #StaggerDamage then
+    Count = #StaggerDamage
+  end
+  for i=1, Count do
+    TickDamage = TickDamage + StaggerDamage[i]
+  end
+  return TickDamage
+end
+
+function Player:IncomingDamageTaken(Milliseconds)
+  local DamageTaken = 0
+  local TimeOffset = Milliseconds / 1000
+  for i=1, #IncomingDamage do
+    if IncomingDamage[i][1] > GetTime() - TimeOffset then
+      DamageTaken = DamageTaken + IncomingDamage[i][2]
+    end
+  end
+  return DamageTaken
+end
+
+HL:RegisterForCombatEvent(
+  function (...)
+    local args = {...}
+    -- Absorb is coming from a spell damage
+    if #args == 23 then
+      local _, _, _, _, _, _, _, DestGUID, _, _, _, _, _, _, _, _, _, _, SpellID, _, _, Amount = ...
+      if DestGUID == Player:GUID() and SpellID == StaggerSpellID then
+        RegisterStaggerFullAbsorb(Amount)
+      end
+    else
+      local _, _, _, _, _, _, _, DestGUID, _, _, _, _, _, _, _, SpellID, _, _, Amount = ...
+      if DestGUID == Player:GUID() and SpellID == StaggerSpellID then
+        RegisterStaggerFullAbsorb(Amount)
+      end
+    end
+  end
+  , "SPELL_ABSORBED"
+)
+
+HL:RegisterForCombatEvent(
+  function(...)
+    local _, _, _, _, _, _, _, DestGUID, _, _, _, SpellID, _, _, Amount = ...
+    if DestGUID == Player:GUID() and SpellID == StaggerDoTID and Amount > 0 then
+      RegisterStaggerDamageTaken(Amount)
+    end
+  end
+  , "SPELL_PERIODIC_DAMAGE"
+)
+
+HL:RegisterForCombatEvent(
+  function(...)
+    local _, _, _, _, _, _, _, DestGUID, _, _, _, _, _, _, Amount = ...
+    if Cache.Persistent.Player.Spec[1] == 268 and DestGUID == Player:GUID() and Amount ~= nil and Amount > 0 then
+      RegisterIncomingDamageTaken(Amount)
+    end
+  end
+  , "SWING_DAMAGE"
+  , "SPELL_DAMAGE"
+  , "SPELL_PERIODIC_DAMAGE"
+)
+
+HL:RegisterForEvent(
+  function()
+    if #StaggerDamage > 0 then
+      for i=0, #StaggerDamage do
+        StaggerDamage[i]=nil
+      end
+    end
+    if #IncomingDamage > 0 then
+      for i=0, #IncomingDamage do
+        IncomingDamage[i]=nil
+      end
+    end
+  end
+  , "PLAYER_REGEN_ENABLED"
+)

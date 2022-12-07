@@ -14,33 +14,19 @@ local Item = HL.Item;
 
 --Survival
 RubimRH.Spell[255] = {
-    --Racials
-    -- Racials
-    Berserking = Spell(26297),
-    BloodFury = Spell(20572),
-    AncestralCall = Spell(274738),
-    Fireblood = Spell(265221),
-    LightsJudgment = Spell(255647),
-    ArcaneTorrent = Spell(80483),
-    BerserkingBuff = Spell(26297),
-    BloodFuryBuff = Spell(20572),
-    -- Abilities
-    Harpoon = Spell(190925),
-    CoordinatedAssault = Spell(266779),
+    CoordinatedAssault = Spell(360952),
+    CoordinatedAssaultz = Spell(265221), --fireblood
     KillCommand = Spell(259489),
-    CoordinatedAssaultBuff = Spell(266779),
     Carve = Spell(187708),
     SerpentSting = Spell(259491),
     RaptorStrikeEagle = Spell(265189),
     RaptorStrike = Spell(186270),
     CounterShot = Spell(147362),
 	Steward = Spell(324739),
-    -- Pet
     CallPet = Spell(883),
     Intimidation = Spell(19577),
     MendPet = Spell(136),
     RevivePet = Spell(982),
-    -- Talents
     SteelTrapDebuff = Spell(162487),
     SteelTrap = Spell(162488),
     AMurderofCrows = Spell(131894),
@@ -65,34 +51,28 @@ RubimRH.Spell[255] = {
     MongooseBiteEagle = Spell(265888),
     MongooseBite = Spell(259387),
     BirdsofPrey = Spell(260331),
-    MongooseFuryBuff = Spell(259388),
+    MongooseFury = Spell(259388),
+    ExplosiveShot = Spell(212431),
+    ExplosiveShotz = Spell(287712), --haymaker
     VipersVenom = Spell(268501),
-    -- Defensive
     AspectoftheTurtle = Spell(186265),
     Exhilaration = Spell(109304),
-    -- Utility
     FreezingTrap = Spell(187650),
+	FreezingTrapz = Spell(255654), --bullrush
     AspectoftheEagle = Spell(186289),
     Muzzle = Spell(187707),
     TranqShot = Spell(19801),
-    -- PvP
     WingClip = Spell(195645),
     LatentPoison = Spell(273284),
-    LatentPoisonDebuff = Spell(273286),
+    LatentPoisonDebuff = Spell(378015),
     HydrasBite = Spell(260241),
 	ResonatingArrow = Spell(308491),
+	DeathChakram = Spell(375891),
+	DeathChakramz = Spell(260364), --arcane pulse
+	Dashz = Spell(274738), --ancestral call
 };
 
 local S = RubimRH.Spell[255]
-local VarCarveCdr = 0;
-
-S.MongooseBite.TextureSpellID = { 224795 } -- Raptor Strikes
-S.Butchery.TextureSpellID = { 203673 } -- Carve
-S.ShrapnelBomb.TextureSpellID = { 269747 }
-S.PheromoneBomb.TextureSpellID = { 269747 }
-S.VolatileBomb.TextureSpellID = { 269747 }
-S.WildfireBomb.TextureSpellID = { 269747 }
-S.WingClip.TextureSpellID = { 76151 }
 
 -- Items
 if not Item.Hunter then
@@ -100,9 +80,9 @@ if not Item.Hunter then
 end
 
 Item.Hunter.Survival = {
-	phialofserenity = Item(177278),
-
+healingpoticon = Item(169451)
 };
+local I = Item.Hunter.Survival;
 
 local function UpdateWFB()
     if S.ShrapnelBomb:IsReadyMorph() then
@@ -114,14 +94,13 @@ local function UpdateWFB()
     else
         S.WildfireBomb = Spell(259495)
     end
-    S.ShrapnelBomb.TextureSpellID = { 269747 }
-    S.PheromoneBomb.TextureSpellID = { 269747 }
-    S.VolatileBomb.TextureSpellID = { 269747 }
-    S.WildfireBomb.TextureSpellID = { 269747 }
 end
 
--- Variables
-local VarCanGcd = 0;
+S.ShrapnelBomb.TextureSpellID = { 269747 }
+S.PheromoneBomb.TextureSpellID = { 269747 }
+S.VolatileBomb.TextureSpellID = { 269747 }
+S.WildfireBomb.TextureSpellID = { 269747 }
+
 -- Rotation Var
 local ShouldReturn;
 local EnemyRanges = { 8, 40, "Melee" }
@@ -143,129 +122,184 @@ local function bool(val)
     return val ~= 0
 end
 
-local I = Item.Hunter.Survival;
-
-local function shouldTranq()
-local namex, iconx, stacksx, debuffClassx, durationx, expirationTimex, unitCasterx, isStealablex, spellIdx, isBossDebuffx, isCastByPlayerx = UnitAura("target", 1)
-
-
-	if debuffClassx == nil then
-        debuffClassx = "none"
-    elseif debuffClassx == "" then
-        debuffClassx = "enrage"
-    else
-        debuffClassx = string.lower(debuffClassx)
-    end
-
-	if debuffClassx == "enrage" then 
-		return true
-	else
-		return false
-	end
-
-end 
-
-
-
 --- APL Main
 local function APL ()
-local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
+HL.GetEnemies("Melee");
+HL.GetEnemies(5, true);
+HL.GetEnemies(8, true);
+HL.GetEnemies(10, true);
+HL.GetEnemies(20, true);
 HL.GetEnemies(25, true);
-	HL.GetEnemies("Melee");
-	HL.GetEnemies(5, true);
-    HL.GetEnemies(8, true);
-    HL.GetEnemies(10, true);
-	HL.GetEnemies(20, true);
-	HL.GetEnemies(40, true);
-
-if Player:IsCasting() or Player:IsChanneling() or Player:BuffP(S.foodanddrink) or Player:BuffP(S.FeignDeath) or Player:BuffP(S.AspectoftheTurtle) then
+HL.GetEnemies(40, true);
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if Player:IsCasting() or Player:IsChanneling() then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") 
+or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName("Feign Death", "player") then
+	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end 
 
---QUEUE
-	if not RubimRH.queuedSpell[1]:CooldownUp() or not Target:IsInRange(40) or not Player:AffectingCombat() then
-		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-	end
-	
-	if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() then
-    	return S.TarTrap:Cast()
-	end
-	
-	if RubimRH.QueuedSpell():IsReadyQueue() then
-        return RubimRH.QueuedSpell():Cast()
-    end
+local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
 
---INTERRUPTS
-	if notInterruptible == false and Target:CastPercentage() > 27 and RubimRH.InterruptsON() and S.Muzzle:IsReady(8) and Target:AffectingCombat() then
-		return S.Muzzle:Cast()
+start, duration, enabled = GetSpellCooldown(61684);
+DashCD = duration - (GetTime() - start)
+
+if DashCD < 0 then 
+	DashCD = 0
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Out of Combat---------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if not Player:AffectingCombat() then
+
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Spell Queue-----------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+
+if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() then
+	return S.FreezingTrapz:Cast()
+end
+
+if RubimRH.QueuedSpell():IsReadyQueue() and S.CoordinatedAssault:ID() ~= RubimRH.queuedSpell[1]:ID() and S.DeathChakram:ID() ~= RubimRH.queuedSpell[1]:ID() then
+    return RubimRH.QueuedSpell():Cast()
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if S.Muzzle:IsReadyQueue(5) and notInterruptible == false and Target:CastPercentage() > math.random(43,87) and RubimRH.InterruptsON() and Target:AffectingCombat() then
+	return S.Muzzle:Cast()
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 35 then
+	return S.Exhilaration:Cast()
+end
+
+if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(187802) 
+and GetItemCooldown(187802) == 0 and GetItemCount(187802) >= 1 
+and (not Player:InArena() and not Player:InBattlegrounds()) then
+    return I.healingpoticon:Cast()
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Rotation--------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and Target:IsInRange(40) then
+
+	if IsSpellKnown(61684, true) and DashCD == 0 and not IsActionInRange(37,"target") and S.KillCommand:TimeSinceLastCast() > Player:GCD() then
+		return S.Dashz:Cast()
 	end
-	
-	if (shouldTranq() 
-     or AuraUtil.FindAuraByName("Undying Rage", "target") 
-     or AuraUtil.FindAuraByName("Enrage", "target") 
-     or AuraUtil.FindAuraByName("Unholy Frenzy", "target")
-     or AuraUtil.FindAuraByName("Angering Shriek", "target")
-     or AuraUtil.FindAuraByName("Loyal Beasts", "target")
-     or AuraUtil.FindAuraByName("Frenzy", "target")
-     or AuraUtil.FindAuraByName("Motivational Clubbing", "target")
-     or AuraUtil.FindAuraByName("Motivated", "target")
-     or AuraUtil.FindAuraByName("Seething Rage", "target")
-     or AuraUtil.FindAuraByName("Vengeful Rage", "target")
-     or AuraUtil.FindAuraByName("Raging Tantrum", "target")
-     or AuraUtil.FindAuraByName("Death Wish", "target")
-     or AuraUtil.FindAuraByName("Battle Trance", "target")
-     ) 
-     and RubimRH.InterruptsON() and S.TranqShot:IsReady() and Target:AffectingCombat() and Target:TimeToDie() > 4 then
-        return S.TranqShot:Cast()
-    end
-	
---OUT OF COMBAT
-	if not Player:AffectingCombat() then
-	
-	if S.Steward:IsCastable() and I.phialofserenity:Count() <= 1 and Cache.EnemiesCount[20] == 0 then
-        return S.Steward:Cast()
-    end
-	
-	end
 
---ROTATION
-	if (Player:AffectingCombat() or Target:IsDummy()) and Player:CanAttack(Target) then
-
-		if S.Carve:IsReady("Melee") and Cache.EnemiesCount[10] > 1 and S.WildfireBomb:FullRechargeTimeP() > Player:GCD() then
-			return S.Carve:Cast()
-		end
-
-		if (S.WildfireBomb:IsReadyMorph(40) or S.VolatileBomb:IsReadyMorph(40) or S.ShrapnelBomb:IsReadyMorph(40) or S.PheromoneBomb:IsReadyMorph(40)) and Cache.EnemiesCount[10] > 1 then
+	if Cache.EnemiesCount[10] >= 2 and RubimRH.AoEON() then
+	
+		if (S.PheromoneBomb:IsReadyMorph(10) or S.ShrapnelBomb:IsReadyMorph(10) or S.VolatileBomb:IsReadyMorph(10))
+		and S.WildfireBomb:FullRechargeTimeP() < Player:GCD() then
 			return S.WildfireBomb:Cast()
 		end
-
-		if S.SerpentSting:IsReady(40) and not Target:DebuffP(S.SerpentSting) then
-			return S.SerpentSting:Cast()
+		
+		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.DeathChakramz:Cast()
 		end
-
-		if S.KillShot:IsReady(40) then
+		
+		if S.CoordinatedAssault:IsReadyQueue(8) and (RubimRH.CDsON() or S.CoordinatedAssault:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.CoordinatedAssaultz:Cast()
+		end
+		
+		if S.KillShot:IsReadyQueue(40) and Player:BuffP(S.CoordinatedAssault) then
 			return S.KillShot:Cast()
 		end
 		
-		if (S.WildfireBomb:IsReadyMorph(40) or S.VolatileBomb:IsReadyMorph(40) or S.ShrapnelBomb:IsReadyMorph(40) or S.PheromoneBomb:IsReadyMorph(40)) and S.WildfireBomb:FullRechargeTimeP() <= Player:GCD() then
+		if S.ExplosiveShot:IsReadyQueue(40) then
+			return S.ExplosiveShotz:Cast()
+		end
+		
+		if S.Butchery:IsCastableQueue() and Player:Focus() >= 30 and S.Butchery:FullRechargeTimeP() < Player:GCD() then
+			return S.Butchery:Cast()
+		end
+		
+		if (S.PheromoneBomb:IsReadyMorph(10) or S.ShrapnelBomb:IsReadyMorph(10) or S.VolatileBomb:IsReadyMorph(10)) then
 			return S.WildfireBomb:Cast()
 		end
 
-		if S.KillCommand:IsReady() and Player:FocusTimeToMaxPredicted() >= Player:GCD() then
+		if S.Butchery:IsCastableQueue() and Player:Focus() >= 30 and (Target:DebuffP(S.ShrapnelBombDebuff) or S.WildfireBomb:FullRechargeTimeP() > 5) then
+			return S.Butchery:Cast()
+		end
+
+		if S.MongooseBite:IsReadyQueue(8) and Target:DebuffStackP(S.LatentPoison) >= 8 then
+			return S.MongooseBite:Cast()
+		end
+		
+		if S.KillCommand:IsReadyQueue(50) and Player:Focus() < 60 and S.KillCommand:FullRechargeTimeP() < Player:GCD() then
 			return S.KillCommand:Cast()
 		end
-	
-		if S.SerpentSting:IsReady(40) and Target:DebuffRemainsP(S.SerpentSting) <= Player:GCD() then
-			return S.SerpentSting:Cast()
+		
+		if S.KillShot:IsReadyQueue(40) then
+			return S.KillShot:Cast()
 		end
 		
-		if S.RaptorStrike:IsReady("Melee") and Player:Focus() >= 50 then
-			return S.RaptorStrike:Cast()
+		if S.MongooseBite:IsReadyQueue(8) then
+			return S.MongooseBite:Cast()
+		end
+
+	elseif Cache.EnemiesCount[10] < 2 or not RubimRH.AoEON() then
+
+		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.DeathChakramz:Cast()
 		end
 		
+		if S.KillShot:IsReadyQueue(40) and Player:BuffP(S.CoordinatedAssault) then
+			return S.KillShot:Cast()
+		end
+		
+		if S.MongooseBite:IsReadyQueue(8) and Player:BuffRemainsP(S.MongooseFury) < Player:GCD() then
+			return S.MongooseBite:Cast()
+		end
+
+		if S.KillShot:IsReadyQueue(40) then
+			return S.KillShot:Cast()
+		end
+		
+		if S.FlankingStrike:IsReadyQueue(5) and Player:Focus() < 60 then
+			return S.FlankingStrike:Cast()
+		end
+		
+		if S.CoordinatedAssault:IsReadyQueue(8) and (RubimRH.CDsON() or S.CoordinatedAssault:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.CoordinatedAssaultz:Cast()
+		end
+		
+		if S.PheromoneBomb:IsReadyMorph(10) and Player:Focus() < 43 and not Player:BuffP(S.MongooseFury) then
+			return S.WildfireBomb:Cast()
+		end
+		
+		if S.KillCommand:IsReadyQueue(50) and Player:Focus() < 71 and S.KillCommand:FullRechargeTimeP() < Player:GCD() then
+			return S.KillCommand:Cast()
+		end
+		
+		if (S.PheromoneBomb:IsReadyMorph(10) or S.ShrapnelBomb:IsReadyMorph(10) or S.VolatileBomb:IsReadyMorph(10)) 
+		and S.WildfireBomb:FullRechargeTimeP() < Player:GCD() then
+			return S.WildfireBomb:Cast()
+		end
+		
+		if S.MongooseBite:IsReadyQueue(8) and Player:BuffP(S.MongooseFury) or Player:Focus() > 61 then
+			return S.MongooseBite:Cast()
+		end
+
+		if S.ExplosiveShot:IsReadyQueue(40) then
+			return S.ExplosiveShotz:Cast()
+		end
+		
+		if (S.PheromoneBomb:IsReadyMorph(10) or S.ShrapnelBomb:IsReadyMorph(10) or S.VolatileBomb:IsReadyMorph(8)) then
+			return S.WildfireBomb:Cast()
+		end
+
 	end
-
-
+end
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end
 

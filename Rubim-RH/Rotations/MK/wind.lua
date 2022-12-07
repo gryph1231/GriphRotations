@@ -628,7 +628,7 @@ end
     --------------------------------------------------------------------------------------------------------------------------------------------
     --call_action_list,name=opener,if=time<4&chi<5&!pet.xuen_the_white_tiger.active&!talent.serenity
 
-        if HL.CombatTime() < 4 and Player:Chi() < 5 and not S.Serenity:IsAvailable() and (not XuenActive or not S.InvokeXuenTheWhiteTiger:IsAvailable()) then
+        if HL.CombatTime() < 4 and Player:Chi() < 5 and not S.Serenity:IsAvailable() and (not XuenActive or not S.InvokeXuenTheWhiteTiger:IsAvailable()) and Enemies12y ==1 then
   
             -- expel_harm,if=talent.chi_burst.enabled&chi.max-chi>=3
             if S.ExpelHarm:IsReady() and S.ChiBurst:IsAvailable() and Player:ChiDeficit() >= 3 and Target:IsInRange(8) then
@@ -825,7 +825,7 @@ end
         --5 targets
 
         -- Strike of the Windlord
-        if Enemies10y >= 5 then
+        if Enemies12y >= 5 then
             -- if S.InvokeXuenTheWhiteTiger:IsReady() and Target:IsInRange(8) and RubimRH.CDsON() then
             --     return S.InvokeXuenTheWhiteTiger:Cast()
             -- end
@@ -931,7 +931,7 @@ end
         end
 
         -- 2-4 targets
-        if Enemies10y >= 2 and Enemies10y < 5 then
+        if Enemies12y >= 2 and Enemies12y < 5 then
 
 
 
@@ -1040,7 +1040,7 @@ end
         end
 
         -- ST
-        if Enemies10y == 1 then
+        if Enemies12y == 1 then
 
 
             -- if S.InvokeXuenTheWhiteTiger:IsReady() and Target:IsInRange(8) and RubimRH.CDsON() then
@@ -1128,7 +1128,7 @@ end
             return S.ChiBurst:Cast()
         end
 
-        if Enemies10y == 1 then
+        if Enemies12y == 1 then
 
             if S.ExpelHarm:IsReady() and ComboStrike(S.ExpelHarm) and Target:IsInRange(8) then
                 return S.ExpelHarm:Cast()

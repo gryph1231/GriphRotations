@@ -125,7 +125,7 @@ Item.Monk.Brewmaster = {
     trink2 = Item(184016, { 13, 14 }), --Skulker's Wing
     trink = Item(179350, { 13, 14 }), --???
     lust = Item(164978), --drums of fury
-    HPicon = Item(169451),
+    HPIcon = Item(169451),
     tx1 = Item(118330),
     tx2 = Item(114616),
 };
@@ -239,22 +239,22 @@ local function UseItems()
   
   local function Defensives()
     if S.CelestialBrew:IsCastable() and (not Player:Buff(S.BlackoutComboBuff) and Player:IncomingDamageTaken(1999) > (UnitHealthMax("player") * 0.1 + Player:StaggerLastTickDamage(4)) and Player:BuffStack(S.ElusiveBrawlerBuff) < 2) then
-        return S.SpinningCraneKick:Cast()
+        return S.CelestialBrew:Cast()
     end
     if S.PurifyingBrew:IsCastable() and ShouldPurify() then
-        return S.SpinningCraneKick:Cast()
+        return S.PurifyingBrew:Cast()
     end
     
     if S.DampenHarm:IsCastable() and not Player:Buff(S.FortifyingBrewBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage() <= 50) then
-        return S.SpinningCraneKick:Cast()
+        return S.DampenHarm:Cast()
     end
     
     if S.FortifyingBrew:IsCastable() and not Player:Buff(S.DampenHarmBuff) and (Player:NeedPanicHealing() or Player:HealthPercentage() <= 35) then
-        return S.SpinningCraneKick:Cast()
+        return S.FortifyingBrew:Cast()
     end
   
      if S.DiffuseMagic:IsCastable() and not Player:Buff(S.DampenHarmBuff) and not Player:Buff(S.FortifyingBrewBuff) and (Player:NeedMajorHealing() or Player:HealthPercentage() <= 45) then
-        return S.SpinningCraneKick:Cast()
+        return S.DiffuseMagic:Cast()
     end
   
   
@@ -382,7 +382,7 @@ if IsTanking and (Enemies15y>=1 or Target:IsInRange(15)) then
     -- invoke_niuzao_the_black_ox,if=buff.recent_purifies.value>=health.max*0.05&(target.cooldown.pause_action.remains>=20|time<=10|target.cooldown.pause_action.duration=0)
     -- APL Note: Cast Niuzao when we'll get at least 20 seconds of uptime. This is specific to the default enemy APL and will need adjustments for other enemies.
     -- Note: Using BossFilteredTarget:TimeToDie() instead of the above calculation
-    if S.InvokeNiuzaoTheBlackOx:IsCastable() and (RubimRH.CDsON() and Target:TimeToDie()>8 or HL.BossFilteredTarget:TimeToDie()(">", 25)) and (Enemies12y>=1 or Target:IsInRange(12)) then
+    if S.InvokeNiuzaoTheBlackOx:IsCastable() and RubimRH.CDsON() and Target:TimeToDie()>8 and (Enemies12y>=1 or Target:IsInRange(12)) then
         return S.InvokeNiuzaoTheBlackOx:Cast()
     end
     
