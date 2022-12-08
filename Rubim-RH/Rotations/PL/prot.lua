@@ -400,7 +400,7 @@ if Player:AffectingCombat() then
       
         -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
         if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and 
-          (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLightFreeBuff)) then
+          (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight)) then
         return S.WordofGlory:Cast()
         end
         
@@ -412,7 +412,7 @@ if Player:AffectingCombat() then
             return S.ShieldoftheRighteous:Cast()
         end
 
-    end
+    
 
 
     if S.ArdentDefender:IsReadyP() and Player:AffectingCombat() and
@@ -474,6 +474,7 @@ if Player:AffectingCombat() then
         return S.WordofGlory:Cast()
     end
 
+
     if S.WordofGlory:IsReadyP() and
         (
         Player:HealthPercentage() < 45 and wordofglorycast or
@@ -489,7 +490,7 @@ if Player:AffectingCombat() then
         return S.BlessingofProtection:Cast()
     end
 
-
+end
     -- fireblood,if=buff.avenging_wrath.up
     -- seraphim
     -- avenging_wrath
