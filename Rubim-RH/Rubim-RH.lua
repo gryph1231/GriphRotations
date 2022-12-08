@@ -111,6 +111,10 @@ Arms = 71
 Fury = 72
 Protection = 73
 
+
+Devastation = 1467 
+Preservation = 1468
+
 -- Defines the APL
 RubimRH.Rotation = {}
 RubimRH.Rotation.APLs = {}
@@ -183,7 +187,9 @@ local EnabledRotation = {
     -- Warrior
     [71] = true, -- Arms
     [72] = true, -- Fury
-    [73] = true  -- Protection
+    [73] = true,  -- Protection
+    -- Evoker
+    [1457] = true,
 }
 
 --DK
@@ -984,7 +990,18 @@ local defaults = {
 			sk4 = 65, -- Power Word: Shield
             sk4id = 17, -- Power Word: Shield
             sk4tooltip = "Percent HP to use Power Word: Shield",
-        }
+        },
+        --devastation
+        [1467] = {
+
+			
+        },
+          --preservation
+          [1468] = {
+
+			
+        },
+  
     }
 }
 

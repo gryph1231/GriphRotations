@@ -26,7 +26,9 @@ do
     [260] = true, -- Outlaw
     [261] = true, -- Subtlety
     [268] = true, -- Brewmaster
-    [269] = true -- Windwalker
+    [269] = true, -- Windwalker
+    [1467] = true, -- Subtlety
+
   }
   function Player:GCD()
     local GUID = self:GUID()

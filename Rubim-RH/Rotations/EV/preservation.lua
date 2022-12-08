@@ -29,7 +29,7 @@ end
 
 
 
-RubimRH.Spell[1467] = {
+RubimRH.Spell[1468] = {
     -- Racials
     TailSwipe               = Spell(368970),
     WingBuffet              = Spell(357214),
@@ -96,18 +96,18 @@ RubimRH.Spell[1467] = {
 
 
 
-local S = RubimRH.Spell[1467]
+local S = RubimRH.Spell[1468]
 
 
 if not Item.Evoker then Item.Evoker = {}; end
-Item.Evoker.Devastation = {
+Item.Evoker.Balance = {
     HPIcon = Item(169451),
     tx1 = Item(118330),
     tx2 = Item(114616),
 
 
 };
-local I = Item.Evoker.Devastation;
+local I = Item.Evoker.Balance;
 
 
 
@@ -201,7 +201,7 @@ local function APL()
 
 
 
-    if Player:IsCasting() or Player:IsChanneling() then
+    if Player:IsCasting() or Player:IsChanneling() and not Player:IsChanneling(S.SpinningCraneKick) then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or
         AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
@@ -423,11 +423,11 @@ local function APL()
     return 0, 625999
 end
 
-RubimRH.Rotation.SetAPL(1467, APL);
+RubimRH.Rotation.SetAPL(1468, APL);
 
 local function PASSIVE()
     -- print(GetEnemiesCount());
     return RubimRH.Shared()
 end
 
-RubimRH.Rotation.SetPASSIVE(1467, PASSIVE);
+RubimRH.Rotation.SetPASSIVE(1468, PASSIVE);

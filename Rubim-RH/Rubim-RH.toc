@@ -61,5 +61,6 @@ Rotations\MG\frost.lua
 Rotations\MG\arcane.lua
 Rotations\PR\shadow.lua
 Rotations\EV\devastation.lua
+Rotations\EV\preservation.lua
 
 Modules\PVP.lua

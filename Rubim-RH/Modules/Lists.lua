@@ -472,6 +472,8 @@ RubimRH.Listener:Add('Rubim_Events', 'PLAYER_ENTERING_WORLD', function(...)
         [256] = true,
         [257] = true,
         [264] = true,
+        [1468] = true,
+
     }
 
     RubimRH.List.RangedSpec = {
@@ -492,6 +494,9 @@ RubimRH.Listener:Add('Rubim_Events', 'PLAYER_ENTERING_WORLD', function(...)
         [265] = true,
         [266] = true,
         [267] = true,
+        [1467] = true,
+        [1468] = true,
+
     }
 
     RubimRH.List.DesarmableSpec = {
@@ -1330,12 +1335,16 @@ RubimRH.List.Class = {
     [10] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },
     [11] = { Type = "Caster", Slow = "Physical", ImmuneSlow = "False" },
     [12] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },
+    [13] = { Type = "Caster", Slow = "Magic", ImmuneSlow = "False" },
+
 }
 
 RubimRH.List.Spec = {
     [71] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },
     [72] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },
     [73] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },
+    [1467] = { Type = "Ranged", Slow = "Magic", ImmuneSlow = "False" },
+    [1468] = { Type = "Ranged", Slow = "Magic", ImmuneSlow = "False" },
 
     [65] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },
     [66] = { Type = "Melee", Slow = "Physical", ImmuneSlow = "False" },

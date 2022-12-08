@@ -368,7 +368,9 @@ local PvPRangedClass = {
     7,
     8,
     9,
-    11
+    11,
+    1467,
+    -- 1468,
 }
 local PvPDesarmableClass = {
     1,
@@ -957,6 +959,8 @@ local MKWind = RubimRH.Spell[Windwalker]
 local RGAss = RubimRH.Spell[Assassination]
 local RGSub = RubimRH.Spell[Subtlety]
 local RGOut = RubimRH.Spell[Outlaw]
+local EVDev = RubimRH.Spell[Devastation]
+local EVPres = RubimRH.Spell[Preservation]
 
 local stunsSpellList = {
     WRArms.Stormbolt,
@@ -1202,11 +1206,16 @@ RubimRH.Rotation.SetPvP(263, emptyAPL)
 RubimRH.Rotation.SetPvP(264, emptyAPL)
 
 RubimRH.Rotation.SetPvP(265, emptyAPL)
---RubimRH.Rotation.SetPvP(266, emptyAPL)
+RubimRH.Rotation.SetPvP(266, emptyAPL)
 RubimRH.Rotation.SetPvP(267, emptyAPL)
 
 RubimRH.Rotation.SetPvP(72, emptyAPL)
 RubimRH.Rotation.SetPvP(73, emptyAPL)
+
+
+RubimRH.Rotation.SetPvP(1467, emptyAPL)
+RubimRH.Rotation.SetPvP(1468, emptyAPL)
+
 
 local function PvPRotation(specID)
     if specID == BeastMastery then

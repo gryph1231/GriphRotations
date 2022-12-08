@@ -208,6 +208,7 @@ AudacityBuff = Spell(381845),
     Dispatch = Spell(2098),
     SinisterStrike = Spell(193315),
     Stealth = Spell(1784),
+    
     Vanish = Spell(1856),
     VanishBuff = Spell(11327),
     Shiv = Spell(5938),
@@ -667,7 +668,7 @@ end
 
     if IsEquippedItem("Sigil of the Master Assassin") and Target:IsInRange(10) and Player:CanAttack(Target) and
         not Player:Buff(S.Stealth)
-        and ((finishcondition and UnitPower("player", 3) >= 32) or UnitPower("player", 3) >= 50) and SnDAS == 64 then
+        and ((finishcondition and UnitPower("player", 3) >= 32) or UnitPower("player", 3) >= 50) and (S.SwiftSlasher:IsAvailable() and SnDAS == 64 or not S.SwiftSlasher:IsAvailable() and  SnDAS == 50) then
         if S.Vanish:IsReadyQueue() and Player:GCDRemains() <= 0.5 and Player:AffectingCombat() and
             Player:BuffRemainsP(S.mantle) == 0 and bladeflurrysync and vanish_ma_condition then
             return S.Vanish:Cast()
