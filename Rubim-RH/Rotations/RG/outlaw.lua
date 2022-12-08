@@ -81,7 +81,8 @@ AudacityBuff = Spell(381845),
     EssenceFont            = Spell(191837),
     SoothingMist           = Spell(209525),
     SurgingMist            = Spell(227344),
-
+    DeftManeuvers = Spell(381878),
+    AcrobaticStrikes = Spell(196924),
     --Dungeons
     --Enrage
     UndyingRage = Spell(333227),
@@ -152,7 +153,6 @@ AudacityBuff = Spell(381845),
     GloomBurst = Spell(326837),
     BarbedShackles = Spell(335305),
     ExplosiveAnger = Spell(336277),
-    FieryCantrip = Spell(326952),
     PlagueBolt = Spell(320120),
     NecromanticBolt = Spell(320300),
     DemoralizingShout = Spell(330562),
@@ -169,14 +169,12 @@ AudacityBuff = Spell(381845),
     DecayingFilth = Spell(330703),
     Discharge = Spell(332196),
     Steward = Spell(324739),
-    EchoingReprimand = Spell(385616), --385616
+    EchoingReprimand = Spell(385616), 
     EchoingReprimandCP2 = Spell(323558),
     EchoingReprimandCP3 = Spell(323559),
     EchoingReprimandCP4 = Spell(323560),
     EchoingReprimandCP5 = Spell(354838),
-    trink2z = Spell(260364), --arcane pulse
     BladeRush = Spell(271877),
-    stopcasting = Spell(291944), --regeneration
     CripplingPoison = Spell(3408),
     InstantPoison = Spell(315584),
     NumbingPoison = Spell(5761),
@@ -186,7 +184,6 @@ AudacityBuff = Spell(381845),
     lust4 = Spell(95809),
     lust5 = Spell(264689),
     KidneyShot = Spell(408),
-    AceUpYourSleeve = Spell(278676),
     Deadshot = Spell(272935),
     Berserking = Spell(26297),
     Darkflight = Spell(68992),
@@ -200,7 +197,7 @@ AudacityBuff = Spell(381845),
     Ambush = Spell(8676),
     BetweentheEyes = Spell(315341),
     BladeFlurry = Spell(13877),
-    DeeperStratagem = Spell(193531),
+  
     DeviousStratagem = Spell(394321),
     Opportunity = Spell(195627),
     PistolShot = Spell(185763),
@@ -226,10 +223,8 @@ AudacityBuff = Spell(381845),
     KillingSpree = Spell(51690),
     MarkedforDeath = Spell(137619),
     QuickDraw = Spell(196938),
-    Tricks = Spell(57934),
     GreenSkinsWickers = Spell(386823), --386823 --394131
     GreenSkinsWickersBuff = Spell(394131),
-    ToTT = Spell(58984),
     SliceandDice = Spell(315496),
     Vigor = Spell(14983),
     Exhaustion = Spell(57723),
@@ -242,7 +237,6 @@ AudacityBuff = Spell(381845),
     AceUpYourSleeve = Spell(278676),
     SnakeEyes = Spell(275846),
     SnakeEyesBuff = Spell(275863),
-    DS = Spell(642),
     CheapShot = Spell(1833),
     CrimsonVial = Spell(185311),
     Feint = Spell(1966),
@@ -257,16 +251,6 @@ AudacityBuff = Spell(381845),
     RuthlessPrecision = Spell(193357),
     TrueBearing = Spell(193359),
     Evasion = Spell(5277),
-    healingpot = Spell(169451),
-    crimsonvial = Spell(312411), --bag of tricks
-    PistolShotz = Spell(287712),
-    foodanddrink = Spell(308433),
-    smokebomb = Spell(212182),
-    trink = Spell(274738),
-    trink2 = Spell(260364),
-    plunderarmor = Spell(198529),
-    FlayedToxin = Spell(345545),
-    dismantle = Spell(207777),
     mantle = Spell(340094),
     WoundPoison = Spell(8679),
 }
@@ -278,8 +262,9 @@ if not Item.Rogue then Item.Rogue = {}; end
 Item.Rogue.Outlaw = {
     trink = Item(184016, { 13, 14 }),
     drums = Item(172233),
-    healthstone = Item(5512),
-    healingpoticon = Item(169451)
+    HPIcon = Item(169451),
+    tx1 = Item(118330),
+    tx2 = Item(114616),
 };
 
 local I = Item.Rogue.Outlaw;
@@ -379,15 +364,43 @@ function HealthPotionSelected()
 end
 
 
+
 local function APL()
-    HL.GetEnemies(10, true);
-    HL.GetEnemies(12, true);
-    HL.GetEnemies(20, true);
-    HL.GetEnemies(25, true);
-    HL.GetEnemies(30, true);
+    HL.GetEnemies(5);
+    HL.GetEnemies("Melee");
+    HL.GetEnemies(8);
+    HL.GetEnemies(10);
+    HL.GetEnemies(12);
+    HL.GetEnemies(15);
+    HL.GetEnemies(20);
+    HL.GetEnemies(25);
+    HL.GetEnemies(30);
+    HL.GetEnemies(35);
+    HL.GetEnemies(40);
+    Enemies5y = Cache.EnemiesCount[5]
+    Enemies8y = Cache.EnemiesCount[8]
+    Enemies10y = Cache.EnemiesCount[10]
+    Enemies12y = Cache.EnemiesCount[12]
+    Enemies15y = Cache.EnemiesCount[15]
+    Enemies20y = Cache.EnemiesCount[20]
+    Enemies25y = Cache.EnemiesCount[25]
+    Enemies30y = Cache.EnemiesCount[30]
+    Enemies35y = Cache.EnemiesCount[35]
+    Enemies40y = Cache.EnemiesCount[40]
     target_is_dummy()
     RtB_BuffRemains()
     RtB_Buffs()
+
+
+    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+end
+
+
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
@@ -458,7 +471,14 @@ local function APL()
         vanishcondition = (
             S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp())
 
-        bladeflurrysync = Cache.EnemiesCount[10] < 2 or
+if S.DeftManeuvers:IsAvailable() and S.AcrobaticStrikes:IsAvailable() then 
+    bfrange = 12
+else
+    bfrange = 10
+
+end
+
+        bladeflurrysync = Cache.EnemiesCount[bfrange] < 2 or
             (Player:BuffRemainsP(S.BladeFlurry) > 1 + num(S.KillingSpree:IsAvailable()))
 
         mfdcondition = Player:ComboPoints() >=
@@ -487,21 +507,7 @@ local function APL()
         return S.Kick:Cast()
     end
 
-    if (select(4, UnitAura("target", 1)) == "enrage"
-        or AuraUtil.FindAuraByName("Undying Rage", "target")
-        or AuraUtil.FindAuraByName("Enrage", "target")
-        or AuraUtil.FindAuraByName("Unholy Frenzy", "target")
-        or AuraUtil.FindAuraByName("Angering Shriek", "target")
-        or AuraUtil.FindAuraByName("Loyal Beasts", "target")
-        or AuraUtil.FindAuraByName("Frenzy", "target")
-        or AuraUtil.FindAuraByName("Motivational Clubbing", "target")
-        or AuraUtil.FindAuraByName("Motivated", "target")
-        or AuraUtil.FindAuraByName("Seething Rage", "target")
-        or AuraUtil.FindAuraByName("Vengeful Rage", "target")
-        or AuraUtil.FindAuraByName("Raging Tantrum", "target")
-        or AuraUtil.FindAuraByName("Death Wish", "target")
-        or AuraUtil.FindAuraByName("Battle Trance", "target"))
-        and RubimRH.InterruptsON() and S.Shiv:IsReadyQueue(8) and Player:AffectingCombat() and Target:TimeToDie() > 4 then
+    if (select(4, UnitAura("target", 1)) == "enrage" and RubimRH.InterruptsON() and S.Shiv:IsReadyQueue(8) and Player:AffectingCombat() and Target:TimeToDie() > 4) then
         return S.Shiv:Cast()
     end
     --------------------------------------------------------------------------------------------------------------------------------------------
@@ -524,9 +530,9 @@ local function APL()
             return S.InstantPoison:Cast()
         end
 
-        -- if S.CripplingPoison:IsCastableQueue() and not Player:BuffP(S.NumbingPoison) and Player:BuffRemainsP(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) and not Player:IsMoving() then
-        -- return S.CripplingPoison:Cast()
-        -- end
+        if S.CripplingPoison:IsCastableQueue() and not S.NumbingPoison:IsAvailable() and not Player:BuffP(S.NumbingPoison) and Player:BuffRemainsP(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) and not Player:IsMoving() then
+        return S.CripplingPoison:Cast()
+        end
 
         if S.NumbingPoison:IsCastableQueue() and not Player:BuffP(S.CripplingPoison) and
             not Player:BuffP(S.CripplingPoison) and Player:BuffRemainsP(S.NumbingPoison) < 300 and
@@ -618,7 +624,6 @@ local function APL()
     end
 
 
-    IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
     if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
         GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
@@ -638,18 +643,13 @@ end
     --     return S.Temptation:Cast()
     -- end
 
-    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(187802) and
-        GetItemCooldown(187802) == 0 and GetItemCount(187802) >= 1
-        and (not Player:InArena() and not Player:InBattlegrounds()) then
-        return I.healingpoticon:Cast()
-    end
-
+   
     if S.BladeFlurry:IsCastableQueue() and
         (
         not Player:Buff(S.VanishBuff) and not Player:Buff(S.Stealth) and
             (
             RubimRH.AoEON() and (not Player:BuffP(S.BladeFlurry) or Player:BuffRemainsP(S.BladeFlurry) < Player:GCD())
-                and Cache.EnemiesCount[12] >= 2)) then
+                and Cache.EnemiesCount[bfrange] >= 2)) then
         return S.BladeFlurry:Cast()
     end
 
@@ -716,8 +716,8 @@ end
         and not Player:BuffP(S.Stealth) and not Player:BuffP(S.VanishBuff) and Target:IsInRange(5)
         and
         (
-        Cache.EnemiesCount[12] == 1 and EnergyTimeToMaxRounded() > 2 or
-            (Cache.EnemiesCount[12] > 1 and Player:BuffP(S.BladeFlurry))
+        Cache.EnemiesCount[bfrange] == 1 and EnergyTimeToMaxRounded() > 2 or
+            (Cache.EnemiesCount[bfrange] > 1 and Player:BuffP(S.BladeFlurry))
             or S.BladeFlurry:CooldownRemainsP() >= 10) then
         return S.BladeRush:Cast()
     end
@@ -897,7 +897,7 @@ local   shadowdance = (IsUsableSpell('Shadow Dance') and S.ShadowDance:CooldownU
             Target:DebuffP(S.Flagellation)
             or SnDAS ~= 64 or Player:BuffP(S.mantle) or RtB_Buffs() >= 5 or erbuff == true or
             (not Target:DebuffP(S.BetweentheEyes) and S.BetweentheEyes:CooldownUp())
-            or (Player:BuffP(S.BladeFlurry) and Cache.EnemiesCount[10] >= 2) or
+            or (Player:BuffP(S.BladeFlurry) and Cache.EnemiesCount[bfrange] >= 2) or
             S.Flagellation:ID() == RubimRH.queuedSpell[1]:ID() or S.Dreadblades:ID() == RubimRH.queuedSpell[1]:ID() then
             if S.Ambush:IsReadyQueue(8) then
                 return S.Ambush:Cast()
