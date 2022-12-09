@@ -269,26 +269,17 @@ end
   * @returns {number}
   *]]
   
+-- Check if the spell Is Castable or not.
+
+
+
+
+
 function Spell:IsCastable(Range, AoESpell, ThisUnit)
     if not self:IsAvailable() or self:IsQueuedPowerCheck() then
         return false
     end
-	
-	local currentZoneID = select(8, GetInstanceInfo())
-    RubimRH.Spell[998] = {
-        RepeatPerformance = Spell(301244),
-    }
-    local S = RubimRH.Spell[998]
-	
-	-- Queens Court - Repeat Performance debuff checker
-	if currentZoneID == 2164 and Player:DebuffRemainsP(S.RepeatPerformance) > 0 then
-	    if Player:PrevGCD(1) ~= self:ID() then
-	        return true
-		else
-		    return false
-		end
-	end
-	
+
     if Range then
         local RangeUnit = ThisUnit or Target;
         return self:IsLearned() and self:CooldownUp() and RangeUnit:IsInRange(Range, AoESpell);
@@ -296,6 +287,7 @@ function Spell:IsCastable(Range, AoESpell, ThisUnit)
         return self:IsLearned() and self:CooldownUp();
     end
 end
+
 
 function Spell:IsCastableQueue(Range, AoESpell, ThisUnit)
 
@@ -796,6 +788,10 @@ function Player:IncomingDamageTaken(Milliseconds)
   end
   return DamageTaken
 end
+
+
+
+
 
 HL:RegisterForCombatEvent(
   function (...)

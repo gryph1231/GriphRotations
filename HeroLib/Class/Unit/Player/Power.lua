@@ -865,13 +865,13 @@ do
   local EchoingReprimandCP5 = Spell(354838)
 
   function AnimachargedCP()
-    if Player:BuffP(EchoingReprimandCP2) then
+    if Player:Buff(EchoingReprimandCP2) then
       return 2
-    elseif Player:BuffP(EchoingReprimandCP3) then
+    elseif Player:Buff(EchoingReprimandCP3) then
       return 3
-    elseif Player:BuffP(EchoingReprimandCP4) then
+    elseif Player:Buff(EchoingReprimandCP4) then
       return 4
-    elseif Player:BuffP(EchoingReprimandCP5) then
+    elseif Player:Buff(EchoingReprimandCP5) then
       return 5
     end
 
