@@ -44,5 +44,6 @@ function HL.Pulse()
   end
 end
 
+
 -- Register the Pulse
 HL.MainFrame:SetScript("OnUpdate", HL.Pulse)
