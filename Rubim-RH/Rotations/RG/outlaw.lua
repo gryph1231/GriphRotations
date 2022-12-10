@@ -273,7 +273,7 @@ if not Item.Rogue then Item.Rogue = {}; end
 
 Item.Rogue.Outlaw = {
     trink = Item(184016, { 13, 14 }),
-    drums = Item(172233),
+    drums = Item(193470),
     HPIcon = Item(169451),
     tx1 = Item(118330),
     tx2 = Item(114616),
@@ -451,6 +451,27 @@ local function APL()
  end
 
 
+ if Player:BuffP(S.EchoingReprimandCP2) or Player:BuffP(S.EchoingReprimandCP3) or Player:BuffP(S.EchoingReprimandCP4)
+ or Player:BuffP(S.EchoingReprimandCP5) then
+ erbuff = true
+else
+ erbuff = false
+end
+
+if (Player:BuffP(S.EchoingReprimandCP2) and Player:ComboPoints() == 2) or
+ (Player:BuffP(S.EchoingReprimandCP3) and Player:ComboPoints() == 3)
+ or (Player:BuffP(S.EchoingReprimandCP4) and Player:ComboPoints() == 4) or
+ (Player:BuffP(S.EchoingReprimandCP5) and Player:ComboPoints() == 5) then
+ ercp = true
+else
+ ercp = false
+end
+
+if ercp == true then
+ effective_combo_points = 7
+else
+ effective_combo_points = Player:ComboPoints()
+end
 -- print(stealthall)
 
     --Reroll BT + GM or single buffs early other than Broadside, TB with Shadowdust, or SnC with Blunderbuss
@@ -484,19 +505,23 @@ local function APL()
                 and (not S.CounttheOdds:IsAvailable() or RtB_BuffRemains() >= 10)
             )
 
-
-            if S.BetweentheEyes:CooldownUp() and EffectiveComboPoints() > 5 then
-                finishcondition = true
+            if S.BetweentheEyes:IsReadyQueue(20) then
+                --Always attempt to use BtE at 5+ CP, regardless of CP gen waste
+                finishcondition = effective_combo_points >= 5
+            elseif Target:DebuffP(S.Flagellation) and Target:DebuffRemainsP(S.Flagellation) <= Player:GCD() then
+                --Finish at 2+ in the last GCD of Flagellation
+                finishcondition = effective_combo_points >= 2
             else
-            finishcondition = (
-                (Player:ComboPoints() >= CPMaxSpend() - num(Player:BuffP(S.Broadside)) -
-                    (
-                    num(Player:BuffP(S.Opportunity)) *
-                        (num(S.QuickDraw:IsAvailable()) or num(S.FantheHammer:IsAvailable())))) or
-                EffectiveComboPoints() >= CPMaxSpend()
-                    )
-
-                end
+                --Finish at max possible CP without overflowing bonus combo points
+                finishcondition = (
+                    Player:ComboPoints() >=
+                        CPMaxSpend() - num(Player:BuffP(S.Broadside)) -
+                        (
+                        num(Player:BuffP(S.Opportunity)) *
+                            (num(S.QuickDraw:IsAvailable()) or num(S.FanTheHammer:IsAvailable())))) or
+                    effective_combo_points >= CPMaxSpend()
+            end
+    
  
         -- variable,name=vanish_condition,value=talent.hidden_opportunity|!talent.shadow_dance|!cooldown.shadow_dance.ready
         vanishcondition = (
@@ -952,8 +977,7 @@ end
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------Builders--------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
-    if not RubimRH.LastCast(S.MarkedforDeath, 1) and not Player:Buff(S.Stealth) and not Target:Debuff(S.Blind) 
-        and not Player:Buff(S.VanishBuff) and Player:AffectingCombat()
+    if not RubimRH.LastCast(S.MarkedforDeath, 1) and not Player:Buff(S.Stealth) and not Target:Debuff(S.Blind)  and Player:AffectingCombat()
         and (not finishcondition or SnDAS ~= maxsndpercent) then
         if S.EchoingReprimand:CooldownRemainsP() <= 10 and SnDAS == maxsndpercent
             and (
