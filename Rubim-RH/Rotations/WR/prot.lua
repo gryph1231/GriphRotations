@@ -156,7 +156,12 @@ local function IgnorePainWillNotCap()
   
   local function ShouldPressShieldBlock()
 	-- shield_block,if=(buff.shield_block.down|buff.shield_block.remains<cooldown.shield_slam.remains)&target.health.pct>20
-	return IsTanking and S.ShieldBlock:IsReady() and ((not Player:Buff(S.ShieldBlockBuff) or Player:BuffRemains(S.ShieldBlockBuff) < S.ShieldSlam:CooldownRemains()) and not Player:Buff(S.LastStandBuff) and Target:HealthPercentage() > 20)
+	return IsTanking and S.ShieldBlock:IsReady() and 
+	-- ((
+		not Player:Buff(S.ShieldBlockBuff) 
+	-- or Player:BuffRemains(S.ShieldBlockBuff) < S.ShieldSlam:CooldownRemains())
+	 and not Player:Buff(S.LastStandBuff) and Target:HealthPercentage() > 20
+	--)
   end
   
   -- A bit of logic to decide whether to pre-cast-rage-dump on ignore pain.
@@ -215,23 +220,23 @@ end
 
 local function Defensive()
 	if ShouldPressShieldBlock() then
-		return S.LastStand:Cast()
+		return S.ShieldBlock:Cast()
 	end
 	-- shield_wall,if=!buff.last_stand.up&!buff.rallying_cry.up
-	if S.ShieldWall:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:NeedPanicHealing() or Player:HealthPercentage()<55) then
+	if S.ShieldWall:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:HealthPercentage()<55 and Player:NeedPanicHealing() or Player:HealthPercentage()<35) then
 		return S.ShieldWall:Cast()
 	end
 	-- last_stand,if=!buff.shield_wall.up&!buff.rallying_cry.up
-	if S.LastStand:IsCastable() and (not Player:Buff(S.ShieldBlockBuff) and S.ShieldBlock:Recharge() > 1) and (Player:NeedPanicHealing() or Player:HealthPercentage()<55) then
+	if S.LastStand:IsCastable() and (not Player:Buff(S.ShieldBlockBuff) and S.ShieldBlock:Recharge() > 1) and (Player:HealthPercentage()<55 and Player:NeedPanicHealing() or Player:HealthPercentage()<55) then
 	return S.LastStand:Cast()
 	end
 	-- rallying_cry,if=!buff.last_stand.up&!buff.shield_wall.up
-	if S.RallyingCry:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff)) and (Player:NeedPanicHealing() or Player:HealthPercentage()<60) then
+	if S.RallyingCry:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff)) and (Player:HealthPercentage()<55 and Player:NeedPanicHealing() or Player:HealthPercentage()<60) then
 		return S.RallyingCry:Cast()
 	end
   
 	-- demoralizing_shout,if=!buff.last_stand.up&!buff.shield_wall.up&!buff.rallying_cry.up
-	if S.DemoralizingShout:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:NeedMajorHealing() or Player:HealthPercentage()<80)then
+	if S.DemoralizingShout:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:HealthPercentage()<55 and Player:NeedPanicHealing() or Player:HealthPercentage()<50)then
 		return S.DemoralizingShout:Cast()
 	end
   
@@ -246,6 +251,7 @@ local function Defensive()
   end
   
   local function Aoe()
+
 	-- ignore_pain,if=rage.deficit>=35&buff.ignore_pain.value<health.max*0.3
 	if S.IgnorePain:IsReady() and (Player:RageDeficit() >= 35 and IgnorePainValue() < Player:MaxHealth() * 0.3) then
 		return S.IgnorePain:Cast()
@@ -385,7 +391,7 @@ local function Defensive()
 		return S.TitanicThrow:Cast()
 	end
 	-- thunder_clap
-	if S.ThunderClap:IsReady() and Target:IsInMeleeRange(8) then
+	if S.ThunderClap:IsReady() and Target:IsInRange(8) then
 	  SuggestRageDump(5)
 	  return S.ThunderClap:Cast()
 	end
@@ -494,20 +500,30 @@ end
 	  end
 
 	  
-
+	  if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
+	  RubimRH.InterruptsON() and S.Pummel:IsCastableQueue(8) and Player:AffectingCombat() then
+	  return S.Pummel:Cast()
+	  end
+	  
+	  
+	  if S.ShieldBlock:IsCastable() and Player:Rage() >= 30 and (IsTanking or Target:IsDummy()) and Player:AffectingCombat() and Cache.EnemiesCount[10] >= 1
+	  and (not Player:BuffP(S.ShieldBlockBuff) or S.ShieldBlock:Charges() == 2)  then
+		  return S.ShieldBlock:Cast()
+	  end
+	  
 
 	  if RubimRH.CDsON() and (Player:Buff(S.AvatarBuff) or not S.Avatar:IsAvailable()) then
 	
 		
-		if S.BloodFury:IsCastable() then
+		if S.BloodFury:IsCastable() and RubimRH.CDsON() then
 		return S.BloodFury:Cast()
 	end
 				
-		if S.Berserking:IsCastable() then
+		if S.Berserking:IsCastable() and RubimRH.CDsON() then
 			return S.Berserking:Cast()
 	end
 	
-		if S.AncestralCall:IsCastable() then
+		if S.AncestralCall:IsCastable() and RubimRH.CDsON() then
 			return S.AncestralCall:Cast()
 		end
 	  end
@@ -526,12 +542,12 @@ end
 	end
 	  if (RubimRH.CDsON()) then
 
-		if S.ArcaneTorrent:IsCastable() and (Player:Rage() < 80) then
+		if S.ArcaneTorrent:IsCastable() and (Player:Rage() < 80) and RubimRH.CDsON() then
 			return S.ArcaneTorrent:Cast()
 		end
   
   
-		if S.Avatar:IsCastable() and Target:IsInRange(5) then
+		if S.Avatar:IsCastable() and Target:IsInRange(5) and RubimRH.CDsON() then
 			return S.Avatar:Cast()
 		end
 
@@ -547,62 +563,10 @@ end
 
 	end
 
---------------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------Rotation------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
-if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
-RubimRH.InterruptsON() and S.Kick:IsCastableQueue(8) and Player:AffectingCombat() then
-return S.Pummel:Cast()
-end
 
 
-if S.ShieldBlock:IsCastable() and Player:Rage() >= 30 and (IsTanking or Target:IsDummy()) and Player:AffectingCombat() and Cache.EnemiesCount[10] >= 1
-and (not Player:BuffP(S.ShieldBlockBuff) or S.ShieldBlock:Charges() == 2)  then
-	return S.ShieldBlock:Cast()
-end
 
-if S.IgnorePain:IsCastable() and Player:Rage() >= 35 and (IsTanking or Target:IsDummy()) and Player:AffectingCombat()
-and not Player:BuffP(S.IgnorePain) and (Player:HealthPercentage() <= 85 or Player:IncDmgPercentage() >= 2) then
-	return S.IgnorePain:Cast()
-end
 
-if S.ImpendingVictory:IsReady(5) and (Player:Rage() >= 10 or Player:BuffP(S.ImpendingVictoryProc)) 
-and Player:HealthPercentage() <= 35 then
-	return S.ImpendingVictory:Cast()
-end
-
-if S.ThunderClap:IsCastable() and not Player:IsTankingAoE(12)
-and Player:Rage() >= 30 and Cache.EnemiesCount[8] >= 2 then
-	return S.ThunderClap:Cast()
-end
-
-if S.DemoralizingShout:IsCastable() 
-and (Cache.EnemiesCount[8] >= 3 or ((UnitClassification("target") == "worldboss" or Target:IsDummy()) and Target:IsInRange(8))
-or (Player:BuffP(S.Avatar) and Cache.EnemiesCount[8] >= 2)) then
-	return S.DemoralizingShout:Cast()
-end
-
-if S.ShieldSlam:IsReady(5) then
-	return S.ShieldSlam:Cast()
-end
-
-if S.ImpendingVictory:IsReady(5) and (Player:Rage() >= 10 or Player:BuffP(S.ImpendingVictoryProc)) 
-and Player:HealthPercentage() <= 70 then
-	return S.ImpendingVictory:Cast()
-end
-
-if S.ThunderClap:IsCastable() 
-and Player:Rage() >= 30 and Cache.EnemiesCount[8] >= 1 then
-	return S.ThunderClap:Cast()
-end
-
--- if S.Execute:IsReady(5) and Player:Rage() >= 65 and (Target:HealthPercentage() > 80 or Target:HealthPercentage() < 20) then
-	-- return S.Execute:Cast()
--- end
-
-if S.Revenge:IsReady(5) and (Player:Rage() >= 65 or Player:BuffP(S.RevengeBuff)) then
-	return S.Revenge:Cast()
-end
 
   return 0, 135328
 end

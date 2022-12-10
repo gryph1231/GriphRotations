@@ -16,6 +16,7 @@ local mainAddon = RubimRH
 
 -- Spells
 RubimRH.Spell[253] = {
+	Dash = Spell(61684),
     ArcaneTorrent = Spell(80483),
     AncestralCall = Spell(274738),
     Berserking = Spell(26297),
@@ -231,21 +232,21 @@ BarbRechargeTime = 11 / (1 + GetHaste('player')/100)
 start, duration, enabled = GetSpellCooldown(388035);
 FortoftheBearCD = duration - (GetTime() - start)
 
-if FortoftheBearCD < 0 then 
+if FortoftheBearCD < 0 or FortoftheBearCD== nil then 
 	FortoftheBearCD = 0
 end
 
 start, duration, enabled = GetSpellCooldown(90361);
 SpiritMendCD = duration - (GetTime() - start)
 
-if SpiritMendCD < 0 then 
+if SpiritMendCD < 0 or SpiritMendCD == nil then 
 	SpiritMendCD = 0
 end
 
 start, duration, enabled = GetSpellCooldown(61684);
 DashCD = duration - (GetTime() - start)
 
-if DashCD < 0 then 
+if DashCD < 0 or DashCD == nil then 
 	DashCD = 0
 end
 
@@ -281,12 +282,12 @@ and S.DeathChakram:ID() ~= RubimRH.queuedSpell[1]:ID() and S.FreezingTrap:ID() ~
     return RubimRH.QueuedSpell():Cast()
 end
 
--- if S.BestialWrath:IsCastableQueue()
--- and (S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID() or RubimRH.CDsON()) 
--- and (CleaveCount() == 1 or Player:BuffRemainsP(S.BeastCleaveBuff) > Player:GCD() * 1.25)
--- and (S.BarbedShot:ChargesFractional() < 1 or not S.ScentofBlood:IsAvailable()) then
-	-- return S.BestialWrath:Cast()
--- end
+if S.BestialWrath:IsCastableQueue()
+and (S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID() or RubimRH.CDsON()) 
+and (CleaveCount() == 1 or Player:BuffRemainsP(S.BeastCleaveBuff) > Player:GCD() * 1.25)
+and (S.BarbedShot:ChargesFractional() < 1 or not S.ScentofBlood:IsAvailable()) then
+	return S.BestialWrath:Cast()
+end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -294,20 +295,8 @@ if S.CounterShot:IsReadyQueue() and notInterruptible == false and Target:CastPer
 	return S.CounterShot:Cast()
 end
 
-if (select(4, UnitAura("target", 1)) == "enrage"
-or AuraUtil.FindAuraByName("Undying Rage", "target") 
-or AuraUtil.FindAuraByName("Enrage", "target") 
-or AuraUtil.FindAuraByName("Unholy Frenzy", "target")
-or AuraUtil.FindAuraByName("Angering Shriek", "target")
-or AuraUtil.FindAuraByName("Loyal Beasts", "target")
-or AuraUtil.FindAuraByName("Frenzy", "target")
-or AuraUtil.FindAuraByName("Motivational Clubbing", "target")
-or AuraUtil.FindAuraByName("Motivated", "target")
-or AuraUtil.FindAuraByName("Seething Rage", "target")
-or AuraUtil.FindAuraByName("Vengeful Rage", "target")
-or AuraUtil.FindAuraByName("Raging Tantrum", "target")
-or AuraUtil.FindAuraByName("Death Wish", "target")
-or AuraUtil.FindAuraByName("Battle Trance", "target")) 
+if select(4, UnitAura("target", 1)) == "enrage"
+
 and RubimRH.InterruptsON() and S.TranqShot:IsReady() and Target:AffectingCombat() and Target:TimeToDie() > 4 then
 	return S.TranqShot:Cast()
 end
@@ -345,7 +334,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 	
 		if Pet:Buff(S.Frenzy) and S.BarbedShot:CooldownRemainsP() < Pet:BuffRemains(S.Frenzy) and Pet:BuffRemains(S.Frenzy) <= Player:GCD() + tolerance then
-			return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+			return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 		end
 	
 		if S.Multishot:IsReadyQueue(40) and Player:GCD() - Player:BuffRemainsP(S.BeastCleaveBuff) > 0.25 then
@@ -357,9 +346,9 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 			return S.BarbedShot:Cast()
 		end
 
-		-- if S.KillCommand:IsReadyQueue(50) and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() and S.KillCleave:IsAvailable() then
-			-- return S.KillCommand:Cast()
-		-- end
+		if S.KillCommand:IsReadyQueue(50) and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() and S.KillCleave:IsAvailable() then
+			return S.KillCommand:Cast()
+		end
 
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
 			return S.DeathChakram:Cast()
@@ -388,12 +377,12 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 
 		if Pet:Buff(S.Frenzy) and S.BarbedShot:CooldownRemainsP() < Pet:BuffRemains(S.Frenzy) and Pet:BuffRemains(S.Frenzy) <= Player:GCD() + tolerance then
-			return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+			return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 		end
 
-		-- if S.KillCommand:IsReadyQueue(50) and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() then
-			-- return S.KillCommand:Cast()
-		-- end
+		if S.KillCommand:IsReadyQueue(50) and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() then
+			return S.KillCommand:Cast()
+		end
 	
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
 			return S.DeathChakram:Cast()
@@ -420,8 +409,12 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 			return S.CobraShot:Cast()
 		end	
 	end
+
+	return 0, 135328
+
 end
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+
+			return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
 RubimRH.Rotation.SetAPL(253, APL);
