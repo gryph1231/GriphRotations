@@ -6,6 +6,8 @@
 -- HeroLib
 local HL = HeroLib;
 local Spell = HL.Spell;
+local MultiSpell = HL.MultiSpell;
+
 local Item = HL.Item;
 -- Spells
 
