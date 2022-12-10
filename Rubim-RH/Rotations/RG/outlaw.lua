@@ -661,7 +661,7 @@ end
 
     if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
         not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and
-        ( IsUsableItem(193479) and GetItemCooldown(193479) == 0 ) then
+        ( IsUsableItem(193470) and GetItemCooldown(193470) == 0 ) then
         return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
     end
 
@@ -697,14 +697,14 @@ end
     --------------------------------------------------------------------------------------------------------------------------------------------
     if Player:Buff(S.Stealth) or Player:Buff(S.VanishBuff) or Player:Buff(S.Shadowmeld) then
         -- blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&!buff.blade_flurry.up
-        -- if S.BladeFlurry:IsCastableQueue() and
-        --     (
-        --     (
-        --         RubimRH.AoEON() and
-        --             (not Player:BuffP(S.BladeFlurry) or Player:BuffRemainsP(S.BladeFlurry) < Player:GCD())
-        --             and Cache.EnemiesCount[bfrange] >= 2)) then
-        --     return S.BladeFlurry:Cast()
-        -- end
+        if S.BladeFlurry:IsCastableQueue() and not Player:Buff(S.Stealth) and not Player:Buff(S.VanishBuff) and
+            (
+            (
+                RubimRH.AoEON() and
+                    (not Player:BuffP(S.BladeFlurry) or Player:BuffRemainsP(S.BladeFlurry) < Player:GCD())
+                    and Cache.EnemiesCount[bfrange] >= 2)) then
+            return S.BladeFlurry:Cast()
+        end
 
         -- cold_blood,if=variable.finish_condition
         if S.ColdBlood:IsCastableQueue() and finishcondition then
@@ -742,7 +742,7 @@ end
     end
 
 
-    if Target:IsInRange(8) then
+    if Target:IsInRange(8) and RubimRH.CDsON() then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
     end

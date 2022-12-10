@@ -270,11 +270,11 @@ or (S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving()) or
 end
 
 if S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() then
-	return S.WailingArrowz:Cast()
+	return S.WailingArrow:Cast()
 end
 
 if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() then
-	return S.FreezingTrapz:Cast()
+	return S.FreezingTrap:Cast()
 end
 
 if RubimRH.QueuedSpell():IsReadyQueue() and S.BestialWrath:ID() ~= RubimRH.queuedSpell[1]:ID() and S.ResonatingArrow:ID() ~= RubimRH.queuedSpell[1]:ID() 

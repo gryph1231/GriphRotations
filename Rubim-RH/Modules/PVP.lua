@@ -963,38 +963,38 @@ local EVDev = RubimRH.Spell[Devastation]
 local EVPres = RubimRH.Spell[Preservation]
 
 local stunsSpellList = {
-    WRArms.Stormbolt,
-    WRFury.Stormbolt,
-    WRProt.Stormbolt,
-    DKBlood.Asphyxiate,
+    -- WRArms.Stormbolt,
+    -- WRFury.Stormbolt,
+    -- WRProt.Stormbolt,
+    -- DKBlood.Asphyxiate,
 }
 local interruptSpellsList = {
-    WRArms.Pummel,
-    WRFury.Pummel,
-    WRProt.Pummel,
+    -- WRArms.Pummel,
+    -- WRFury.Pummel,
+    -- WRProt.Pummel,
 
-    DKBlood.MindFreeze,
-    DKFrost.MindFreeze,
-    DKUnholy.MindFreeze,
+    -- DKBlood.MindFreeze,
+    -- DKFrost.MindFreeze,
+    -- DKUnholy.MindFreeze,
 
-    HRSurv.Muzzle,
-    HRBM.CounterShot,
+    -- HRSurv.Muzzle,
+    -- HRBM.CounterShot,
 
-    RGAss.Kick,
-    RGSub.Kick,
-    RGOut.Kick,
+    -- RGAss.Kick,
+    -- RGSub.Kick,
+    -- RGOut.Kick,
 }
 local slowSpellsList = {
-    WRArms.Hamstring,
-    WRFury.PiercingHowl,
-    WRProt.PiercingHowl,
+    -- WRArms.Hamstring,
+    -- WRFury.PiercingHowl,
+    -- WRProt.PiercingHowl,
 
-    DKBlood.HeartStrike,
-    DKFrost.ChainsofIce,
-    DKUnholy.ChainsofIce,
+    -- DKBlood.HeartStrike,
+    -- DKFrost.ChainsofIce,
+    -- DKUnholy.ChainsofIce,
 
-    HRSurv.WingClip,
-    HRBM.ConcusiveShot,
+    -- HRSurv.WingClip,
+    -- HRBM.ConcusiveShot,
 }
 local function interruptSpell(useStuns)
     local useStuns = useStuns or false
