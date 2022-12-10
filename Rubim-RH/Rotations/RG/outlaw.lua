@@ -10,7 +10,7 @@ local Target = Unit.Target;
 local Spell = HL.Spell;
 local Item = HL.Item;
 local MouseOver = Unit.MouseOver;
-local MultiSpell = HL.MultiSpell
+local MultiSpell = HL.MultiSpell;
 
 -- Lua
 local pairs = pairs;

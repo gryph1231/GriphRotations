@@ -22,13 +22,11 @@ RubimRH.Spell[253] = {
     BerserkingBuff = Spell(26297),
     BloodFury = Spell(20572),
     BloodFuryBuff = Spell(20572),
-    SpiritMendz = Spell(28880), --gift of naaru
     LightsJudgment = Spell(255647),
     Shadowmeld = Spell(58984),
     CallPet = Spell(883),
     MendPet = Spell(136),
     RevivePet = Spell(982),
-	Dashz = Spell(287712), --haymaker
     AspectoftheWild = Spell(193530),
 	WildSpirits = Spell(328231),
     BarbedShot = Spell(217200),
@@ -45,11 +43,9 @@ RubimRH.Spell[253] = {
     AspectoftheBeast = Spell(191384),
     Barrage = Spell(120360),
 	FortitudeoftheBear = Spell(388035),
-	FortitudeoftheBearz = Spell(291944), --regeneration
     BindingShot = Spell(109248),
     ChimaeraShot = Spell(53209),
     WailingArrow = Spell(392060),
-    WailingArrowz = Spell(274738), --ancestral call
     WildCall = Spell(185789),
     DireBeast = Spell(120679),
     WildInstincts = Spell(378442),
@@ -61,7 +57,6 @@ RubimRH.Spell[253] = {
     Stampede = Spell(201430),
     ThrilloftheHunt = Spell(257944),
     VenomousBite = Spell(257891),
-	Trinkz = Spell(265221), --fireblood
 	StunGrenadeBuff = Spell(165534),
     AspectoftheTurtle = Spell(186265),
     Exhilaration = Spell(109304),
@@ -70,7 +65,6 @@ RubimRH.Spell[253] = {
     TranqShot = Spell(19801),
     Disengage = Spell(781),
     FreezingTrap = Spell(187650),
-    FreezingTrapz = Spell(255654), --bullrush
     FeignDeath = Spell(5384),
     TarTrap = Spell(187698),
     ConcusiveShot = Spell(5116),
@@ -82,7 +76,6 @@ RubimRH.Spell[253] = {
 	Flare = Spell(1543),
 	KillCleave = Spell(378207),
 	DeathChakram = Spell(375891),
-	DeathChakramz = Spell(260364), --arcane pulse
 }
 local S = RubimRH.Spell[253]
 
@@ -322,7 +315,7 @@ end
 ----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if IsSpellKnown(90361, true) and SpiritMendCD == 0 and IsActionInRange(39,"player") and Player:HealthPercentage() <= 85 then
-	return S.SpiritMendz:Cast()
+	return S.SpiritMend:Cast()
 end
 
 if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 35 then
@@ -330,7 +323,7 @@ if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPer
 end
 
 if IsSpellKnown(388035, true) and FortoftheBearCD == 0 and Player:HealthPercentage() <= 30 then
-	return S.FortitudeoftheBearz:Cast()
+	return S.FortitudeoftheBear:Cast()
 end
 
 if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 
@@ -343,7 +336,7 @@ end
 if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and Target:IsInRange(40) then
 
 	if IsSpellKnown(61684, true) and DashCD == 0 and not IsActionInRange(37,"target") and S.KillCommand:TimeSinceLastCast() > Player:GCD() then
-		return S.Dashz:Cast()
+		return S.Dash:Cast()
 	end
 
 	if CleaveCount() >= 2 and RubimRH.AoEON() then
@@ -369,7 +362,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		-- end
 
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakramz:Cast()
+			return S.DeathChakram:Cast()
 		end
 
 		if S.BestialWrath:IsCastableQueue() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()) then
@@ -403,7 +396,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		-- end
 	
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakramz:Cast()
+			return S.DeathChakram:Cast()
 		end
 	
 		if S.BestialWrath:IsCastableQueue() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()) then

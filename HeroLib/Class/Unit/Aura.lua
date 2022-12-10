@@ -12,6 +12,8 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
+local UnitAura = UnitAura -- name, icon, count, dispelType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellID, canApplyAura, isBossAura, casterIsPlayer, nameplateShowAll, timeMod, value1, value2, value3, ..., value11
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local unpack = unpack
 -- File Locals
 
@@ -541,4 +543,61 @@ do
   function Unit:BloodlustExhaustDown(BypassRecovery)
     return not self:BloodlustExhaustUp(BypassRecovery)
   end
+end
+
+
+
+
+do
+  local GUID, SpellID, UnitID
+  local AuraStack, AuraDuration, AuraExpirationTime, AuraSpellID, Index
+
+  function Unit:AuraInfo(ThisSpell, Filter, Full)
+    GUID = self:GUID()
+    if not GUID then return end
+
+    SpellID = ThisSpell:ID()
+
+    -- Use GetPlayerAuraBySpellID if we are checking a player buff as it is more performant and finds more things
+    if GUID == Player:GUID() then
+      if Full then
+        return GetPlayerAuraBySpellID(SpellID)
+      else
+        local spellTable = GetPlayerAuraBySpellID(SpellID)
+        if type(spellTable) ~= "table" then return nil end
+        AuraDuration = spellTable.duration
+        AuraExpirationTime = spellTable.expirationTime
+        AuraStack = spellTable.applications
+        return AuraStack, AuraDuration, AuraExpirationTime
+      end
+    end
+
+    UnitID = self:ID()
+    Index = 1
+    while true do
+      _, _, AuraStack, _, AuraDuration, AuraExpirationTime, _, _, _, AuraSpellID = UnitAura(UnitID, Index, Filter)
+
+      -- Returns no value if the aura was not found.
+      if not AuraSpellID then return end
+
+      -- Returns the info once we match the spell ids.
+      if AuraSpellID == SpellID then
+        if Full then
+          return UnitAura(UnitID, Index, Filter)
+        else
+          return AuraStack, AuraDuration, AuraExpirationTime, Index
+        end
+        --return Full and UnitAura(UnitID, Index, Filter) or AuraStack, AuraDuration, AuraExpirationTime, Index
+      end
+
+      Index = Index + 1
+    end
+  end
+end
+
+-- Get the BuffInfo (from AuraInfo).
+function Unit:BuffInfo(ThisSpell, AnyCaster, Full)
+  local Filter = AnyCaster and "HELPFUL" or "HELPFUL|PLAYER"
+
+  return self:AuraInfo(ThisSpell, Filter, Full)
 end

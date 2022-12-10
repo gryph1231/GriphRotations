@@ -147,15 +147,66 @@ RubimRH.Spell[263] = {
 }
 
 RubimRH.Spell[253] = {
-    BestialWrath = Spell(19574),
-    AspectoftheWild = Spell(193530),
-    WildSpirits = Spell(328231),
-    Intimidation = Spell(19577),
-    SoulShape = Spell(310143),
-    Exhilaration = Spell(109304),
-    Flare = Spell(1543),
+    ArcaneTorrent = Spell(80483),
+    AncestralCall = Spell(274738),
+    Berserking = Spell(26297),
+    BerserkingBuff = Spell(26297),
+    BloodFury = Spell(20572),
+    BloodFuryBuff = Spell(20572),
+    LightsJudgment = Spell(255647),
+    Shadowmeld = Spell(58984),
+    CallPet = Spell(883),
     MendPet = Spell(136),
+    RevivePet = Spell(982),
+    AspectoftheWild = Spell(193530),
+	WildSpirits = Spell(328231),
+    BarbedShot = Spell(217200),
+    Frenzy = Spell(272790),
+    BeastCleaveBuff = Spell(268877),
+    BestialWrath = Spell(19574),
+    CobraShot = Spell(193455),
+	KillShot = Spell(53351),
+    KillCommand = Spell(34026),
     ResonatingArrow = Spell(308491),
+    Multishot = Spell(2643),
+    AMurderofCrows = Spell(131894),
+    AnimalCompanion = Spell(267116),
+    AspectoftheBeast = Spell(191384),
+    Barrage = Spell(120360),
+	FortitudeoftheBear = Spell(388035),
+    BindingShot = Spell(109248),
+    ChimaeraShot = Spell(53209),
+    WailingArrow = Spell(392060),
+    WildCall = Spell(185789),
+    DireBeast = Spell(120679),
+    WildInstincts = Spell(378442),
+    CalloftheWild = Spell(361582),
+    KillerInstinct = Spell(273887),
+    OnewiththePack = Spell(199528),
+    ScentofBlood = Spell(193532),
+    SpittingCobra = Spell(194407),
+    Stampede = Spell(201430),
+    ThrilloftheHunt = Spell(257944),
+    VenomousBite = Spell(257891),
+	StunGrenadeBuff = Spell(165534),
+    AspectoftheTurtle = Spell(186265),
+    Exhilaration = Spell(109304),
+    AspectoftheCheetah = Spell(186257),
+    CounterShot = Spell(147362),
+    TranqShot = Spell(19801),
+    Disengage = Spell(781),
+    FreezingTrap = Spell(187650),
+    FeignDeath = Spell(5384),
+    TarTrap = Spell(187698),
+    ConcusiveShot = Spell(5116),
+    Intimidation = Spell(19577),
+	BloodBolt = Spell(288962),
+	SoulShape = Spell(310143),
+	foodanddrink = Spell(308433),
+	AlphaPredator = Spell(269737),
+	Flare = Spell(1543),
+	KillCleave = Spell(378207),
+	DeathChakram = Spell(375891),
 
 }
 
@@ -171,6 +222,104 @@ RubimRH.Spell[255] = {
     ResonatingArrow = Spell(308491),
 
 }
+
+RubimRH.Spell[73] = {
+
+
+    lust1 = Spell(57724),
+    lust2 = Spell(57723),
+    lust3 = Spell(80354),
+    lust4 = Spell(95809),
+    lust5 = Spell(264689),
+      lustAT = Spell(265221), -- fireblood
+      Ravagerz                              = Spell(312411),
+    execute = Spell(135358),
+      AncestralCall                         = Spell(274738),
+      ArcaneTorrent                         = Spell(50613),
+      -- BagofTricks                           = Spell(312411),
+      Berserking                            = Spell(26297),
+      BloodFury                             = Spell(20572),
+      -- Abilities
+      BattleShout                           = Spell(6673),
+      Charge                                = Spell(100),
+      HeroicThrow                           = Spell(57755),
+      Pummel                                = Spell(6552),
+      Slam                                  = Spell(1464),
+      odynsfury                             = Spell(28880),--Gift of Naru
+      VictoryRush                           = Spell(34428),
+      -- Talents
+      Avatar                                = Spell(107574),
+      BerserkerRage                         = Spell(18499),
+      BloodandThunder                       = Spell(384277),
+      DoubleTime                            = Spell(103827),
+      FrothingBerserker                     = Spell(215571),
+      IntimidatingShout                     = Spell(5246),
+      HeroicLeap                            = Spell(6544),
+      ImpendingVictory                      = Spell(202168),
+      OverwhelmingRage                      = Spell(382767),
+      RallyingCry                           = Spell(97462),
+      Shockwave                             = Spell(46968),
+      SonicBoom                             = Spell(390725),
+      SpearofBastion                        = Spell(376079),
+      StormBolt                             = Spell(107570),
+      ThunderousRoar                        = Spell(384318),
+      TitanicThrow                          = Spell(384090),
+      TitansTorment                         = Spell(390135),
+      WreckingThrow                         = Spell(384110),
+      -- Buffs
+      AvatarBuff                            = Spell(107574),
+      BattleShoutBuff                       = Spell(6673),
+      -- Debuffs
+      SpearofBastionDebuff                  = Spell(376080),
+      -- Covenant Abilities (Shadowlands)
+      AncientAftershock                     = Spell(325886),
+      Condemn                               = MultiSpell(330325, 330334, 317485, 317349),
+      CondemnDebuff                         = Spell(317491),
+      ConquerorsBanner                      = Spell(324143),
+      ConquerorsFrenzyBuff                  = Spell(343672),
+      ElysianMightBuff                      = Spell(311193),
+      Fleshcraft                            = Spell(324631),
+      SpearofBastionCov                     = Spell(307865),
+      SpearofBastionCovBuff                 = Spell(307871),
+      -- Conduits (Shadowlands)
+      AshenJuggernaut                       = Spell(335232),
+      AshenJuggernautBuff                   = Spell(335234),
+      MercilessBonegrinder                  = Spell(335260),
+      MercilessBonegrinderBuff              = Spell(346574),
+      -- Pool
+      Pool                                  = Spell(999910),
+    -- Abilities
+  Devastate                             = Spell(20243),
+  Execute                               = Spell(280735),
+  ShieldBlock                           = Spell(2565),
+  ShieldSlam                            = Spell(23922),
+  -- Talents
+  BoomingVoice                          = Spell(202743),
+  DemoralizingShout                     = Spell(1160),
+  IgnorePain                            = Spell(190456),
+  Intervene                             = Spell(3411),
+  LastStand                             = Spell(12975),
+  Ravager                               = Spell(228920),
+  
+  Rend                                  = Spell(394062),
+  Revenge                               = Spell(6572),
+  ShieldCharge                          = Spell(385952),
+  ShieldWall                            = Spell(871),
+  ThunderClap                           = Spell(6343),
+  UnstoppableForce                      = Spell(275336),
+  -- Buffs
+  LastStandBuff                         = Spell(12975),
+  RallyingCryBuff                       = Spell(97463),
+  RevengeBuff                           = Spell(5302),
+  SeeingRedBuff                         = Spell(386486),
+  ShieldBlockBuff                       = Spell(132404),
+  ShieldWallBuff                        = Spell(871),
+  ViolentOutburstBuff                   = Spell(386478),
+
+
+}
+
+
 
 
 RubimRH.Spell[72] = {

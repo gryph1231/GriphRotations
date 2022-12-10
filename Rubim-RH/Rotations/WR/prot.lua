@@ -11,66 +11,101 @@ local Player = Unit.Player;
 local Target = Unit.Target;
 local Spell = HL.Spell;
 local Item = HL.Item;
+local MultiSpell = HL.MultiSpell;
 
 local mainAddon = RubimRH
 RubimRH.Spell[73] = {
-    -- Racials
-	RallyingCry = Spell(97462),
-    BattleShout = Spell(6673),
-    ArcaneTorrent = Spell(69179),
-    Berserking = Spell(26297),
-	Reflect = Spell(23920),
-	ShieldBlockBuff = Spell(132404),
-    Shadowmeld = Spell(58984),
+
+    lust1 = Spell(57724),
+    lust2 = Spell(57723),
+    lust3 = Spell(80354),
+    lust4 = Spell(95809),
+    lust5 = Spell(264689),
+      lustAT = Spell(265221), -- fireblood
+      Ravagerz                              = Spell(312411),
+    execute = Spell(135358),
+      AncestralCall                         = Spell(274738),
+      ArcaneTorrent                         = Spell(50613),
+      -- BagofTricks                           = Spell(312411),
+      Berserking                            = Spell(26297),
+      BloodFury                             = Spell(20572),
+      -- Abilities
+      BattleShout                           = Spell(6673),
+      Charge                                = Spell(100),
+      HeroicThrow                           = Spell(57755),
+      Pummel                                = Spell(6552),
+      Slam                                  = Spell(1464),
+      odynsfury                             = Spell(28880),--Gift of Naru
+      VictoryRush                           = Spell(34428),
+      -- Talents
+      Avatar                                = Spell(107574),
+      BerserkerRage                         = Spell(18499),
+      BloodandThunder                       = Spell(384277),
+      DoubleTime                            = Spell(103827),
+      FrothingBerserker                     = Spell(215571),
+      IntimidatingShout                     = Spell(5246),
+      HeroicLeap                            = Spell(6544),
+      ImpendingVictory                      = Spell(202168),
+      OverwhelmingRage                      = Spell(382767),
+      RallyingCry                           = Spell(97462),
+      Shockwave                             = Spell(46968),
+      SonicBoom                             = Spell(390725),
+      SpearofBastion                        = Spell(376079),
+      StormBolt                             = Spell(107570),
+      ThunderousRoar                        = Spell(384318),
+      TitanicThrow                          = Spell(384090),
+      TitansTorment                         = Spell(390135),
+      WreckingThrow                         = Spell(384110),
+      -- Buffs
+      AvatarBuff                            = Spell(107574),
+      BattleShoutBuff                       = Spell(6673),
+      -- Debuffs
+      SpearofBastionDebuff                  = Spell(376080),
+      -- Covenant Abilities (Shadowlands)
+      AncientAftershock                     = Spell(325886),
+      Condemn                               = MultiSpell(330325, 330334, 317485, 317349),
+      CondemnDebuff                         = Spell(317491),
+      ConquerorsBanner                      = Spell(324143),
+      ConquerorsFrenzyBuff                  = Spell(343672),
+      ElysianMightBuff                      = Spell(311193),
+      Fleshcraft                            = Spell(324631),
+      SpearofBastionCov                     = Spell(307865),
+      SpearofBastionCovBuff                 = Spell(307871),
+      -- Conduits (Shadowlands)
+      AshenJuggernaut                       = Spell(335232),
+      AshenJuggernautBuff                   = Spell(335234),
+      MercilessBonegrinder                  = Spell(335260),
+      MercilessBonegrinderBuff              = Spell(346574),
+      -- Pool
+      Pool                                  = Spell(999910),
     -- Abilities
-	DefensiveStance = Spell(386208),
-	DefensiveStancez = Spell(20594), --stoneform
-	BattleStance = Spell(386164),
-	BattleStancez = Spell(69070), --rocket jump
-	CracklingThunder = Spell(203201),
-    Ravager = Spell(22401),
-    BattleCry = Spell(1719),
-    StormBolt = Spell(107570),
-    BerserkerRage = Spell(18499),
-    Charge = Spell(100),
-    DemoralizingShout = Spell(1160),
-    Devastate = Spell(20243),
-    FuriousSlash = Spell(100130),
-    HeroicLeap = Spell(6544),
-    HeroicThrow = Spell(57755),
-    Revenge = Spell(6572),
-    RevengeBuff = Spell(5302),
-    ShieldSlam = Spell(23922),
-    ThunderClap = Spell(6343),
-    VictoryRush = Spell(34428),
-    Victorious = Spell(32216),
-	DragonRoar = Spell (23260),
-    -- Talents
-	BoomingVoice = Spell(202743),
-	ShieldBash = Spell(35178),
-	Bolster = Spell(280001),
-    ImpendingVictory = Spell(202168),
-    ImpendingVictoryProc = Spell(32216),
-    Shockwave = Spell(46968),
-    Vengeance = Spell(202572),
-    VengeanceIP = Spell(202574),
-    VengeanceRV = Spell(202573),
-	Execute = Spell(163201), 
-	UnstoppableForce = Spell(275336),
-    -- Artifact
-    NeltharionsFury = Spell(203524),
-    -- Defensive
-    IgnorePain = Spell(190456),
-    LastStand = Spell(12975),
-    Pummel = Spell(6552),
-    ShieldBlock = Spell(2565),
-    ShieldBlockB = Spell(132404),
-    Avatar = Spell(107574),
-	ShieldWall = Spell(871),
-	FM = Spell(20594),
-    Condemn = Spell(317349),
-    trinket = Spell(155145),
-    IntimidatingShout = Spell(5246),
+  Devastate                             = Spell(20243),
+  Execute                               = Spell(280735),
+  ShieldBlock                           = Spell(2565),
+  ShieldSlam                            = Spell(23922),
+  -- Talents
+  BoomingVoice                          = Spell(202743),
+  DemoralizingShout                     = Spell(1160),
+  IgnorePain                            = Spell(190456),
+  Intervene                             = Spell(3411),
+  LastStand                             = Spell(12975),
+  Ravager                               = Spell(228920),
+  
+  Rend                                  = Spell(394062),
+  Revenge                               = Spell(6572),
+  ShieldCharge                          = Spell(385952),
+  ShieldWall                            = Spell(871),
+  ThunderClap                           = Spell(6343),
+  UnstoppableForce                      = Spell(275336),
+  -- Buffs
+  LastStandBuff                         = Spell(12975),
+  RallyingCryBuff                       = Spell(97463),
+  RevengeBuff                           = Spell(5302),
+  SeeingRedBuff                         = Spell(386486),
+  ShieldBlockBuff                       = Spell(132404),
+  ShieldWallBuff                        = Spell(871),
+  ViolentOutburstBuff                   = Spell(386478),
+
 }
 
 local S = RubimRH.Spell[73]
@@ -78,20 +113,15 @@ local S = RubimRH.Spell[73]
 -- Items
 if not Item.Warrior then Item.Warrior = {} end
 Item.Warrior.Protection = {
-  trink = Item(159627, { 13, 14 }),
-  BattlePotionofStrength           = Item(163224),
-
+    trink = Item(184016, { 13, 14 }),
+    drums = Item(193470),
+    HPIcon = Item(169451),
+    tx1 = Item(118330),
+    tx2 = Item(114616),
 };
 local I = Item.Warrior.Protection;
 
 local ShouldReturn;
-
-local EnemyRanges = {}
-local function UpdateRanges()
-  for _, i in ipairs(EnemyRanges) do
-    HL.GetEnemies(i);
-  end
-end
 
 local function num(val)
   if val then return 1 else return 0 end
@@ -101,98 +131,304 @@ local function bool(val)
   return val ~= 0
 end
 
-local EnemyRanges = {5}
-local function UpdateRanges()
-  for _, i in ipairs(EnemyRanges) do
-    HL.GetEnemies(i);
+
+local function IgnorePainWillNotCap()
+	if Player:Buff(S.IgnorePain) then
+	  local absorb = Player:AttackPowerDamageMod() * 3.5 * (1 + Player:VersatilityDmgPct() / 100)
+	  local spellTable = Player:AuraInfo(S.IgnorePain, nil, true)
+	  local IPAmount = spellTable.points[1]
+	  --return IPAmount < (0.5 * mathfloor(absorb * 1.3))
+	  -- Ignore Pain appears to cap at 2 times its absorb value now
+	  return IPAmount < absorb
+	else
+	  return true
+	end
   end
-end
--- Custom Warrior Protection functions
+  
+  local function IgnorePainValue()
+	if Player:Buff(S.IgnorePain) then
+	  local IPBuffInfo = Player:BuffInfo(S.IgnorePain, nil, true)
+	  return IPBuffInfo.points[1]
+	else
+	  return 0
+	end
+  end
+  
+  local function ShouldPressShieldBlock()
+	-- shield_block,if=(buff.shield_block.down|buff.shield_block.remains<cooldown.shield_slam.remains)&target.health.pct>20
+	return IsTanking and S.ShieldBlock:IsReady() and ((not Player:Buff(S.ShieldBlockBuff) or Player:BuffRemains(S.ShieldBlockBuff) < S.ShieldSlam:CooldownRemains()) and not Player:Buff(S.LastStandBuff) and Target:HealthPercentage() > 20)
+  end
+  
+  -- A bit of logic to decide whether to pre-cast-rage-dump on ignore pain.
+  local function SuggestRageDump(RageFromSpell)
+	-- Get RageMax from setting (default 80)
+	local RageMax = 75
+	-- If the setting value is lower than 35, it's not possible to cast Ignore Pain, so just return false
+	if (RageMax < 35 or Player:Rage() < 35) then return false end
+	local ShouldPreRageDump = false
+	-- Make sure we have enough Rage to cast IP, that it's not on CD, and that we shouldn't use Shield Block
+	local AbleToCastIP = (Player:Rage() >= 35 and not ShouldPressShieldBlock())
+	if AbleToCastIP and (Player:Rage() + RageFromSpell >= RageMax or S.DemoralizingShout:IsReady()) then
+	  -- should pre-dump rage into IP if rage + RageFromSpell >= RageMax or Demo Shout is ready
+		shouldPreRageDump = true
+	end
+	if shouldPreRageDump and Target:IsInRange(8) then
+	  if IgnorePainWillNotCap() then
+		return S.IgnorePain:Cast()
+	  else
+		return S.Revenge:Cast()
+	end
+	end
+  end
+  
 
-local function isCurrentlyTanking()
-  -- is player currently tanking any enemies within 16 yard radius
-  local IsTanking = Player:IsTankingAoE(16) or Player:IsTanking(Target);
-  return IsTanking;
-end
 
-local function shouldCastIp()
-  if Player:Buff(S.IgnorePain) then 
-    local castIP = tonumber((GetSpellDescription(190456):match("%d+%S+%d"):gsub("%D","")))
-    local IPCap = math.floor(castIP * 1.3);
-    local currentIp = Player:Buff(S.IgnorePain, 16, true)
+local function UseItems()
 
-    -- Dont cast IP if we are currently at 50% of IP Cap remaining
-    if currentIp  < (0.5 * IPCap) then
-      return true
-    else
-      return false
+    local trinket1 = GetInventoryItemID("player", 13)
+    local trinket2 = GetInventoryItemID("player", 14)
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+    if trinket1ready then
+        return I.tx1:Cast()
     end
-  else
-    -- No IP buff currently
-    return true
+    if trinket2ready then
+        return I.tx2:Cast()
+    end
+end
+
+local function HealthPotionSelected()
+
+    local HealthPotionIDs = {
+        191380, 191379, 191378
+
+    }
+
+    for _, HealthPotionID in ipairs(HealthPotionIDs) do
+        if Item(HealthPotionID):IsUsable() then
+            return Item(HealthPotionID)
+        end
+    end
+end
+
+
+local function Defensive()
+	if ShouldPressShieldBlock() then
+		return S.LastStand:Cast()
+	end
+	-- shield_wall,if=!buff.last_stand.up&!buff.rallying_cry.up
+	if S.ShieldWall:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:NeedPanicHealing() or Player:HealthPercentage()<55) then
+		return S.ShieldWall:Cast()
+	end
+	-- last_stand,if=!buff.shield_wall.up&!buff.rallying_cry.up
+	if S.LastStand:IsCastable() and (not Player:Buff(S.ShieldBlockBuff) and S.ShieldBlock:Recharge() > 1) and (Player:NeedPanicHealing() or Player:HealthPercentage()<55) then
+	return S.LastStand:Cast()
+	end
+	-- rallying_cry,if=!buff.last_stand.up&!buff.shield_wall.up
+	if S.RallyingCry:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff)) and (Player:NeedPanicHealing() or Player:HealthPercentage()<60) then
+		return S.RallyingCry:Cast()
+	end
+  
+	-- demoralizing_shout,if=!buff.last_stand.up&!buff.shield_wall.up&!buff.rallying_cry.up
+	if S.DemoralizingShout:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:NeedMajorHealing() or Player:HealthPercentage()<80)then
+		return S.DemoralizingShout:Cast()
+	end
+  
+	if Player:HealthPercentage() < 70 then
+	  if S.VictoryRush:IsReady() then
+		return S.VictoryRush:Cast()
+	end
+	  if S.ImpendingVictory:IsReady() then
+		return S.ImpendingVictory:Cast()
+	end
+	end
   end
-end
-
-local function DungeonBoss()
-	local guid = UnitGUID('target')
-	if guid then
-		local unit_type = strsplit("-", guid)
-		if not UnitIsPlayer('target') and Player:CanAttack(Target) then
-			local _, _, _, _, _, npc_id = strsplit("-", guid)
-			npcid = npc_id
-		end
+  
+  local function Aoe()
+	-- ignore_pain,if=rage.deficit>=35&buff.ignore_pain.value<health.max*0.3
+	if S.IgnorePain:IsReady() and (Player:RageDeficit() >= 35 and IgnorePainValue() < Player:MaxHealth() * 0.3) then
+		return S.IgnorePain:Cast()
 	end
-	
-	if (npcid == '150159' or npcid == '150222' or npcid == '155407' or npcid == '155157' or npcid == '144244' or npcid == '144246' or npcid == '144248' 
-	or npcid == '152619' or npcid == '81305' or npcid == '80816' or npcid == '79852' or npcid == '83612' or npcid == '77803' or npcid == '79545' 
-	or npcid == '80005' or npcid == '175616' or npcid == '176556' or npcid == '175646' or npcid == '176564' or npcid == '175806' or npcid == '175663' 
-	or npcid == '175546' or npcid == '177269' or npcid == '114284' or npcid == '114261' or npcid == '114328' or npcid == '113971' or npcid == '114262' 
-	or npcid == '114312' or npcid == '114247' or npcid == '114350' or npcid == '114790' or npcid == '116494') then
-		DngBoss = true
-	else
-		DngBoss = false
+	-- spear_of_bastion
+	if S.SpearofBastion:IsCastable() and Target:IsInRange(8) then
+	  SuggestRageDump(20)
+	  return S.SpearofBastion:Cast()
 	end
-	
-	return DngBoss
-end
-
-local function Dummy()
-	local x = UnitName("target")
-	local targetisdummy = false
-
-	if x then
-		name = x:sub(-5)
+	-- thunderous_roar
+	if S.ThunderousRoar:IsCastable() and Target:IsInRange(8) and RubimRH.CDsON() then
+	  SuggestRageDump(10)
+	  return S.ThunderousRoar:Cast()
 	end
-	
-	if Target:Exists() then
-		if name == 'Dummy' then
-			targetisdummy = true
-		end
-	else
-		targetisdummy = false
+	-- ravager
+	if S.Ravager:IsCastable() and (Target:IsInRange(5) or Enemies8y>=2) and RubimRH.CDsON() then
+	  SuggestRageDump(10)
+	  return S.Ravager:Cast()
 	end
+	-- shockwave
+	if S.Shockwave:IsCastable() and Target:IsInRange(5) then
+	  SuggestRageDump(10)
+	  return S.Shockwave:Cast()
+	end
+	-- shield_charge
+	if S.ShieldCharge:IsCastable() and Target:IsInRange(5) then
+		return S.ShieldCharge:Cast()
+	end
+  
+	-- revenge,if=rage.deficit>30
+	if S.Revenge:IsReady() and (not ShouldPressShieldBlock()) and (Player:RageDeficit() > 30) then
+		return S.Revenge:Cast()
+	end
+	-- thunder_clap
+	if S.ThunderClap:IsCastable() and Target:IsInRange(8) then
+	  SuggestRageDump(5)
+	  return S.ThunderClap:Cast()
+	end
+	-- titanic_throw
+	if S.TitanicThrow:IsCastable() and RubimRH.CDsON() and Target:IsInRange(8) then
+		return S.TitanicThrow:Cast()
+	end
+	-- rend,if=!talent.thunderclap&!talent.blood_and_thunder
+	if S.Rend:IsReady() and (not ShouldPressShieldBlock()) and ((not S.ThunderClap:IsAvailable()) and not S.BloodandThunder:IsAvailable()) then
+		return S.Rend:Cast()
+	end
+	-- shield_slam
+	if S.ShieldSlam:IsCastable()  and Target:IsInRange(8) then
+	  SuggestRageDump(20)
+	  return S.ShieldSlam:Cast()
+	end
+	-- execute
+	if S.Execute:IsReady() and not ShouldPressShieldBlock() and Target:IsInRange(8) then
+		return S.Execute:Cast()
+	end
+	-- devastate
+	if S.Devastate:IsCastable() and Target:IsInRange(8) then
+		return S.Devastate:Cast()
+	end
+	-- impending_victory
+	if S.ImpendingVictory:IsReady() and Target:IsInRange(8) then
+		return S.ImpendingVictory:Cast()
+	end
+	-- storm_bolt
+	-- if S.StormBolt:IsCastable() then
+	--   if Cast(S.StormBolt, nil, nil, not Target:IsInRange(20)) then return "storm_bolt aoe 30"; end
+	-- end
+  end
+  
+  local function Generic()
+	-- ignore_pain,if=(rage.deficit>=35&buff.ignore_pain.value<health.max*0.3*0.5)|buff.ignore_pain.remains<gcd
+	if S.IgnorePain:IsReady() and ((Player:RageDeficit() >= 35 and IgnorePainValue() < Player:MaxHealth() * 0.3 * 0.5) or Player:BuffRemains(S.IgnorePain) < Player:GCD()) then
+		return S.IgnorePain:Cast()
+	end
+	-- ravager
+	if S.Ravager:IsCastable() and (Target:IsInRange(5) or Enemies8y>=2) and RubimRH.CDsON() then
+	  SuggestRageDump(10)
+	  return S.Ravager:Cast()
+	end
+	-- thunderous_roar
+	if S.ThunderousRoar:IsCastable() and Target:IsInRange(5) and RubimRH.CDsON() then
+	  SuggestRageDump(10)
+	  return S.ThunderousRoar:Cast()
+	end
+	-- spear_of_bastion
+	if S.SpearofBastion:IsCastable()  and Target:IsInRange(8) then
+	  SuggestRageDump(20)
+	  return S.SpearofBastion:Cast()
+	end
+	-- shield_charge
+	if S.ShieldCharge:IsCastable() and Target:IsInRange(5) then
+		return S.ShieldCharge:Cast()
+	end
+	-- shockwave
+	-- if S.Shockwave:IsCastable()  and Target:IsInRange(8) then
+	--   SuggestRageDump(10)
+	--   return S.Shockwave:Cast()
+	-- end
+	-- execute
+	if S.Execute:IsReady() and not ShouldPressShieldBlock()  and Target:IsInRange(8) then
+		return S.Execute:Cast()
+	end
+	-- shield_slam
+	if S.ShieldSlam:IsReady() and Target:IsInRange(8) then
+	  SuggestRageDump(20)
+	  return S.ShieldSlam:Cast()
+	end
+	-- thunder_clap,if=active_enemies>=2|(talent.rend&talent.blood_and_thunder)
+	if S.ThunderClap:IsCastable() and Target:IsInRange(8) and (Enemies8y >= 2 or (S.Rend:IsAvailable() and S.BloodandThunder:IsAvailable())) then
+	  SuggestRageDump(5)
+	  return S.ThunderClap:Cast()
+	end
+	if (not ShouldPressShieldBlock()) then
+	  -- rend,if=!talent.thunderclap&!talent.blood_and_thunder
+	  if S.Rend:IsReady() and ((not S.ThunderClap:IsAvailable()) and not S.BloodandThunder:IsAvailable()) then
+		return S.Rend:Cast()
+	end
+	  -- revenge,if=rage.deficit>30&active_enemies>=2
+	  if S.Revenge:IsReady() and (Player:RageDeficit() > 30 and Enemies8y >= 2) then
+		return S.Revenge:Cast()
+	end
+	end
+	-- titanic_throw,if=active_enemies>=2
+	if S.TitanicThrow:IsReady() and (Enemies8y >= 2) then
+		return S.TitanicThrow:Cast()
+	end
+	-- devastate
+	if S.Devastate:IsReady() then
+		return S.Devastate:Cast()
+	end
+	-- heroic_throw
+	if S.HeroicThrow:IsReady() and not Target:IsInRange(8) and Target:IsInRange(30) and (Target:AffectingCombat() or Player:AffectingCombat()) then
+		return S.HeroicThrow:Cast()
+	end
+	-- titanic_throw
+	if S.TitanicThrow:IsReady() then
+		return S.TitanicThrow:Cast()
+	end
+	-- thunder_clap
+	if S.ThunderClap:IsReady() and Target:IsInMeleeRange(8) then
+	  SuggestRageDump(5)
+	  return S.ThunderClap:Cast()
+	end
+	-- revenge,if=rage.deficit>30
+	if S.Revenge:IsReady() and Target:IsInRange(8) and (not ShouldPressShieldBlock()) and (Player:RageDeficit() > 30) then
+		return S.Revenge:Cast()
+	end
+	-- impending_victory
+	if S.ImpendingVictory:IsReady() then
+		return S.ImpendingVictory:Cast()
+	end
+	-- storm_bolt
+	-- if S.StormBolt:IsCastable() then
+	--   if Cast(S.StormBolt, nil, nil, not Target:IsInRange(20)) then return "storm_bolt generic 38"; end
+	-- end
+  end
+  
+  --- ======= ACTION LISTS =======
+  local function APL()
 
-	return targetisdummy
-end
-
--- ======= ACTION LISTS =======
-local function APL()
-	DungeonBoss()
-	Dummy()
- 	HL.GetEnemies("Melee");
-	HL.GetEnemies(5, true);
-    HL.GetEnemies(8, true);
-    HL.GetEnemies(10, true);
-	HL.GetEnemies(11, true);
-	HL.GetEnemies(12, true);
-	HL.GetEnemies(15, true);
-	HL.GetEnemies(17, true);
-	HL.GetEnemies(20, true);
-	HL.GetEnemies(22, true);
-	HL.GetEnemies(25, true);
-	HL.GetEnemies(30, true);
-	
-local IsTanking = Player:IsTankingAoE(10) or Player:IsTanking(Target);
+    HL.GetEnemies(5);
+    HL.GetEnemies("Melee");
+    HL.GetEnemies(8);
+    HL.GetEnemies(10);
+    HL.GetEnemies(12);
+    HL.GetEnemies(15);
+    HL.GetEnemies(20);
+    HL.GetEnemies(25);
+    HL.GetEnemies(30);
+    HL.GetEnemies(35);
+    HL.GetEnemies(40);
+    Enemies5y = Cache.EnemiesCount[5]
+    Enemies8y = Cache.EnemiesCount[8]
+    Enemies10y = Cache.EnemiesCount[10]
+    Enemies12y = Cache.EnemiesCount[12]
+    Enemies15y = Cache.EnemiesCount[15]
+    Enemies20y = Cache.EnemiesCount[20]
+    Enemies25y = Cache.EnemiesCount[25]
+    Enemies30y = Cache.EnemiesCount[30]
+    Enemies35y = Cache.EnemiesCount[35]
+    Enemies40y = Cache.EnemiesCount[40]
+    HealthPotionSelected()
+local IsTanking = Player:IsTankingAoE(15) or Player:IsTanking(Target);
 
 -- if S.Condemn:IsReady(5) then
 	-- print('EXECUTE RDY')
@@ -211,75 +447,121 @@ end
 
 if not Player:AffectingCombat() then
 
-	if S.BattleShout:IsCastable() and not Player:BuffP(S.BattleShout) then
+	if S.BattleShout:IsCastable() and not Player:BuffP(S.BattleShoutBuff) then
 		return S.BattleShout:Cast()
 	end
 
-	if not RubimRH.queuedSpell[1]:CooldownUp() then
-		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-	end
 
-	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
-end
+
+	  return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+	end
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Spell Queue-----------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 
+
+if not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or Enemies20y==0 then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+
+
 if RubimRH.QueuedSpell():IsReadyQueue() then
     return RubimRH.QueuedSpell():Cast()
 end
 
-if not RubimRH.queuedSpell[1]:CooldownUp() then
-	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-end
 
---------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
 
-if RubimRH.CDsON() and Player:AffectingCombat() then
+ 
+    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+    end
+	
+    if Target:IsInRange(8) and RubimRH.CDsON() then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
+    end
+ 
+  
+	if Player:AffectingCombat() then
 
-	if S.DefensiveStance:IsCastable() and not Player:BuffP(S.DefensiveStance) and Player:HealthPercentage() <= 50 then
-		return S.DefensiveStancez:Cast()
+
+	  
+	  if IsTanking then
+		local ShouldReturn = Defensive(); if ShouldReturn then return ShouldReturn; end
+	  end
+
+	  
+
+
+	  if RubimRH.CDsON() and (Player:Buff(S.AvatarBuff) or not S.Avatar:IsAvailable()) then
+	
+		
+		if S.BloodFury:IsCastable() then
+		return S.BloodFury:Cast()
 	end
-
-	if S.BattleStance:IsCastable() and not Player:BuffP(S.BattleStance) and Player:HealthPercentage() >= 75 then
-		return S.BattleStancez:Cast()
-	end
-
-	if S.ShieldWall:IsCastable() and Player:HealthPercentage() <= 35 and Cache.EnemiesCount[10] >= 1 then
-		return S.ShieldWall:Cast()
-	end
-
-	if S.LastStand:IsCastable() and Player:HealthPercentage() <= 15 and Cache.EnemiesCount[10] >= 1 then
-		return S.LastStand:Cast()
+				
+		if S.Berserking:IsCastable() then
+			return S.Berserking:Cast()
 	end
 	
-	if S.RallyingCry:IsCastable() and Player:HealthPercentage() <= 5 and Cache.EnemiesCount[10] >= 1 then
-		return S.RallyingCry:Cast()
+		if S.AncestralCall:IsCastable() then
+			return S.AncestralCall:Cast()
+		end
+	  end
+
+	  if S.Revenge:IsReady() and Target:IsInRange(8) and (Player:Buff(S.RevengeBuff) and (Target:HealthPercentage() > 20 or Enemies8y > 3) and S.ShieldSlam:CooldownRemains() > 0) then
+		return S.Revenge:Cast()
 	end
 
-	if S.Avatar:IsCastable() and Cache.EnemiesCount[10] >= 1 then
-		return S.Avatar:Cast()
+	  if S.IgnorePain:IsReady() and IgnorePainWillNotCap() and (Target:HealthPercentage() >= 20 and (Player:Rage() >= 85 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ShieldBlockBuff) or Player:Rage() >= 60 and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() or Player:Rage() >= 70 and S.Avatar:CooldownUp() or Player:Rage() >= 40 and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() and Player:Buff(S.LastStandBuff) or Player:Rage() >= 55 and S.Avatar:CooldownUp() and Player:Buff(S.LastStandBuff) or Player:Rage() >= 80 or Player:Rage() >= 55 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ViolentOutburstBuff) and Player:Buff(S.ShieldBlockBuff) or Player:Rage() >= 30 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ViolentOutburstBuff) and Player:Buff(S.LastStandBuff) and Player:Buff(S.ShieldBlockBuff))) then
+		return S.IgnorePain:Cast()
 	end
 
-end
+	  if S.ShieldSlam:IsCastable() and (Player:Buff(S.ViolentOutburstBuff) and Player:Rage() <= 55) then
+		SuggestRageDump(20)
+		return S.ShieldSlam:Cast()
+	end
+	  if (RubimRH.CDsON()) then
+
+		if S.ArcaneTorrent:IsCastable() and (Player:Rage() < 80) then
+			return S.ArcaneTorrent:Cast()
+		end
+  
+  
+		if S.Avatar:IsCastable() and Target:IsInRange(5) then
+			return S.Avatar:Cast()
+		end
+
+	  end
+
+	  -- run_action_list,name=aoe,if=spell_targets.thunder_clap>3
+	  if Enemies8y > 3 then
+		local ShouldReturn = Aoe(); if ShouldReturn then return ShouldReturn; end
+	  end
+
+	  -- call_action_list,name=generic
+	  local ShouldReturn = Generic(); if ShouldReturn then return ShouldReturn; end
+
+	end
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------Rotation------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-
-if S.Pummel:IsReady(8) and notInterruptible == false and Target:CastPercentage() > math.random(43, 82) and RubimRH.InterruptsON() then
-	return S.Pummel:Cast()
+if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
+RubimRH.InterruptsON() and S.Kick:IsCastableQueue(8) and Player:AffectingCombat() then
+return S.Pummel:Cast()
 end
 
-if S.ShieldBlock:IsCastable() and Player:Rage() >= 30 and (IsTanking or Dummy()) and Player:AffectingCombat() and Cache.EnemiesCount[10] >= 1
+
+if S.ShieldBlock:IsCastable() and Player:Rage() >= 30 and (IsTanking or Target:IsDummy()) and Player:AffectingCombat() and Cache.EnemiesCount[10] >= 1
 and (not Player:BuffP(S.ShieldBlockBuff) or S.ShieldBlock:Charges() == 2)  then
 	return S.ShieldBlock:Cast()
 end
 
-if S.IgnorePain:IsCastable() and Player:Rage() >= 35 and (IsTanking or Dummy()) and Player:AffectingCombat()
+if S.IgnorePain:IsCastable() and Player:Rage() >= 35 and (IsTanking or Target:IsDummy()) and Player:AffectingCombat()
 and not Player:BuffP(S.IgnorePain) and (Player:HealthPercentage() <= 85 or Player:IncDmgPercentage() >= 2) then
 	return S.IgnorePain:Cast()
 end
@@ -289,13 +571,13 @@ and Player:HealthPercentage() <= 35 then
 	return S.ImpendingVictory:Cast()
 end
 
-if S.ThunderClap:IsCastable() and not Player:IsTankingAoE(8)
+if S.ThunderClap:IsCastable() and not Player:IsTankingAoE(12)
 and Player:Rage() >= 30 and Cache.EnemiesCount[8] >= 2 then
 	return S.ThunderClap:Cast()
 end
 
 if S.DemoralizingShout:IsCastable() 
-and (Cache.EnemiesCount[8] >= 3 or ((UnitClassification("target") == "worldboss" or DungeonBoss() or Dummy()) and Target:IsInRange(8))
+and (Cache.EnemiesCount[8] >= 3 or ((UnitClassification("target") == "worldboss" or Target:IsDummy()) and Target:IsInRange(8))
 or (Player:BuffP(S.Avatar) and Cache.EnemiesCount[8] >= 2)) then
 	return S.DemoralizingShout:Cast()
 end
