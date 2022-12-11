@@ -77,6 +77,7 @@ RubimRH.Spell[253] = {
 	Flare = Spell(1543),
 	KillCleave = Spell(378207),
 	DeathChakram = Spell(375891),
+	Dashz = Spell(287712), --haymaker
 }
 local S = RubimRH.Spell[253]
 
@@ -325,7 +326,7 @@ end
 if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and Target:IsInRange(40) then
 
 	if IsSpellKnown(61684, true) and DashCD == 0 and not IsActionInRange(37,"target") and S.KillCommand:TimeSinceLastCast() > Player:GCD() then
-		return S.Dash:Cast()
+		return S.Dashz:Cast()
 	end
 
 	if CleaveCount() >= 2 and RubimRH.AoEON() then
