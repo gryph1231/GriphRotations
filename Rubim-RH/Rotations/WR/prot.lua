@@ -23,7 +23,6 @@ RubimRH.Spell[73] = {
     lust5 = Spell(264689),
       lustAT = Spell(265221), -- fireblood
       Ravagerz                              = Spell(312411),
-    execute = Spell(135358),
       AncestralCall                         = Spell(274738),
       ArcaneTorrent                         = Spell(50613),
       -- BagofTricks                           = Spell(312411),
@@ -80,7 +79,7 @@ RubimRH.Spell[73] = {
       Pool                                  = Spell(999910),
     -- Abilities
   Devastate                             = Spell(20243),
-  Execute                               = Spell(280735),
+  Execute                               = Spell(163201),
   ShieldBlock                           = Spell(2565),
   ShieldSlam                            = Spell(23922),
   -- Talents
