@@ -417,7 +417,7 @@ local function APL()
     if Player:IsCasting() or Player:IsChanneling() then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or
-        AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+        AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName("Shroud of Concealment", "player") then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
     end
     SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
@@ -577,6 +577,19 @@ end
 
 
     end
+
+
+
+--  print(RubimRH.InLOS('target'))
+
+
+
+
+
+
+
+
+
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------Interrupts & Shiv-----------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------

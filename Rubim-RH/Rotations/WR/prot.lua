@@ -167,7 +167,7 @@ local function IgnorePainWillNotCap()
   -- A bit of logic to decide whether to pre-cast-rage-dump on ignore pain.
   local function SuggestRageDump(RageFromSpell)
 	-- Get RageMax from setting (default 80)
-	local RageMax = 75
+	local RageMax = 85
 	-- If the setting value is lower than 35, it's not possible to cast Ignore Pain, so just return false
 	if (RageMax < 35 or Player:Rage() < 35) then return false end
 	local ShouldPreRageDump = false
@@ -236,7 +236,7 @@ local function Defensive()
 	end
   
 	-- demoralizing_shout,if=!buff.last_stand.up&!buff.shield_wall.up&!buff.rallying_cry.up
-	if S.DemoralizingShout:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:HealthPercentage()<55 and Player:NeedPanicHealing() or Player:HealthPercentage()<50)then
+	if S.DemoralizingShout:IsCastable() and (not Player:Buff(S.LastStandBuff) and not Player:Buff(S.ShieldWallBuff) and not Player:Buff(S.RallyingCryBuff)) and (Player:HealthPercentage()<85 and Player:NeedPanicHealing() or Player:HealthPercentage()<70)then
 		return S.DemoralizingShout:Cast()
 	end
   
