@@ -296,22 +296,14 @@ end
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------PreCombat/OutofCombat-------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
-        if not Player:AffectingCombat() and Enemies30y == 0 then
+        if not Player:AffectingCombat() and Enemies30y == 0  then
 
           
 
-            if S.BattleShout:IsCastable() and not Player:BuffP(S.BattleShoutBuff) then
+            if S.BattleShout:IsCastable() and not Player:BuffP(S.BattleShoutBuff) and RubimRH.InterruptsON() then
                 return S.BattleShout:Cast()
             end
- 
-    -- recklessness,if=!runeforge.signet_of_tormented_kings.equipped
-    if S.Recklessness:IsCastable() and Target:IsInRange(8) and Target:IsInRange(5) and RubimRH.CDsON() then
-        return S.Recklessness:Cast()
-    end
-
-    if bloodthirstit and Target:IsInRange(8) then
-        return S.Bloodthirst:Cast()
-    end
+            
             
 
 
@@ -346,7 +338,7 @@ end
     --------------------------------------------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------CDsON------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
-    if Player:AffectingCombat() and RubimRH.CDsON() then
+    if Player:AffectingCombat() and RubimRH.CDsON()  and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 
             if Target:IsInRange(10) then
                 local ShouldReturn = UseItems();
@@ -395,7 +387,7 @@ end
         return S.Recklessness:Cast() 
       end
     -- recklessness,if=!talent.annihilator
-    if S.Recklessness:IsCastable() and EnrageUp and (not S.Annihilator:IsAvailable()) and Target:IsInRange(8)  then
+    if S.Recklessness:IsCastable() and EnrageUp and (not S.Annihilator:IsAvailable()) and Target:IsInRange(8)then
         return S.Recklessness:Cast() 
       end
 
@@ -450,7 +442,7 @@ end
     ----------------------------------------------------------Single Target---------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
 
-    if S.Ravager:IsCastable() and EnrageUp and Target:IsInRange(5) then
+    if S.Ravager:IsCastable() and EnrageUp and Target:IsInRange(5) and RubimRH.CDsON() then
         return S.Ravager:Cast() 
     end
 
