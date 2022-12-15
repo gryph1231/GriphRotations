@@ -510,17 +510,10 @@ local function APL()
         if S.BetweentheEyes:IsReadyQueue(20) then
             --Always attempt to use BtE at 5+ CP, regardless of CP gen waste
             finishcondition = effective_combo_points >= 5
-        elseif Target:DebuffP(S.Flagellation) and Target:DebuffRemainsP(S.Flagellation) <= Player:GCD() then
-            --Finish at 2+ in the last GCD of Flagellation
-            finishcondition = effective_combo_points >= 2
+
         else
             --Finish at max possible CP without overflowing bonus combo points
-            finishcondition = (
-                Player:ComboPoints() >=
-                    CPMaxSpend() - num(Player:BuffP(S.Broadside)) -
-                    (
-                    num(Player:BuffP(S.Opportunity)) *
-                        (num(S.QuickDraw:IsAvailable()) or num(S.FanTheHammer:IsAvailable())))) or
+            finishcondition = (Player:ComboPoints() >= CPMaxSpend() - (num(Player:BuffP(S.Broadside)) - (num(Player:BuffP(S.Opportunity)) *(num(S.QuickDraw:IsAvailable()) or num(S.FanTheHammer:IsAvailable()))))) or
                 effective_combo_points >= CPMaxSpend()
         end
 
@@ -1000,8 +993,8 @@ local function APL()
         if S.ColdBlood:IsCastableQueue() and finishcondition then
             return S.ColdBlood:Cast()
         end
-        if S.Dispatch:IsCastableQueue(8) and not Target:Debuff(S.Blind) and not Player:Buff(S.Stealth) and
-            Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and SnDAS == maxsndpercent then
+        if S.Dispatch:IsCastableQueue(8) and not Target:Debuff(S.Blind) and Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and SnDAS == maxsndpercent then
+        --  print('dispatch')
             return S.Dispatch:Cast()
         end
 

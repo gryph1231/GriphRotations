@@ -271,10 +271,10 @@ local function Defensive()
 	  return S.Ravager:Cast()
 	end
 	-- shockwave
-	if S.Shockwave:IsCastable() and Target:IsInRange(5) then
-	  SuggestRageDump(10)
-	  return S.Shockwave:Cast()
-	end
+	-- if S.Shockwave:IsCastable() and Target:IsInRange(5) then
+	--   SuggestRageDump(10)
+	--   return S.Shockwave:Cast()
+	-- end
 	-- shield_charge
 	if S.ShieldCharge:IsCastable() and Target:IsInRange(5) then
 		return S.ShieldCharge:Cast()
