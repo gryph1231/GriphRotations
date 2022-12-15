@@ -256,7 +256,7 @@ local function Defensive()
 		return S.IgnorePain:Cast()
 	end
 	-- spear_of_bastion
-	if S.SpearofBastion:IsCastable() and Target:IsInRange(8) then
+	if S.SpearofBastion:IsCastable() and Target:IsInRange(8) and RubimRH.CDsON() then
 	  SuggestRageDump(20)
 	  return S.SpearofBastion:Cast()
 	end
@@ -336,7 +336,7 @@ local function Defensive()
 	  return S.ThunderousRoar:Cast()
 	end
 	-- spear_of_bastion
-	if S.SpearofBastion:IsCastable()  and Target:IsInRange(8) then
+	if S.SpearofBastion:IsCastable()  and Target:IsInRange(8) and RubimRH.CDsON() then
 	  SuggestRageDump(20)
 	  return S.SpearofBastion:Cast()
 	end
