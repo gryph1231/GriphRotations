@@ -514,7 +514,7 @@ end
     return S.Slam:Cast()
  end
   -- bloodbath
-  if S.Bloodbath:IsReady(8) then
+  if bloodbathit then
     return S.Bloodbath:Cast()
  end
 
