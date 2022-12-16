@@ -78,7 +78,7 @@ RubimRH.Spell[260] = {
     HealingSurge           = Spell(8004),
     ShadowDance            = Spell(185313),
     ShadowDanceBuff        = Spell(185422),
-
+    ClosestTarget = Spell(256948), -- spatial rift
     HealingRain      = Spell(73920),
     Wellspring       = Spell(197995),
     Downpour         = Spell(207778),
@@ -346,6 +346,17 @@ local function EnergyTimeToMaxRounded()
     return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
 end
 
+local function CPMaxSpend()
+    if S.DeeperStratagem:IsAvailable() and S.DeviousStratagem:IsAvailable() then
+    return 7
+    elseif S.DeeperStratagem:IsAvailable() and not S.DeviousStratagem:IsAvailable() or not S.DeeperStratagem:IsAvailable() and S.DeviousStratagem:IsAvailable() then
+    return 6
+    else
+    return 5
+    end
+  end
+
+
 local function UseItems()
 
     local trinket1 = GetInventoryItemID("player", 13)
@@ -419,17 +430,17 @@ local function APL()
         AuraUtil.FindAuraByName("Shroud of Concealment", "player") then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
     end
-    SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
-    if SnDAS == nil then
-        SnDAS = 0
-    end
+    -- SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
+    -- if SnDAS == nil then
+    --     SnDAS = 0
+    -- end
 
-    if S.SwiftSlasher:IsAvailable() then
-        maxsndpercent = 64
-    else
-        maxsndpercent = 50
+    -- if S.SwiftSlasher:IsAvailable() then
+    --     maxsndpercent = 64
+    -- else
+    --     maxsndpercent = 50
 
-    end
+    -- end
 
     if S.FantheHammer:IsAvailable() then
         fthrank = 2
@@ -507,7 +518,7 @@ local function APL()
                 and (not S.CounttheOdds:IsAvailable() or RtB_BuffRemains() >= 10)
             )
 
-        if S.BetweentheEyes:IsReadyQueue(20) then
+        if S.BetweentheEyes:CooldownUp() then
             --Always attempt to use BtE at 5+ CP, regardless of CP gen waste
             finishcondition = effective_combo_points >= 5
 
@@ -706,7 +717,7 @@ local function APL()
     --------------------------------------------------------------------------------------------------------------------------------------------
     if Player:Buff(S.Stealth) or Player:Buff(S.VanishBuff) or Player:Buff(S.Shadowmeld) then
         -- blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&!buff.blade_flurry.up
-        if S.BladeFlurry:IsCastableQueue() and not Player:Buff(S.Stealth) and not Player:Buff(S.VanishBuff) and
+        if S.BladeFlurry:IsCastableQueue() and not Player:Buff(S.Stealth) and
             (
             (
                 RubimRH.AoEON() and
@@ -740,10 +751,15 @@ local function APL()
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
+
     if not IsCurrentSpell(6603) and not Player:BuffP(S.Stealth) and not Player:Buff(S.VanishBuff) and
         Player:CanAttack(Target) and not Target:IsDeadOrGhost()
         and Target:AffectingCombat() and Target:IsInRange(20) then
         return S.autoattack:Cast()
+    end
+
+    if Player:AffectingCombat() and Enemies8y>=1 and not Player:BuffP(S.Stealth) and not Target:Exists() then
+        return S.ClosestTarget:Cast()
     end
 
     if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
@@ -770,10 +786,8 @@ local function APL()
     --     return S.Temptation:Cast()
     -- end
 
-    if S.BladeFlurry:IsCastableQueue() and
-        (
-        not stealthall and
-            (
+    if S.BladeFlurry:IsCastableQueue() and not Player:Buff(S.Stealth) and 
+        (           (
             RubimRH.AoEON() and (not Player:BuffP(S.BladeFlurry) or Player:BuffRemainsP(S.BladeFlurry) < Player:GCD())
                 and Cache.EnemiesCount[bfrange] >= 2)) then
         return S.BladeFlurry:Cast()
@@ -834,7 +848,8 @@ local function APL()
             -- &(variable.finish_condition|talent.hidden_opportunity)
             -- &(!talent.hidden_opportunity|!cooldown.vanish.ready)
             if S.ShadowDance:IsCastableQueue()
-                and Player:Buff(S.SliceandDice) and SnDAS == maxsndpercent
+                and Player:Buff(S.SliceandDice) 
+                -- and SnDAS == maxsndpercent
                 and (finishcondition or S.HiddenOpportunity:IsAvailable())
                 and (not S.HiddenOpportunity:IsAvailable() or not S.Vanish:CooldownUp())
             then
@@ -976,12 +991,12 @@ local function APL()
         end
     end
 
-    if S.SliceandDice:IsCastableQueue() and S.SwiftSlasher:IsAvailable() and
-        (SnDAS ~= maxsndpercent
-            or Player:BuffRemainsP(S.SliceandDice) <= Player:GCD() * 2)
-        and Target:IsInRange(10) and Player:ComboPoints() >= CPMaxSpend() then
-        return S.SliceandDice:Cast()
-    end
+    -- if S.SliceandDice:IsCastableQueue() and S.SwiftSlasher:IsAvailable() and
+    --     (SnDAS ~= maxsndpercent
+    --         or Player:BuffRemainsP(S.SliceandDice) <= Player:GCD() * 2)
+    --     and Target:IsInRange(10) and Player:ComboPoints() >= CPMaxSpend() then
+    --     return S.SliceandDice:Cast()
+    -- end
 
     if finishcondition then
         if S.SliceandDice:IsCastableQueue() and not S.SwiftSlasher:IsAvailable() and not Player:Buff(S.GrandMelee) and
@@ -993,7 +1008,9 @@ local function APL()
         if S.ColdBlood:IsCastableQueue() and finishcondition then
             return S.ColdBlood:Cast()
         end
-        if S.Dispatch:IsCastableQueue(8) and not Target:Debuff(S.Blind) and Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and SnDAS == maxsndpercent then
+        if S.Dispatch:IsCastableQueue(8) and not Target:Debuff(S.Blind) and Player:AffectingCombat() and not Player:Buff(S.VanishBuff) 
+        -- and SnDAS == maxsndpercent 
+        then
         --  print('dispatch')
             return S.Dispatch:Cast()
         end
@@ -1005,7 +1022,11 @@ local function APL()
     --------------------------------------------------------------------------------------------------------------------------------------------
     if not RubimRH.LastCast(S.MarkedforDeath, 1) and not Player:Buff(S.Stealth) and not Target:Debuff(S.Blind) and
         not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat()
-        and (not finishcondition or SnDAS ~= maxsndpercent) then
+        and 
+        --(
+            not finishcondition 
+        -- or SnDAS ~= maxsndpercent) 
+        then
         if S.EchoingReprimand:CooldownRemainsP() <= 10 and not Player:Buff(S.VanishBuff)
             and (
             ((Player:ComboPoints() == 1 - num(Player:BuffP(S.Broadside))) and Player:Buff(S.EchoingReprimandCP2))
