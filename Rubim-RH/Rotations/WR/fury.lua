@@ -62,11 +62,13 @@ BerserkerStance = Spell(386196),
     Shockwave                             = Spell(46968),
     SonicBoom                             = Spell(390725),
     SpearofBastion                        = Spell(376079),
+    SpearofBastionz                       = Spell(260364), --arcane pulse
     StormBolt                             = Spell(107570),
     ThunderousRoar                        = Spell(384318),
     TitanicThrow                          = Spell(384090),
     TitansTorment                         = Spell(390135),
     WreckingThrow                         = Spell(384110),
+    TitanicRage                           = Spell(394329),
     -- Buffs
     AvatarBuff                            = Spell(107574),
     BattleShoutBuff                       = Spell(6673),
@@ -108,6 +110,7 @@ BerserkerStance = Spell(386196),
  RagingBlow                            = Spell(85288),
  Rampage                               = Spell(184367),
  Ravager                               = Spell(228920),
+ Ravagerz                              = Spell(265221), --fireblood
  RecklessAbandon                       = Spell(202751),
  Recklessness                          = Spell(1719),
  StormofSwords                         = Spell(388903),
@@ -120,6 +123,9 @@ BerserkerStance = Spell(386196),
  MeatCleaverBuff                       = Spell(85739),
  RecklessnessBuff                      = Spell(1719),
  SuddenDeathBuff                       = Spell(280776),
+ BitterImmunity                        = Spell(383762),
+ ImprovedWhirlwindTalent               = Spell(12950),
+ MeatCleaverTalent					   = Spell(280392),
  LightsJudgment = Spell(255647),
  -- Debuffs
  SiegebreakerDebuff                    = Spell(280773),
@@ -127,10 +133,6 @@ BerserkerStance = Spell(386196),
  ViciousContempt                       = Spell(337302),
  -- Legendary Effects (Shadowlands)
  WilloftheBerserkerBuff                = Spell(335594),
-
-
-
-
 }
 
 local S = RubimRH.Spell[72]
@@ -138,21 +140,17 @@ local S = RubimRH.Spell[72]
 if not Item.Warrior then Item.Warrior = {}; end
 
 Item.Warrior.Fury = {
-
-    lust = Item(164978), --drums of fury
-    HPIcon = Item(169451),
-    tx1 = Item(118330),
-    tx2 = Item(114616),
+healingpoticon = Item(169451),
+tx1 = Item(118330),
+tx2 = Item(114616),
 };
 
 local I = Item.Warrior.Fury;
 
 
 function HealthPotionSelected()
-
     local HealthPotionIDs = {
         191380, 191379, 191378
-
     }
 
     for _, HealthPotionID in ipairs(HealthPotionIDs) do
@@ -164,395 +162,310 @@ end
 
 
 
-    local function UseItems()
-
-        local trinket1 = GetInventoryItemID("player", 13) 
-        local trinket2 = GetInventoryItemID("player", 14) 
-        local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-        local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+local function UseItems()
+local trinket1 = GetInventoryItemID("player", 13) 
+local trinket2 = GetInventoryItemID("player", 14) 
+local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
         
-          if trinket1ready then
-              return I.tx1:Cast()      
-            end
-          if trinket2ready then
-              return I.tx2:Cast()
-          end
-      end
+	if trinket1ready then
+		return I.tx1:Cast()      
+	end
+  
+	if trinket2ready then
+		return I.tx2:Cast()
+	end
+		
+end
+	
+function IsDummy(NPCID)
 
+	if NPCID then
+		GUID = UnitGUID(NPCID)
+		if GUID then
+			local Type, _, _, _, _, UnitIDzFromGUID = strsplit('-', GUID)
+			UnitIDz = tonumber(UnitIDzFromGUID)
+		end
+	end
+	
+	if GUID and (UnitIDz == 31146 or UnitIDz == 31144 or UnitIDz == 32666 or UnitIDz == 32667 or UnitIDz == 46647 or UnitIDz == 114832 or UnitIDz == 153292
+	or UnitIDz == 67127 or UnitIDz == 87317 or UnitIDz == 87318 or UnitIDz == 87320 or UnitIDz == 88314 or UnitIDz == 88316 or UnitIDz == 87760
+	or UnitIDz == 29310 or UnitIDz == 29308 or UnitIDz == 27483 or UnitIDz == 26632 or UnitIDz == 26630 or UnitIDz == 31134 or UnitIDz == 29266 
+	or UnitIDz == 87761 or UnitIDz == 87762 or UnitIDz == 88288 or UnitIDz == 88289 or UnitIDz == 113964 or UnitIDz == 113966 or UnitIDz == 103397
+	or UnitIDz == 103404 or UnitIDz == 103402 or UnitIDz == 107555 or UnitIDz == 107556 or UnitIDz == 92164 or UnitIDz == 92165 or UnitIDz == 92166
+	or UnitIDz == 101956 or UnitIDz == 102045 or UnitIDz == 102048 or UnitIDz == 102052 or UnitIDz == 144081 or UnitIDz == 144082 or UnitIDz == 144085 
+	or UnitIDz == 144086 or UnitIDz == 126781 or UnitIDz == 131983 or UnitIDz == 131989 or UnitIDz == 131992 or UnitIDz == 154564 or UnitIDz == 154567
+	or UnitIDz == 154580 or UnitIDz == 154583 or UnitIDz == 154585 or UnitIDz == 154586 or UnitIDz == 160325 or UnitIDz == 173942 or UnitIDz == 175449
+	or UnitIDz == 175450 or UnitIDz == 175451 or UnitIDz == 175452 or UnitIDz == 175455 or UnitIDz == 175456 or UnitIDz == 175462 or UnitIDz == 174565
+	or UnitIDz == 174566 or UnitIDz == 174567 or UnitIDz == 174568 or UnitIDz == 174569 or UnitIDz == 174570 or UnitIDz == 174571 or UnitIDz == 174484
+	or UnitIDz == 174487 or UnitIDz == 174488 or UnitIDz == 174491 or UnitIDz == 65310 or UnitIDz == 198594 or UnitIDz == 189632) then
+		return true
+	else
+		return false
+	end
+
+end
+
+local function allMobsinRange(range)
+local totalRange40 = 0
+local allMobsinRange = false
+
+	for id = 1, 40 do
+		local unitID = "nameplate" .. id
+		local x = UnitName(unitID)
+			if x then
+				name = x:sub(-5)
+			end
+		if UnitCanAttack("player",unitID) and (UnitAffectingCombat(unitID) or IsDummy(unitID)) and UnitHealthMax(unitID) > 5 then
+			totalRange40 = totalRange40 + 1
+		end
+    end
+
+	if range == totalRange40 and totalRange40 >= 1 then
+		allMobsinRange = true
+	else
+		allMobsinRange = false
+	end
+
+	return allMobsinRange
+	
+end
 
 local function APL()
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------Range-Checks/Variables------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    HL.GetEnemies(5);
-    HL.GetEnemies("Melee");
-    HL.GetEnemies(8);
-    HL.GetEnemies(10);
-    HL.GetEnemies(12);
-    HL.GetEnemies(15);
-    HL.GetEnemies(20);
-    HL.GetEnemies(25);
-    HL.GetEnemies(30);
-    HL.GetEnemies(35);
-    HL.GetEnemies(40);
-    Enemies5y = Cache.EnemiesCount[5]
-    Enemies8y = Cache.EnemiesCount[8]
-    Enemies10y = Cache.EnemiesCount[10]
-    Enemies12y = Cache.EnemiesCount[12]
-    Enemies15y = Cache.EnemiesCount[15]
-    Enemies20y = Cache.EnemiesCount[20]
-    Enemies25y = Cache.EnemiesCount[25]
-    Enemies30y = Cache.EnemiesCount[30]
-    Enemies35y = Cache.EnemiesCount[35]
-    Enemies40y = Cache.EnemiesCount[40]
+HL.GetEnemies(8, true);
+HL.GetEnemies(10, true);
+HL.GetEnemies(25, true);
+HealthPotionSelected()
+IsDummy()
+allMobsinRange()
+UseItems()
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if Player:IsCasting() or Player:IsChanneling() then
+	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+	return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+end 
 
+tarSpeed,_,_,_ = GetUnitSpeed('target')
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Out of Combat---------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if not Player:AffectingCombat() then
 
---rotation variables for multispells
-    executeit = (IsUsableSpell('Execute') and S.Execute:CooldownUp() and Target:IsInRange(8))
-    condemnit = (IsUsableSpell('Condemn') and S.Condemn:CooldownUp() and Target:IsInRange(8))
-
-    bloodthirstit = (IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))
-    bloodbathit = (IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8))
-
-    ragingblowit = (IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))
-    crushingblowit = (IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))
-
-    -- Enrage check
-    EnrageUp = Player:Buff(S.EnrageBuff)
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------Interrupts/Queues-----------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-    if not RubimRH.queuedSpell[1]:CooldownUp() or not Target:IsInRange(10) or not Player:AffectingCombat() then
-        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-    end
-
-    if RubimRH.QueuedSpell():IsReadyQueue() then
-        return RubimRH.QueuedSpell():Cast()
-    end
-
-
-
-    if Player:IsCasting() or Player:IsChanneling() then
-        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
-    elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or
-        AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName("Shroud of Concealment", "player") then
-        return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
-    end
-
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------Defensives/Pots-------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    IsTanking = Player:IsTankingAoE(12) or Player:IsTanking(Target)
-
-    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
-        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
-        and (not Player:InArena() and not Player:InBattlegrounds()) then
-        return I.HPIcon:Cast()
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Spell Queue-----------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-
-    if (Cache.EnemiesCount[30] or Target:IsInRange(15)) and Player:AffectingCombat() then
-
-        if S.RallyingCry:IsCastable() and (not Player:Buff(S.EnragedReneration) or Player:Buff(S.EnragedReneration) and Player:HealthPercentage()<25) and Player:HealthPercentage()<50 then
-            return S.RallyingCry:Cast()
-        end
-
-        if S.EnragedReneration:IsCastable() and (not Player:Buff(S.RallyingCry) or Player:Buff(S.RallyingCry) and Player:HealthPercentage()<25) and Player:HealthPercentage()<50 then
-            return S.EnragedReneration:Cast()
-        end
-      
-        -- if S.BerserkerRage:IsCastable() and Player:IsFeared() then
-        --     return S.BerserkerRage:Cast()
-        -- end
-
-
-        if Player:HealthPercentage() < 50 and RubimRH.InterruptsON() then
-            if S.VictoryRush:IsReady(8) then
-                return S.VictoryRush:Cast()
-            end
-            if S.ImpendingVictory:IsReady(8) then
-                return S.ImpendingVictory:Cast()
-            end
-
-          end
-
-
-
-
-
-
-
-
-
-
-    end
-    
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------PreCombat/OutofCombat-------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-        if not Player:AffectingCombat() and Enemies30y == 0  then
-
-          
-
-            if S.BattleShout:IsCastable() and not Player:BuffP(S.BattleShoutBuff) and RubimRH.InterruptsON() then
-                return S.BattleShout:Cast()
-            end
-            
-            
-
-
-
-
-        end
-
-
-        
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------Opener----------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-
-        if HL.CombatTime() < 4 and Target:IsInRange(15) then
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-        end
-
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ---------------------------------------------------------------------CDsON------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    if Player:AffectingCombat() and RubimRH.CDsON()  and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-
-            if Target:IsInRange(10) then
-                local ShouldReturn = UseItems();
-                if ShouldReturn then return ShouldReturn; end
-            end
-
-      -- arcane_torrent,if=rage<40&!buff.recklessness.up
-      if S.ArcaneTorrent:IsCastable() and (Player:Rage() < 40 and not Player:Buff(S.RecklessnessBuff)) then
-        return S.ArcaneTorrent:Cast() 
-      end   
-
-    --    lights_judgment,if=buff.recklessness.down&debuff.siegebreaker.down
-       if S.LightsJudgment:IsCastable() and (not Player:Buff(S.RecklessnessBuff) and not Target:Debuff(S.SiegebreakerDebuff)) then
-        return S.LightsJudgment:Cast() 
-    end  
-    --    bag_of_tricks,if=buff.recklessness.down&debuff.siegebreaker.down&buff.enrage.up
-       if S.BagofTricks:IsCastable() and (not Player:Buff(S.RecklessnessBuff) and not Target:Debuff(S.SiegebreakerDebuff) and EnrageUp) then
-        return S.BagofTricks:Cast() 
-    end  
-      -- berserking,if=buff.recklessness.up
-      if S.Berserking:IsCastable() and (Player:Buff(S.RecklessnessBuff)) and Target:IsInRange(8)  then
-        return S.Berserking:Cast() 
-    end  
-      -- blood_fury
-      if S.BloodFury:IsCastable() and Target:IsInRange(8)  then
-        return S.BloodFury:Cast() 
-    end  
-      -- fireblood
-    --   if S.Fireblood:IsCastable() then
-    --     return S.Fireblood:Cast() 
-    -- end 
-    --   -- ancestral_call
-    --   if S.AncestralCall:IsCastable() and Target:IsInRange(8)  then
-    --     return S.AncestralCall:Cast() 
-    --   end
-    -- avatar,if=talent.titans_torment&buff.enrage.up&(buff.elysian_might.up|!runeforge.elysian_might|!covenant.kyrian)
-    if S.Avatar:IsCastable() and EnrageUp and Target:IsInRange(8) and (S.TitansTorment:IsAvailable() and EnrageUp and (Player:Buff(S.ElysianMightBuff) or (not ElysianMightEquipped) or CovenantID ~= 1)) then
-        return S.Avatar:Cast() 
-      end
-    -- avatar,if=!talent.titans_torment&(buff.recklessness.up|target.time_to_die<20)
-    if S.Avatar:IsCastable() and EnrageUp and Target:IsInRange(8) and ((not S.TitansTorment:IsAvailable()) and (Player:Buff(S.RecklessnessBuff) or Target:TimeToDie() < 20)) then
-        return S.Avatar:Cast() 
-      end
-    -- recklessness,if=talent.annihilator&cooldown.avatar.remains<1|cooldown.avatar.remains>40|!talent.avatar|target.time_to_die<20
-    if S.Recklessness:IsCastable() and EnrageUp and Target:IsInRange(8) and Target:IsInRange(8)  and (S.Annihilator:IsAvailable() and S.Avatar:CooldownRemains() < 1 or S.Avatar:CooldownRemains() > 40 or (not S.Avatar:IsAvailable()) or Target:TimeToDie() < 20) then
-        return S.Recklessness:Cast() 
-      end
-    -- recklessness,if=!talent.annihilator
-    if S.Recklessness:IsCastable() and EnrageUp and (not S.Annihilator:IsAvailable()) and Target:IsInRange(8)then
-        return S.Recklessness:Cast() 
-      end
-
-    -- spear_of_bastion,if=buff.enrage.up&(buff.recklessness.up|buff.avatar.up|target.time_to_die<20)
-    if S.SpearofBastion:IsCastable() and Target:IsInRange(8) and (EnrageUp and (Player:Buff(S.RecklessnessBuff) or Player:Buff(S.AvatarBuff) or Target:TimeToDie() < 20)) then
-        return S.SpearofBastion:Cast() 
-      end
-  
-
-
-
-    end
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------StartRotation---------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-
-    if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-
-        if not IsCurrentSpell(6603) and Player:CanAttack(Target)
-        and Target:AffectingCombat() and Target:IsInRange(10) then
-        return S.autoattack:Cast()
-        end
-
-        if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
-        RubimRH.InterruptsON() and S.Pummel:IsReadyQueue(8) and Player:AffectingCombat() then
-        return S.Pummel:Cast()
-        end
-
-        if S.BerserkerStance:IsCastable() and not Player:BuffP(S.BerserkerStance) then
-            return S.BerserkerStance:Cast()
-        end  
-
-
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------AOE-------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-
-  -- whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up|raid_event.adds.in<2&!buff.meat_cleaver.up
-  if S.Whirlwind:IsCastable() and RubimRH.AoEON() and (Enemies10y > 1 and Target:IsInRange(8) and (S.MeatCleaver:IsAvailable() and not Player:Buff(S.MeatCleaverBuff))) then
-    return S.Whirlwind:Cast() 
-  end
-
-
-
-
-
-
-
-    --------------------------------------------------------------------------------------------------------------------------------------------
-    ----------------------------------------------------------Single Target---------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------
-
-    if S.Ravager:IsCastable() and EnrageUp and Target:IsInRange(5) and RubimRH.CDsON() then
-        return S.Ravager:Cast() 
-    end
-
- -- Execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd
- if executeit and (Player:Buff(S.AshenJuggernautBuff) and Player:BuffRemains(S.AshenJuggernautBuff) < Player:GCD())  then
-    return S.Execute:Cast()
- end
-  -- thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-  if S.ThunderousRoar:IsCastable() and Target:IsInRange(8) and RubimRH.CDsON() and (EnrageUp) then
-    return S.ThunderousRoar:Cast()
- end
-  -- crushing_blow,if=talent.wrath_and_fury
-  if crushingblowit and S.WrathandFury:IsAvailable() then
-    return S.CrushingBlow:Cast()
- end
-
-  -- Execute,if=buff.enrage.up
-  if executeit and EnrageUp then
-    return S.Execute:Cast()
- end
-  -- odyns_fury,if=!talent.annihilator&buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-  if S.OdynsFury:IsCastable() and Target:IsInRange(8) and ((not S.Annihilator:IsAvailable()) and EnrageUp) then
-    return S.OdynsFury:Cast()
- end
-  -- rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)|buff.frenzy.remains<gcd
-  if S.Rampage:IsReady(8) and (Player:Buff(S.RecklessnessBuff) or Player:BuffRemains(S.EnrageBuff) < Player:GCD() or (Player:Rage() > 110 and S.OverwhelmingRage:IsAvailable()) or (Player:Rage() > 80 and not S.OverwhelmingRage:IsAvailable()) or Player:BuffRemains(S.FrenzyBuff) < Player:GCD()) then
-    return S.Rampage:Cast()
- end
-  -- Execute
-  if executeit then
-    return S.Execute:Cast()
- end
-  -- bloodthirst,if=buff.enrage.down|(talent.annihilator&!buff.recklessness.up)
-  if  S.Bloodthirst:IsReady(8) and (not EnrageUp or (S.Annihilator:IsAvailable() and not Player:Buff(S.RecklessnessBuff))) then
-    return S.Bloodthirst:Cast()
- end
-
-  -- odyns_fury,if=talent.annihilator&buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-  if S.OdynsFury:IsCastable() and Target:IsInRange(8) and (S.Annihilator:IsAvailable() and EnrageUp) then
-    return S.OdynsFury:Cast()
+if RubimRH.QueuedSpell():IsReadyQueue() and S.Ravager:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Recklessness:ID() ~= RubimRH.queuedSpell[1]:ID() 
+and S.SpearofBastion:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Avatar:ID() ~= RubimRH.queuedSpell[1]:ID() and S.OdynsFury:ID() ~= RubimRH.queuedSpell[1]:ID()
+and S.ThunderousRoar:ID() ~= RubimRH.queuedSpell[1]:ID() and S.Onslaught:ID() ~= RubimRH.queuedSpell[1]:ID() then
+    return RubimRH.QueuedSpell():Cast()
 end
-  -- onslaught,if=!talent.annihilator&buff.enrage.up|talent.tenderize
-  if S.Onslaught:IsReady() and Target:IsInRange(8) and ((not S.Annihilator:IsAvailable()) and EnrageUp or S.Tenderize:IsAvailable()) then
-    return S.Onslaught:Cast()
- end
-  -- raging_blow,if=charges>1&talent.wrath_and_fury
-  if S.RagingBlow:IsReady(8) and (S.RagingBlow:Charges() > 1 and S.WrathandFury:IsAvailable()) then
-    return S.RagingBlow:Cast()
- end
-  -- bloodbath,if=buff.enrage.down|!talent.wrath_and_fury
-  if bloodbathit and (not EnrageUp or not S.WrathandFury:IsAvailable()) then
-    return S.Bloodbath:Cast()
- end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Interrupts------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if S.Pummel:IsReadyQueue(8) and select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and RubimRH.InterruptsON() and Player:AffectingCombat() then
+	return S.Pummel:Cast()
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if S.EnragedReneration:IsCastableQueue() and (S.BitterImmunity:CooldownDown() or not S.BitterImmunity:IsAvailable())
+and Player:AffectingCombat() and Player:HealthPercentage() <= 30 then
+	return S.EnragedReneration:Cast()
+end
 
-  -- bloodthirst,if=!talent.wrath_and_fury
-  if S.Bloodthirst:IsReady(8) and not S.WrathandFury:IsAvailable() then
-    return S.Bloodthirst:Cast()
- end
-  -- raging_blow,if=charges>1
-  if S.RagingBlow:IsReady(8) and S.RagingBlow:Charges() > 1 then
-    return S.RagingBlow:Cast()
- end
-  -- rampage
-  if S.Rampage:IsReady(8) then
-    return S.Rampage:Cast()
- end
-  -- slam,if=talent.storm_of_swords
-  if S.Slam:IsReady(8) and (S.StormofSwords:IsAvailable()) then
-    return S.Slam:Cast()
- end
-  -- bloodbath
-  if bloodbathit then
-    return S.Bloodbath:Cast()
- end
+if S.BitterImmunity:IsCastableQueue() and (S.EnragedReneration:CooldownDown() or not S.EnragedReneration:IsAvailable())
+and Player:AffectingCombat() and Player:HealthPercentage() <= 30 then
+	return S.BitterImmunity:Cast()
+end
 
-  -- crushing_blow/raging blow
-  if S.RagingBlow:IsReady(8) then
-    return S.RagingBlow:Cast()
- end
+if ((S.EnragedReneration:CooldownDown() or not S.EnragedReneration:IsAvailable()) and (S.BitterImmunity:CooldownDown() or not S.BitterImmunity:IsAvailable())) and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(191378) or IsUsableItem(191380) or IsUsableItem(191379)) 
+and (GetItemCooldown(191378) == 0 or GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+    return I.healingpoticon:Cast()
+end
 
-  -- crushing_blow/raging blow
-  if crushingblowit then
-    return S.CrushingBlow:Cast()
- end
+if S.BerserkerStance:IsCastableQueue() and not Player:BuffP(S.BerserkerStance) then
+	return S.BerserkerStance:Cast()
+end
 
+if S.BloodFury:IsReadyQueue(8) and RubimRH.CDsON() then
+	return S.BloodFury:Cast()
+end
 
-  -- whirlwind
-  if S.Whirlwind:IsCastable() and Target:IsInRange(8) then
-    return S.Whirlwind:Cast()
- end
+if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) then
+	if Target:IsInRange(10) then
+	local ShouldReturn = UseItems();
+		if ShouldReturn then 
+			return ShouldReturn; 
+		end
+	end
+end
+--------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------Rotation--------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if Player:AffectingCombat() and Player:CanAttack(Target) then
+	if not IsCurrentSpell(6603) and Target:IsInRange(10) then
+		return S.autoattack:Cast()
+	end
 
-  -- wrecking_throw
-  if S.WreckingThrow:IsCastable() and Target:IsInRange(30) then
-    return S.WreckingThrow:Cast()
- end
+	if Cache.EnemiesCount[10] >= 2 and RubimRH.AoEON() then
+		if S.Ravager:IsCastableQueue() and S.Ravager:IsAvailable() then
+			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
+				return S.Ravager:Cast()
+			elseif S.Ravager:ID() == RubimRH.queuedSpell[1]:ID() then
+				return S.Ravagerz:Cast()
+			end
+		end
+		
+		if S.Whirlwind:IsCastableQueue() and (S.ImprovedWhirlwindTalent:IsAvailable() or S.MeatCleaverTalent:IsAvailable()) and not Player:BuffP(S.MeatCleaverBuff) then
+			return S.Whirlwind:Cast()
+		end
+		
+		if S.Rampage:IsReadyQueue(8) and Player:BuffRemainsP(S.EnrageBuff) <= Player:GCD() then
+			return S.Rampage:Cast()
+		end
+		
+		if S.Recklessness:IsReadyQueue(8) and S.Recklessness:IsAvailable() and (RubimRH.CDsON() or S.Recklessness:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.Recklessness:Cast()
+		end
+		
+		if S.SpearofBastion:IsCastableQueue() and S.SpearofBastion:IsAvailable() then
+			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and Player:BuffP(S.RecklessnessBuff) and (allMobsinRange(Cache.EnemiesCount[25]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
+				return S.SpearofBastion:Cast()
+			elseif S.SpearofBastion:ID() == RubimRH.queuedSpell[1]:ID() then
+				return S.SpearofBastionz:Cast()
+			end	
+		end
+		
+		if S.Avatar:IsReadyQueue(8) and S.Avatar:IsAvailable() and (RubimRH.CDsON() or S.Avatar:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.Avatar:Cast()
+		end
 
+		if S.ThunderousRoar:IsCastableQueue() and (RubimRH.CDsON() or S.ThunderousRoar:ID() == RubimRH.queuedSpell[1]:ID()) 
+		and Player:BuffP(S.EnrageBuff) and Cache.EnemiesCount[8] >= 1 and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) then
+			return S.ThunderousRoar:Cast()
+		end
 
-        
+		if S.OdynsFury:IsReadyQueue(8) and S.OdynsFury:IsAvailable() and Player:BuffP(S.EnrageBuff) and (RubimRH.CDsON() or S.OdynsFury:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.OdynsFury:Cast()
+		end
+		
+		if IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and S.WrathandFury:IsAvailable() and Player:BuffP(S.EnrageBuff) and Target:IsInRange(8) then
+			return S.RagingBlow:Cast()
+		end
+		
+		if ((IsUsableSpell('Impending Victory') and S.ImpendingVictory:CooldownUp() and Target:IsInRange(8))
+		or (IsUsableSpell('Victory Rush') and S.VictoryRush:CooldownUp() and Target:IsInRange(8))) and Player:HealthPercentage() <= 30 then
+			return S.VictoryRush:Cast()
+		end
+		
+		if IsUsableSpell('Execute') and Player:BuffP(S.EnrageBuff) and S.Execute:CooldownUp() and Target:IsInRange(8) then
+			return S.Execute:Cast()
+		end
+		
+		if S.Annihilator:IsAvailable() and ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))
+		or (IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+		
+		if (IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))
+		or (IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8)) then
+			return S.Bloodthirst:Cast()
+		end
+		
+		if S.Whirlwind:IsCastableQueue() and Cache.EnemiesCount[8] >= 1 then
+			return S.Whirlwind:Cast()
+		end
+		
+		if S.Slam:IsReadyQueue() and S.Annihilator:IsAvailable() then
+			return S.Slam:Cast()
+		end
 
-        if Player:AffectingCombat() then
-            return 0, 135328
-        end
-         
-    
-
-
-        end
-
-        return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+	elseif Cache.EnemiesCount[10] < 2 or not RubimRH.AoEON() then
+	
+		if S.Ravager:IsCastableQueue() and S.Ravager:IsAvailable() then
+			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
+				return S.Ravager:Cast()
+			elseif S.Ravager:ID() == RubimRH.queuedSpell[1]:ID() then
+				return S.Ravagerz:Cast()
+			end
+		end
+		
+		if S.Recklessness:IsReadyQueue(10) and S.Recklessness:IsAvailable() and (RubimRH.CDsON() or S.Recklessness:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.Recklessness:Cast()
+		end
+	
+		if S.SpearofBastion:IsCastableQueue() and S.SpearofBastion:IsAvailable() then
+			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and Player:BuffP(S.RecklessnessBuff) and (allMobsinRange(Cache.EnemiesCount[25]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
+				return S.SpearofBastion:Cast()
+			elseif S.SpearofBastion:ID() == RubimRH.queuedSpell[1]:ID() then
+				return S.SpearofBastionz:Cast()
+			end	
+		end
+		
+		if S.Avatar:IsReadyQueue(8) and S.Avatar:IsAvailable() and Player:BuffP(S.RecklessnessBuff) and RubimRH.CDsON()
+		and ((Player:BuffP(S.EnrageBuff) and S.TitansTorment:IsAvailable()) or S.TitanicRage:IsAvailable())	then
+			return S.Avatar:Cast()
+		end
+		
+		if IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and S.WrathandFury:IsAvailable() and Player:BuffP(S.EnrageBuff) and Target:IsInRange(8) then
+			return S.RagingBlow:Cast()
+		end
+		
+		if S.Rampage:IsReadyQueue(8) then
+			return S.Rampage:Cast()
+		end
+	
+		if S.ThunderousRoar:IsCastableQueue() and (RubimRH.CDsON() or S.ThunderousRoar:ID() == RubimRH.queuedSpell[1]:ID()) 
+		and Player:BuffP(S.EnrageBuff) and Cache.EnemiesCount[8] >= 1 and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) then
+			return S.ThunderousRoar:Cast()
+		end
+		
+		if S.OdynsFury:IsReadyQueue(8) and Player:BuffP(S.EnrageBuff) then
+			return S.OdynsFury:Cast()
+		end
+		
+		if S.Onslaught:IsReadyQueue(8) and Player:BuffP(S.EnrageBuff) then
+			return S.Onslaught:Cast()
+		end
+	
+		if ((IsUsableSpell('Impending Victory') and S.ImpendingVictory:CooldownUp() and Target:IsInRange(8))
+		or (IsUsableSpell('Victory Rush') and S.VictoryRush:CooldownUp() and Target:IsInRange(8))) and Player:HealthPercentage() <= 30 then
+			return S.VictoryRush:Cast()
+		end
+	
+		if IsUsableSpell('Execute') and Player:BuffP(S.EnrageBuff) and S.Execute:CooldownUp() and Target:IsInRange(8) then
+			return S.Execute:Cast()
+		end
+	
+		if S.Annihilator:IsAvailable() and ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))
+		or (IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+	
+		if (IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))
+		or (IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8)) then
+			return S.Bloodthirst:Cast()
+		end
+		
+		if S.Slam:IsReadyQueue() and S.Annihilator:IsAvailable() then
+			return S.Slam:Cast()
+		end
+	
+		if S.Whirlwind:IsReadyQueue(8) and Player:Rage() >= 80 then
+			return S.Whirlwind:Cast()
+		end
     end
+end
+	return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+end
 
 RubimRH.Rotation.SetAPL(72, APL);
 
