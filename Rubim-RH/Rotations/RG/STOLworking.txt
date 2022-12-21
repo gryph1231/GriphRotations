@@ -484,6 +484,7 @@ local function APL()
 
 
 
+
     IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
     --------------------------------------------------------------------------------------------------------------------------------------------
@@ -600,9 +601,15 @@ local function APL()
         end
 
 
+
+
+
+
+        
         -- variable,name=vanish_condition,value=talent.hidden_opportunity|!talent.shadow_dance|!cooldown.shadow_dance.ready
         vanishcondition = (
-            S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp()) 
+            S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp()) and
+            not Player:Buff(S.AudacityBuff) and not Player:Buff(S.ShadowDanceBuff)
 
         if S.DeftManeuvers:IsAvailable() and S.AcrobaticStrikes:IsAvailable() then
             bfrange = 12
@@ -635,17 +642,17 @@ local function APL()
 
 
 
-            -- shadow_dance_condition,value=talent.shadow_dance&debuff.between_the_eyes.up
-            -- &(!talent.ghostly_strike|debuff.ghostly_strike.up)
-            -- &(!talent.dreadblades|!cooldown.dreadblades.ready)
-            -- &(!talent.hidden_opportunity|!buff.audacity.up
-            -- &(talent.fan_the_hammer.rank<2|!buff.opportunity.up))
+        -- variable,name=shadow_dance_condition,value=talent.shadow_dance&debuff.between_the_eyes.up
+        -- &(!talent.ghostly_strike|debuff.ghostly_strike.up)&(!talent.dreadblades|!cooldown.dreadblades.ready)
+        -- &(!talent.hidden_opportunity|!buff.audacity.up&(talent.fan_the_hammer.rank<2|!buff.opportunity.up))
         shadowdancecondition = (
-            S.ShadowDance:IsAvailable() and Target:DebuffP(S.BetweentheEyes)
-                and (not S.GhostlyStrike:IsAvailable() or Target:DebuffP(S.GhostlyStrike)) and
+            S.ShadowDance:IsAvailable() and Target:Debuff(S.BetweentheEyes)
+                and (not S.GhostlyStrike:IsAvailable() or Target:Debuff(S.GhostlyStrike)) and
                 (not S.Dreadblades:IsAvailable() or not S.Dreadblades:CooldownUp())
-                and (not S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.AudacityBuff) 
-                and (fthrank < 2 or not Player:Buff(S.Opportunity))
+                and
+                (
+                not S.HiddenOpportunity:IsAvailable() or
+                    not Player:Buff(S.AudacityBuff) and (fthrank < 2 or not Player:Buff(S.Opportunity))
                 )
 
             )
@@ -912,21 +919,19 @@ local function APL()
             return S.Vanish:Cast()
         end
 
-        if (Player:BuffRemains(S.BladeFlurry) >= 5.5 and  Cache.EnemiesCount[bfrange] > 1  or  Cache.EnemiesCount[bfrange] == 1) 
-        -- and not RtB_KiR_Reroll() and not RtB_Reroll() and  RtB_BuffRemains() > 5.5 and Player:BuffRemains(S.SliceandDice)>5.5
-         then
-        
-            -- shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition
-            -- &buff.slice_and_dice.up&(variable.finish_condition|talent.hidden_opportunity)
+        if (Player:BuffRemains(S.BladeFlurry) >= 5.5 and  Cache.EnemiesCount[bfrange] > 1  or  Cache.EnemiesCount[bfrange] == 1) and not RtB_Reroll() and  RtB_BuffRemains() > 5.5 and Player:BuffRemains(S.SliceandDice)>5.5 then
+            -- print('maxsndpercent: ',maxsndpercent)
+            -- shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition&buff.slice_and_dice.up
+            -- &(variable.finish_condition|talent.hidden_opportunity)
             -- &(!talent.hidden_opportunity|!cooldown.vanish.ready)
-
-            if S.ShadowDance:IsCastableQueue() and not S.KeepitRolling:IsAvailable() and shadowdancecondition 
-            and Player:Buff(S.SliceandDice) and (finishcondition or S.HiddenOpportunity:IsAvailable())
+            if S.ShadowDance:IsCastableQueue()
+                and Player:Buff(S.SliceandDice) 
+                -- and SnDAS == maxsndpercent
+                and (finishcondition or S.HiddenOpportunity:IsAvailable())
                 and (not S.HiddenOpportunity:IsAvailable() or not S.Vanish:CooldownUp())
             then
                 return S.ShadowDance:Cast()
             end
-
             -- shadow_dance,if=talent.keep_it_rolling&variable.shadow_dance_condition
             -- &(cooldown.keep_it_rolling.remains<=30|cooldown.keep_it_rolling.remains>120
             -- &(variable.finish_condition|talent.hidden_opportunity))
@@ -967,11 +972,8 @@ local function APL()
         return S.AdrenalineRush:Cast()
     end
 
-    -- dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death|!cooldown.marked_for_death.ready)
-    -- &target.time_to_die>=10
-    if S.Dreadblades:IsCastableQueue() and not stealthall 
-    and RubimRH.CDsON() and Player:ComboPoints() <= 2 and Player:CanAttack(Target)
-    and Target:IsInRange(10) and not Player:Buff(S.Stealth) and Player:AffectingCombat()
+    if S.Dreadblades:IsCastableQueue() and RubimRH.CDsON() and Player:ComboPoints() <= 2 and Player:CanAttack(Target) and
+        Target:IsInRange(10) and not Player:Buff(S.Stealth) and Player:AffectingCombat()
         and (not S.MarkedforDeath:IsAvailable() or not S.MarkedforDeath:CooldownUp()) then
         return S.Dreadblades:Cast()
     end
@@ -1000,7 +1002,7 @@ local function APL()
         RubimRH.CDsON()  and Player:AffectingCombat() 
         and not Target:Debuff(S.Blind)  
         and not Player:BuffP(S.Stealth) and not Player:BuffP(S.VanishBuff) and Target:IsInRange(5)
-        and (Target:Debuff(S.BetweentheEyes) or S.BetweentheEyes:CooldownRemains()>Player:GCD()) and
+        and (Target:Debuff(S.BetweentheEyes) or S.BetweentheEyes:CooldownRemains()>Player:GCD()) and 
         (
         Cache.EnemiesCount[bfrange] == 1 and Player:EnergyDeficit()>50 or
             (Cache.EnemiesCount[bfrange] > 1 and Player:BuffP(S.BladeFlurry))) then

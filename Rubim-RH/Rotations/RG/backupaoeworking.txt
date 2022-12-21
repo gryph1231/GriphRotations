@@ -331,7 +331,17 @@ local function RtB_BuffRemains()
     return Cache.APLVar.RtB_BuffRemains;
 end
 
-
+local function RtB_Buffs()
+    if not Cache.APLVar.RtB_Buffs then
+        Cache.APLVar.RtB_Buffs = 0;
+        for i = 1, #RtB_BuffsList do
+            if Player:BuffP(RtB_BuffsList[i]) then
+                Cache.APLVar.RtB_Buffs = Cache.APLVar.RtB_Buffs + 1;
+            end
+        end
+    end
+    return Cache.APLVar.RtB_Buffs;
+end
 
 local function EnergyTimeToMaxRounded()
     return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
@@ -377,82 +387,6 @@ local function HealthPotionSelected()
     end
 end
 
-
-local function RtB_Buffs ()
-    if not Cache.APLVar.RtB_Buffs then
-      Cache.APLVar.RtB_Buffs = {}
-      Cache.APLVar.RtB_Buffs.Total = 0
-      Cache.APLVar.RtB_Buffs.Normal = 0
-      Cache.APLVar.RtB_Buffs.Shorter = 0
-      Cache.APLVar.RtB_Buffs.Longer = 0
-      local RtBRemains = RtB_BuffRemains()
-      for i = 1, #RtB_BuffsList do
-        local Remains = Player:BuffRemains(RtB_BuffsList[i])
-        if Remains > 0 then
-          Cache.APLVar.RtB_Buffs.Total = Cache.APLVar.RtB_Buffs.Total + 1
-          if Remains == RtBRemains then
-            Cache.APLVar.RtB_Buffs.Normal = Cache.APLVar.RtB_Buffs.Normal + 1
-          elseif Remains > RtBRemains then
-            Cache.APLVar.RtB_Buffs.Longer = Cache.APLVar.RtB_Buffs.Longer + 1
-          else
-            Cache.APLVar.RtB_Buffs.Shorter = Cache.APLVar.RtB_Buffs.Shorter + 1
-          end
-        end
-      end
-    end
-    return Cache.APLVar.RtB_Buffs.Total
-  end
-
-
-
--- RtB rerolling strategy, return true if we should reroll
-local function RtB_KiR_Reroll()
-    if not Cache.APLVar.RtB_KiR_Reroll then
-      -- actions+=/variable,name=rtb_reroll_kir_cto,if=talent.keep_it_rolling|talent.count_the_odds,value=(rtb_buffs.normal=0&rtb_buffs.longer>=1)&!(buff.broadside.up&buff.true_bearing.up&buff.skull_and_crossbones.up)&!(buff.broadside.remains>39|buff.true_bearing.remains>39|buff.ruthless_precision.remains>39|buff.skull_and_crossbones.remains>39)
-      if not S.KeepitRolling:IsAvailable() and not S.CounttheOdds:IsAvailable() then
-        Cache.APLVar.RtB_KiR_Reroll = false
-      else
-        RtB_Buffs() -- Regenerate cache
-        if Cache.APLVar.RtB_Buffs.Normal == 0 and Cache.APLVar.RtB_Buffs.Longer > 0
-          and not (Player:Buff(S.Broadside) and Player:Buff(S.TrueBearing) and Player:Buff(S.SkullandCrossbones))
-          and not (Player:BuffRemains(S.Broadside) > 39 or Player:BuffRemains(S.TrueBearing) > 39
-            or Player:BuffRemains(S.RuthlessPrecision) > 39 or Player:BuffRemains(S.SkullandCrossbones) > 39) then
-          Cache.APLVar.RtB_KiR_Reroll = true
-        else
-          Cache.APLVar.RtB_KiR_Reroll = false
-        end
-      end
-    end
-  
-    return Cache.APLVar.RtB_KiR_Reroll
-  end
-  
-
-  local function RtB_Reroll()
-    if not Cache.APLVar.RtB_Reroll then
-     
-        -- actions+=/variable,name=rtb_reroll,value=rtb_buffs<2&(!buff.broadside.up&(!talent.fan_the_hammer|!buff.skull_and_crossbones.up)&!buff.true_bearing.up|buff.loaded_dice.up)|rtb_buffs=2&(buff.buried_treasure.up&buff.grand_melee.up|!buff.broadside.up&!buff.true_bearing.up&buff.loaded_dice.up)
-        if RtB_Buffs() == 2 then
-          if Player:Buff(S.BuriedTreasure) and Player:Buff(S.GrandMelee) then
-            Cache.APLVar.RtB_Reroll = true
-          elseif Player:Buff(S.LoadedDiceBuff) and not Player:Buff(S.Broadside) and not Player:Buff(S.TrueBearing) then
-            Cache.APLVar.RtB_Reroll = true
-          end
-        elseif RtB_Buffs() < 2
-          and (not Player:Buff(S.Broadside) and (not S.FantheHammer:IsAvailable() or not Player:Buff(S.SkullandCrossbones))
-            and not Player:Buff(S.TrueBearing) or Player:Buff(S.LoadedDiceBuff)) then
-          Cache.APLVar.RtB_Reroll = true
-        else
-          Cache.APLVar.RtB_Reroll = false
-        end
-      end
-       return Cache.APLVar.RtB_Reroll
-  end
-  
-
-
-
-
 local function APL()
 
     HL.GetEnemies(5);
@@ -480,6 +414,7 @@ local function APL()
     target_is_dummy()
     RtB_BuffRemains()
     RtB_Buffs()
+
 
 
 
@@ -568,21 +503,21 @@ local function APL()
         -- variable,name=rtb_reroll,value=rtb_buffs<2&(!buff.broadside.up&(!talent.fan_the_hammer|!buff.skull_and_crossbones.up)
         -- &!buff.true_bearing.up|buff.loaded_dice.up)|rtb_buffs=2
         -- &(buff.buried_treasure.up&buff.grand_melee.up|!buff.broadside.up&!buff.true_bearing.up&buff.loaded_dice.up)
-        -- rtb_reroll = RtB_Buffs() < 2 and
-        --     (
-        --     not Player:Buff(S.Broadside) and (not S.FantheHammer:IsAvailable() or not Player:Buff(S.SkullandCrossbones))
-        --         and
-        --         not Player:Buff(S.TrueBearing) or Player:Buff(S.LoadedDiceBuff)) or RtB_Buffs() == 2
-        --     and
-        --     (
-        --     Player:Buff(S.BuriedTreasure) and Player:Buff(S.GrandMelee) or
-        --         not Player:Buff(S.Broadside) and not Player:Buff(S.TrueBearing) and Player:Buff(S.LoadedDiceBuff))
+        rtb_reroll = RtB_Buffs() < 2 and
+            (
+            not Player:Buff(S.Broadside) and (not S.FantheHammer:IsAvailable() or not Player:Buff(S.SkullandCrossbones))
+                and
+                not Player:Buff(S.TrueBearing) or Player:Buff(S.LoadedDiceBuff)) or RtB_Buffs() == 2
+            and
+            (
+            Player:Buff(S.BuriedTreasure) and Player:Buff(S.GrandMelee) or
+                not Player:Buff(S.Broadside) and not Player:Buff(S.TrueBearing) and Player:Buff(S.LoadedDiceBuff))
 
         -- variable,name=ambushcondition,value=combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up&energy>=50
         -- &(!talent.count_the_odds|buff.roll_the_bones.remains>=10)
         --Ensure we get full Ambush CP gains and aren't rerolling Count the Odds buffs away
         ambushcondition = (
-            Player:ComboPointsDeficit() >= (2 + (num(S.ImprovedAmbush)) + (num(Player:Buff(S.Broadside)))) and
+            Player:ComboPointsDeficit() >= (2 + num(S.ImprovedAmbush) + num(Player:Buff(S.Broadside))) and
                 Player:Energy() >= 50
                 and (not S.CounttheOdds:IsAvailable() or RtB_BuffRemains() >= 10)
             )
@@ -595,14 +530,15 @@ local function APL()
             -- variable,name=finish_condition,value=combo_points>=cp_max_spend-buff.broadside.up-(buff.opportunity.up*(talent.quick_draw|talent.fan_the_hammer))|effective_combo_points>=cp_max_spend
 
             --Finish at max possible CP without overflowing bonus combo points
-            finishcondition = (Player:ComboPoints() >= CPMaxSpend() - (num(Player:Buff(S.Broadside))) - ((num(Player:Buff(S.Opportunity))) * ((num(S.QuickDraw:IsAvailable())) or (num(S.FantheHammer:IsAvailable())))) or 
+            finishcondition = (Player:ComboPoints() >= CPMaxSpend() - finishCPminus or
                 effective_combo_points >= CPMaxSpend())
         end
 
 
         -- variable,name=vanish_condition,value=talent.hidden_opportunity|!talent.shadow_dance|!cooldown.shadow_dance.ready
         vanishcondition = (
-            S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp()) 
+            S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp()) and
+            not Player:Buff(S.AudacityBuff) and not Player:Buff(S.ShadowDanceBuff)
 
         if S.DeftManeuvers:IsAvailable() and S.AcrobaticStrikes:IsAvailable() then
             bfrange = 12
@@ -629,23 +565,23 @@ local function APL()
 
         vanishopportunitycondition = (
             not S.ShadowDance:IsAvailable() and
-                (fthrank + (num(S.QuickDraw:IsAvailable())) + (num(S.Audacity:IsAvailable()))) <
-                (num(S.CounttheOdds:IsAvailable()) + (num(S.KeepitRolling:IsAvailable())))
+                (fthrank + num(S.QuickDraw:IsAvailable()) + num(S.Audacity:IsAvailable())) <
+                (num(S.CounttheOdds:IsAvailable()) + num(S.KeepitRolling:IsAvailable()))
             )
 
 
 
-            -- shadow_dance_condition,value=talent.shadow_dance&debuff.between_the_eyes.up
-            -- &(!talent.ghostly_strike|debuff.ghostly_strike.up)
-            -- &(!talent.dreadblades|!cooldown.dreadblades.ready)
-            -- &(!talent.hidden_opportunity|!buff.audacity.up
-            -- &(talent.fan_the_hammer.rank<2|!buff.opportunity.up))
+        -- variable,name=shadow_dance_condition,value=talent.shadow_dance&debuff.between_the_eyes.up
+        -- &(!talent.ghostly_strike|debuff.ghostly_strike.up)&(!talent.dreadblades|!cooldown.dreadblades.ready)
+        -- &(!talent.hidden_opportunity|!buff.audacity.up&(talent.fan_the_hammer.rank<2|!buff.opportunity.up))
         shadowdancecondition = (
-            S.ShadowDance:IsAvailable() and Target:DebuffP(S.BetweentheEyes)
-                and (not S.GhostlyStrike:IsAvailable() or Target:DebuffP(S.GhostlyStrike)) and
+            S.ShadowDance:IsAvailable() and Target:Debuff(S.BetweentheEyes)
+                and (not S.GhostlyStrike:IsAvailable() or Target:Debuff(S.GhostlyStrike)) and
                 (not S.Dreadblades:IsAvailable() or not S.Dreadblades:CooldownUp())
-                and (not S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.AudacityBuff) 
-                and (fthrank < 2 or not Player:Buff(S.Opportunity))
+                and
+                (
+                not S.HiddenOpportunity:IsAvailable() or
+                    not Player:Buff(S.AudacityBuff) and (fthrank < 2 or not Player:Buff(S.Opportunity))
                 )
 
             )
@@ -722,7 +658,7 @@ local function APL()
             Enemies20y >= 1
             and ((not Player:BuffP(S.mantle) or Player:Buff(S.Stealth))
                 and not Player:DebuffP(S.Dreadblades)
-                and (RtB_Buffs() == 0 or RtB_Reroll() or RtB_KiR_Reroll())) then
+                and (RtB_Buffs() == 0 or rtb_reroll)) then
             return S.RolltheBones:Cast()
         end
 
@@ -864,12 +800,12 @@ local function APL()
     if S.RolltheBones:IsCastableQueue() and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff)
         and (not Player:BuffP(S.mantle)
             and not Player:DebuffP(S.Dreadblades)
-            and (RtB_Buffs() == 0 or RtB_Reroll() or RtB_KiR_Reroll())) then
+            and (RtB_Buffs() == 0 or rtb_reroll)) then
         return S.RolltheBones:Cast()
     end
 
     -- keep_it_rolling,if=!variable.rtb_reroll&(buff.broadside.up+buff.true_bearing.up+buff.skull_and_crossbones.up+buff.ruthless_precision.up)>2&(buff.shadow_dance.down|rtb_buffs>=6)
-    if S.KeepitRolling:IsCastableQueue() and not RtB_Reroll()
+    if S.KeepitRolling:IsCastableQueue() and not rtb_reroll
         and
         (
             ((num(Player:Buff(S.Broadside)))
@@ -887,46 +823,43 @@ local function APL()
 
     -- call_action_list,name=stealth_cds,if=!stealthed.all|talent.count_the_odds&!variable.stealthed_cto
     if RubimRH.CDsON() and (not stealthall or S.CounttheOdds:IsAvailable() and not stealthedcto)
-        and Target:IsInRange(bfrange) and Player:CanAttack(Target) and
-        Player:GCDRemains() <= 0.5 and Player:AffectingCombat() then
+        and Target:IsInRange(10) and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and
+        Player:GCDRemains() <= 0.2 and Player:AffectingCombat() then
 
-            -- vanish,if=talent.find_weakness&!talent.audacity&debuff.find_weakness.down&variable.ambush_condition&variable.vanish_condition
-        if S.Vanish:IsCastableQueue() and S.FindWeakness:IsAvailable() and not S.Audacity:IsAvailable() and not Target:Debuff(S.FindWeaknessDebuff) and
+        -- vanish,if=talent.find_weakness&debuff.find_weakness.down&variable.ambushcondition&variable.vanish_condition
+        if S.Vanish:IsCastableQueue() and S.FindWeakness:IsAvailable() and not Target:Debuff(S.FindWeaknessDebuff) and
             ambushcondition and vanishcondition then
             return S.Vanish:Cast()
         end
 
         -- vanish,if=talent.hidden_opportunity&!buff.audacity.up
-        -- &(variable.vanish_opportunity_condition
-        -- |buff.opportunity.stack<buff.opportunity.max_stack)
-        -- &variable.ambush_condition&variable.vanish_condition
+        -- &(variable.vanishopportunitycondition|buff.opportunity.stack<buff.opportunity.max_stack)
+        -- &variable.ambushcondition&variable.vanish_condition
         if S.Vanish:IsCastableQueue() and S.HiddenOpportunity:IsAvailable() and not Player:Buff(S.AudacityBuff)
             and (vanishopportunitycondition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition and
             vanishcondition then
             return S.Vanish:Cast()
         end
 
-        -- vanish,if=(!talent.find_weakness|talent.audacity)&!talent.hidden_opportunity&variable.finish_condition&variable.vanish_condition
-        if S.Vanish:IsCastableQueue() and (not S.FindWeakness:IsAvailable() or S.Audacity:IsAvailable()) and not S.HiddenOpportunity:IsAvailable() and
+        -- vanish,if=!talent.find_weakness&!talent.hidden_opportunity&variable.finish_condition&variable.vanish_condition
+        if S.Vanish:IsCastableQueue() and not S.FindWeakness:IsAvailable() and not S.HiddenOpportunity:IsAvailable() and
             finishcondition and vanishcondition then
             return S.Vanish:Cast()
         end
 
-        if (Player:BuffRemains(S.BladeFlurry) >= 5.5 and  Cache.EnemiesCount[bfrange] > 1  or  Cache.EnemiesCount[bfrange] == 1) 
-        -- and not RtB_KiR_Reroll() and not RtB_Reroll() and  RtB_BuffRemains() > 5.5 and Player:BuffRemains(S.SliceandDice)>5.5
-         then
-        
-            -- shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition
-            -- &buff.slice_and_dice.up&(variable.finish_condition|talent.hidden_opportunity)
+        if (Player:BuffRemains(S.BladeFlurry) >= 5.5 and  Cache.EnemiesCount[bfrange] > 1  or  Cache.EnemiesCount[bfrange] == 1) and not rtb_reroll and  RtB_BuffRemains() > 5.5 and Player:BuffRemains(S.SliceandDice)>5.5 then
+            -- print('maxsndpercent: ',maxsndpercent)
+            -- shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition&buff.slice_and_dice.up
+            -- &(variable.finish_condition|talent.hidden_opportunity)
             -- &(!talent.hidden_opportunity|!cooldown.vanish.ready)
-
-            if S.ShadowDance:IsCastableQueue() and not S.KeepitRolling:IsAvailable() and shadowdancecondition 
-            and Player:Buff(S.SliceandDice) and (finishcondition or S.HiddenOpportunity:IsAvailable())
+            if S.ShadowDance:IsCastableQueue()
+                and Player:Buff(S.SliceandDice) 
+                -- and SnDAS == maxsndpercent
+                and (finishcondition or S.HiddenOpportunity:IsAvailable())
                 and (not S.HiddenOpportunity:IsAvailable() or not S.Vanish:CooldownUp())
             then
                 return S.ShadowDance:Cast()
             end
-
             -- shadow_dance,if=talent.keep_it_rolling&variable.shadow_dance_condition
             -- &(cooldown.keep_it_rolling.remains<=30|cooldown.keep_it_rolling.remains>120
             -- &(variable.finish_condition|talent.hidden_opportunity))
@@ -967,11 +900,8 @@ local function APL()
         return S.AdrenalineRush:Cast()
     end
 
-    -- dreadblades,if=!stealthed.all&combo_points<=2&(!talent.marked_for_death|!cooldown.marked_for_death.ready)
-    -- &target.time_to_die>=10
-    if S.Dreadblades:IsCastableQueue() and not stealthall 
-    and RubimRH.CDsON() and Player:ComboPoints() <= 2 and Player:CanAttack(Target)
-    and Target:IsInRange(10) and not Player:Buff(S.Stealth) and Player:AffectingCombat()
+    if S.Dreadblades:IsCastableQueue() and Player:ComboPoints() <= 2 and Player:CanAttack(Target) and
+        Target:IsInRange(10) and not Player:Buff(S.Stealth) and Player:AffectingCombat()
         and (not S.MarkedforDeath:IsAvailable() or not S.MarkedforDeath:CooldownUp()) then
         return S.Dreadblades:Cast()
     end
@@ -996,14 +926,15 @@ local function APL()
 
     
     -- blade_rush,if=variable.blade_flurry_sync&!buff.dreadblades.up&!buff.shadow_dance.up&energy.base_time_to_max>4&target.time_to_die>4
-    if S.BladeRush:IsCastableQueue() and not Player:Debuff(S.Dreadblades) and not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(S.SubterfugeBuff) and
+    if S.BladeRush:IsCastableQueue() and not Player:Buff(S.Dreadblades) and not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(S.SubterfugeBuff) and
         RubimRH.CDsON()  and Player:AffectingCombat() 
-        and not Target:Debuff(S.Blind)  
+        and not Target:Debuff(S.Blind) and Player:EnergyDeficit()>50
         and not Player:BuffP(S.Stealth) and not Player:BuffP(S.VanishBuff) and Target:IsInRange(5)
-        and (Target:Debuff(S.BetweentheEyes) or S.BetweentheEyes:CooldownRemains()>Player:GCD()) and
+        and
         (
-        Cache.EnemiesCount[bfrange] == 1 and Player:EnergyDeficit()>50 or
-            (Cache.EnemiesCount[bfrange] > 1 and Player:BuffP(S.BladeFlurry))) then
+        Cache.EnemiesCount[bfrange] == 1  or
+            (Cache.EnemiesCount[bfrange] > 1 and Player:BuffP(S.BladeFlurry))
+            or S.BladeFlurry:CooldownRemainsP() >= 10) then
         return S.BladeRush:Cast()
     end
 
@@ -1059,8 +990,8 @@ local function APL()
             (
             Target:DebuffRemainsP(S.BetweentheEyes) < 4 or
                 (
-                (S.GreenSkinsWickers:IsAvailable() and not Player:Buff(S.GreenSkinsWickersBuff)) or
-                    (not S.GreenSkinsWickers:IsAvailable() and Player:Buff(S.RuthlessPrecision)))) then
+                (S.GreenSkinsWickers:IsAvailable() and not Player:BuffP(S.GreenSkinsWickersBuff)) or
+                    (not S.GreenSkinsWickers:IsAvailable() and Player:BuffP(S.RuthlessPrecision)))) then
             return S.BetweentheEyes:Cast()
         end
     end
@@ -1115,7 +1046,7 @@ local function APL()
         return S.GhostlyStrike:Cast()
                 end
 
-        if S.EchoingReprimand:IsCastableQueue(8) and not Target:IsDeadOrGhost() and not Player:Debuff(S.Dreadblades) then
+        if S.EchoingReprimand:IsCastableQueue(8) and not Target:IsDeadOrGhost() and not Player:Buff(S.Dreadblades) then
             return S.EchoingReprimand:Cast()
         end
 
@@ -1154,7 +1085,7 @@ local function APL()
         -- &!buff.dreadblades.up&(!talent.hidden_opportunity|!buff.subterfuge.up&!buff.shadow_dance.up)
         if S.PistolShot:IsCastableQueue(20) and not Player:Buff(S.VanishBuff) and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity)
             and Player:ComboPointsDeficit() > (1 + num(S.QuickDraw:IsAvailable()) * fthrank)
-            and not Player:Debuff(S.Dreadblades) and
+            and not Player:Buff(S.Dreadblades) and
             (
             not S.HiddenOpportunity:IsAvailable() or
                 not Player:Buff(S.SubterfugeBuff) and not Player:Buff(S.ShadowDanceBuff)
@@ -1168,10 +1099,6 @@ local function APL()
             (
             S.HiddenOpportunity:IsAvailable() or S.FindWeakness:IsAvailable() and not Target:Debuff(S.FindWeaknessDebuff)
             ) then
-            return S.Ambush:Cast()
-        end
-        -- ambush,if=talent.hidden_opportunity|talent.find_weakness&debuff.find_weakness.down
-        if S.Ambush:IsReady() and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Target:IsInRange(8) then
             return S.Ambush:Cast()
         end
 
@@ -1188,17 +1115,14 @@ local function APL()
                     or S.QuickDraw:IsAvailable() or S.Audacity:IsAvailable() and not Player:Buff(S.AudacityBuff)) then
                 return S.PistolShot:Cast()
             end
-            -- if S.PistolShot:IsCastableQueue(20) and not stealthall and not Player:Buff(S.AudacityBuff) and Player:Buff(S.Opportunity) then
-            --     return S.PistolShot:Cast()
-            -- end
+            if S.PistolShot:IsCastableQueue(20) and not stealthall and not Player:Buff(S.AudacityBuff) and Player:Buff(S.Opportunity) then
+                return S.PistolShot:Cast()
+            end
             
             if S.SinisterStrike:IsCastableQueue(8) and not stealthall and not Player:Buff(S.AudacityBuff) then
                 return S.SinisterStrike:Cast()
             end
         
-            if S.SinisterStrike:IsCastableQueue(8) and Player:Energy()>=50 then
-                return S.SinisterStrike:Cast()
-            end
     end
 
     --------------------------------------------------------------------------------------------------------------------------------------------
