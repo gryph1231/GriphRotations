@@ -12,16 +12,10 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local GetTime = HL.GetTime()
-local GetSpellInfo = GetSpellInfo -- name, rank, icon, castTime, minRange, maxRange, spellId
-local IsSpellKnown = IsSpellKnown
-local IsPlayerSpell = IsPlayerSpell
-local IsUsableSpell = IsUsableSpell
-local GetSpellCount = GetSpellCount
-local GetSpellPowerCost = GetSpellPowerCost
 local pairs = pairs
 local unpack = unpack
 local wipe = table.wipe
+-- File Locals
 
 
 --- ============================ CONTENT ============================
@@ -34,10 +28,7 @@ end
 function Spell:Type()
   return self.SpellType
 end
--- Get the spell Name.
-function Spell:Name()
-  return self.SpellName
-end
+
 -- Get the Time since Last spell Cast.
 function Spell:TimeSinceLastCast()
   return HL.GetTime() - self.LastCastTime
@@ -67,16 +58,6 @@ end
 function Spell:Damage()
   return self.DamageFormula and self.DamageFormula() or 0
 end
-
-
-
--- Get the spell Info from the spell ID.
-function Spell:InfoByID()
-  return GetSpellInfo(self:ID())
-end
-
-
-
 
 -- Get the spell Info.
 function Spell:Info(Type, Index)
@@ -255,14 +236,6 @@ function Spell:ExecuteTime()
 
   return CastTime > GCD and CastTime or GCD
 end
--- action.foo.execute_remains
-function Spell:ExecuteRemains()
-  if not Player:IsCasting(self) then return 0 end
-  local CastRemains = Player:CastRemains()
-  local GCDRemains = Player:GCDRemains()
-
-  return CastRemains > GCDRemains and CastRemains or GCDRemains
-end
 
 -- Get the CostTable using GetSpellPowerCost.
 function Spell:CostTable()
@@ -422,44 +395,4 @@ end
 -- conduit.foo.enabled (or conduit.foo)
 function Spell:ConduitEnabled()
   return self:ConduitRank() > 0
-end
-
--- talent.foo.rank
-function Spell:TalentRank()
-  return Cache.Persistent.Talents[self.SpellID] or 0
-end
-
--- action.foo.travel_time
-do
-  local SpellProjectileSpeed = HL.SpellProjectileSpeed
-  local ClassesSpecsBySpecID = HL.SpecID_ClassesSpecs
-
-  function Spell:FilterProjectileSpeed(SpecID)
-    local RegisteredSpells = {}
-
-    -- Fetch registered spells during the init
-    for _, SpecSpells in pairs(Spell[ClassesSpecsBySpecID[SpecID][1]]) do
-      for _, ThisSpell in pairs(SpecSpells) do
-        local SpellID = ThisSpell:ID()
-        local ProjectileSpeed = SpellProjectileSpeed[SpellID]
-        if ProjectileSpeed ~= nil then
-          RegisteredSpells[SpellID] = ProjectileSpeed
-        end
-      end
-    end
-
-    SpellProjectileSpeed = RegisteredSpells
-  end
-
-  function Spell:TravelTime(ThisUnit)
-    local SpellID = self:ID()
-
-    local Speed = SpellProjectileSpeed[SpellID]
-    if not Speed or Speed == 0 then return 0 end
-
-    local MaxDistance = (ThisUnit and ThisUnit:MaxDistance()) or Target:MaxDistance()
-    if not MaxDistance then return 0 end
-
-    return MaxDistance / (Speed or 22)
-  end
 end

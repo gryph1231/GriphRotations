@@ -12,7 +12,6 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local GetTime = GetTime
 local mathmax = math.max
 local mathmin = math.min
 local pairs = pairs
@@ -21,13 +20,12 @@ local tableinsert = table.insert
 local type = type
 local unpack = unpack
 local wipe = table.wipe
-local GetInstanceInfo = GetInstanceInfo
 -- File Locals
 
 
 
 --- ============================ CONTENT ============================
-local TTD = {
+HL.TTD = {
   Settings = {
     -- Refresh time (seconds) : min=0.1,  max=2,    default = 0.1
     Refresh = 0.1,
@@ -48,15 +46,14 @@ local TTD = {
   ExistingUnits = {}, -- Used to track GUIDs of currently existing units (to be compared with tracked units)
   Throttle = 0
 }
-HL.TTD = TTD
-
+local TTD = HL.TTD
 function HL.TTDRefresh()
   -- This may not be needed if we don't have any units but caching them in case
   -- We do speeds it all up a little bit
-  local CurrentTime = GetTime()
+  local CurrentTime = HL.GetTime()
   local HistoryCount = TTD.Settings.HistoryCount
   local HistoryTime = TTD.Settings.HistoryTime
-  local TTDCache = TTD.Cache
+  local Cache = TTD.Cache
   local IterableUnits = TTD.IterableUnits
   local Units = TTD.Units
   local ExistingUnits = TTD.ExistingUnits
@@ -85,13 +82,13 @@ function HL.TTDRefresh()
           -- Check if the % HP changed since the last check (or if there were none)
           if not Values or HealthPercentage ~= Values[2] then
             local Value
-            local LastIndex = #TTDCache
+            local LastIndex = #Cache
             -- Check if we can re-use a table from the cache
             if LastIndex == 0 then
               Value = { Time, HealthPercentage }
             else
-              Value = TTDCache[LastIndex]
-              TTDCache[LastIndex] = nil
+              Value = Cache[LastIndex]
+              Cache[LastIndex] = nil
               Value[1] = Time
               Value[2] = HealthPercentage
             end
@@ -99,7 +96,7 @@ function HL.TTDRefresh()
             local n = #Values
             -- Delete values that are no longer valid
             while (n > HistoryCount) or (Time - Values[n][1] > HistoryTime) do
-              TTDCache[#Cache + 1] = Values[n]
+              Cache[#Cache + 1] = Values[n]
               Values[n] = nil
               n = n - 1
             end
@@ -146,9 +143,10 @@ function Unit:TimeToX(Percentage, MinSamples)
       local a, b = 0, 0
       local Ex2, Ex, Exy, Ey = 0, 0, 0, 0
 
+      local Value, x, y
       for i = 1, n do
-        local Value = Values[i]
-        local x, y = Value[1], Value[2]
+        Value = Values[i]
+        x, y = Value[1], Value[2]
 
         Ex2 = Ex2 + x * x
         Ex = Ex + x
@@ -164,7 +162,7 @@ function Unit:TimeToX(Percentage, MinSamples)
         -- Use best fit line to calculate estimated time to reach target health
         Seconds = (Percentage - a) / b
         -- Subtract current time to obtain "time remaining"
-        Seconds = mathmin(7777, Seconds - (GetTime() - UnitTable[2]))
+        Seconds = mathmin(7777, Seconds - (HL.GetTime() - UnitTable[2]))
         if Seconds < 0 then Seconds = 9999 end
       end
     end
@@ -174,41 +172,13 @@ end
 
 -- Get the unit TTD Percentage
 local SpecialTTDPercentageData = {
-  --- Shadowlands
-  ----- Dungeons -----
-  --- De Other Side
-  -- Mueh'zala leaves the fight at 10%.
-  [166608] = 10,
-  --- Mists of Tirna Scithe
-  -- Tirnenns leaves the fight at 20%.
-  [164929] = 20, -- Tirnenn Villager
-  [164804] = 20, -- Droman Oulfarran
-  --- Sanguine Depths
-  -- General Kaal leaves the fight at 50%.
-  [162099] = 50,
-  ----- Castle Nathria -----
-  --- Stone Legion Generals
-  -- General Kaal leaves the fight at 50% if General Grashaal has not fight yet. We take 49% as check value since it get -95% dmg reduction at 50% until intermission is over.
-  [168112] = function(self) return (not self:CheckHPFromBossList(168113, 99) and 49) or 0 end,
-  --- Sun King's Salvation
-  -- Shade of Kael'thas fight is 60% -> 45% and then 10% -> 0%.
-  [165805] = function(self) return (self:HealthPercentage() > 20 and 45) or 0 end,
-  ----- Sanctum of Domination -----
-  --- Eye of the Jailer leaves at 66% and 33%
-  [180018] = function(self) return (self:HealthPercentage() > 66 and 66) or (self:HealthPercentage() <= 66 and self:HealthPercentage() > 33 and 33) or 0 end,
-  --- Painsmith Raznal leaves at 70% and 40%
-  [176523] = function(self) return (self:HealthPercentage() > 70 and 70) or (self:HealthPercentage() <= 70 and self:HealthPercentage() > 40 and 40) or 0 end,
-  --- Fatescribe Roh-Kalo phases at 70% and 40%
-  [179390] = function(self) return (self:HealthPercentage() > 70 and 70) or (self:HealthPercentage() <= 70 and self:HealthPercentage() > 40 and 40) or 0 end,
-  --- Sylvanas Windrunner intermission at 83% and "dies" at 50% (45% in MM)
-  [180828] = function(self) return (self:HealthPercentage() > 83 and 83) or ((Player:InstanceDifficulty() == 16 and 45) or 50) end,
-
   --- Legion
   ----- Open World  -----
-  --- Stormheim Invasion
+  --- Stormheim Invasion (7.2 Patch)
   -- Lord Commander Alexius
   [118566] = 85,
-  ----- Dungeons -----
+
+  ----- Dungeons (7.0 Patch) -----
   --- Halls of Valor
   -- Hymdall leaves the fight at 10%.
   [94960] = 10,
@@ -219,61 +189,65 @@ local SpecialTTDPercentageData = {
   --- Maw of Souls
   -- Helya leaves the fight at 70%.
   [96759] = 70,
-  ----- Trial of Valor -----
+
+  ----- Trial of Valor (T19 - 7.1 Patch) -----
   --- Odyn
   -- Hyrja & Hymdall leaves the fight at 25% during first stage and 85%/90% during second stage (HM/MM).
-  [114360] = function(self) return (not self:CheckHPFromBossList(114263, 99) and 25) or (Player:InstanceDifficulty() == 16 and 85) or 90 end,
-  [114361] = function(self) return (not self:CheckHPFromBossList(114263, 99) and 25) or (Player:InstanceDifficulty() == 16 and 85) or 90 end,
+  -- TODO : Put GetInstanceInfo into PersistentCache.
+  [114360] = function(self) return (not self:IsInBossList(114263, 99) and 25) or (select(3, GetInstanceInfo()) == 16 and 85) or 90 end,
+  [114361] = function(self) return (not self:IsInBossList(114263, 99) and 25) or (select(3, GetInstanceInfo()) == 16 and 85) or 90 end,
   -- Odyn leaves the fight at 10%.
   [114263] = 10,
-  ----- Nighthold -----
-  --- Elisande leaves the fight two times at 10% then normally dies. She looses 50% power per stage (100 -> 50 -> 0).
+  ----- Nighthold (T19 - 7.1.5 Patch) -----
+  --- Elisande
+  -- She leaves the fight two times at 10% then she normally dies.
+  -- She looses 50% power per stage (100 -> 50 -> 0).
   [106643] = function(self) return (self:Power() > 0 and 10) or 0 end,
 
   --- Warlord of Draenor (WoD)
-  ----- Dungeons -----
-  --- Shadowmoon Burial Grounds
-  -- Carrion Worm doesn't die but leave the area at 10%.
-  [88769] = 10,
-  [76057] = 10,
-  ----- HellFire Citadel -----
+  ----- HellFire Citadel (T18 - 6.2 Patch) -----
   --- Hellfire Assault
   -- Mar'Tak doesn't die and leave fight at 50% (blocked at 1hp anyway).
   [93023] = 50,
+
+  ----- Dungeons (6.0 Patch) -----
+  --- Shadowmoon Burial Grounds
+  -- Carrion Worm : They doesn't die but leave the area at 10%.
+  [88769] = 10,
+  [76057] = 10
 }
 function Unit:SpecialTTDPercentage(NPCID)
-  local SpecialTTDPercentage = SpecialTTDPercentageData[NPCID]
-  if not SpecialTTDPercentage then return 0 end
-
-  if type(SpecialTTDPercentage) == "number" then
-    return SpecialTTDPercentage
+  if SpecialTTDPercentageData[NPCID] then
+    if type(SpecialTTDPercentageData[NPCID]) == "number" then
+      return SpecialTTDPercentageData[NPCID]
+    else
+      return SpecialTTDPercentageData[NPCID](self)
+    end
   end
-
-  return SpecialTTDPercentage(self)
+  return 0
 end
 
 -- Get the unit TimeToDie
 function Unit:TimeToDie(MinSamples)
   local GUID = self:GUID()
-  if not GUID then return 11111 end
-
-  local MinSamples = MinSamples or 3
-  local UnitInfo = Cache.UnitInfo[GUID]
-  if not UnitInfo then
-    UnitInfo = {}
-    Cache.UnitInfo[GUID] = UnitInfo
+  if GUID then
+    local MinSamples = MinSamples or 3
+    local UnitInfo = Cache.UnitInfo[GUID]
+    if not UnitInfo then
+      UnitInfo = {}
+      Cache.UnitInfo[GUID] = UnitInfo
+    end
+    local TTD = UnitInfo.TTD
+    if not TTD then
+      TTD = {}
+      UnitInfo.TTD = TTD
+    end
+    if not TTD[MinSamples] then
+      TTD[MinSamples] = self:TimeToX(self:SpecialTTDPercentage(self:NPCID()), MinSamples)
+    end
+    return TTD[MinSamples]
   end
-
-  local TTD = UnitInfo.TTD
-  if not TTD then
-    TTD = {}
-    UnitInfo.TTD = TTD
-  end
-  if not TTD[MinSamples] then
-    TTD[MinSamples] = self:TimeToX(self:SpecialTTDPercentage(self:NPCID()), MinSamples)
-  end
-
-  return TTD[MinSamples]
+  return 11111
 end
 
 -- Get the boss unit TimeToDie
@@ -281,14 +255,12 @@ function Unit:BossTimeToDie(MinSamples)
   if self:IsInBossList() or self:IsDummy() then
     return self:TimeToDie(MinSamples)
   end
-
   return 11111
 end
 
 -- Get if the unit meets the TimeToDie requirements.
 function Unit:FilteredTimeToDie(Operator, Value, Offset, ValueThreshold, MinSamples)
   local TTD = self:TimeToDie(MinSamples)
-
   return TTD < (ValueThreshold or 7777) and Utils.CompareThis(Operator, TTD + (Offset or 0), Value) or false
 end
 
@@ -297,7 +269,6 @@ function Unit:BossFilteredTimeToDie(Operator, Value, Offset, ValueThreshold, Min
   if self:IsInBossList() or self:IsDummy() then
     return self:FilteredTimeToDie(Operator, Value, Offset, ValueThreshold, MinSamples)
   end
-
   return false
 end
 
@@ -311,12 +282,11 @@ function Unit:BossTimeToDieIsNotValid(MinSamples)
   if self:IsInBossList() then
     return self:TimeToDieIsNotValid(MinSamples)
   end
-
   return true
 end
 
 -- Returns the max fight length of boss units, or the current selected target if no boss units
-function HL.FightRemains(Enemies, BossOnly)
+function HL.FightRemains(Range, BossOnly)
   local BossExists, MaxTimeToDie
   for _, BossUnit in pairs(Boss) do
     if BossUnit:Exists() then
@@ -333,8 +303,8 @@ function HL.FightRemains(Enemies, BossOnly)
   end
 
   -- If we specify an AoE range, iterate through all the targets in the specified range
-  if Enemies then
-    for _, CycleUnit in pairs(Enemies) do
+  if Range then
+    for _, CycleUnit in pairs(Cache.Enemies[Range]) do
       if not CycleUnit:IsUserCycleBlacklisted() and (CycleUnit:AffectingCombat() or CycleUnit:IsDummy()) and not CycleUnit:TimeToDieIsNotValid() then
         MaxTimeToDie = mathmax(MaxTimeToDie or 0, CycleUnit:TimeToDie())
       end
@@ -358,12 +328,11 @@ function HL.BossFightRemainsIsNotValid()
 end
 
 -- Returns if the current fight length meets the requirements.
-function HL.FilteredFightRemains(Enemies, Operator, Value, CheckIfValid, BossOnly)
-  local FightRemains = HL.FightRemains(Enemies, BossOnly)
+function HL.FilteredFightRemains(Range, Operator, Value, CheckIfValid, BossOnly)
+  local FightRemains = HL.FightRemains(Range, BossOnly)
   if CheckIfValid and FightRemains >= 7777 then
     return false
   end
-
   return Utils.CompareThis(Operator, FightRemains, Value) or false
 end
 
@@ -371,3 +340,4 @@ end
 function HL.BossFilteredFightRemains(Operator, Value, CheckIfValid)
   return HL.FilteredFightRemains(nil, Operator, Value, CheckIfValid, true)
 end
+

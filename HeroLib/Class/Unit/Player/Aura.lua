@@ -26,14 +26,14 @@ do
       -- Rogue
       Spell(1784), -- Stealth
       Spell(115191), -- Stealth w/ Subterfuge Talent
-      Spell(11327), -- Vanish
-      Spell(115193), -- Vanish w/ Subterfuge Talent
       -- Feral
       Spell(5215) -- Prowl
     },
     -- Combat Stealth
     {
       -- Rogue
+      Spell(11327), -- Vanish
+      Spell(115193), -- Vanish w/ Subterfuge Talent
       Spell(115192), -- Subterfuge Buff
       Spell(185422), -- Stealth from Shadow Dance
       -- Druid
@@ -41,8 +41,6 @@ do
     },
     -- Special Stealth
     {
-      -- Rogue
-      Spell(347037), -- Sepsis stance mask buff
       -- Night Elf
       Spell(58984) -- Shadowmeld
     }

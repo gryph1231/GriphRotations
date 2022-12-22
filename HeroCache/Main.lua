@@ -13,6 +13,7 @@ end
 -- Addon
 HeroCache = Cache;
 
+
 --- ============================ CONTENT ============================
 -- Defines our cached tables.
 -- Temporary
@@ -31,17 +32,19 @@ Cache.Persistent = {
     Class = { UnitClass("player") },
     Spec = {}
   },
-  BookIndex = { Pet = {}, Player = {} },
   SpellLearned = { Pet = {}, Player = {} },
-  Texture = { Spell = {}, Item = {}, Custom = {} },
-  ElvUIPaging = { PagingString, PagingStrings = {}, PagingBars = {} },
-  Talents = { Rank }
+  Texture = { Spell = {}, Item = {}, Custom = {} }
 };
 
 -- Reset the cache.
 Cache.HasBeenReset = false;
 function Cache.Reset()
   if not Cache.HasBeenReset then
+    -- -- foreach method
+    -- for Key, Value in pairs(HL.Cache) do
+    --   wipe(HL.Cache[Key]);
+    -- end
+
     wipe(Cache.APLVar);
     wipe(Cache.Enemies);
     wipe(Cache.EnemiesCount);
@@ -170,18 +173,23 @@ end]=],
   --[[
     Main cache creation function
     Returns a table with 3 functions:
+
       Get(...)
         Returns the value or nil if it's not cached
+
       Set(..., val)
         Sets the value at given path to @val, returns @val
+
       GetSet(..., [func])
         Special getter that can also *set* the value if it's nil, calling @func in the process (lazily)
         The behavior is triggered only if the last argument to it is a function, works as Get otherwise
+
     Calling
       .Set('A', 'B', 2, 'C', 42)
     is basically equivalent to
       cache['A']['B'][2]['C'] = 42
     which creates tables as needed
+
     Typical usage is:
       .GetSet('A', 53, 'B',
               function() return GetSpellPowerCost(53)[1] end)
@@ -261,4 +269,16 @@ end
 -- Typical usage is : return Cache.Set("SpellInfo", 53, "CostTable", GetSpellPowerCost(53)[1]);
 function Cache.Set(...)
   return HeroCacheDB.Enabled and CacheImpl.Set(...) or select(select('#', ...), ...)
+end
+
+-- Wipe a table while keeping the structure
+-- i.e. wipe every sub-table as long it doesn't contain a table
+function Cache.WipeTableRecursively(Table)
+  for Key, Value in pairs(Table) do
+    if type(Value) == "table" then
+      Cache.WipeTableRecursively(Value);
+    else
+      wipe(Table);
+    end
+  end
 end

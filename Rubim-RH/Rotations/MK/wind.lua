@@ -529,7 +529,7 @@ local VarHoldSEF = ( S.BonedustBrew:CooldownUp() and S.StormEarthAndFire:Charges
     end
 
 
-    if Player:IsChanneling(S.FistsofFury) and Player:ChannelPercentage() < 80 and Player:BuffRemains(S.SerenityBuff) < 1
+    if Player:IsChanneling(S.FistsofFury) and Player:CastPercentage() < 80 and Player:BuffRemains(S.SerenityBuff) < 1
         and S.Serenity:IsAvailable() then
         return S.StopFoF:Cast()
     end

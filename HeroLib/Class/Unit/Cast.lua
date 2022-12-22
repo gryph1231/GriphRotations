@@ -160,11 +160,3 @@ function Unit:CastCost()
   end
   return 0
 end
-
--- Alias of CastPercentage.
-function Unit:ChannelPercentage(ReverseChannel)
-  return self:CastPercentage(ReverseChannel)
-end
-
-
-

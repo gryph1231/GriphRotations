@@ -103,15 +103,7 @@ function Player:IsInRaid()
   return self:InstanceType() == "raid" or false
 end
 
--- Get wether the player is in a raid area.
-function Player:IsInRaidArea()
-  return self:InstanceType() == "raid" or false
-end
 -- Get wether the player is in a dungeon instance.
 function Player:IsInDungeon()
-  return self:InstanceType() == "party" or false
-end
--- Get wether the player is in a dungeon area.
-function Player:IsInDungeonArea()
   return self:InstanceType() == "party" or false
 end

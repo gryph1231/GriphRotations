@@ -119,11 +119,5 @@ HL.SpecID_ClassesSpecs = {
   -- Warrior
   [71] = { "Warrior", "Arms" },
   [72] = { "Warrior", "Fury" },
-  [73] = { "Warrior", "Protection" },
-  -- Evoker
-  [1467] = { "Evoker", "Devastation" },
-  [1468] = { "Evoker", "Preservation" },
-
-
-
+  [73] = { "Warrior", "Protection" }
 }

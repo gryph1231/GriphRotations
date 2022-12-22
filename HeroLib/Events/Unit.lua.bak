@@ -8,7 +8,6 @@ local Unit = HL.Unit
 local Player = Unit.Player
 local Pet = Unit.Pet
 local Target = Unit.Target
-local Nameplate = Unit.Nameplate;
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua

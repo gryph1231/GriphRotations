@@ -19,20 +19,10 @@ local Item = HL.Item
 
 --- ============================ CONTENT ============================
 
--- Get if the player is in a party.
-function Player:IsInParty()
-  return UnitInParty(self.UnitID)
-end
-
--- Get if the player is in a raid.
-function Player:IsInRaid()
-  return UnitInRaid(self.UnitID)
-end
-
+-- Get if the player is mounted on a non-combat mount.
 function Player:IsMounted()
   return IsMounted() and not self:IsOnCombatMount()
 end
-
 
 -- Get the player race.
 -- Dwarf, Draenei, Gnome, Human, NightElf, Worgen

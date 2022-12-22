@@ -12,8 +12,6 @@ local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
 -- Lua
-local UnitAura = UnitAura -- name, icon, count, dispelType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellID, canApplyAura, isBossAura, casterIsPlayer, nameplateShowAll, timeMod, value1, value2, value3, ..., value11
-local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local unpack = unpack
 -- File Locals
 
@@ -158,11 +156,49 @@ function Unit:BuffStackP(Spell, AnyCaster, Offset)
 end
 
 -- buff.foo.refreshable (doesn't exists on SimC atm tho)
-function Unit:BuffRefreshable(ThisSpell, AnyCaster, BypassRecovery)
-  local PandemicThreshold = ThisSpell:PandemicThreshold()
-
-  return self:BuffRemains(ThisSpell, AnyCaster, BypassRecovery) <= PandemicThreshold
+function Unit:BuffRefreshable(Spell, PandemicThreshold, AnyCaster, Offset)
+  return self:BuffRemains(Spell, AnyCaster, Offset) <= PandemicThreshold
 end
+
+--[[*
+  * @function Unit:BuffRefreshableP
+  * @override Unit:BuffRefreshable
+  * @desc Offset defaulted to "Auto" which is ideal in most cases to improve the prediction.
+  *
+  * @param {string|number} [Offset="Auto"]
+  *
+  * @returns {number}
+  *]]
+function Unit:BuffRefreshableP(Spell, PandemicThreshold, AnyCaster, Offset)
+  return self:BuffRefreshable(Spell, PandemicThreshold, AnyCaster, Offset or "Auto")
+end
+
+--[[*
+  * @function Unit:BuffRefreshableC
+  * @override Unit:BuffRefreshable
+  * @desc Automaticaly calculates the pandemicThreshold from enum table.
+  *
+  * @param
+  *
+  * @returns {number}
+  *]]
+function Unit:BuffRefreshableC(Spell, AnyCaster, Offset)
+  return self:BuffRefreshable(Spell, Spell:PandemicThreshold(), AnyCaster, Offset)
+end
+
+--[[*
+  * @function Unit:BuffRefreshableCP
+  * @override Unit:BuffRefreshableP
+  * @desc Automaticaly calculates the pandemicThreshold from enum table with prediction.
+  *
+  * @param
+  *
+  * @returns {number}
+  *]]
+function Unit:BuffRefreshableCP(Spell, AnyCaster, Offset)
+  return self:BuffRefreshableP(Spell, Spell:PandemicThreshold(), AnyCaster, Offset)
+end
+
 -- hot.foo.ticks_remain
 function Unit:BuffTicksRemainP(Spell)
   local Remains = self:BuffRemainsP(Spell)
@@ -421,183 +457,4 @@ end
 
 function Unit:HasNotHeroism()
   return (not self:HasHeroism())
-end
-
-
-do
-  local BloodlustSpells = {
-    -- Abilities
-    Spell(2825), -- Shaman: Bloodlust (Horde)
-    Spell(32182), -- Shaman: Heroism (Alliance)
-    Spell(80353), -- Mage:Time Warp
-    Spell(90355), -- Hunter: Ancient Hysteria
-    Spell(160452), -- Hunter: Netherwinds
-    Spell(264667), -- Hunter: Primal Rage
-    -- Drums
-    Spell(35475), -- Drums of War
-    Spell(35476), -- Drums of Battle
-    Spell(146555), -- Drums of Rage
-    Spell(178207), -- Drums of Fury
-    Spell(230935), -- Drums of the Mountain
-    Spell(256740), -- Drums of the Maelstrom
-    Spell(309658), -- Drums of Deathly Ferocity
-  }
-
-  -- buff.bloodlust.remains
-  function Unit:BloodlustRemains(BypassRecovery)
-    local GUID = self:GUID()
-    if not GUID then return false end
-
-    for i = 1, #BloodlustSpells do
-      local BloodlustSpell = BloodlustSpells[i]
-      if self:Buff(BloodlustSpell, nil) then
-        return self:BuffRemains(BloodlustSpell, nil, BypassRecovery)
-      end
-    end
-
-    return 0
-  end
-
-  -- buff.bloodlust.up
-  function Unit:BloodlustUp(BypassRecovery)
-    return self:BloodlustRemains(BypassRecovery) > 0
-  end
-
-  -- buff.bloodlust.down
-  function Unit:BloodlustDown(BypassRecovery)
-    return not self:BloodlustUp(BypassRecovery)
-  end
-end
-
-do
-  local PowerInfusionSpells = {
-    -- Abilities
-    Spell(10060), -- Priest: Power Infusion
-  }
-
-  -- buff.power_infusion.remains
-  function Unit:PowerInfusionRemains(BypassRecovery)
-    local GUID = self:GUID()
-    if not GUID then return false end
-
-    for i = 1, #PowerInfusionSpells do
-      local PowerInfusionSpell = PowerInfusionSpells[i]
-      if self:Buff(PowerInfusionSpell, nil) then
-        return self:BuffRemains(PowerInfusionSpell, nil, BypassRecovery)
-      end
-    end
-
-    return 0
-  end
-
-  -- buff.power_infusion.up
-  function Unit:PowerInfusionUp(BypassRecovery)
-    return self:PowerInfusionRemains(BypassRecovery) > 0
-  end
-
-  -- buff.power_infusion.down
-  function Unit:PowerInfusionDown(BypassRecovery)
-    return not self:PowerInfusionUp(BypassRecovery)
-  end
-end
-
-do
-  local BloodlustExhaustSpells = {
-    --TODO : look for other debuffs
-    -- Abilities
-    Spell(57724),   -- Shaman: Sated (Horde)
-    Spell(57723),   -- Shaman: Exhaustion (Alliance)
-    Spell(80354),   -- Mage:Temporal Displacement
-    Spell(264689),  -- Hunter: Fatigued
-    -- Drums
-    --Spell(35475), -- Drums of War
-    --Spell(35476), -- Drums of Battle
-    --Spell(146555), -- Drums of Rage
-    --Spell(178207), -- Drums of Fury
-    --Spell(230935), -- Drums of the Mountain
-    --Spell(256740), -- Drums of the Maelstrom
-    --Spell(309658), -- Drums of Deathly Ferocity
-  }
-
-  -- buff.bloodlust.remains
-  function Unit:BloodlustExhaustRemains(BypassRecovery)
-    local GUID = self:GUID()
-    if not GUID then return false end
-
-    for i = 1, #BloodlustExhaustSpells do
-      local BloodlustExhaustSpell = BloodlustExhaustSpells[i]
-      if self:DebuffUp(BloodlustExhaustSpell, nil) then
-        return self:DebuffRemains(BloodlustExhaustSpell, nil, BypassRecovery)
-      end
-    end
-
-    return 0
-  end
-
-  -- buff.bloodlust.up
-  function Unit:BloodlustExhaustUp(BypassRecovery)
-    return self:BloodlustExhaustRemains(BypassRecovery) > 0
-  end
-
-  -- buff.bloodlust.down
-  function Unit:BloodlustExhaustDown(BypassRecovery)
-    return not self:BloodlustExhaustUp(BypassRecovery)
-  end
-end
-
-
-
-
-do
-  local GUID, SpellID, UnitID
-  local AuraStack, AuraDuration, AuraExpirationTime, AuraSpellID, Index
-
-  function Unit:AuraInfo(ThisSpell, Filter, Full)
-    GUID = self:GUID()
-    if not GUID then return end
-
-    SpellID = ThisSpell:ID()
-
-    -- Use GetPlayerAuraBySpellID if we are checking a player buff as it is more performant and finds more things
-    if GUID == Player:GUID() then
-      if Full then
-        return GetPlayerAuraBySpellID(SpellID)
-      else
-        local spellTable = GetPlayerAuraBySpellID(SpellID)
-        if type(spellTable) ~= "table" then return nil end
-        AuraDuration = spellTable.duration
-        AuraExpirationTime = spellTable.expirationTime
-        AuraStack = spellTable.applications
-        return AuraStack, AuraDuration, AuraExpirationTime
-      end
-    end
-
-    UnitID = self:ID()
-    Index = 1
-    while true do
-      _, _, AuraStack, _, AuraDuration, AuraExpirationTime, _, _, _, AuraSpellID = UnitAura(UnitID, Index, Filter)
-
-      -- Returns no value if the aura was not found.
-      if not AuraSpellID then return end
-
-      -- Returns the info once we match the spell ids.
-      if AuraSpellID == SpellID then
-        if Full then
-          return UnitAura(UnitID, Index, Filter)
-        else
-          return AuraStack, AuraDuration, AuraExpirationTime, Index
-        end
-        --return Full and UnitAura(UnitID, Index, Filter) or AuraStack, AuraDuration, AuraExpirationTime, Index
-      end
-
-      Index = Index + 1
-    end
-  end
-end
-
--- Get the BuffInfo (from AuraInfo).
-function Unit:BuffInfo(ThisSpell, AnyCaster, Full)
-  local Filter = AnyCaster and "HELPFUL" or "HELPFUL|PLAYER"
-
-  return self:AuraInfo(ThisSpell, Filter, Full)
 end

@@ -113,10 +113,6 @@ do
   end
 end
 
-
-
-
-
 --------------------------
 --- 1 | Rage Functions ---
 --------------------------
@@ -736,14 +732,6 @@ do
   function Player:PainDeficitPercentage()
     return (self:PainDeficit() / self:PainMax()) * 100
   end
-
-
-
-
-
-
-
-
 end
 
 ------------------------------
@@ -827,64 +815,3 @@ do
     [18] = function() return nil end,
   }
 end
-
--- do
---   local DeeperStratagem = Spell(193531)
---   local DeviousStratagem = Spell(394321)
--- function CPMaxSpend()
---   if DeeperStratagem:IsAvailable() and DeviousStratagem:IsAvailable() then
---   return 7
---   elseif DeeperStratagem:IsAvailable() and not DeviousStratagem:IsAvailable() or not DeeperStratagem:IsAvailable() and DeviousStratagem:IsAvailable() then
---   return 6
---   else
---   return 5
---   end
--- end
--- end
-
-
--- local EchoingReprimandCP2 = Spell(323558),
--- local EchoingReprimandCP3 = Spell(323559),
--- local EchoingReprimandCP4 = Spell(323560),
--- local EchoingReprimandCP5 = Spell(354838),
-
-
--- -- "cp_spend"
--- do
--- function CPSpend()
---   return math.min(Player:ComboPoints(), CPMaxSpend())
--- end
--- end
-
--- -- -- "animacharged_cp"
--- do
-
---   local EchoingReprimandCP2 = Spell(323558)
---   local EchoingReprimandCP3 = Spell(323559)
---   local EchoingReprimandCP4 = Spell(323560)
---   local EchoingReprimandCP5 = Spell(354838)
-
---   function AnimachargedCP()
---     if Player:Buff(EchoingReprimandCP2) then
---       return 2
---     elseif Player:Buff(EchoingReprimandCP3) then
---       return 3
---     elseif Player:Buff(EchoingReprimandCP4) then
---       return 4
---     elseif Player:Buff(EchoingReprimandCP5) then
---       return 5
---     end
-
---     return -1
---   end
-
---   function EffectiveComboPoints()
---     if Player:ComboPoints() == 2 and Player:BuffP(EchoingReprimandCP2)
---     or Player:ComboPoints() == 3 and Player:BuffP(EchoingReprimandCP3)
---     or Player:ComboPoints() == 4 and Player:BuffP(EchoingReprimandCP4)
---     or Player:ComboPoints() == 5 and Player:BuffP(EchoingReprimandCP5) then
---       return 7
---     end
---     return Player:ComboPoints()
---   end
--- end

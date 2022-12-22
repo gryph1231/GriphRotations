@@ -479,7 +479,7 @@ if IsTanking and (Enemies15y>=1 or Target:IsInRange(15)) then
     return S.SpinningCraneKick:Cast()
   end
   -- breath_of_fire,if=buff.blackout_combo.down&(buff.bloodlust.down|(buff.bloodlust.up&dot.breath_of_fire_dot.refreshable))
-  if S.BreathOfFire:IsCastable() and (Enemies12y>=1 or Target:IsInRange(12)) and (not Player:Buff(S.BlackoutComboBuff) and (Player:BloodlustDown() or (Player:BloodlustUp() and Target:BuffRefreshable(S.BreathOfFireDotDebuff)))) then
+  if S.BreathOfFire:IsCastable() and (Enemies12y>=1 or Target:IsInRange(12)) and not Player:Buff(S.BlackoutComboBuff) and Player:BloodlustDown() then
     return S.BreathOfFire:Cast()
   end
   -- chi_burst

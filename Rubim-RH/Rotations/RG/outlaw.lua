@@ -837,7 +837,7 @@ local function APL()
     end
 
 
-    if Target:IsInRange(8) and RubimRH.CDsON() then
+    if Target:IsInRange(8) and RubimRH.CDsON() and Player:CanAttack(Target) then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
     end

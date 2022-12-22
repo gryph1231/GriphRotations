@@ -15,6 +15,7 @@ local mathmin = math.min
 -- File Locals
 
 
+
 --- ============================ CONTENT ============================
 -- Create the MainFrame
 HL.MainFrame = CreateFrame("Frame", "HeroLib_MainFrame", UIParent)
@@ -43,7 +44,6 @@ function HL.Pulse()
     end
   end
 end
-
 
 -- Register the Pulse
 HL.MainFrame:SetScript("OnUpdate", HL.Pulse)
