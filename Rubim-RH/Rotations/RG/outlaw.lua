@@ -363,19 +363,6 @@ local function UseItems()
     end
 end
 
-local function HealthPotionSelected()
-
-    local HealthPotionIDs = {
-        191380, 191379, 191378
-
-    }
-
-    for _, HealthPotionID in ipairs(HealthPotionIDs) do
-        if Item(HealthPotionID):IsUsable() then
-            return Item(HealthPotionID)
-        end
-    end
-end
 
 
 local function RtB_Buffs ()
@@ -515,7 +502,7 @@ local function APL()
         fthrank = 0
     end
 
-    if not Player:Buff(S.Stealth) and not Player:Buff(S.VanishBuff) and not Player:Buff(S.SubterfugeBuff) then
+    if not Player:Buff(S.Stealth) and not Player:Buff(S.VanishBuff)  then
         stealthbasic = false
     else
         stealthbasic = true
@@ -667,7 +654,7 @@ local function APL()
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------Interrupts & Shiv-----------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
-    if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(60, 80) and
+    if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(30, 80) and
         RubimRH.InterruptsON() and S.Kick:IsCastableQueue(8) and Player:AffectingCombat() then
         return S.Kick:Cast()
     end
@@ -806,7 +793,7 @@ local function APL()
         -- |stealthed.basic&talent.find_weakness&!debuff.find_weakness.up
         -- |talent.hidden_opportunity
 
-        if S.Ambush:IsCastableQueue() and Target:IsInRange(8) and Player:CanAttack(Target) and (stealthedcto
+        if S.Ambush:IsCastableQueue() and not finishcondition and Target:IsInRange(8) and Player:CanAttack(Target) and (stealthedcto
             or
             stealthbasic and S.FindWeakness:IsAvailable() and
             not Target:Debuff(S.FindWeaknessDebuff)
@@ -830,8 +817,8 @@ local function APL()
     --     return S.ClosestTarget:Cast()
     -- end
 
-    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
-        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+    if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) and
+        (GetItemCooldown(191380) == 0 or GetItemCooldown(191379) == 0 or GetItemCooldown(191378) == 0) and (GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1 or GetItemCount(191378) >= 1)
         and (not Player:InArena() and not Player:InBattlegrounds()) then
         return I.HPIcon:Cast()
     end
@@ -861,7 +848,7 @@ local function APL()
         return S.BladeFlurry:Cast()
     end
 
-    if S.RolltheBones:IsCastableQueue() and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff)
+    if S.RolltheBones:IsCastableQueue() and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff) and not Player:Buff(S.ShadowDance)
         and (not Player:BuffP(S.mantle)
             and not Player:DebuffP(S.Dreadblades)
             and (RtB_Buffs() == 0 or RtB_Reroll() or RtB_KiR_Reroll())) then
@@ -912,14 +899,7 @@ local function APL()
             return S.Vanish:Cast()
         end
 
-        if (Player:BuffRemains(S.BladeFlurry) >= 5.5 and  Cache.EnemiesCount[bfrange] > 1  or  Cache.EnemiesCount[bfrange] == 1) 
-        -- and not RtB_KiR_Reroll() and not RtB_Reroll() and  RtB_BuffRemains() > 5.5 and Player:BuffRemains(S.SliceandDice)>5.5
-         then
-        
-            -- shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition
-            -- &buff.slice_and_dice.up&(variable.finish_condition|talent.hidden_opportunity)
-            -- &(!talent.hidden_opportunity|!cooldown.vanish.ready)
-
+     
             if S.ShadowDance:IsCastableQueue() and not S.KeepitRolling:IsAvailable() and shadowdancecondition 
             and Player:Buff(S.SliceandDice) and (finishcondition or S.HiddenOpportunity:IsAvailable())
                 and (not S.HiddenOpportunity:IsAvailable() or not S.Vanish:CooldownUp())
@@ -936,19 +916,7 @@ local function APL()
                 return S.ShadowDance:Cast()
             end
 
-            -- Shadow Dance: Is one of the few cooldowns the spec has that is exempt from  Restless Blades.
-            -- Whenever you go into a  Shadow Dance window you want to make sure you are going into it with at
-            -- least 80 energy even if it means waiting a few seconds without casting anything beforehand.
-            -- While it's active  Ambush becomes your highest priority builder, nothing else changes other than this though.
-            -- Shadow Dance at or below 3 combo points, and do not have  Audacity or  Opportunity active and wait until you
-            -- -- have at least 80 energy. While active  Ambush becomes your highest priority builder.
-
-            -- if S.ShadowDance:IsCastableQueue() and Player:ComboPoints() <= 3 and not Player:Buff(S.AudacityBuff)
-            --     and not Player:Buff(S.Opportunity) and Player:Energy() >= 80
-            -- then
-            --     return S.ShadowDance:Cast()
-            -- end
-        end
+        
 
 
     end
@@ -997,13 +965,16 @@ local function APL()
     
     -- blade_rush,if=variable.blade_flurry_sync&!buff.dreadblades.up&!buff.shadow_dance.up&energy.base_time_to_max>4&target.time_to_die>4
     if S.BladeRush:IsCastableQueue() and not Player:Debuff(S.Dreadblades) and not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(S.SubterfugeBuff) and
-        RubimRH.CDsON()  and Player:AffectingCombat() 
+        RubimRH.CDsON() and Player:AffectingCombat() 
         and not Target:Debuff(S.Blind)  
+        
+
+        -- and Player:EnergyDeficit()>50
         and not Player:BuffP(S.Stealth) and not Player:BuffP(S.VanishBuff) and Target:IsInRange(5)
         and (Target:Debuff(S.BetweentheEyes) or S.BetweentheEyes:CooldownRemains()>Player:GCD()) and
         (
-        Cache.EnemiesCount[bfrange] == 1 and Player:EnergyDeficit()>50 or
-            (Cache.EnemiesCount[bfrange] > 1 and Player:BuffP(S.BladeFlurry))) then
+        Cache.EnemiesCount[bfrange] == 1 and EnergyTimeToMaxRounded()>4 or
+            (Player:BuffP(S.BladeFlurry) and (Player:EnergyDeficit()>50 and Cache.EnemiesCount[bfrange] > 1 or Cache.EnemiesCount[bfrange]>3))) then
         return S.BladeRush:Cast()
     end
 

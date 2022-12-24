@@ -143,6 +143,7 @@ Item.Warrior.Fury = {
 healingpoticon = Item(169451),
 tx1 = Item(118330),
 tx2 = Item(114616),
+HPIcon = Item(169451),
 };
 
 local I = Item.Warrior.Fury;
@@ -286,10 +287,11 @@ and Player:AffectingCombat() and Player:HealthPercentage() <= 30 then
 	return S.BitterImmunity:Cast()
 end
 
-if ((S.EnragedReneration:CooldownDown() or not S.EnragedReneration:IsAvailable()) and (S.BitterImmunity:CooldownDown() or not S.BitterImmunity:IsAvailable())) and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(191378) or IsUsableItem(191380) or IsUsableItem(191379)) 
-and (GetItemCooldown(191378) == 0 or GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
-    return I.healingpoticon:Cast()
-end
+if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) and
+        (GetItemCooldown(191380) == 0 or GetItemCooldown(191379) == 0 or GetItemCooldown(191378) == 0) and (GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1 or GetItemCount(191378) >= 1)
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+    end
 
 if S.BerserkerStance:IsCastableQueue() and not Player:BuffP(S.BerserkerStance) then
 	return S.BerserkerStance:Cast()
