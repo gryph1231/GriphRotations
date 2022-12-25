@@ -257,9 +257,9 @@ end
 ----------------------------------------------------------Out of Combat---------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if not Player:AffectingCombat() then
-	-- if S.MendPet:IsCastable() and Pet:IsActive() and Cache.EnemiesCount[25] == 0 and Pet:HealthPercentage() > 0 and Pet:HealthPercentage() <= 85 and not Pet:Buff(S.MendPet) then
-		-- return S.MendPet:Cast()
-	-- end
+	if S.MendPet:IsCastable() and Pet:IsActive() and Cache.EnemiesCount[25] == 0 and Pet:HealthPercentage() > 0 and Pet:HealthPercentage() <= 85 and not Pet:Buff(S.MendPet) then
+		return S.MendPet:Cast()
+	end
 end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Spell Queue-----------------------------------------------------------------------

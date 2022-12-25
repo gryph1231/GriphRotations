@@ -306,18 +306,18 @@ local function APL()
 
 
 
-    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() 
-    and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
-        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
-        return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
-    end
+    -- if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() 
+    -- and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+    --     not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+    --     return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+    -- end
 
-    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
-        (
-        Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
-            Player:Debuff(S.lust5)) then
-        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-    end
+    -- if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+    --     (
+    --     Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
+    --         Player:Debuff(S.lust5)) then
+    --     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    -- end
 
 
     if S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving() then
@@ -406,7 +406,7 @@ if Player:AffectingCombat() then
         
       
         if S.ShieldoftheRighteous:IsReady() and Target:IsInRange(5) 
-        and (Player:BuffRefreshable(S.ShieldoftheRighteousBuff) 
+        and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
         and (ActiveMitigationNeeded 
         or Player:HealthPercentage() <=80)) then
             return S.ShieldoftheRighteous:Cast()
