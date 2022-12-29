@@ -69,6 +69,7 @@ BerserkerStance = Spell(386196),
     TitansTorment                         = Spell(390135),
     WreckingThrow                         = Spell(384110),
     TitanicRage                           = Spell(394329),
+	ShatteringThrow                       = Spell(64382),
     -- Buffs
     AvatarBuff                            = Spell(107574),
     BattleShoutBuff                       = Spell(6673),
@@ -317,23 +318,15 @@ if Player:AffectingCombat() and Player:CanAttack(Target) then
 		return S.autoattack:Cast()
 	end
 
-	if Cache.EnemiesCount[10] >= 2 and RubimRH.AoEON() then
-		if S.Ravager:IsCastableQueue() and S.Ravager:IsAvailable() then
-			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
-				return S.Ravager:Cast()
-			elseif S.Ravager:ID() == RubimRH.queuedSpell[1]:ID() then
-				return S.Ravagerz:Cast()
-			end
-		end
 		
-		if S.Whirlwind:IsCastableQueue() and (S.ImprovedWhirlwindTalent:IsAvailable() or S.MeatCleaverTalent:IsAvailable()) and not Player:BuffP(S.MeatCleaverBuff) then
+		if  Cache.EnemiesCount[10] >= 2 and S.Whirlwind:IsCastableQueue() and (S.ImprovedWhirlwindTalent:IsAvailable() or S.MeatCleaverTalent:IsAvailable()) and not Player:BuffP(S.MeatCleaverBuff) then
 			return S.Whirlwind:Cast()
 		end
-		
-		if S.Rampage:IsReadyQueue(8) and Player:BuffRemainsP(S.EnrageBuff) <= Player:GCD() then
-			return S.Rampage:Cast()
+
+		if S.Ravager:IsCastable() and RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
+			return S.Ravager:Cast()
 		end
-		
+
 		if S.Recklessness:IsReadyQueue(8) and S.Recklessness:IsAvailable() and (RubimRH.CDsON() or S.Recklessness:ID() == RubimRH.queuedSpell[1]:ID()) then
 			return S.Recklessness:Cast()
 		end
@@ -359,112 +352,142 @@ if Player:AffectingCombat() and Player:CanAttack(Target) then
 			return S.OdynsFury:Cast()
 		end
 		
-		if IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and S.WrathandFury:IsAvailable() and Player:BuffP(S.EnrageBuff) and Target:IsInRange(8) then
-			return S.RagingBlow:Cast()
+	
+		-- J	25.63	whirlwind,if=spell_targets.whirlwind>1&talent.improved_whirlwind&!buff.meat_cleaver.up|raid_event.adds.in<2&talent.improved_whirlwind&!buff.meat_cleaver.up
+		if S.Whirlwind:IsCastable() and Cache.EnemiesCount[10]>1 and S.ImprovedWhirlwindTalent:IsAvailable() and not Player:Buff(S.MeatCleaverBuff) then
+			return S.Whirlwind:Cast()
 		end
-		
-		if ((IsUsableSpell('Impending Victory') and S.ImpendingVictory:CooldownUp() and Target:IsInRange(8))
-		or (IsUsableSpell('Victory Rush') and S.VictoryRush:CooldownUp() and Target:IsInRange(8))) and Player:HealthPercentage() <= 30 then
-			return S.VictoryRush:Cast()
-		end
-		
-		if IsUsableSpell('Execute') and Player:BuffP(S.EnrageBuff) and S.Execute:CooldownUp() and Target:IsInRange(8) then
+		-- 0.00	execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd
+		if IsUsableSpell('Execute') and Player:Buff(S.AshenJuggernautBuff) and Player:BuffP(S.EnrageBuff) and S.Execute:CooldownUp() and Target:IsInRange(8) then
 			return S.Execute:Cast()
 		end
 		
-		if S.Annihilator:IsAvailable() and ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))
-		or (IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
+		-- 0.00	thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)\
+		if S.ThunderousRoar:IsCastableQueue() and Player:Buff(S.EnrageBuff) and Cache.EnemiesCount[10]>1 then
+			return S.ThunderousRoar:Cast()
+		end
+		
+		-- K	1.70	odyns_fury,if=active_enemies>1&buff.enrage.up&raid_event.adds.in>15
+		if S.OdynsFury:IsCastableQueue() and Player:Buff(S.EnrageBuff) and Cache.EnemiesCount[10]>1 then
+			return S.OdynsFury:Cast()
+		end
+		-- L	140.91	crushing_blow,if=talent.wrath_and_fury&buff.enrage.up
+				if S.WrathandFury:IsAvailable() and Player:Buff(S.EnrageBuff) and ((IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
 			return S.RagingBlow:Cast()
 		end
-		
-		if (IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))
-		or (IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8)) then
+		-- M	27.70	execute,if=buff.enrage.up
+		if IsUsableSpell('Execute') and Player:BuffP(S.EnrageBuff) and S.Execute:CooldownUp() and Target:IsInRange(8) then
+			return S.Execute:Cast()
+		end
+		-- N	3.00	odyns_fury,if=buff.enrage.up&raid_event.adds.in>15
+		if S.OdynsFury:IsCastableQueue() and Player:Buff(S.EnrageBuff) and Cache.EnemiesCount[10]>=1 then
+			return S.OdynsFury:Cast()
+		end
+
+
+		-- O	74.05	rampage,if=buff.recklessness.up|buff.enrage.remains<gcd|(rage>110&talent.overwhelming_rage)|(rage>80&!talent.overwhelming_rage)
+		if S.Rampage:IsReadyQueue() and (Player:Buff(S.RecklessnessBuff) or Player:BuffRemains(S.EnrageBuff)<Player:GCD() or (Player:Rage()>110 and S.OverwhelmingRage:IsAvailable()) or (Player:Rage()>80 and not S.OverwhelmingRage:IsAvailable())) then
+			return S.Rampage:Cast()
+		end
+
+
+		-- P	0.55	execute
+		if IsUsableSpell('Execute') and S.Execute:CooldownUp() and Target:IsInRange(8) then
+			return S.Execute:Cast()
+		end
+
+
+		-- 0.00	bloodbath,if=buff.enrage.up&talent.reckless_abandon&!talent.wrath_and_fury
+		if Player:Buff(S.EnrageBuff) and S.RecklessAbandon:IsAvailable() and not S.WrathandFury:IsAvailable() and ((IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8))) then
 			return S.Bloodthirst:Cast()
 		end
-		
-		if S.Whirlwind:IsCastableQueue() and Cache.EnemiesCount[8] >= 1 then
-			return S.Whirlwind:Cast()
+
+
+		-- Q	3.37	bloodthirst,if=buff.enrage.down|(talent.annihilator&!buff.recklessness.up)
+		if (not Player:Buff(S.EnrageBuff) or (S.Annihilator:IsAvailable() and not Player:Buff(S.RecklessnessBuff))) and ((IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))) then
+			return S.Bloodthirst:Cast()
 		end
-		
+
+
+
+		-- 0.00	onslaught,if=!talent.annihilator&buff.enrage.up|talent.tenderize
+	if S.Onslaught:IsReadyQueue(8) and (not S.Annihilator:IsAvailable() and Player:BuffP(S.EnrageBuff) or S.Tenderize:IsAvailable()) then
+			return S.Onslaught:Cast()
+		end
+
+
+		-- R	8.46	raging_blow,if=charges>1&talent.wrath_and_fury
+		if S.RagingBlow:Charges()>1 and S.WrathandFury:IsAvailable() and ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+
+		-- S	0.87	crushing_blow,if=charges>1&talent.wrath_and_fury
+		if S.CrushingBlow:Charges()>1 and S.WrathandFury:IsAvailable() and ((IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+		-- T	0.06	bloodbath,if=buff.enrage.down|!talent.wrath_and_fury
+		if ((not Player:Buff(S.EnrageBuff) or not S.WrathandFury:IsAvailable()) and ((IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8)))) then
+			return S.Bloodthirst:Cast()
+		end
+
+
+
+		-- 0.00	crushing_blow,if=buff.enrage.up&talent.reckless_abandon
+		if Player:Buff(S.EnrageBuff) and S.RecklessAbandon:IsAvailable() and ((IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+		-- 0.00	bloodthirst,if=!talent.wrath_and_fury
+		if  not S.WrathandFury:IsAvailable() and ((IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))) then
+			return S.Bloodthirst:Cast()
+		end
+
+
+		-- U	10.97	raging_blow,if=charges>=1
+		if S.RagingBlow:Charges()>=1 and  ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+
+
+		-- V	3.33	rampage
+		if S.Rampage:IsReadyQueue(8) then
+			return S.Rampage:Cast()
+		end
+
+
+		-- 0.00	slam,if=talent.annihilator
 		if S.Slam:IsReadyQueue() and S.Annihilator:IsAvailable() then
 			return S.Slam:Cast()
 		end
 
-	elseif Cache.EnemiesCount[10] < 2 or not RubimRH.AoEON() then
-	
-		if S.Ravager:IsCastableQueue() and S.Ravager:IsAvailable() then
-			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
-				return S.Ravager:Cast()
-			elseif S.Ravager:ID() == RubimRH.queuedSpell[1]:ID() then
-				return S.Ravagerz:Cast()
-			end
-		end
-		
-		if S.Recklessness:IsReadyQueue(10) and S.Recklessness:IsAvailable() and (RubimRH.CDsON() or S.Recklessness:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.Recklessness:Cast()
-		end
-	
-		if S.SpearofBastion:IsCastableQueue() and S.SpearofBastion:IsAvailable() then
-			if RubimRH.CDsON() and Player:BuffP(S.EnrageBuff) and Player:BuffP(S.RecklessnessBuff) and (allMobsinRange(Cache.EnemiesCount[25]) or IsResting()) and Target:IsInRange(8) and tarSpeed == 0 then
-				return S.SpearofBastion:Cast()
-			elseif S.SpearofBastion:ID() == RubimRH.queuedSpell[1]:ID() then
-				return S.SpearofBastionz:Cast()
-			end	
-		end
-		
-		if S.Avatar:IsReadyQueue(8) and S.Avatar:IsAvailable() and Player:BuffP(S.RecklessnessBuff) and RubimRH.CDsON()
-		and ((Player:BuffP(S.EnrageBuff) and S.TitansTorment:IsAvailable()) or S.TitanicRage:IsAvailable())	then
-			return S.Avatar:Cast()
-		end
-		
-		if IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and S.WrathandFury:IsAvailable() and Player:BuffP(S.EnrageBuff) and Target:IsInRange(8) then
-			return S.RagingBlow:Cast()
-		end
-		
-		if S.Rampage:IsReadyQueue(8) then
-			return S.Rampage:Cast()
-		end
-	
-		if S.ThunderousRoar:IsCastableQueue() and (RubimRH.CDsON() or S.ThunderousRoar:ID() == RubimRH.queuedSpell[1]:ID()) 
-		and Player:BuffP(S.EnrageBuff) and Cache.EnemiesCount[8] >= 1 and (allMobsinRange(Cache.EnemiesCount[8]) or IsResting()) then
-			return S.ThunderousRoar:Cast()
-		end
-		
-		if S.OdynsFury:IsReadyQueue(8) and Player:BuffP(S.EnrageBuff) then
-			return S.OdynsFury:Cast()
-		end
-		
-		if S.Onslaught:IsReadyQueue(8) and Player:BuffP(S.EnrageBuff) then
-			return S.Onslaught:Cast()
-		end
-	
-		if ((IsUsableSpell('Impending Victory') and S.ImpendingVictory:CooldownUp() and Target:IsInRange(8))
-		or (IsUsableSpell('Victory Rush') and S.VictoryRush:CooldownUp() and Target:IsInRange(8))) and Player:HealthPercentage() <= 30 then
-			return S.VictoryRush:Cast()
-		end
-	
-		if IsUsableSpell('Execute') and Player:BuffP(S.EnrageBuff) and S.Execute:CooldownUp() and Target:IsInRange(8) then
-			return S.Execute:Cast()
-		end
-	
-		if S.Annihilator:IsAvailable() and ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))
-		or (IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
-			return S.RagingBlow:Cast()
-		end
-	
-		if (IsUsableSpell('Bloodthirst') and S.Bloodthirst:CooldownUp() and Target:IsInRange(8))
-		or (IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8)) then
+
+		-- W	5.55	bloodbath
+		if ((IsUsableSpell('Bloodbath') and S.Bloodbath:CooldownUp() and Target:IsInRange(8))) then
 			return S.Bloodthirst:Cast()
 		end
-		
-		if S.Slam:IsReadyQueue() and S.Annihilator:IsAvailable() then
-			return S.Slam:Cast()
+
+
+
+		-- X	0.32	raging_blow
+		if  ((IsUsableSpell('Raging Blow') and S.RagingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
 		end
-	
-		if S.Whirlwind:IsReadyQueue(8) and Player:Rage() >= 80 then
+
+
+		-- Y	0.00	crushing_blow
+		if  ((IsUsableSpell('Crushing Blow') and S.CrushingBlow:CooldownUp() and Target:IsInRange(8))) then
+			return S.RagingBlow:Cast()
+		end
+
+
+
+		-- Z	4.68	whirlwind
+		if S.Whirlwind:IsReadyQueue(8) then
 			return S.Whirlwind:Cast()
 		end
-    end
+
+
+		-- Sample Sequence
+
 end
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end

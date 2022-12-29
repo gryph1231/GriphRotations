@@ -654,7 +654,7 @@ local function APL()
     --------------------------------------------------------------------------------------------------------------------------------------------
     ----------------------------------------------------------Interrupts & Shiv-----------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------
-    if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(55, 88) and
+    if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(35, 90) and
         RubimRH.InterruptsON() and S.Kick:IsCastableQueue(8) and Player:AffectingCombat() then
         return S.Kick:Cast()
     end
