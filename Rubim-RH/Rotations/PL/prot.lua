@@ -23,7 +23,7 @@ RubimRH.Spell[66] = {
     BlindingLight = Spell(115750),
     SenseUndead = Spell(5502),
 
-
+CleanseToxins = Spell(213644),
     autoattack = Spell(291944), -- regeneratin
     wristsx = Spell(255647), -- lights judgmenet
     tempestofthelightbringer = Spell(383396),
@@ -324,6 +324,10 @@ local function APL()
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
+    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not UnitExists("mouseover") or not UnitIsDeadOrGhost("mouseover")) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
 
     if S.DivineShield:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
@@ -374,25 +378,25 @@ if Player:AffectingCombat() then
     end
       
         if S.GuardianofAncientKings:IsCastable() and
-        Cache.EnemiesCount[10] >= 1 and (Player:NeedPanicHealing() or Player:HealthPercentage()<40) 
+        Cache.EnemiesCount[10] >= 1 and (Player:NeedPanicHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<35) 
         and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
             return S.GuardianofAncientKings:Cast()
     end
         if S.ArdentDefender:IsCastable() and
-        Cache.EnemiesCount[10] >= 1 and (Player:NeedMajorHealing() or Player:HealthPercentage()<50) 
+        Cache.EnemiesCount[10] >= 1 and (Player:NeedMajorHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<50) 
         and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
             return S.ArdentDefender:Cast()
     end
 
         if S.EyeofTyr:IsCastable() and
-        Cache.EnemiesCount[10] >= 1  and (Player:NeedMajorHealing() or Player:HealthPercentage()<85 
+        Cache.EnemiesCount[10] >= 1  and (Player:NeedMajorHealing() and Player:HealthPercentage()<85 or Player:HealthPercentage()<80 
         or ActiveMitigationNeeded and not Player:Buff(S.ShieldoftheRighteousBuff)) 
         and (Cache.EnemiesCount[8] >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
            return S.EyeofTyr:Cast()
     end
 
-    if S.DivineShield:IsCastable() and
-        Cache.EnemiesCount[10] >= 1  and (Player:NeedPanicHealing() or Player:HealthPercentage()<20) and not Player:Buff(S.ArdentDefenderBuff) 
+    if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance) and 
+        Cache.EnemiesCount[10] >= 1  and (Player:NeedPanicHealing() and Player:HealthPercentage()<30 or Player:HealthPercentage()<20) and not Player:Buff(S.ArdentDefenderBuff) 
         and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
         and S.ArdentDefender:CooldownRemains()>Player:GCD() and S.LayonHands:CooldownRemains()>Player:GCD() then
       return S.DivineShield:Cast()
@@ -400,7 +404,7 @@ if Player:AffectingCombat() then
       
         -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
         if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and 
-          (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight)) then
+          (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight) or Player:HealthPercentage()<45) then
         return S.WordofGlory:Cast()
         end
         
