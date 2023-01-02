@@ -159,7 +159,7 @@ Item.Paladin.Protection = {
 
     bracer = Item(168978),
     rez = Item(158379),
-    drums = Item(172233),
+    drums = Item(193470),
 
     HPIcon = Item(169451),
     tx1 = Item(118330),
@@ -291,7 +291,7 @@ local function APL()
     --     return S.healthstone:Cast()
     -- end
 
-    if RubimRH.CDsON() and Target:IsInRange(8) then
+    if RubimRH.CDsON() and Target:IsInRange(8) and Player:CanAttack(Target) then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
     end
@@ -306,18 +306,18 @@ local function APL()
 
 
 
-    -- if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() 
-    -- and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
-    --     not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
-    --     return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
-    -- end
+    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() 
+    and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+        return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+    end
 
-    -- if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
-    --     (
-    --     Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
-    --         Player:Debuff(S.lust5)) then
-    --     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-    -- end
+    if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+        (
+        Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
+            Player:Debuff(S.lust5)) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
 
 
     if S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving() then

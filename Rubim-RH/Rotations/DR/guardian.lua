@@ -170,10 +170,10 @@ local I = Item.Druid.Guardian;
         local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
         local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
         
-          if trinket1ready then
+          if trinket1ready and trinket1 ~= 193701 then
               return I.tx1:Cast()      
             end
-          if trinket2ready then
+          if trinket2ready and trinket2 ~= 193701 then
               return I.tx2:Cast()
           end
       end
@@ -210,7 +210,7 @@ local function APL()
 
 
     -- use_items
-    if RubimRH.CDsON() and Target:IsInRange(8) then
+    if RubimRH.CDsON() and Target:IsInRange(8) and Player:CanAttack(Target) then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
     end
@@ -300,7 +300,7 @@ Thrash = IsUsableSpell('Thrash') and S.Thrash:CooldownUp()
 --4 moonkin
 --5
 
-        if S.MarkoftheWild:IsCastable() and Player:BuffRemains(S.MarkoftheWildBuff)<300 then 
+        if S.MarkoftheWild:IsCastable() and not AuraUtil.FindAuraByName("Mark of the Wild", "player")  then 
             return S.MarkoftheWild:Cast()
         end
 -- print(GetShapeshiftForm())
@@ -380,14 +380,15 @@ Thrash = IsUsableSpell('Thrash') and S.Thrash:CooldownUp()
 
             
             -- Maintain 100%  Moonfire uptime
-            if S.Moonfire:IsCastable() and Target:IsInRange(40) and (Target:DebuffRemains(S.MoonfireDebuff)<Player:GCD() or Player:Buff(S.GalacticGuardianBuff) and Enemies12y<5) then
+            if S.Moonfire:IsCastable() and (Target:AffectingCombat() or not Player:AffectingCombat()) and Target:IsInRange(40) and (Target:DebuffRemains(S.MoonfireDebuff)<Player:GCD() or Player:Buff(S.GalacticGuardianBuff) and Enemies12y<5) then
                 return S.Moonfire:Cast()
             end
 
             -- Spend rage on either  Ironfur (defensively) or  Maul (offensively) to avoid capping
             if S.Ironfur:IsCastable() and Player:Rage()>40
-            and (Player:BuffStack(S.IronfurBuff)<1 
-            or Player:HealthPercentage()<80 and Player:BuffStack(S.IronfurBuff)<2)  
+            and (Player:BuffStack(S.IronfurBuff)<1
+            or Player:BuffRemains(S.IronfurBuff)<Player:GCD()*2
+            or Player:HealthPercentage()<90 and Player:BuffStack(S.IronfurBuff)<2)  
             and Enemies12y>=1 
             then
                 return S.Ironfur:Cast()
@@ -437,7 +438,7 @@ Thrash = IsUsableSpell('Thrash') and S.Thrash:CooldownUp()
 
       --Out of range
 
-    if Target:IsInRange(40) and not Target:IsInRange(12) then
+    if Target:IsInRange(40) and not Target:IsInRange(12) and (Target:AffectingCombat() or not Player:AffectingCombat()) then
         if S.Moonfire:IsCastable() then
             return S.Moonfire:Cast()
         end
