@@ -296,7 +296,7 @@ if S.CounterShot:IsReadyQueue() and notInterruptible == false and Target:CastPer
 	return S.CounterShot:Cast()
 end
 
-if select(4, UnitAura("target", 1)) == "enrage"
+if select(4, UnitAura("target", 1)) == ""
 
 and RubimRH.InterruptsON() and S.TranqShot:IsReady() and Target:AffectingCombat() and Target:TimeToDie() > 4 then
 	return S.TranqShot:Cast()
