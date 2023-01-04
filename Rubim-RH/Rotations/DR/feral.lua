@@ -56,11 +56,16 @@ RubimRH.Spell[103] = {
     LunarInspiration = Spell(155580),
     MoonfireCatDebuff = Spell(155625),
     Sabertooth = Spell(391722),
+	AdaptiveSwarm = Spell(391888),
+	AdaptiveSwarmDebuff = Spell(391889),
+	AdaptiveSwarmz = Spell(291944), --Regeneratin
     PoweroftheMoon = Spell(273389),
     PrimalWrath = Spell(285381),
 	Typhoon = Spell(132469),
+	Typhoonz = Spell(20549), --war stomp
 	MightyBash = Spell(5211),
-	Maim = Spell(22570),	
+	Maim = Spell(22570),
+	Renewal = Spell(108238),
 	ApexBuff = Spell(391882),	
 	SkullBash = Spell(106839),
     IronJawsBuff = Spell(276026),
@@ -169,8 +174,8 @@ local check = false
 end
 
 local function ThrashRefreshable()
-local ThrashRefreshable10 = 0
-local MissingThrash10 = 0
+local ThrashRefreshable8 = 0
+local MissingThrash8 = 0
 
     for id = 1, 40 do
 		local unitID = "nameplate" .. id
@@ -184,16 +189,44 @@ local MissingThrash10 = 0
 
 		if timer then 
 			if UnitCanAttack("player", unitID) and IsItemInRange(34368, unitID) and timer <= 4 then
-				ThrashRefreshable10 = ThrashRefreshable10 + 1
+				ThrashRefreshable8 = ThrashRefreshable8 + 1
 			end
 		end
 		
 		if UnitCanAttack("player", unitID) and IsItemInRange(34368, unitID) and not AuraUtil.FindAuraByName("Thrash",unitID,"PLAYER|HARMFUL") then
-			MissingThrash10 = MissingThrash10 + 1
+			MissingThrash8 = MissingThrash8 + 1
 		end
 	end
 
-	return ThrashRefreshable10 + MissingThrash10
+	return ThrashRefreshable8 + MissingThrash8
+end
+
+local function MissingAOERip()
+local RipRefreshable8 = 0
+local MissingRip8 = 0
+
+    for id = 1, 40 do
+		local unitID = "nameplate" .. id
+		local _,_,_,_,_,expirationTime = AuraUtil.FindAuraByName("Rip",unitID,"PLAYER|HARMFUL")
+		
+		if AuraUtil.FindAuraByName("Rip",unitID,"PLAYER|HARMFUL") then
+			timerRip = expirationTime - HL.GetTime()
+		else
+			timerRip = nil
+		end
+
+		if timerRip then 
+			if UnitCanAttack("player", unitID) and IsItemInRange(34368, unitID) and timerRip <= 4 then
+				RipRefreshable8 = RipRefreshable8 + 1
+			end
+		end
+		
+		if UnitCanAttack("player", unitID) and IsItemInRange(34368, unitID) and not AuraUtil.FindAuraByName("Rip",unitID,"PLAYER|HARMFUL") then
+			MissingRip8 = MissingRip8 + 1
+		end
+	end
+
+	return RipRefreshable8 + MissingRip8
 end
 
 local function APL()
@@ -203,6 +236,7 @@ RakeBT()
 BrutalSlashBT()
 ThrashBT()
 ThrashRefreshable()
+MissingAOERip()
 HL.GetEnemies(10, true);
 HL.GetEnemies(12, true);
 HL.GetEnemies(20, true);
@@ -253,6 +287,10 @@ if S.Convoke:ID() == RubimRH.queuedSpell[1]:ID() then
 	return S.Convoke:Cast()
 end
 
+if S.Typhoon:ID() == RubimRH.queuedSpell[1]:ID() then
+	return S.Typhoonz:Cast()
+end
+
 if S.Soothe:ID() == RubimRH.queuedSpell[1]:ID() then
 	return S.Soothe:Cast()
 end
@@ -293,6 +331,10 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
+if S.Renewal:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 30 then
+	return S.Renewal:Cast()
+end
+
 if S.Regrowth:IsCastable() and Player:BuffP(S.PredatorySwiftness) and Player:HealthPercentage() <= 85 and Cache.EnemiesCount[25] == 0 then
 	return S.Regrowth:Cast()
 end
@@ -309,6 +351,11 @@ if Player:BuffP(S.CatForm) and Player:AffectingCombat() then
 	-- return S.autoattack:Cast()
 -- end	
 
+--adaptive_swarm,target_if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!action.adaptive_swarm_heal.in_flight&!action.adaptive_swarm_damage.in_flight&!action.adaptive_swarm.in_flight)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
+if S.AdaptiveSwarm:IsReady(20) and (not Target:DebuffP(S.AdaptiveSwarmDebuff) or Target:DebuffRemainsP(S.AdaptiveSwarmDebuff) < 2) and Target:DebuffStackP(S.AdaptiveSwarmDebuff) < 3 and (Target:TimeToDie() > 5 or Cache.EnemiesCount[20] >= 2) then
+	return S.AdaptiveSwarmz:Cast()
+end
+
 if S.TigersFury:IsReady(10) and Player:EnergyDeficit() >= 50 then
 	return S.TigersFury:Cast()
 end
@@ -324,7 +371,7 @@ end
 --aoe
 if Cache.EnemiesCount[10] >= 2 and RubimRH.AoEON() then
 	
-	if S.PrimalWrath:IsReady(10) and Player:ComboPoints() >= 5 and (Player:EnergyTimeToMaxPredicted() <= Player:GCD() * 2 or Player:BuffP(S.Clearcasting)) then
+	if S.PrimalWrath:IsReady(10) and Player:ComboPoints() >= 5 and ((Player:EnergyTimeToMaxPredicted() <= Player:GCD() * 2 or Player:BuffP(S.Clearcasting)) or MissingAOERip() >= 1) then
 		return S.PrimalWrath:Cast()
 	end
 	
@@ -374,8 +421,10 @@ if Cache.EnemiesCount[10] >= 2 and RubimRH.AoEON() then
 end
 	
 --apex proc
-	if S.FerociousBite:IsReady(10) and Player:BuffP(S.ApexBuff) then
-		return S.FerociousBite:Cast()
+	if Cache.EnemiesCount[10] == 1 or not RubimRH.AoEON() then
+		if S.FerociousBite:IsReady(10) and Player:BuffP(S.ApexBuff) then
+			return S.FerociousBite:Cast()
+		end
 	end
 
 --bloodtalons
@@ -396,8 +445,8 @@ end
 	end
 	
 --finisher
-	if Player:ComboPoints() == 5 and (Cache.EnemiesCount[10] < 2 or not RubimRH.AoEON()) then
-		if S.Rip:IsReady(10) and Target:DebuffRemainsP(S.Rip) < 7 then
+	if Player:ComboPoints() == 5 and (Cache.EnemiesCount[10] == 1 or not RubimRH.AoEON()) then
+		if S.Rip:IsReady(10) and Target:DebuffRemainsP(S.Rip) < 7 and Player:BuffP(S.BloodtalonsBuff) then
 			return S.Rip:Cast()
 		end
 	
