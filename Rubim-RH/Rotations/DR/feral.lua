@@ -351,13 +351,16 @@ if Player:BuffP(S.CatForm) and Player:AffectingCombat() then
 	-- return S.autoattack:Cast()
 -- end	
 
---adaptive_swarm,target_if=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!action.adaptive_swarm_heal.in_flight&!action.adaptive_swarm_damage.in_flight&!action.adaptive_swarm.in_flight)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
+if S.TigersFury:IsReady(10) and Player:EnergyDeficit() >= 50 then
+	return S.TigersFury:Cast()
+end
+
 if S.AdaptiveSwarm:IsReady(20) and (not Target:DebuffP(S.AdaptiveSwarmDebuff) or Target:DebuffRemainsP(S.AdaptiveSwarmDebuff) < 2) and Target:DebuffStackP(S.AdaptiveSwarmDebuff) < 3 and (Target:TimeToDie() > 5 or Cache.EnemiesCount[20] >= 2) then
 	return S.AdaptiveSwarmz:Cast()
 end
 
-if S.TigersFury:IsReady(10) and Player:EnergyDeficit() >= 50 then
-	return S.TigersFury:Cast()
+if S.FeralFrenzy:IsReady(20) and (Player:ComboPoints() < 2 or Player:BuffP(S.Berserk)) then
+	return S.FeralFrenzy:Cast()
 end
 
 if S.Convoke:IsReady(10) and RubimRH.CDsON() and Player:BuffP(S.TigersFury) and Player:ComboPoints() < 3 then
@@ -395,7 +398,7 @@ if Cache.EnemiesCount[10] >= 2 and RubimRH.AoEON() then
 		end
 	end
 
-	if Player:EnergyTimeToMaxPredicted() <= Player:GCD() * 2 or Player:BuffP(S.Clearcasting) then
+	if Player:ComboPointsDeficit() >= 1 and (Player:EnergyTimeToMaxPredicted() <= Player:GCD() * 2 or Player:BuffP(S.Clearcasting)) then
 		if S.Thrash:IsReadyMorph(10) and ThrashRefreshable() >= 1 then
 			return S.Thrash:Cast()
 		end
@@ -460,7 +463,7 @@ end
 	end
 	
 --berserk builder
-	if Player:ComboPoints() < 5 and Player:BuffP(S.Berserk) then
+	if Player:ComboPointsDeficit() >= 1 and Player:BuffP(S.Berserk) then
 		if S.Rake:IsReady(10) and Target:DebuffRemainsP(S.RakeDebuff) < 4 then
 			return S.Rake:Cast()
 		end
@@ -475,7 +478,7 @@ end
 	end
 
 --builder
-	if Player:ComboPoints() < 5 then
+	if Player:ComboPointsDeficit() >= 1 then
 		if Player:BuffP(S.Clearcasting) then
 			if S.Thrash:IsReadyMorph(10) and ThrashRefreshable() >= 1 then
 				return S.Thrash:Cast()
