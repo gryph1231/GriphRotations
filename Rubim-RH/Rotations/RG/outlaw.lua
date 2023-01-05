@@ -848,7 +848,7 @@ local function APL()
         return S.BladeFlurry:Cast()
     end
 
-    if S.RolltheBones:IsCastableQueue() and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff) and not Player:Buff(S.ShadowDance)
+    if S.RolltheBones:IsCastable() and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff) and not Player:Buff(S.ShadowDance)
         and (not Player:BuffP(S.mantle)
             and not Player:DebuffP(S.Dreadblades)
             and (RtB_Buffs() == 0 or RtB_Reroll() or RtB_KiR_Reroll())) then
