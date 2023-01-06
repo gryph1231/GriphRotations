@@ -431,14 +431,19 @@ local function APL()
         return S.BlessingofProtection:Cast()
     end
 
+    if S.WordofGlory:IsCastable() and (S.LayonHands:CooldownRemains()>Player:GCD() or Player:Debuff(S.Forbearance)) and Player:HealthPercentage()<60 and Player:HolyPower()>=3 and not Player:Buff(S.DivineShield) and
+    not Player:BuffP(S.ShieldofVengeance) then
+    return S.WordofGlory:Cast()
+end
+
     if Player:CanAttack(Target) then
 
         Ranged = function()
 
             if Player:AffectingCombat() then
-                -- if S.HammerofWrath:IsReadyP() and Target:IsInRange(30) and (Player:BuffP(S.AvengingWrath) or Player:BuffP(S.Crusade) or Target:HealthPercentage()<=20) then
-                -- return S.HammerofWrath:Cast()
-                -- end
+                if S.HammerofWrath:IsReadyP() and Target:IsInRange(30) and (Player:BuffP(S.AvengingWrath) or Player:BuffP(S.Crusade) or Target:HealthPercentage()<=20) then
+                return S.HammerofWrath:Cast()
+                end
 
                 if S.BladeofJustice:IsCastable() and Target:IsInRange(15) then
                     return S.BladeofJustice:Cast()
@@ -698,10 +703,6 @@ local function APL()
                 return S.VanquishersHammer:Cast()
             end
 
-            -- hammer_of_wrath,if=runeforge.the_mad_paragon|covenant.venthyr&cooldown.ashen_hallow.remains>210
-            -- if S.HammerofWrath:IsReady() and (IsEquippedItem("Mad Paragon") or covenantID == 2 and S.AshenHallow:CooldownRemains()>210) then
-            --     return S.HammerofWrath:Cast()
-            --     end
 
             -- wake_of_ashes,if=Player:HolyPower()<=2&talent.ashes_to_dust&(not S.AvengingWrath:CooldownUp() or not S.Crusade:CooldownUp())
             if S.WakeofAshes:IsReadyP() and RubimRH:CDsON() and Target:IsInRange(6) and Player:HolyPower() <= 2 and
@@ -782,9 +783,9 @@ local function APL()
             end
 
             -- hammer_of_wrath
-            -- if S.HammerofWrath:IsCastable() and Target:IsInRange(20) then
-            --     return S.HammerofWrath:Cast()
-            --     end
+            if S.HammerofWrath:IsReady() and Target:IsInRange(20) then
+                return S.HammerofWrath:Cast()
+                end
 
 
             -- blade_of_justice,if=Player:HolyPower()<=3
@@ -885,10 +886,7 @@ local function APL()
             return RubimRH.QueuedSpell():Cast()
         end
 
-        if S.FlashofLight:IsCastable() and Player:HealthPercentage() < 85 and Player:BuffStackP(S.SelfLessHealerBuff) ==
-            4 and Cache.EnemiesCount[15] == 0 then
-            return S.FlashofLight:Cast()
-        end
+
 
         -- if S.DevotionAura:IsCastable() and not Player:BuffP(S.DevotionAura) then
         -- return S.DevotionAura:Cast()

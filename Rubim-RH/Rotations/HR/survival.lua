@@ -158,6 +158,10 @@ if not Player:AffectingCombat() then
 	end
 end
 
+if S.MendPet:IsCastable() and Pet:IsActive() and Pet:HealthPercentage() > 0 and Pet:HealthPercentage() <= 55 and not Pet:Buff(S.MendPet) then
+	return S.MendPet:Cast()
+end
+
 if select(4, UnitAura("target", 1)) == ""
 
 and RubimRH.InterruptsON() and S.TranqShot:IsReady() and Target:AffectingCombat() and Target:TimeToDie() > 4 then
