@@ -625,7 +625,7 @@ local function APL()
             -- &(!talent.hidden_opportunity|!buff.audacity.up
             -- &(talent.fan_the_hammer.rank<2|!buff.opportunity.up))
         shadowdancecondition = (
-            S.ShadowDance:IsAvailable() and Target:DebuffP(S.BetweentheEyes)
+            S.ShadowDance:IsAvailable() and (Target:DebuffP(S.BetweentheEyes) or (Cache.EnemiesCount[bfrange] > 1 and S.BetweentheEyes:CooldownRemainsP() >= 5))
                 and (not S.GhostlyStrike:IsAvailable() or Target:DebuffP(S.GhostlyStrike)) and
                 (not S.Dreadblades:IsAvailable() or not S.Dreadblades:CooldownUp())
                 and (not S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.AudacityBuff) 
