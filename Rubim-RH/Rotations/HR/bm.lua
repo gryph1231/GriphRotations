@@ -16,18 +16,21 @@ local mainAddon = RubimRH
 
 -- Spells
 RubimRH.Spell[253] = {
-	Dash = Spell(61684),
     ArcaneTorrent = Spell(80483),
     AncestralCall = Spell(274738),
     Berserking = Spell(26297),
     BerserkingBuff = Spell(26297),
     BloodFury = Spell(20572),
     BloodFuryBuff = Spell(20572),
+    Bloodshed = Spell(321530),
+    DireBeast = Spell(120679),
+    SpiritMendz = Spell(28880), --gift of naaru
     LightsJudgment = Spell(255647),
     Shadowmeld = Spell(58984),
     CallPet = Spell(883),
     MendPet = Spell(136),
     RevivePet = Spell(982),
+	Dashz = Spell(287712), --haymaker
     AspectoftheWild = Spell(193530),
 	WildSpirits = Spell(328231),
     BarbedShot = Spell(217200),
@@ -44,11 +47,12 @@ RubimRH.Spell[253] = {
     AspectoftheBeast = Spell(191384),
     Barrage = Spell(120360),
 	FortitudeoftheBear = Spell(388035),
+	FortitudeoftheBearz = Spell(291944), --regeneration
     BindingShot = Spell(109248),
     ChimaeraShot = Spell(53209),
     WailingArrow = Spell(392060),
+    WailingArrowz = Spell(274738), --ancestral call
     WildCall = Spell(185789),
-    DireBeast = Spell(120679),
     WildInstincts = Spell(378442),
     CalloftheWild = Spell(361582),
     KillerInstinct = Spell(273887),
@@ -58,6 +62,7 @@ RubimRH.Spell[253] = {
     Stampede = Spell(201430),
     ThrilloftheHunt = Spell(257944),
     VenomousBite = Spell(257891),
+	Trinkz = Spell(265221),
 	StunGrenadeBuff = Spell(165534),
     AspectoftheTurtle = Spell(186265),
     Exhilaration = Spell(109304),
@@ -66,6 +71,7 @@ RubimRH.Spell[253] = {
     TranqShot = Spell(19801),
     Disengage = Spell(781),
     FreezingTrap = Spell(187650),
+    FreezingTrapz = Spell(265221), --fireblood
     FeignDeath = Spell(5384),
     TarTrap = Spell(187698),
     ConcusiveShot = Spell(5116),
@@ -77,7 +83,7 @@ RubimRH.Spell[253] = {
 	Flare = Spell(1543),
 	KillCleave = Spell(378207),
 	DeathChakram = Spell(375891),
-	Dashz = Spell(287712), --haymaker
+	DeathChakramz = Spell(260364), --arcane pulse
 }
 local S = RubimRH.Spell[253]
 
@@ -130,7 +136,7 @@ function IsDummy(NPCID)
 	or UnitIDz == 154580 or UnitIDz == 154583 or UnitIDz == 154585 or UnitIDz == 154586 or UnitIDz == 160325 or UnitIDz == 173942 or UnitIDz == 175449
 	or UnitIDz == 175450 or UnitIDz == 175451 or UnitIDz == 175452 or UnitIDz == 175455 or UnitIDz == 175456 or UnitIDz == 175462 or UnitIDz == 174565
 	or UnitIDz == 174566 or UnitIDz == 174567 or UnitIDz == 174568 or UnitIDz == 174569 or UnitIDz == 174570 or UnitIDz == 174571 or UnitIDz == 174484
-	or UnitIDz == 174487 or UnitIDz == 174488 or UnitIDz == 174491 or UnitIDz == 65310) then
+	or UnitIDz == 174487 or UnitIDz == 174488 or UnitIDz == 174491 or UnitIDz == 65310 or UnitIDz == 198594 or UnitIDz == 189632) then
 		return true
 	else
 		return false
@@ -214,17 +220,18 @@ allMobsinRange()
 KCRange()
 IsDummy()
 HL.GetEnemies(25, true);
+HL.GetEnemies(8, true);
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:IsCasting() or Player:IsChanneling() then
+if Player:IsCasting() or Player:IsChanneling() or (IsCurrentAction(13) or IsCurrentAction(14)) then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") 
 or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName("Feign Death", "player") then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end 
 
-tolerance = select(4, GetNetStats())/1000 + 0.2
+tolerance = select(4, GetNetStats())/1000 + 0.3
 local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
 
 --CHANGE TO 12 WHEN NOT USING BLOODLETTING CONDUIT
@@ -233,21 +240,21 @@ BarbRechargeTime = 11 / (1 + GetHaste('player')/100)
 start, duration, enabled = GetSpellCooldown(388035);
 FortoftheBearCD = duration - (GetTime() - start)
 
-if FortoftheBearCD < 0 or FortoftheBearCD== nil then 
+if FortoftheBearCD < 0 then 
 	FortoftheBearCD = 0
 end
 
 start, duration, enabled = GetSpellCooldown(90361);
 SpiritMendCD = duration - (GetTime() - start)
 
-if SpiritMendCD < 0 or SpiritMendCD == nil then 
+if SpiritMendCD < 0 then 
 	SpiritMendCD = 0
 end
 
 start, duration, enabled = GetSpellCooldown(61684);
 DashCD = duration - (GetTime() - start)
 
-if DashCD < 0 or DashCD == nil then 
+if DashCD < 0 then 
 	DashCD = 0
 end
 
@@ -265,7 +272,6 @@ end
 if S.MendPet:IsCastable() and Pet:IsActive() and Pet:HealthPercentage() > 0 and Pet:HealthPercentage() <= 55 and not Pet:Buff(S.MendPet) then
 	return S.MendPet:Cast()
 end
-
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Spell Queue-----------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -275,50 +281,43 @@ or (S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving()) or
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-if S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() then
-	return S.WailingArrow:Cast()
-end
-
 if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() then
-	return S.FreezingTrap:Cast()
+	return S.FreezingTrapz:Cast()
 end
 
 if RubimRH.QueuedSpell():IsReadyQueue() and S.BestialWrath:ID() ~= RubimRH.queuedSpell[1]:ID() and S.ResonatingArrow:ID() ~= RubimRH.queuedSpell[1]:ID() 
-and S.DeathChakram:ID() ~= RubimRH.queuedSpell[1]:ID() and S.FreezingTrap:ID() ~= RubimRH.queuedSpell[1]:ID() then
+and S.DeathChakram:ID() ~= RubimRH.queuedSpell[1]:ID() and S.FreezingTrap:ID() ~= RubimRH.queuedSpell[1]:ID() and S.WailingArrow:ID() ~= RubimRH.queuedSpell[1]:ID() then
     return RubimRH.QueuedSpell():Cast()
 end
 
-if S.BestialWrath:IsCastableQueue()
-and (S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID() or RubimRH.CDsON()) 
-and (CleaveCount() == 1 or Player:BuffRemainsP(S.BeastCleaveBuff) > Player:GCD() * 1.25)
-and (S.BarbedShot:ChargesFractional() < 1 or not S.ScentofBlood:IsAvailable()) then
-	return S.BestialWrath:Cast()
-end
+-- if S.BestialWrath:IsCastableQueue()
+-- and (S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID() or RubimRH.CDsON()) 
+-- and (CleaveCount() == 1 or Player:BuffRemainsP(S.BeastCleaveBuff) > Player:GCD() * 1.25)
+-- and (S.BarbedShot:ChargesFractional() < 1 or not S.ScentofBlood:IsAvailable()) then
+	-- return S.BestialWrath:Cast()
+-- end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if S.CounterShot:IsReadyQueue() and notInterruptible == false and Target:CastPercentage() > math.random(43,87) and RubimRH.InterruptsON() and Target:AffectingCombat() then
+if S.CounterShot:IsReadyQueue() and notInterruptible == false and Target:CastPercentage() > math.random(37,81) and RubimRH.InterruptsON() and Target:AffectingCombat() then
 	return S.CounterShot:Cast()
 end
 
-if select(4, UnitAura("target", 1)) == ""
-
-and RubimRH.InterruptsON() and S.TranqShot:IsReady() and Target:AffectingCombat() and Target:TimeToDie() > 4 then
+if (select(4, UnitAura("target", 1)) == "magic" 
+or AuraUtil.FindAuraByName("Enrage", "target")) 
+and S.TranqShot:IsReadyQueue(40) and Target:AffectingCombat() and Target:TimeToDie() > 4
+and (Pet:BuffRemains(S.Frenzy) - Player:GCD() > tolerance or not Pet:BuffP(S.Frenzy)) then
 	return S.TranqShot:Cast()
 end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if IsSpellKnown(90361, true) and SpiritMendCD == 0 and IsActionInRange(39,"player") and Player:HealthPercentage() <= 85 then
-	return S.SpiritMend:Cast()
-end
-
-if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 35 then
-	return S.Exhilaration:Cast()
-end
+-- if IsSpellKnown(90361, true) and SpiritMendCD == 0 and IsActionInRange(39,"player") and Player:HealthPercentage() <= 85 then
+	-- return S.SpiritMendz:Cast()
+-- end
 
 if IsSpellKnown(388035, true) and FortoftheBearCD == 0 and Player:HealthPercentage() <= 30 then
-	return S.FortitudeoftheBear:Cast()
+	return S.FortitudeoftheBearz:Cast()
 end
 
 if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 
@@ -338,13 +337,26 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		if S.BarbedShot:IsReadyQueue(40) and Pet:Buff(S.Frenzy) and Pet:BuffRemains(S.Frenzy) - Player:GCD() < tolerance then
 			return S.BarbedShot:Cast()
 		end
-	
-		if Pet:Buff(S.Frenzy) and S.BarbedShot:CooldownRemainsP() < Pet:BuffRemains(S.Frenzy) and Pet:BuffRemains(S.Frenzy) <= Player:GCD() + tolerance then
-			return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+
+		if Pet:Buff(S.Frenzy) and S.BarbedShot:CooldownRemainsP() + 0.15 < Pet:BuffRemains(S.Frenzy) and Pet:BuffRemains(S.Frenzy) <= Player:GCD() + tolerance then
+			return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 		end
-	
-		if S.Multishot:IsReadyQueue(40) and Player:GCD() - Player:BuffRemainsP(S.BeastCleaveBuff) > 0.25 then
+
+		if S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() then
+			return S.WailingArrowz:Cast()
+		end
+
+		if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 15 then
+			return S.Exhilaration:Cast()
+		end
+
+		if S.Multishot:IsReadyQueue(40) and Player:BuffRemainsP(S.BeastCleaveBuff) <= Player:GCD() then
 			return S.Multishot:Cast()
+		end
+		
+		if S.KillCommand:IsReadyQueue(50) and KCRange() and not (S.BestialWrath:CooldownUp() or (not RubimRH.CDsON() and not S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()))
+		and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() and S.KillCleave:IsAvailable() and Player:BuffP(S.BeastCleaveBuff) then
+			return S.KillCommand:Cast()
 		end
 		
 		if S.BarbedShot:IsReadyQueue(40) and (S.BarbedShot:FullRechargeTimeP() < Player:GCD()
@@ -352,12 +364,12 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 			return S.BarbedShot:Cast()
 		end
 
-		if S.KillCommand:IsReadyQueue(50) and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() and S.KillCleave:IsAvailable() then
-			return S.KillCommand:Cast()
+		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
+			return S.DeathChakramz:Cast()
 		end
 
-		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakram:Cast()
+		if S.Bloodshed:IsReadyQueue(40) and RubimRH.CDsON() then
+			return S.Bloodshed:Cast()
 		end
 
 		if S.BestialWrath:IsCastableQueue() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()) then
@@ -372,26 +384,44 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 			return S.KillShot:Cast()
 		end
 		
+		if S.DireBeast:IsReadyQueue(40) and RubimRH.CDsON() then
+			return S.DireBeast:Cast()
+		end
+		
 		if S.CobraShot:IsReadyQueue(40) and Player:FocusTimeToMaxPredicted() < Player:GCD() * 2 then
 			return S.CobraShot:Cast()
 		end
-	
+		
 	elseif CleaveCount() < 2 or not RubimRH.AoEON() then
+	
 		if S.BarbedShot:IsReadyQueue(40) and ((Pet:Buff(S.Frenzy) and Pet:BuffRemains(S.Frenzy) - Player:GCD() < tolerance) 
 		or (Pet:BuffStack(S.Frenzy) < 3 and S.BestialWrath:CooldownUp() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()))) then
 			return S.BarbedShot:Cast()
 		end
 
-		if Pet:Buff(S.Frenzy) and S.BarbedShot:CooldownRemainsP() < Pet:BuffRemains(S.Frenzy) and Pet:BuffRemains(S.Frenzy) <= Player:GCD() + tolerance then
-			return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+		if Pet:Buff(S.Frenzy) and S.BarbedShot:CooldownRemainsP() + 0.15 < Pet:BuffRemains(S.Frenzy) and Pet:BuffRemains(S.Frenzy) <= Player:GCD() + tolerance then
+			return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 		end
-
-		if S.KillCommand:IsReadyQueue(50) and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() then
+	
+		if S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() then
+			return S.WailingArrowz:Cast()
+		end
+	
+		if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 15 then
+			return S.Exhilaration:Cast()
+		end
+	
+		if S.KillCommand:IsReadyQueue(50) and not (S.BestialWrath:CooldownUp() or (not RubimRH.CDsON() and not S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()))
+		and KCRange() and S.KillCommand:FullRechargeTimeP() <= Player:GCD() and S.AlphaPredator:IsAvailable() then
 			return S.KillCommand:Cast()
 		end
 	
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakram:Cast()
+			return S.DeathChakramz:Cast()
+		end
+	
+		if S.Bloodshed:IsReadyQueue(40) and RubimRH.CDsON() then
+			return S.Bloodshed:Cast()
 		end
 	
 		if S.BestialWrath:IsCastableQueue() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()) then
@@ -407,6 +437,10 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 			return S.BarbedShot:Cast()
 		end
 
+		if S.DireBeast:IsReadyQueue(40) and RubimRH.CDsON() then
+			return S.DireBeast:Cast()
+		end
+
 		if S.KillShot:IsReadyQueue(40) then
 			return S.KillShot:Cast()
 		end
@@ -414,13 +448,13 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		if S.CobraShot:IsReadyQueue(40) and (Player:Focus() - S.CobraShot:Cost() + Player:FocusRegen() * (S.KillCommand:CooldownRemainsP() - 1) > S.KillCommand:Cost() or S.KillCommand:CooldownRemainsP() > 1 + Player:GCD()) or Player:BuffP(S.BestialWrath) then
 			return S.CobraShot:Cast()
 		end	
+		
+		-- if S.CobraShot:IsReadyQueue(40) then
+			-- return S.CobraShot:Cast()
+		-- end	
 	end
-
-	return 0, 135328
-
 end
-
-			return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end
 
 RubimRH.Rotation.SetAPL(253, APL);
