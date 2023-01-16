@@ -964,8 +964,7 @@ local function APL()
 
     
     -- blade_rush,if=variable.blade_flurry_sync&!buff.dreadblades.up&!buff.shadow_dance.up&energy.base_time_to_max>4&target.time_to_die>4
-    if S.BladeRush:IsCastableQueue() and not Player:Debuff(S.Dreadblades) and not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(S.SubterfugeBuff) and
-        RubimRH.CDsON() and Player:AffectingCombat() 
+    if S.BladeRush:IsCastableQueue() and not Player:Debuff(S.Dreadblades) and not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(S.SubterfugeBuff) and Player:AffectingCombat() 
         and not Target:Debuff(S.Blind)  
         
 
