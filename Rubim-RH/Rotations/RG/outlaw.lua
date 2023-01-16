@@ -347,22 +347,20 @@ local function CPMaxSpend()
     end
   end
 
+  local function UseItems()
 
-local function UseItems()
-
-    local trinket1 = GetInventoryItemID("player", 13)
-    local trinket2 = GetInventoryItemID("player", 14)
+    local trinket1 = GetInventoryItemID("player", 13) 
+    local trinket2 = GetInventoryItemID("player", 14) 
     local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
     local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
 
-    if trinket1ready then
-        return I.tx1:Cast()
-    end
-    if trinket2ready then
-        return I.tx2:Cast()
-    end
-end
-
+      if trinket1ready and trinket1 ~= 193701 then
+          return I.tx1:Cast()
+        end
+      if trinket2ready and trinket2 ~= 193701 then
+          return I.tx2:Cast()
+      end
+  end
 
 
 local function RtB_Buffs ()
