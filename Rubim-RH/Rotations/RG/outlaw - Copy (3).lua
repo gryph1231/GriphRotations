@@ -463,6 +463,7 @@ local function APL()
     Enemies30y = Cache.EnemiesCount[30]
     Enemies35y = Cache.EnemiesCount[35]
     Enemies40y = Cache.EnemiesCount[40]
+    HealthPotionSelected()
     target_is_dummy()
     RtB_BuffRemains()
     RtB_Buffs()
