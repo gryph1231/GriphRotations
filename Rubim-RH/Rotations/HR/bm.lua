@@ -305,7 +305,7 @@ or (S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving()) or
 end
 
 if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() then
-	return S.FreezingTrapz:Cast()
+	return S.FreezingTrap:Cast()
 end
 
 if RubimRH.QueuedSpell():IsReadyQueue() and S.BestialWrath:ID() ~= RubimRH.queuedSpell[1]:ID() and S.ResonatingArrow:ID() ~= RubimRH.queuedSpell[1]:ID() 
@@ -373,7 +373,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 
 		if S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() then
-			return S.WailingArrowz:Cast()
+			return S.WailingArrow:Cast()
 		end
 
 		if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 15 then
@@ -395,7 +395,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakramz:Cast()
+			return S.DeathChakram:Cast()
 		end
 
 		if S.Bloodshed:IsReadyQueue(40) and RubimRH.CDsON() then
@@ -434,7 +434,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 	
 		if S.WailingArrow:ID() == RubimRH.queuedSpell[1]:ID() then
-			return S.WailingArrowz:Cast()
+			return S.WailingArrow:Cast()
 		end
 	
 		if S.Exhilaration:IsCastable() and Player:AffectingCombat() and Player:HealthPercentage() <= 15 then
@@ -447,7 +447,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 	
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakramz:Cast()
+			return S.DeathChakram:Cast()
 		end
 	
 		if S.Bloodshed:IsReadyQueue(40) and RubimRH.CDsON() then
