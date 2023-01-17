@@ -737,14 +737,18 @@ local function APL()
         return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
     end
 
-    if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and Target:Debuff(S.CheapShot) then
+    if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:Debuff(S.CheapShot) or Target:Debuff(S.Gouge) or Target:Debuff(S.Blind) or Target:Debuff(S.KidneyShot)) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
+    if S.CheapShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:Debuff(S.CheapShot) or Target:Debuff(S.Gouge) or Target:Debuff(S.Blind) or Target:Debuff(S.KidneyShot)) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
     if S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and
         (
-        Target:Debuff(S.CheapShot) or not Target:IsInRange(10) or not Player:AffectingCombat() or Player:Buff(S.Stealth)
-            or Target:Debuff(S.BetweentheEyes) or Player:Buff(S.VanishBuff) or Target:Debuff(S.Blind)) then
+        Target:Debuff(S.CheapShot) or Target:Debuff(S.Gouge) or Target:Debuff(S.Blind) or Target:Debuff(S.KidneyShot) or Player:Buff(S.Stealth)
+            or Player:Buff(S.VanishBuff)) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
