@@ -32,6 +32,13 @@ Modules\MiniMap.lua
 Rotations\Shared.lua
 
 Rotations\RG\outlaw.lua
+Rotations\PL\ret.lua
+Rotations\PL\prot.lua
+
+Rotations\WR\arms.lua
+Rotations\WR\fury.lua
+Rotations\WR\prot.lua
+
 Rotations\HR\bm.lua
 Rotations\HR\mm.lua
 Rotations\HR\survival.lua
@@ -39,6 +46,6 @@ Rotations\SM\enha.lua
 Rotations\DH\havoc.lua
 Rotations\MK\mist.lua
 Rotations\DR\feral.lua
-Rotations\DR\wind.lua
+Rotations\MK\wind.lua
 
 
