@@ -339,7 +339,7 @@ end
 	-- return S.SpiritMendz:Cast()
 -- end
 
-if Target:IsInRange(8) and RubimRH.CDsON() and Player:CanAttack(Target) then
+if Target:IsInRange(40) and RubimRH.CDsON() and Player:CanAttack(Target) then
 	local ShouldReturn = UseItems();
 	if ShouldReturn then return ShouldReturn; end
 end
