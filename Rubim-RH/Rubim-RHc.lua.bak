@@ -87,11 +87,7 @@ end
 
 function RubimRH.MainIconToggle()
     RubimRH.playSoundR(891);
-    if RubimRH.db.profile.mainOption.mainIcon == false then
-        RubimRH.db.profile.mainOption.mainIcon = true
-    else
-        RubimRH.db.profile.mainOption.mainIcon = false
-    end
+		RubimRH.db.profile.mainOption.mainIcon = true
     print("|cFF69CCF0Show Interface" .. "|r: |cFF00FF00" .. tostring(RubimRH.db.profile.mainOption.mainIcon))
 end
 

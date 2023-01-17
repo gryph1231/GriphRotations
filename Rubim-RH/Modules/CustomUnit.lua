@@ -361,8 +361,7 @@ local HealerSpecs = {
     [65] = true, -- Holy
     [256] = true, -- Discipline
     [257] = true, -- Holy
-    [264] = true, -- Restoration(shaman)
-    [1468] = true, -- Preservation
+    [264] = true -- Restoration(shaman)
 }
 
 -- @return boolean
@@ -618,8 +617,6 @@ local RangedSpecs = {
     [265] = true, -- Affliction
     [266] = true, -- Demonology
     [267] = true, -- Destruction
-    [1467] = true, -- Devastation
-    [1468] = true, -- Preservation
 }
 
 function Unit:IsRanged(ID)

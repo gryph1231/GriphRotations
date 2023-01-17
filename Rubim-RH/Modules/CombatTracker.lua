@@ -31,8 +31,6 @@ local Doubles = {
     [17]  = 'Frost + Physical',
     [33]  = 'Shadow + Physical',
     [65]  = 'Arcane + Physical',
-    [1468]  = 'Arcane + Physical',
-
     [127] = 'Arcane + Shadow + Frost + Nature + Fire + Holy + Physical',
 }
 

@@ -461,7 +461,7 @@ function AllMenu(selectedTab, point, relativeTo, relativePoint, xOfs, yOfs)
 					-- Create the checkbox for Avenger Shield interrupt
                     local ASInterruptbutton = StdUi:Checkbox(tab.frame, 'Avenger\'s Shield interrupt only');                    
 					-- Set this checkbox a tooltip
-					StdUi:FrameTooltip(ASInterruptbutton, 'This will force Avenger\'s Shield to be used as interrupt', 'TOPLEFT', 'TOPRIGHT', true);                    
+					StdUi:FrameTooltip(ASInterruptbutton, 'This will force Avenger\s Shield to be used as interrupt', 'TOPLEFT', 'TOPRIGHT', true);                    
 					-- Set default value (checked, unchecked)and save it to db 
 					ASInterruptbutton:SetChecked(RubimRH.db.profile[66].ASInterrupt)                    
 					-- Set positionning

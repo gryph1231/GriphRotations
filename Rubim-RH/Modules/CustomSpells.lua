@@ -67,37 +67,6 @@ function Spell:QueueAuto(powerExtra)
     RubimRH.queuedSpellAuto = { self, powerEx }
 end
 
-
-function GroupBuffMissing(spell)
-    local range = 40
-    local buffIDs = { 381732, 381741, 381746, 381748, 381749, 381750, 381751, 381752, 381753, 381754, 381756, 381757, 381758 }
-    if spell:Name() == "Battle Shout" then range = 100 end
-    local Group
-    if UnitInRaid("player") then
-      Group = Unit.Raid
-    elseif UnitInParty("player") then
-      Group = Unit.Party
-    else
-      return false
-    end
-    for _, Char in pairs(Group) do
-      if spell:Name() == "Blessing of the Bronze" then
-        if Char:Exists() and Char:IsInRange(range) then
-          for _, v in pairs(buffIDs) do
-            if Char:BuffUp(HL.Spell(v)) then return false end
-          end
-          return true
-        end
-      else
-        if Char:Exists() and Char:IsInRange(range) and not Char:Buff(spell, true) then
-          return true
-        end
-      end
-    end
-    return false
-  end
-
-
 -- Essence fix for QueueSkill
 local Essences = {   
   Spell(297108),
@@ -300,17 +269,26 @@ end
   * @returns {number}
   *]]
   
--- Check if the spell Is Castable or not.
-
-
-
-
-
 function Spell:IsCastable(Range, AoESpell, ThisUnit)
     if not self:IsAvailable() or self:IsQueuedPowerCheck() then
         return false
     end
-
+	
+	local currentZoneID = select(8, GetInstanceInfo())
+    RubimRH.Spell[998] = {
+        RepeatPerformance = Spell(301244),
+    }
+    local S = RubimRH.Spell[998]
+	
+	-- Queens Court - Repeat Performance debuff checker
+	if currentZoneID == 2164 and Player:DebuffRemainsP(S.RepeatPerformance) > 0 then
+	    if Player:PrevGCD(1) ~= self:ID() then
+	        return true
+		else
+		    return false
+		end
+	end
+	
     if Range then
         local RangeUnit = ThisUnit or Target;
         return self:IsLearned() and self:CooldownUp() and RangeUnit:IsInRange(Range, AoESpell);
@@ -318,7 +296,6 @@ function Spell:IsCastable(Range, AoESpell, ThisUnit)
         return self:IsLearned() and self:CooldownUp();
     end
 end
-
 
 function Spell:IsCastableQueue(Range, AoESpell, ThisUnit)
 
@@ -765,118 +742,3 @@ function RubimRH.GetDescription(spellID)
     return numbers
 end
 
-
--- Stagger Tracker
-local StaggerSpellID = 115069
-local StaggerDoTID = 124255
-local BobandWeave = Spell(280515)
-local StaggerFull = 0
-local StaggerDamage = {}
-local IncomingDamage = {}
-
-local function RegisterStaggerFullAbsorb(Amount)
-  local StaggerDuration = 10 + (BobandWeave:IsAvailable() and 3 or 0)
-  StaggerFull = StaggerFull + Amount
-  C_Timer.After(StaggerDuration, function() StaggerFull = StaggerFull - Amount; end)
-end
-
-local function RegisterStaggerDamageTaken(Amount)
-  if #StaggerDamage == 10 then
-    table.remove(StaggerDamage, 10)
-  end
-  table.insert(StaggerDamage, 1, Amount)
-end
-
-local function RegisterIncomingDamageTaken(Amount)
-  while #IncomingDamage > 0 and IncomingDamage[#IncomingDamage][1] < GetTime() - 6 do
-    table.remove(IncomingDamage, #IncomingDamage)
-  end
-  table.insert(IncomingDamage, 1, {GetTime(), Amount})
-end
-
-function Player:StaggerFull()
-  return StaggerFull
-end
-
-function Player:StaggerLastTickDamage(Count)
-  local TickDamage = 0
-  if Count > #StaggerDamage then
-    Count = #StaggerDamage
-  end
-  for i=1, Count do
-    TickDamage = TickDamage + StaggerDamage[i]
-  end
-  return TickDamage
-end
-
-function Player:IncomingDamageTaken(Milliseconds)
-  local DamageTaken = 0
-  local TimeOffset = Milliseconds / 1000
-  for i=1, #IncomingDamage do
-    if IncomingDamage[i][1] > GetTime() - TimeOffset then
-      DamageTaken = DamageTaken + IncomingDamage[i][2]
-    end
-  end
-  return DamageTaken
-end
-
-
-
-
-
-HL:RegisterForCombatEvent(
-  function (...)
-    local args = {...}
-    -- Absorb is coming from a spell damage
-    if #args == 23 then
-      local _, _, _, _, _, _, _, DestGUID, _, _, _, _, _, _, _, _, _, _, SpellID, _, _, Amount = ...
-      if DestGUID == Player:GUID() and SpellID == StaggerSpellID then
-        RegisterStaggerFullAbsorb(Amount)
-      end
-    else
-      local _, _, _, _, _, _, _, DestGUID, _, _, _, _, _, _, _, SpellID, _, _, Amount = ...
-      if DestGUID == Player:GUID() and SpellID == StaggerSpellID then
-        RegisterStaggerFullAbsorb(Amount)
-      end
-    end
-  end
-  , "SPELL_ABSORBED"
-)
-
-HL:RegisterForCombatEvent(
-  function(...)
-    local _, _, _, _, _, _, _, DestGUID, _, _, _, SpellID, _, _, Amount = ...
-    if DestGUID == Player:GUID() and SpellID == StaggerDoTID and Amount > 0 then
-      RegisterStaggerDamageTaken(Amount)
-    end
-  end
-  , "SPELL_PERIODIC_DAMAGE"
-)
-
-HL:RegisterForCombatEvent(
-  function(...)
-    local _, _, _, _, _, _, _, DestGUID, _, _, _, _, _, _, Amount = ...
-    if Cache.Persistent.Player.Spec[1] == 268 and DestGUID == Player:GUID() and Amount ~= nil and Amount > 0 then
-      RegisterIncomingDamageTaken(Amount)
-    end
-  end
-  , "SWING_DAMAGE"
-  , "SPELL_DAMAGE"
-  , "SPELL_PERIODIC_DAMAGE"
-)
-
-HL:RegisterForEvent(
-  function()
-    if #StaggerDamage > 0 then
-      for i=0, #StaggerDamage do
-        StaggerDamage[i]=nil
-      end
-    end
-    if #IncomingDamage > 0 then
-      for i=0, #IncomingDamage do
-        IncomingDamage[i]=nil
-      end
-    end
-  end
-  , "PLAYER_REGEN_ENABLED"
-)
