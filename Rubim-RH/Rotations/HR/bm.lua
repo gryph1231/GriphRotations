@@ -90,8 +90,13 @@ local S = RubimRH.Spell[253]
 if not Item.Hunter then Item.Hunter = {}; end
 
 Item.Hunter.BeastMastery = {
-healingpoticon = Item(169451)
+    trink = Item(184016, { 13, 14 }),
+    drums = Item(193470),
+    HPIcon = Item(169451),
+    tx1 = Item(118330),
+    tx2 = Item(114616),
 };
+
 local I = Item.Hunter.BeastMastery;
 
 local function bool(val)
@@ -214,6 +219,24 @@ end
 	return check
 end
 
+
+local function UseItems()
+
+    local trinket1 = GetInventoryItemID("player", 13) 
+    local trinket2 = GetInventoryItemID("player", 14) 
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+      if trinket1ready and trinket1 ~= 193701 then
+          return I.tx1:Cast()
+        end
+      if trinket2ready and trinket2 ~= 193701 then
+          return I.tx2:Cast()
+      end
+  end
+
+
+
 local function APL()
 CleaveCount()
 allMobsinRange()
@@ -316,13 +339,20 @@ end
 	-- return S.SpiritMendz:Cast()
 -- end
 
+if Target:IsInRange(8) and RubimRH.CDsON() and Player:CanAttack(Target) then
+	local ShouldReturn = UseItems();
+	if ShouldReturn then return ShouldReturn; end
+end
+
+
 if IsSpellKnown(388035, true) and FortoftheBearCD == 0 and Player:HealthPercentage() <= 30 then
 	return S.FortitudeoftheBearz:Cast()
 end
 
-if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 
+if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) and
+(GetItemCooldown(191380) == 0 or GetItemCooldown(191379) == 0 or GetItemCooldown(191378) == 0) and (GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1 or GetItemCount(191378) >= 1)
 and (not Player:InArena() and not Player:InBattlegrounds()) then
-    return I.healingpoticon:Cast()
+return I.HPIcon:Cast()
 end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Rotation--------------------------------------------------------------------------
