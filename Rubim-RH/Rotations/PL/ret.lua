@@ -153,7 +153,7 @@ divineprotection = Spell(210256), -- blessing of sanctuary
   
     -- Buffs
     Intercession             = Spell(391054),
-    intercession           = Spell(105809),
+    intercession           = Spell(105809), --holy avenger
     trinket                  = Spell(59547), -- gift of narru
 
     
@@ -264,8 +264,6 @@ local function UseItems()
 end
 
 
-
-local VerdictSpell = (S.FinalVerdict:IsAvailable()) and S.FinalVerdict or S.TemplarsVerdict
 
 
 
@@ -535,11 +533,11 @@ end
               end
 
               -- templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8|cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)|buff.crusade.up&buff.crusade.stack<10
-              if VerdictSpell:IsReady() and (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
+              if (S.FinalVerdict:IsAvailable() and S.FinalVerdict:IsReady() or S.TemplarsVerdict:IsReady()) and (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
               and ((not S.ExecutionSentence:IsAvailable()) or S.DivineAuxiliary:IsAvailable() or Target:TimeToDie() < 8 
               or S.ExecutionSentence:CooldownRemains() > Player:GCD() * 2) and ((not S.FinalReckoning:IsAvailable()) or S.DivineAuxiliary:IsAvailable() 
               or S.FinalReckoning:CooldownRemains() > Player:GCD() * 2) or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10)) then
-                return VerdictSpell:Cast()
+                return S.TemplarsVerdict:Cast()
               end
 
 
