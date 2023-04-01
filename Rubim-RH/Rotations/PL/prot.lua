@@ -87,8 +87,9 @@ CleanseToxins = Spell(213644),
     DevotionAura             = Spell(465),
     RetributionAura          = Spell(183435),
     -- Buffs
+    
     Intercession             = Spell(391054),
-    Intercessionz            = Spell(215661),
+    intercession           = Spell(105809),
     trinket                  = Spell(59547), -- gift of narru
 
     AvengingWrathBuff           = Spell(31884),
@@ -115,7 +116,7 @@ CleanseToxins = Spell(213644),
     lust3 = Spell(80354),
     lust4 = Spell(95809),
     lust5 = Spell(264689),
-    lustAT = Spell(265221), -- fireblood
+    lustAT                   = Spell(20549), -- war stomp
 
     EyeofTyr = Spell(387174),
    
@@ -168,25 +169,6 @@ Item.Paladin.Protection = {
 local I = Item.Paladin.Protection;
 
 
--- Variables
-local EnemyRanges = { 10, 15, 50 }
-local function UpdateRanges()
-    for _, i in ipairs(EnemyRanges) do
-        HL.GetEnemies(i);
-    end
-end
-
-local function num(val)
-    if val then
-        return 1
-    else
-        return 0
-    end
-end
-
-local function bool(val)
-    return val ~= 0
-end
 
 local function allMobsinRange(range)
     local totalRange40 = 0
@@ -298,7 +280,7 @@ local function APL()
 
 
     if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
-        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 and S.LayonHands:CooldownRemains()>0.5 
         and (not Player:InArena() and not Player:InBattlegrounds()) then
         return I.HPIcon:Cast()
     end
@@ -323,6 +305,13 @@ local function APL()
     if S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and Player:IsMoving() then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
+
+    
+    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() then
+        return S.intercession:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+    end
+
+
 
     if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not UnitExists("mouseover") or not UnitIsDeadOrGhost("mouseover")) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
