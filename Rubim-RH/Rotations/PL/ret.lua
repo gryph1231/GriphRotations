@@ -246,6 +246,14 @@ local function allMobsinRange(range)
 
 end
 
+
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+frame:SetScript("OnEvent", UpdateTemplarsVerdictSpellId)
+
+
+
 local VarDsCastable
 
 local function UseItems()
@@ -264,6 +272,8 @@ local function UseItems()
 end
 
 
+
+local VerdictSpell = (S.FinalVerdict:IsAvailable()) and S.FinalVerdict or S.TemplarsVerdict
 
 
 
@@ -305,7 +315,6 @@ HolyPower = Player:HolyPower()
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     end
     local start, duration = GetSpellCooldown('Radiant Decree')
-
 
 
 
@@ -432,10 +441,7 @@ end
                 return S.HammerofWrath:Cast()
                 end
 
-                if S.BladeofJustice:IsCastable() and Target:IsInRange(15) then
-                    return S.BladeofJustice:Cast()
-                end
-
+          
                 if S.Judgment:IsCastable() and Target:IsInRange(30) then
                     return S.Judgment:Cast()
                 end
@@ -532,20 +538,20 @@ end
                 return S.JusticarsVengeance:Cast()
               end
 
-              -- templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8|cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)|buff.crusade.up&buff.crusade.stack<10
-              if (S.FinalVerdict:IsAvailable() and S.FinalVerdict:IsReady() or S.TemplarsVerdict:IsReady()) and (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
+            --   templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8|cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)|buff.crusade.up&buff.crusade.stack<10
+              if VerdictSpell:IsReady() and (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
               and ((not S.ExecutionSentence:IsAvailable()) or S.DivineAuxiliary:IsAvailable() or Target:TimeToDie() < 8 
               or S.ExecutionSentence:CooldownRemains() > Player:GCD() * 2) and ((not S.FinalReckoning:IsAvailable()) or S.DivineAuxiliary:IsAvailable() 
               or S.FinalReckoning:CooldownRemains() > Player:GCD() * 2) or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10)) then
-                return S.TemplarsVerdict:Cast()
+                return VerdictSpell:Cast()
               end
-
 
 
         end
 
 
         Generators = function()
+
 
             if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target) then 
 
@@ -705,7 +711,7 @@ end
             return S.Rebuke:Cast()
         end
 
-        if not Target:IsInRange(10) then
+        if not Target:IsInRange(20) then
             if Ranged() ~= nil then
                 return Ranged()
             end
