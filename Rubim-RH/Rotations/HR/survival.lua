@@ -58,7 +58,6 @@ RubimRH.Spell[255] = {
     AspectoftheTurtle = Spell(186265),
     Exhilaration = Spell(109304),
     FreezingTrap = Spell(187650),
-	FreezingTrapz = Spell(255654), --bullrush
     AspectoftheEagle = Spell(186289),
     Muzzle = Spell(187707),
     TranqShot = Spell(19801),
@@ -68,7 +67,6 @@ RubimRH.Spell[255] = {
     HydrasBite = Spell(260241),
 	ResonatingArrow = Spell(308491),
 	DeathChakram = Spell(375891),
-	DeathChakramz = Spell(260364), --arcane pulse
 	Dashz = Spell(274738), --ancestral call
 };
 
@@ -176,7 +174,7 @@ if not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() then
 end
 
 if S.FreezingTrap:ID() == RubimRH.queuedSpell[1]:ID() then
-	return S.FreezingTrapz:Cast()
+	return S.FreezingTrap:Cast()
 end
 
 if RubimRH.QueuedSpell():IsReadyQueue() and S.CoordinatedAssault:ID() ~= RubimRH.queuedSpell[1]:ID() and S.DeathChakram:ID() ~= RubimRH.queuedSpell[1]:ID() then
@@ -217,11 +215,11 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 		
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakramz:Cast()
+			return S.DeathChakram:Cast()
 		end
 		
 		if S.CoordinatedAssault:IsReadyQueue(8) and (RubimRH.CDsON() or S.CoordinatedAssault:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.CoordinatedAssaultz:Cast()
+			return S.CoordinatedAssault:Cast()
 		end
 		
 		if S.KillShot:IsReadyQueue(40) and Player:BuffP(S.CoordinatedAssault) then
@@ -229,7 +227,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 		
 		if S.ExplosiveShot:IsReadyQueue(40) then
-			return S.ExplosiveShotz:Cast()
+			return S.ExplosiveShot:Cast()
 		end
 		
 		if S.Butchery:IsCastableQueue() and Player:Focus() >= 30 and S.Butchery:FullRechargeTimeP() < Player:GCD() then
@@ -263,7 +261,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 	elseif Cache.EnemiesCount[10] < 2 or not RubimRH.AoEON() then
 
 		if S.DeathChakram:IsReadyQueue(40) and (RubimRH.CDsON() or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.DeathChakramz:Cast()
+			return S.DeathChakram:Cast()
 		end
 		
 		if S.KillShot:IsReadyQueue(40) and Player:BuffP(S.CoordinatedAssault) then
@@ -283,7 +281,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 		
 		if S.CoordinatedAssault:IsReadyQueue(8) and (RubimRH.CDsON() or S.CoordinatedAssault:ID() == RubimRH.queuedSpell[1]:ID()) then
-			return S.CoordinatedAssaultz:Cast()
+			return S.CoordinatedAssault:Cast()
 		end
 		
 		if S.PheromoneBomb:IsReadyMorph(10) and Player:Focus() < 43 and not Player:BuffP(S.MongooseFury) then
@@ -304,7 +302,7 @@ if Player:AffectingCombat() and Pet:IsActive() and Player:CanAttack(Target) and 
 		end
 
 		if S.ExplosiveShot:IsReadyQueue(40) then
-			return S.ExplosiveShotz:Cast()
+			return S.ExplosiveShot:Cast()
 		end
 		
 		if (S.PheromoneBomb:IsReadyMorph(10) or S.ShrapnelBomb:IsReadyMorph(10) or S.VolatileBomb:IsReadyMorph(8)) then

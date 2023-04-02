@@ -272,7 +272,6 @@ local function APL()
     --  if I.healthstone:IsReady() and I.healthstone:Count()>=1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() then
     --     return S.healthstone:Cast()
     -- end
-
     if RubimRH.CDsON() and Target:IsInRange(8) and Player:CanAttack(Target) then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
@@ -284,9 +283,6 @@ local function APL()
         and (not Player:InArena() and not Player:InBattlegrounds()) then
         return I.HPIcon:Cast()
     end
-
-
-
 
     if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() 
     and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
@@ -307,13 +303,13 @@ local function APL()
     end
 
     
-    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() then
+    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() and Player:HolyPower()>=3 then
         return S.intercession:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
     end
 
 
 
-    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not UnitExists("mouseover") or not UnitIsDeadOrGhost("mouseover")) then
+    if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (Player:HolyPower()<3 or not S.Intercession:IsReady()) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
@@ -416,20 +412,20 @@ if Player:AffectingCombat() then
     end
 
 
-    if S.ArdentDefender:IsReadyP() and not Player:Buff(S.GuardianofAncientKings) and
+    if S.ArdentDefender:IsReadyP() and not Player:Buff(S.GuardianofAncientKings)   and
     not Player:Buff(S.DivineShield) and
         (Player:NeedPanicHealing() or Player:NeedMajorHealing()) and Player:HealthPercentage() <= 25 and
         (S.LayonHands:CooldownRemains() > 1 or not Player:InArena()) and Cache.EnemiesCount[10] >= 1 then
         return S.ArdentDefender:Cast()
     end
 
-    if S.ArdentDefender:IsReadyP() and Cache.EnemiesCount[10] >= 1 and Player:HealthPercentage() <= 60 and
+    if S.ArdentDefender:IsReady() and Cache.EnemiesCount[10] >= 1 and Player:HealthPercentage() <= 60 and S.GuardianofAncientKings:TimeSinceLastCast()>0.5 and
     not Player:Buff(S.DivineShield) and
         not Player:Buff(S.GuardianofAncientKings) and (Player:NeedPanicHealing() or Player:NeedMajorHealing()) then
         return S.ArdentDefender:Cast()
     end
 
-    if S.GuardianofAncientKings:IsReadyP() and
+    if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
         (
         Player:NeedPanicHealing() and Player:HealthPercentage() <= 70 or
             Player:NeedMajorHealing() and Player:HealthPercentage() < 55) and not Player:Buff(S.ArdentDefender) and
