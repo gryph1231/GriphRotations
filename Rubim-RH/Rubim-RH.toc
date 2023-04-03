@@ -47,5 +47,6 @@ Rotations\DH\havoc.lua
 Rotations\MK\mist.lua
 Rotations\DR\feral.lua
 Rotations\MK\wind.lua
+Rotations\MK\brew.lua
 
 

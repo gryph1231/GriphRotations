@@ -292,387 +292,263 @@ if Target:MaxDistanceToPlayer(true) < 8 and S.FeralLunge:ID() ==  RubimRH.queued
 
 if Player:CanAttack(Target) and Player:AffectingCombat() then
 
-
-
-    Ranged = function()
-
-	
-	end
-
-	
-    Cooldowns = function()
-        -- if S.Bloodlust:IsReadyP() then
-            -- return S.bloodlust:Cast()
-        -- end
-		
--- windstrike
-        if S.Windstrike:IsReadyMorph() and Target:IsInRange(30) then
-            return S.StormStrike:Cast()
+    APL ()
+    -- Opener
+    if HL.CombatTime() < 10 then
+        if not Player:Buff(S.WindfuryTotem) and S.WindfuryTotem:IsReady() then
+            return S.WindfuryTotem:Cast()
         end
-
-
--- berserking,if=!talent.ascendance.enabled|buff.ascendance.up
-        if S.Berserking:IsReady() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.Ascendance)) then
-            return S.Berserking:Cast()
+        if S.FlameShock:IsReady() and not Target:Debuff(S.FlameShock) then
+            return S.FlameShock:Cast()
         end
-
-
--- feral_spirit
-        if S.FeralSpirit:IsReady() and Target:IsInRange(10) then
+        if S.FeralSpirit:IsReady() then
             return S.FeralSpirit:Cast()
         end
-
--- ascendance
-        if S.Ascendance:IsReady() and Target:IsInRange(10) then
+        if S.PrimordialWave:IsReady() then
+            return S.PrimordialWave:Cast()
+        end
+        if S.LavaLash:IsReady() and Cache.EnemiesCount[10] >= 2 and Target:Debuff(S.FlameShock) then
+            return S.LavaLash:Cast()
+        end
+        if S.LightningBolt:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 10 and Player:Buff(S.PrimordialWave) then
+            return S.LightningBolt:Cast()
+        end
+        if (S.CrashLightning:IsReady() or S.ChainLightning:IsReady()) and Player:Buff(S.FeralSpirit) then
+            return S.AlphaWolf:Cast()
+        end
+        if S.Stormstrike:IsReady() then
+            return S.Stormstrike:Cast()
+        end
+        if (S.LightningBolt:IsReady() or S.ChainLightning:IsReady()) and Player:BuffStack(S.MaelstromWeapon) >= 5 then
             return S.Ascendance:Cast()
         end
-
-
-    end
-
-
-
-
-    AoE = function()
--- frost_shock,if=buff.hailstorm.up
-        if S.FrostShock:IsReady() and Player:BuffP(S.Hailstorm) and Target:IsInRange(40) then
-            return S.FrostShock:Cast()
+        if S.Ascendance:IsReady() and Target:IsInRange(5) then
+            return S.Windstrike:Cast()
         end
-
-
--- windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
-        -- if S.WindfuryTotem:IsReady() and I.DoomWinds:IsEquipped() and not Target:Debuff(S.DoomWinds) hen
-            -- return S.WindfuryTotem:Cast()
-        -- end
-
-
--- flame_shock,target_if=refreshable,cycle_targets=1,if=talent.fire_nova.enabled|talent.lashing_flames.enabled|covenant.necrolord
-        if S.FlameShock:IsReady() and Target:IsInRange(40) and not Target:Debuff(S.FlameShock) and (S.FireNova:IsAvailable() or S.LashingFlames:IsAvailable()) --cause necrolord was chosen and didnt know way to track this yet) 
-		then
-            return S.FlameShock:Cast()
+        if S.DoomWinds:IsReady() and S.Stormstrike:IsReady() then
+            return S.DoomWinds:Cast()
         end
-
-
--- primordial_wave,target_if=min:dot.flame_shock.remains,cycle_targets=1,if=!buff.primordial_wave.up
-        if S.PrimordialWave:IsReady() and Target:Debuff(S.FlameShock) and not Player:BuffP(S.PrimordialWaveBuff) and Target:IsInRange(40) then
-            return S.PrimordialWave:Cast()
-        end
-
-
--- fire_nova,if=active_dot.flame_shock>=3
-        if S.FireNova:IsReady() and (MultiDots(12, S.FlameShock, 10, 3) >= 1) and Target:IsInRange(10) then
-            return S.FireNova:Cast()
-        end
-
-
--- vesper_totem
-       -- if S.VesperTotem:IsReady() and Target:IsInRange(8) and RubimRH.CDsON() then
-            -- return S.VesperTotem:Cast()
-        -- end
-
-
-
--- lightning_bolt,if=buff.primordial_wave.up&(buff.stormkeeper.up|buff.maelstrom_weapon.stack>=5)
-        if S.LightningBolt:IsReady() and Player:BuffP(S.PrimordialWaveBuff) and (Player:BuffP(S.StormKeeper) or Player:BuffStackP(S.MaelstromWeapon)>=5) and Target:IsInRange(40) then
-            return S.LightningBolt:Cast()
-        end
-
-
--- crash_lightning,if=talent.crashing_storm.enabled|buff.crash_lightning.down
-        if S.CrashLightning:IsReady() and (S.CrashingStorm:IsAvailable() or not Player:BuffP(S.CrashLightning)) and Target:IsInRange(6) then
-            return S.CrashLightning:Cast()
-        end
-
--- lava_lash,target_if=min:debuff.lashing_flames.remains,cycle_targets=1,if=talent.lashing_flames.enabled
-        if S.LavaLash:IsReady() and Target:DebuffRemains(S.LashingFlames)<Player:GCD() and S.LashingFlames:IsAvailable() and Target:IsInRange(10) then
-            return S.LavaLash:Cast()
-        end
-
-
--- crash_lightning
-        if S.CrashLightning:IsReady() and Cache.EnemiesCount[6]>=2 and Target:IsInRange(6) then
-            return S.CrashLightning:Cast()
-        end
-
-
--- chain_lightning,if=buff.stormkeeper.up
-        if S.ChainLightning:IsReady() and Player:BuffP(S.StormKeeper) and Target:IsInRange(40) then
-            return S.ChainLightning:Cast()
-        end
-
-
--- chain_harvest,if=buff.maelstrom_weapon.stack>=5
-        if S.ChainHarvest:IsReady() and Player:BuffStackP(S.MaelstromWeapon)>=5 and RubimRH.CDsON() and Target:IsInRange(40) then
-            return S.ChainHarvest:Cast()
-        end
-
-
--- elemental_blast,if=buff.maelstrom_weapon.stack>=5
-        if S.ElementalBlast:IsReady() and Player:BuffStackP(S.MaelstromWeapon)>=5 and Target:IsInRange(40) then
+        if S.ElementalBlast:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 8 then
             return S.ElementalBlast:Cast()
         end
-
-
--- stormkeeper,if=buff.maelstrom_weapon.stack>=5
-        if S.StormKeeper:IsReady() and Player:BuffStackP(S.MaelstromWeapon)>=5 and Target:IsInRange(40) then
-            return S.StormKeeper:Cast()
+        if S.LavaBurst:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 8 then
+            return S.LavaBurst:Cast()
         end
+    end
 
-
--- chain_lightning,if=buff.maelstrom_weapon.stack=10
-        if S.ChainLightning:IsReady() and Player:BuffStackP(S.MaelstromWeapon)==10 and Target:IsInRange(40) then
-            return S.ChainLightning:Cast()
+    -- AOE
+    if Cache.EnemiesCount[10] >= 2 then
+        if not Player:Buff(S.WindfuryTotem) and S.WindfuryTotem:IsReady() then
+            return S.WindfuryTotem:Cast()
         end
-
--- flame_shock,target_if=refreshable,cycle_targets=1,if=talent.fire_nova.enabled
-        if S.FlameShock:IsReady() and Target:DebuffRemains(S.FlameShock)<5.4 and S.FireNova:IsAvailable() and Target:IsInRange(40) then
-            return S.FlameShock:Cast()
+        if S.FeralSpirit:IsReady() then
+            return S.FeralSpirit:Cast()
         end
-
--- sundering
-        if S.Sundering:IsReady() and RubimRH.CDsON() and Target:IsInRange(8) then
-            return S.Sundering:Cast()
+        if S.Ascendance:IsReady() and S.ThorimsInvocation:IsReady() and Player:BuffStack(S.ChainLightning) then
+            return S.Ascendance:Cast()
         end
-
--- lava_lash,target_if=min:debuff.lashing_flames.remains,cycle_targets=1,if=runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6
-        -- if S.LavaLash:IsReady() and Target:DebuffRemains(S.LashingFlames)<Player:GCD() and I.PrimalLavaActuators:IsEquipped() and Player:BuffStackP(S.PrimalLavaActuators)>6 then
-            -- return S.LavaLash:Cast()
-        -- end
-
-
-
--- stormstrike
-        if S.StormStrike:IsReady() and Target:IsInRange(10) then
-            return S.StormStrike:Cast()
-        end
-
-        if S.primalstrike:IsReady() and Target:IsInRange(10) then
-            return S.StormStrike:Cast()
-        end
-
--- lava_lash
-        if S.LavaLash:IsReady() and Target:IsInRange(10) then
-            return S.LavaLash:Cast()
-        end
-
-
--- flame_shock,target_if=refreshable,cycle_targets=1
-        if S.FlameShock:IsReady() and Target:DebuffRemains(S.FlameShock)<5.4 and Target:IsInRange(40) then
-            return S.FlameShock:Cast()
-        end
-
-
--- fae_transfusion
-        -- if S.FaeTransfusion:IsReady() then
-            -- return S.FaeTransfusion:Cast()
-        -- end
-
-
--- frost_shock
-        if S.FrostShock:IsReady() and Target:IsInRange(40) then
-            return S.FrostShock:Cast()
-        end
-
--- ice_strike
-        if S.IceStrike:IsReady() and Target:IsInRange(10) then
-            return S.IceStrike:Cast()
-        end
-
-
-
--- chain_lightning,if=buff.maelstrom_weapon.stack>=5
-        if S.ChainLightning:IsReady() and Player:BuffStackP(S.MaelstromWeapon)>=5 and Target:IsInRange(40) then
-            return S.ChainLightning:Cast()
-        end
-
--- fire_nova,if=active_dot.flame_shock>1
-        if S.FireNova:IsReady() and (MultiDots(40, S.FlameShock, 10, 1) >= 1 or Target:Debuff(S.FlameShock)) and Target:IsInRange(10) then
-            return S.FireNova:Cast()
-        end
-
--- earthen_spike
-        if S.EarthenSpike:IsReady() and Target:IsInRange(10) then
-            return S.EarthenSpike:Cast()
-        end
-
-
--- windfury_totem,if=buff.windfury_totem.remains<30
-        -- if S.WindfuryTotem:IsReady() and not Player:BuffP(S.WinfuryTotemBuff) and not Player:PrevGCD(1, S.WindfuryTotem)  then
-            -- return S.WindfuryTotem:Cast()
-        -- end
-
-	
-end	
-
-
-    SingleTarget = function()
-	
--- primordial_wave,if=!buff.primordial_wave.up
-        if S.PrimordialWave:IsReady() and Target:IsInRange(40) and not Player:BuffP(S.PrimordialWaveBuff) and (Cache.EnemiesCount[12]==1 or not RubimRH.AoEON()) then
-            return S.PrimordialWave:Cast()
-        end
-
-
--- windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
-        -- if S.WindfuryTotem:IsReady() and I.DoomWinds:IsEquipped() and not Target:Debuff(S.DoomWinds) hen
-            -- return S.WindfuryTotem:Cast()
-        -- end
-
--- flame_shock,if=!ticking
-        if S.FlameShock:IsReady() and not Target:Debuff(S.FlameShock) and Target:IsInRange(40) then
-            return S.FlameShock:Cast()
-        end
-
--- vesper_totem
-        -- if S.VesperTotem:IsReady() and Target:IsInRange(8) and RubimRH.CDsON() then
-            -- return S.VesperTotem:Cast()
-        -- end
-
--- frost_shock,if=buff.hailstorm.up
-        if S.FrostShock:IsReady() and Target:IsInRange(40) then
-            return S.FrostShock:Cast()
-        end
-
-
--- earthen_spike
-        if S.EarthenSpike:IsReady() and Target:IsInRange(10) then
-            return S.EarthenSpike:Cast()
-        end
-
--- fae_transfusion
-        -- if S.FaeTransfusion:IsReady() then
-            -- return S.FaeTransfusion:Cast()
-        -- end
-
--- lightning_bolt,if=buff.stormkeeper.up
-        if S.LightningBolt:IsReady() and Player:BuffP(S.StormKeeper) and Target:IsInRange(40) then
+        if S.LightningBolt:IsReady() and Player:Buff(S.PrimordialWave) and Player:BuffStack(S.MaelstromWeapon) == 10 and S.FlameShock:MaxDebuffTargets() then
             return S.LightningBolt:Cast()
         end
-
-
--- elemental_blast,if=buff.maelstrom_weapon.stack>=5
-        if S.ElementalBlast:IsReady() and Player:BuffStackP(S.MaelstromWeapon)>=5 and Target:IsInRange(40) then
-            return S.ElementalBlast:Cast()
+        if S.DoomWinds:IsReady() then
+            return S.DoomWinds:Cast()
         end
-
-
--- chain_harvest,if=buff.maelstrom_weapon.stack>=5
-        if S.ChainHarvest:IsReady() and Target:IsInRange(40) and Player:BuffStackP(S.MaelstromWeapon)>=5 and RubimRH.CDsON() then
-            return S.ChainHarvest:Cast()
-        end
-
--- lightning_bolt,if=buff.maelstrom_weapon.stack=10
-        if S.LightningBolt:IsReady() and Player:BuffStackP(S.MaelstromWeapon)==10 and Target:IsInRange(40) then
-            return S.LightningBolt:Cast()
-        end
-
-
--- lava_lash,if=buff.hot_hand.up|(runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6)
-        if S.LavaLash:IsReady() and Target:IsInRange(10) and ((Player:BuffP(S.HotHand))
-		-- or (I.PrimalLavaActuators:IsEquipped() and Player:BuffStackP(S.PrimalLavaActuators)>6) 
-		)
-		then
-            return S.LavaLash:Cast()
-        end
-
-
--- stormstrike
-        if S.StormStrike:IsReady() and Target:IsInRange(10) then
-            return S.StormStrike:Cast()
-        end
-        if S.primalstrike:IsReady() and Target:IsInRange(10) then
-            return S.StormStrike:Cast()
-        end
-
-
--- stormkeeper,if=buff.maelstrom_weapon.stack>=5
-        if S.StormKeeper:IsReady() and Target:IsInRange(40) and Player:BuffStackP(S.MaelstromWeapon)>=5 then
-            return S.StormKeeper:Cast()
-        end
-
-
--- lava_lash
-        if S.LavaLash:IsReady() and Target:IsInRange(10) then
-            return S.LavaLash:Cast()
-        end
-
-
--- crash_lightning
-        if S.CrashLightning:IsReady() and Target:IsInRange(6) and Cache.EnemiesCount[6]>=1 then
+        if S.CrashLightning:IsReady() and (not Player:Buff(S.CrashLightning) or Player:Buff(S.DoomWinds)) then
             return S.CrashLightning:Cast()
-        end
-
-
--- flame_shock,target_if=refreshable
-        if S.FlameShock:IsReady() and Target:DebuffRemains(S.FlameShock)<5.4 and Target:IsInRange(40) then
-            return S.FlameShock:Cast()
-        end
-
-
--- frost_shock
-        if S.FrostShock:IsReady() and Target:IsInRange(40) then
-            return S.FrostShock:Cast()
-        end
-
-
--- ice_strike
-        if S.IceStrike:IsReady() and Target:IsInRange(10) then
-            return S.IceStrike:Cast()
-        end
-
-
--- sundering
-        if S.Sundering:IsReady() and RubimRH.CDsON() and Target:IsInRange(8) then
-            return S.Sundering:Cast()
-        end
-
-
--- fire_nova,if=active_dot.flame_shock
-        if S.FireNova:IsReady() and Target:IsInRange(10) and (MultiDots(40, S.FlameShock, 10, 1) >= 1 or Target:Debuff(S.FlameShock)) and Cache.EnemiesCount[12]>=1 then
-            return S.FireNova:Cast()
-        end
-
--- lightning_bolt,if=buff.maelstrom_weapon.stack>=5
-        if S.LightningBolt:IsReady() and Player:BuffStackP(S.MaelstromWeapon)>=10 and Target:IsInRange(40) then
-            return S.LightningBolt:Cast()
-        end
-
--- windfury_totem,if=buff.windfury_totem.remains<30	
-        -- if S.WindfuryTotem:IsReady() and not Player:BuffP(S.WinfuryTotemBuff) and Target:IsInRange(20) and not Player:PrevGCD(1, S.WindfuryTotem)  then
-            -- return S.WindfuryTotem:Cast()
-        -- end
-
-	
+end
+if S.Sundering:IsReady() and Player:Buff(S.DoomWinds) then
+return S.Sundering:Cast()
+end
+if S.FireNova:IsReady() and S.FlameShock:MaxDebuffTargets() >= 6 then
+return S.FireNova:Cast()
+end
+if S.PrimordialWave:IsReady() then
+return S.PrimordialWave:Cast()
+end
+if S.Windstrike:IsReady() then
+return S.Windstrike:Cast()
+end
+if S.LavaLash:IsReady() and Target:Debuff(S.FlameShock) and not Target:Debuff(S.LashingFlames) then
+return S.LavaLash:Cast()
+end
+if S.FlameShock:IsReady() and not Target:Debuff(S.FlameShock) then
+return S.FlameShock:Cast()
+end
+if S.LavaLash:IsReady() and Target:Debuff(S.FlameShock) then
+return S.LavaLash:Cast()
+end
+if S.IceStrike:IsReady() and S.Hailstorm:IsReady() then
+return S.IceStrike:Cast()
+end
+if S.FrostShock:IsReady() and Player:Buff(S.Hailstorm) then
+return S.FrostShock:Cast()
+end
+if S.Sundering:IsReady() then
+return S.Sundering:Cast()
+end
+if S.FireNova:IsReady() and S.FlameShock:MaxDebuffTargets() >= 4 then
+return S.FireNova:Cast()
+end
+if S.ElementalBlast:IsReady() and Cache.EnemiesCount[10] <= 3 then
+return S.ElementalBlast:Cast()
+end
+if S.ChainLightning:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 8 then
+return S.ChainLightning:Cast()
+end
+if S.CrashLightning:IsReady() and Player:Buff(S.ChainLightning) then
+return S.CrashLightning:Cast()
+end
+if S.LavaLash:IsReady() and Player:Buff(S.CrashLightning) and Player:BuffStack(S.AshenCatalyst) >= 8 then
+return S.LavaLash:Cast()
+end
+if S.Windstrike:IsReady() then
+return S.Windstrike:Cast()
+end
+if S.Stormstrike:IsReady() and Player:Buff(S.CrashLightning) then
+return S.Stormstrike:Cast()
+end
+if S.LavaLash:IsReady() and Player:Buff(S.CrashLightning) then
+return S.LavaLash:Cast()
+end
+if S.IceStrike:IsReady() and Player:Buff(S.CrashLightning) then
+return S.IceStrike:Cast()
+end
+if S.FireNova:IsReady() and S.FlameShock:MaxDebuffTargets() >= 2 then
+return S.FireNova:Cast()
+end
+if S.CrashLightning:IsReady() then
+return S.CrashLightning:Cast()
+end
+if S.LavaLash:IsReady() then
+return S.LavaLash:Cast()
+end
+if S.Stormstrike:IsReady() then
+return S.Stormstrike:Cast()
+end
+if S.IceStrike:IsReady() then
+     return S.IceStrike:Cast()
     end
-	
-
-
-
-
-
-
-   if not Target:IsInRange(12) then
-    if Ranged() ~= nil then
-        return Ranged()
+    if S.ChainLightning:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 5 then
+        return S.ChainLightning:Cast()
     end
-	end
-	
-	
-   if Target:IsInRange(10) and RubimRH.CDsON() then
-    if Cooldowns() ~= nil then
-        return Cooldowns()
+    if S.FlameShock:IsReady() then
+        return S.FlameShock:Cast()
     end
-	end
-		
-    if AoE() ~= nil and RubimRH.AoEON() and Cache.EnemiesCount[12]>1 then
-        return AoE()
+    if S.FrostShock:IsReady() then
+        return S.FrostShock:Cast()
     end
-	
-    if SingleTarget() ~= nil then
-        return SingleTarget()
+    if S.WindfuryTotem:IsReady() and Player:BuffRemains(S.WindfuryTotem) <= 10 then
+        return S.WindfuryTotem:Cast()
     end
-	
-	
+end
+
+-- Single Target Priority
+if S.FeralSpirit:IsReady() then
+    return S.FeralSpirit:Cast()
+end
+if S.Ascendance:IsReady() then
+    return S.Ascendance:Cast()
+end
+if S.DoomWinds:IsReady() then
+    return S.DoomWinds:Cast()
+end
+if S.Windstrike:IsReady() and Player:Buff(S.Ascendance) then
+    return S.Windstrike:Cast()
+end
+if S.LavaLash:IsReady() and (Player:Buff(S.HotHand) or Player:BuffStack(S.AshenCatalyst) >= 7) then
+    return S.LavaLash:Cast()
+end
+if S.WindfuryTotem:IsReady() and not Player:Buff(S.WindfuryTotem) then
+    return S.WindfuryTotem:Cast()
+end
+if S.Stormstrike:IsReady() and Player:Buff(S.DoomWinds) then
+    return S.Stormstrike:Cast()
+end
+if S.IceStrike:IsReady() and Player:Buff(S.DoomWinds) then
+    return S.IceStrike:Cast()
+end
+if S.CrashLightning:IsReady() and Player:Buff(S.DoomWinds) then
+    return S.CrashLightning:Cast()
+end
+if S.Sundering:IsReady() and Player:Buff(S.DoomWinds) then
+    return S.Sundering:Cast()
+end
+if S.PrimordialWave:IsReady() then
+    return S.PrimordialWave:Cast()
+end
+if S.FlameShock:IsReady() and not Target:Debuff(S.FlameShock) then
+    return S.FlameShock:Cast()
+end
+if S.LightningBolt:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 8 and Player:Buff(S.PrimordialWave) then
+    return S.LightningBolt:Cast()
+end
+if S.ElementalBlast:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 8 and (Player:BuffStack(S.ElementalBlastCharges) >= 2 or Player:Buff(S.ElementalSpirits)) then
+    return S.ElementalBlast:Cast()
+end
+if S.ElementalBlast:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 8 and Player:BuffStack(S.ElementalBlastCharges) >= 2 then
+    return S.ElementalBlast:Cast()
+end
+if S.IceStrike:IsReady() then
+    return S.IceStrike:Cast()
+end
+if S.Stormstrike:IsReady() and Player:Buff(S.MaelstromofElements) and Player:BuffStack(S.MaelstromWeapon)<= 5 then
+return S.Stormstrike:Cast()
+end
+if S.FrostShock:IsReady() and Player:Buff(S.Hailstorm) then
+return S.FrostShock:Cast()
+end
+if S.LavaLash:IsReady() and Target:DebuffRemains(S.FlameShock) <= 5 then
+return S.LavaLash:Cast()
+end
+if S.Stormstrike:IsReady() and Player:Buff(S.DeeplyRootedElements) then
+return S.Stormstrike:Cast()
+end
+if S.ElementalBlast:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 5 and (Player:BuffStack(S.ElementalBlastCharges) >= 2 or Player:Buff(S.ElementalSpirits)) then
+return S.ElementalBlast:Cast()
+end
+if S.ElementalBlast:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 5 and Player:BuffStack(S.ElementalBlastCharges) >= 2 then
+return S.ElementalBlast:Cast()
+end
+if S.LavaBurst:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 5 then
+return S.LavaBurst:Cast()
+end
+if S.LightningBolt:IsReady() and Player:BuffStack(S.MaelstromWeapon) == 10 then
+return S.LightningBolt:Cast()
+end
+if S.Stormstrike:IsReady() then
+return S.Stormstrike:Cast()
+end
+if S.WindfuryTotem:IsReady() and Player:BuffRemains(S.WindfuryTotem) <= 10 then
+return S.WindfuryTotem:Cast()
+end
+if S.IceStrike:IsReady() then
+return S.IceStrike:Cast()
+end
+if S.LavaLash:IsReady() then
+return S.LavaLash:Cast()
+end
+if S.LightningBolt:IsReady() and Player:BuffStack(S.MaelstromWeapon) >= 5 then
+return S.LightningBolt:Cast()
+end
+if S.Sundering:IsReady() then
+return S.Sundering:Cast()
+end
+if S.FireNova:IsReady() then
+return S.FireNova:Cast()
+end
+if S.FrostShock:IsReady() then
+return S.FrostShock:Cast()
+end
+if S.CrashLightning:IsReady() then
+return S.CrashLightning:Cast()
+end
+if S.FlameShock:IsReady() then
+return S.FlameShock:Cast()
+end
+if S.WindfuryTotem:IsReady() then
+return S.WindfuryTotem:Cast()
+end
+
 end
 
     return 0, 135328

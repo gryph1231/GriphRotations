@@ -169,7 +169,6 @@ Item.Paladin.Protection = {
 local I = Item.Paladin.Protection;
 
 
-
 local function allMobsinRange(range)
     local totalRange40 = 0
     local allMobsinRange = false
@@ -192,29 +191,6 @@ local function allMobsinRange(range)
 
 end
 
-local function ConcerationTime()
-    for i = 1, 5 do
-        local active, totemName, startTime, duration, textureId = GetTotemInfo(i)
-        if active == true then
-            return startTime + duration - GetTime()
-        end
-    end
-    return 0
-end
-
-function HealthPotionSelected()
-
-    local HealthPotionIDs = {
-        191380, 191379, 191378
-
-    }
-
-    for _, HealthPotionID in ipairs(HealthPotionIDs) do
-        if Item(HealthPotionID):IsUsable() then
-            return Item(HealthPotionID)
-        end
-    end
-end
 
 local function UseItems()
 
@@ -230,12 +206,65 @@ local function UseItems()
         return I.tx2:Cast()
     end
 end
+
+-- local function mitigate()
+--     --Use not with these buffs or below x health
+--         if Player:AffectingCombat() then 
+--             for id = 1, 40 do
+--                 --Use for
+--                 local spell = {'Savage Peck', 'Barkbreaker','Shield of Light','Savage Blade', 
+--                 'Bloodletting Sweep','Stormslam','Deathspike','Infused Strike','Arcane Cleave','Dragon Strike',
+--                 'Frigid Shard','Searing Blows','Lightning Strike','Brutalize','Savage Strike','Garrison Hearthstone'}
+
+--                 local unitID = "nameplate" .. id
+--                 local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
+                
+--                 for idx = 1, #spell do
+--                     if UnitCanAttack("player", unitID) and name == spell[idx] then
+--                         return true
+--                     end
+--                 end
+--             end
+        
+--     end
+    
+--     return false
+-- end
+
+local function mitigate()
+    --Use not with these buffs or below x health
+    if Player:AffectingCombat() then
+      
+            for id = 1, 40 do
+                --Use for
+                local spell = {'Savage Peck', 'Barkbreaker','Shield of Light','Savage Blade', 
+                                'Bloodletting Sweep','Stormslam','Deathspike','Infused Strike',
+                                'Arcane Cleave','Dragon Strike','Frigid Shard','Searing Blows',
+                                'Lightning Strike','Brutalize','Savage Strike','Garrison Hearthstone'}
+                                local unitID = "nameplate" .. id
+                local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
+                
+                for idx = 1, #spell do
+                    if UnitCanAttack("player", unitID) and name == spell[idx] then
+                        return true
+                    end
+                end
+            end
+         end
+     return false
+end
+
+
+
 --- ======= ACTION LISTS =======
 local function APL()
+    mitigate()
+
+    local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
     ActiveMitigationNeeded = Player:ActiveMitigationNeeded()
     IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
-  
+
 
     HL.GetEnemies(5);
     HL.GetEnemies("Melee");
@@ -265,13 +294,22 @@ local function APL()
         Player:HolyPower() >= 3 or Player:BuffP(S.DivinePurposeBuff) or Player:BuffP(S.ShiningLight) or
             Player:Buff(S.BastionofLight))
 
-    -- if  (not Target:Exists() or not Target:IsInRange(30)) and Cache.EnemiesCount[20]>=1 then
-    -- return 133015
-    -- end
+    -- Define a list of dungeon boss encounter IDs
+        local dungeonBoss = {
+        'Overgrown Ancient','Crawth', -- Algeth'ar Academy
+        'Melidrussa Chillworn','Kokia Blazehoof','Kyrakka and Erkhart Stormvein', -- Ruby Life Pools
+        'Leymor','Umbrelskul','Azureblade', -- Azure Vault
+        'The Raging Tempest','Teera and Maruuk','Balakar Khan', -- Nokhud Offensive
+        -- Court of Stars - nothing
+        'Hyrja','God-King Skovald','Odyn', 'Hymdall',-- Halls of Valor
+        'Sadana Bloodfury', -- Shadowmoon Burial Grounds
+        -- Temple of the Jade Serpent - nothing
 
-    --  if I.healthstone:IsReady() and I.healthstone:Count()>=1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() then
-    --     return S.healthstone:Cast()
-    -- end
+        }
+
+
+
+
     if RubimRH.CDsON() and Target:IsInRange(8) and Player:CanAttack(Target) then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
@@ -356,37 +394,93 @@ local function APL()
         return S.autoattack:Cast()
     end
 
+
+
+    -------------DEFENSIVES_-------------
 if Player:AffectingCombat() then 
 
-        if Player:HealthPercentage() <= 20  and not Player:Debuff(S.Forbearance) and S.LayonHands:IsCastable() and Cache.EnemiesCount[30] >= 1 then
-            return S.LayonHands:Cast()
-    end
-      
-        if S.GuardianofAncientKings:IsCastable() and
-        Cache.EnemiesCount[10] >= 1 and (Player:NeedPanicHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<35) 
-        and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
-            return S.GuardianofAncientKings:Cast()
-    end
-        if S.ArdentDefender:IsCastable() and
-        Cache.EnemiesCount[10] >= 1 and (Player:NeedMajorHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<50) 
-        and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
-            return S.ArdentDefender:Cast()
-    end
+                if S.LayonHands:IsReadyP() and Player:HealthPercentage() <= 25 and not Player:Debuff(S.Forbearance) and
+                    not Player:InArena() and Cache.EnemiesCount[30] >= 1 then
+                    return S.LayonHands:Cast()
+                end
 
-        if S.EyeofTyr:IsCastable() and
-        Cache.EnemiesCount[10] >= 1  and (Player:NeedMajorHealing() and Player:HealthPercentage()<85 or Player:HealthPercentage()<80 
-        or ActiveMitigationNeeded and not Player:Buff(S.ShieldoftheRighteousBuff)) 
-        and (Cache.EnemiesCount[8] >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
-           return S.EyeofTyr:Cast()
-    end
 
-    if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance) and 
-        Cache.EnemiesCount[10] >= 1  and (Player:NeedPanicHealing() and Player:HealthPercentage()<30 or Player:HealthPercentage()<20) and not Player:Buff(S.ArdentDefenderBuff) 
-        and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
-        and S.ArdentDefender:CooldownRemains()>Player:GCD() and S.LayonHands:CooldownRemains()>Player:GCD() then
-      return S.DivineShield:Cast()
-    end
-      
+            -- defensives for trash
+            if not IsEncounterInProgress(dungeonBoss) and level <= 12 then
+                        if S.GuardianofAncientKings:IsCastable()  and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
+                        Cache.EnemiesCount[10] >= 1 and (Player:NeedPanicHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<35) 
+                        and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
+                            return S.GuardianofAncientKings:Cast()
+                    end
+                        if S.ArdentDefender:IsCastable() and S.GuardianofAncientKings:TimeSinceLastCast()>0.5 and
+                        Cache.EnemiesCount[10] >= 1 and (Player:NeedMajorHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<50) 
+                        and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
+                            return S.ArdentDefender:Cast()
+                    end
+
+                        if S.EyeofTyr:IsCastable() and
+                        Cache.EnemiesCount[10] >= 1  and (Player:NeedMajorHealing() and Player:HealthPercentage()<85 or Player:HealthPercentage()<80 
+                        or ActiveMitigationNeeded and not Player:Buff(S.ShieldoftheRighteousBuff)) 
+                        and (Cache.EnemiesCount[8] >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
+                        return S.EyeofTyr:Cast()
+                    end
+
+                    if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance)  and 
+                        Cache.EnemiesCount[10] >= 1  and (Player:NeedPanicHealing() and Player:HealthPercentage()<30 or Player:HealthPercentage()<20) and not Player:Buff(S.ArdentDefenderBuff) 
+                        and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
+                        and S.ArdentDefender:CooldownRemains()>Player:GCD() and S.LayonHands:CooldownRemains()>Player:GCD() then
+                    return S.DivineShield:Cast()
+                    end
+            end
+
+            -- defensives for bosses
+            if IsEncounterInProgress(dungeonBoss) and mitigate() and level > 12 then
+                    if S.GuardianofAncientKings:IsCastable() and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
+                    Cache.EnemiesCount[10] >= 1 
+                    and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
+                        return S.GuardianofAncientKings:Cast()
+                end
+                    if S.ArdentDefender:IsCastable() and S.GuardianofAncientKings:TimeSinceLastCast()>0.5 and
+                    Cache.EnemiesCount[10] >= 1 
+                    and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
+                        return S.ArdentDefender:Cast()
+                end
+
+                    if S.EyeofTyr:IsCastable()  and
+                    Cache.EnemiesCount[10] >= 1  
+                    and not Player:Buff(S.ShieldoftheRighteousBuff)
+                    and not Player:Buff(S.ArdentDefenderBuff) and S.ArdentDefender:CooldownRemains()>Player:GCD()
+                    and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
+                    and (Cache.EnemiesCount[8] >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
+                    return S.EyeofTyr:Cast()
+                end
+
+                if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance) and 
+                    Cache.EnemiesCount[10] >= 1  
+                    and not Player:Buff(S.ArdentDefenderBuff) and S.ArdentDefender:CooldownRemains()>Player:GCD()
+                    and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
+                    and not Target:Debuff(S.EyeofTyr)
+                then
+                return S.DivineShield:Cast()
+                end
+
+                -- if S.BlessingofProtection:IsCastable() and not Player:Debuff(S.Forbearance) and 
+                --     Cache.EnemiesCount[10] >= 1  
+                --     and not Player:Buff(S.DivineShield) and S.DivineShield:CooldownRemains()>Player:GCD()
+                --     and not Player:Buff(S.ArdentDefenderBuff) and S.ArdentDefender:CooldownRemains()>Player:GCD()
+                --     and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
+                --     and not Target:Debuff(S.EyeofTyr)
+                -- then
+                -- return S.BlessingofProtection:Cast()
+                -- end
+
+
+
+
+            end
+
+
+
         -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
         if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and 
           (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight) or Player:HealthPercentage()<45) then
@@ -401,55 +495,7 @@ if Player:AffectingCombat() then
             return S.ShieldoftheRighteous:Cast()
         end
 
-    
 
-
-    if S.ArdentDefender:IsReadyP() and Player:AffectingCombat() and
-    not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and
-        (Player:NeedPanicHealing() or Player:NeedMajorHealing()) and Player:HealthPercentage() <= 35 and
-        Cache.EnemiesCount[10] >= 1 then
-        return S.ArdentDefender:Cast()
-    end
-
-
-    if S.ArdentDefender:IsReadyP() and not Player:Buff(S.GuardianofAncientKings)   and
-    not Player:Buff(S.DivineShield) and
-        (Player:NeedPanicHealing() or Player:NeedMajorHealing()) and Player:HealthPercentage() <= 25 and
-        (S.LayonHands:CooldownRemains() > 1 or not Player:InArena()) and Cache.EnemiesCount[10] >= 1 then
-        return S.ArdentDefender:Cast()
-    end
-
-    if S.ArdentDefender:IsReady() and Cache.EnemiesCount[10] >= 1 and Player:HealthPercentage() <= 60 and S.GuardianofAncientKings:TimeSinceLastCast()>0.5 and
-    not Player:Buff(S.DivineShield) and
-        not Player:Buff(S.GuardianofAncientKings) and (Player:NeedPanicHealing() or Player:NeedMajorHealing()) then
-        return S.ArdentDefender:Cast()
-    end
-
-    if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
-        (
-        Player:NeedPanicHealing() and Player:HealthPercentage() <= 70 or
-            Player:NeedMajorHealing() and Player:HealthPercentage() < 55) and not Player:Buff(S.ArdentDefender) and
-        not Player:Buff(S.DivineShield) and Cache.EnemiesCount[10] >= 1 then
-        return S.GuardianofAncientKings:Cast()
-    end
-
-
-    if S.EyeofTyr:IsCastable() and (Player:NeedMajorHealing() or Player:HealthPercentage()<85) and (Cache.EnemiesCount[8]>= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
-        return S.EyeofTyr:Cast()
-      end
-    
-
-    if S.LayonHands:IsReadyP() and Player:HealthPercentage() <= 25 and not Player:Debuff(S.Forbearance) and
-        not Player:InArena() and Cache.EnemiesCount[30] >= 1 then
-        return S.LayonHands:Cast()
-    end
-
-
-    if S.DivineShield:IsReady() and Player:HealthPercentage() <= 25 and not Player:Debuff(S.Forbearance) and
-        not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > 1 and
-        not Player:Buff(S.GuardianofAncientKings) and Cache.EnemiesCount[15] >= 1 then
-        return S.DivineShield:Cast()
-    end
 
 
     if S.BastionofLight:IsReadyP() and Cache.EnemiesCount[8] >= 1 and RubimRH.CDsON() then
@@ -472,22 +518,17 @@ if Player:AffectingCombat() then
         return S.WordofGlory:Cast()
     end
 
-    if S.BlessingofProtection:IsReadyP() and Player:HealthPercentage() <= 20 and not Player:DebuffP(S.Forbearance) and
-        S.DivineShield:CooldownRemains() > Player:GCD() and not Player:BuffP(S.ArdentDefender) and
-        not Player:Buff(S.GuardianofAncientKings) and S.LayonHands:CooldownRemains() > Player:GCD() and
+    if S.BlessingofProtection:IsReadyP() and Player:HealthPercentage() <= 20 
+    and not Player:DebuffP(S.Forbearance) and
+        S.DivineShield:CooldownRemains() > Player:GCD() 
+        and not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains()>Player:GCD()
+        and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD()
+        and S.LayonHands:CooldownRemains() > Player:GCD() and
         Cache.EnemiesCount[10] >= 1 then
         return S.BlessingofProtection:Cast()
     end
 
 end
-    -- fireblood,if=buff.avenging_wrath.up
-    -- seraphim
-    -- avenging_wrath
-    -- holy_avenger,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains>60
-    -- potion,if=buff.avenging_wrath.up
-    -- use_items,if=buff.seraphim.up|!talent.seraphim.enabled
-    -- moment_of_glory,if=prev_gcd.1.avengers_shield&cooldown.avengers_shield.remains
-
 
     if RubimRH.CDsON() and Cache.EnemiesCount[8] >= 1 then
 
@@ -510,27 +551,6 @@ end
 
     end
 
-
-    -- shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
-    -- shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
-    -- judgment,target_if=min:debuff.judgment.remains,if=charges=2|!talent.crusaders_judgment.enabled
-    -- avengers_shield,if=debuff.vengeful_shock.down&conduit.vengeful_shock.enabled
-    -- hammer_of_wrath
-    -- avengers_shield
-    -- judgment,target_if=min:debuff.judgment.remains
-    -- vanquishers_hammer
-    -- consecration,if=!consecration.up
-    -- divine_toll
-    -- blessed_hammer,strikes=2.4,if=charges=3
-    -- ashen_hallow
-    -- hammer_of_the_righteous,if=charges=2
-    -- word_of_glory,if=buff.vanquishers_hammer.up
-    -- blessed_hammer,strikes=2.4
-    -- hammer_of_the_righteous
-    -- lights_judgment
-    -- arcane_torrent
-    -- consecration
-    -- word_of_glory,if=buff.shining_light_free.up&!covenant.necrolord
 
 
     consecrationdrop = (
