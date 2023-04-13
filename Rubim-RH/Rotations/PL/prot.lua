@@ -240,7 +240,7 @@ local function mitigate()
                 local spell = {'Savage Peck', 'Barkbreaker','Shield of Light','Savage Blade', 
                                 'Bloodletting Sweep','Stormslam','Deathspike','Infused Strike',
                                 'Arcane Cleave','Dragon Strike','Frigid Shard','Searing Blows',
-                                'Lightning Strike','Brutalize','Savage Strike','Garrison Hearthstone'}
+                                'Lightning Strike','Brutalize','Savage Strike','Void Slash', 'Severing Slash', 'Ice Cutter'}
                                 local unitID = "nameplate" .. id
                 local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
                 
@@ -295,7 +295,7 @@ local function APL()
             Player:Buff(S.BastionofLight))
 
     -- Define a list of dungeon boss encounter IDs
-        local dungeonBoss = {
+        local Boss = {
         'Overgrown Ancient','Crawth', -- Algeth'ar Academy
         'Melidrussa Chillworn','Kokia Blazehoof','Kyrakka and Erkhart Stormvein', -- Ruby Life Pools
         'Leymor','Umbrelskul','Azureblade', -- Azure Vault
@@ -304,6 +304,7 @@ local function APL()
         'Hyrja','God-King Skovald','Odyn', 'Hymdall',-- Halls of Valor
         'Sadana Bloodfury', -- Shadowmoon Burial Grounds
         -- Temple of the Jade Serpent - nothing
+        --
 
         }
 
@@ -406,7 +407,7 @@ if Player:AffectingCombat() then
 
 
             -- defensives for trash
-            if not IsEncounterInProgress(dungeonBoss) and level <= 12 then
+            if not IsEncounterInProgress(Boss) then
                         if S.GuardianofAncientKings:IsCastable()  and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
                         Cache.EnemiesCount[10] >= 1 and (Player:NeedPanicHealing() and Player:HealthPercentage()<55 or Player:HealthPercentage()<35) 
                         and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
@@ -434,7 +435,7 @@ if Player:AffectingCombat() then
             end
 
             -- defensives for bosses
-            if IsEncounterInProgress(dungeonBoss) and mitigate() and level > 12 then
+            if (IsEncounterInProgress(Boss) and mitigate() and level > 12 or mitigate() and level> 12)then
                     if S.GuardianofAncientKings:IsCastable() and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
                     Cache.EnemiesCount[10] >= 1 
                     and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
