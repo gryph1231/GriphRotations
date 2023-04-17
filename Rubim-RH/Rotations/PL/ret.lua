@@ -272,9 +272,59 @@ local function UseItems()
 end
 
 
+local function kickprio()
+    -- list of m+ abilities that should be kicked
+    local KickSpells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
+        'Suppress', 'Drifting Embers',  --CoS
+        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
+        'Roaring Blaze','Lightning Bolt','Flashfire', --RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
+        'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
+        'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
 
+    }
+
+    local currentSpell = select(1, UnitCastingInfo('target'))
+
+    for i = 1, #KickSpells do
+        if currentSpell == KickSpells[i] then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function stunprio()
+    -- list of m+ abilities that should be stunned
+    local stunspells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
+        'Suppress', 'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis Bat',  --CoS
+        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
+        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance',--RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit','Void Slash','Cry of Anguish', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep',--TotJS
+        'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
+        'Rally the Clan','Tempest','Stormbolt','Death Bolt Volley','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
+
+    }
+
+    local currentSpell = select(1, UnitCastingInfo('target'))
+
+    for i = 1, #stunspells do
+        if currentSpell == stunspells[i] then
+            return true
+        end
+    end
+
+    return false
+end
 
 local function APL()
+    stunprio()
+    kickprio()
     ConsecrationTime()
     ComputeTimeToHPG()
     HL.GetEnemies(5);
@@ -449,7 +499,7 @@ end
 
         Cooldowns = function()
 
-            if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target) then
+            if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
                 local ShouldReturn = UseItems();
                 if ShouldReturn then return ShouldReturn; end
             end
@@ -544,7 +594,7 @@ end
               end
 
             --   templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8|cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)|buff.crusade.up&buff.crusade.stack<10
-              if (IsUsableSpell('Final Verdict') or IsUsableSpell('Templar"s Verdict')) and 
+              if (IsUsableSpell('Final Verdict') or IsUsableSpell(85256)) and 
                (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
               and ((not S.ExecutionSentence:IsAvailable()) or S.DivineAuxiliary:IsAvailable() or Target:TimeToDie() < 8 
               or S.ExecutionSentence:CooldownRemains() > Player:GCD() * 2) and ((not S.FinalReckoning:IsAvailable()) or S.DivineAuxiliary:IsAvailable() 
@@ -618,7 +668,7 @@ end
                     return S.WakeofAshes:Cast()
                 end
                 -- divine_toll,if=holy_power<=2&!debuff.judgment.up&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|fight_remains<8)
-                if S.DivineToll:IsCastable() and (HolyPower <= 2 and not Target:Debuff(S.JudgmentDebuff) 
+                if S.DivineToll:IsCastable() and RubimRH.CDsON() and (HolyPower <= 2 and not Target:Debuff(S.JudgmentDebuff) 
                 and (Target:TimeToDie() < 8 or Cache.EnemiesCount[8] >= 5)
                  and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15 or Target:TimeToDie() < 8)) then
                     return S.DivineToll:Cast()
@@ -718,10 +768,21 @@ end
             
         end
 
-        if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
-            RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() then
-            return S.Rebuke:Cast()
-        end
+    --Kick
+    if Target:CastPercentage() > math.random(43, 87) and
+    RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() and kickprio() then
+    return S.Rebuke:Cast()
+end
+
+--Stun
+if Target:CastPercentage() > math.random(15, 87) and
+    RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
+    return S.HammerofJustice:Cast()
+end
+
+if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
+    return S.HammerofJustice:Cast()
+end
 
         if not Target:IsInRange(20) then
             if Ranged() ~= nil then

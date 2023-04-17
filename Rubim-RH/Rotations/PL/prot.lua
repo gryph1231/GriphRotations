@@ -42,6 +42,7 @@ CleanseToxins = Spell(213644),
     GiftoftheNaaru           = Spell(59542),
     -- LightsJudgment                        = Spell(255647),
     -- Abilities
+    FinalStand = Spell(204077),
     Consecration             = Spell(26573),
     CrusaderStrike           = Spell(35395),
     DivineShield             = Spell(642),
@@ -207,36 +208,13 @@ local function UseItems()
     end
 end
 
--- local function mitigate()
---     --Use not with these buffs or below x health
---         if Player:AffectingCombat() then 
---             for id = 1, 40 do
---                 --Use for
---                 local spell = {'Savage Peck', 'Barkbreaker','Shield of Light','Savage Blade', 
---                 'Bloodletting Sweep','Stormslam','Deathspike','Infused Strike','Arcane Cleave','Dragon Strike',
---                 'Frigid Shard','Searing Blows','Lightning Strike','Brutalize','Savage Strike','Garrison Hearthstone'}
 
---                 local unitID = "nameplate" .. id
---                 local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
-                
---                 for idx = 1, #spell do
---                     if UnitCanAttack("player", unitID) and name == spell[idx] then
---                         return true
---                     end
---                 end
---             end
-        
---     end
-    
---     return false
--- end
 
 local function mitigate()
-    --Use not with these buffs or below x health
     if Player:AffectingCombat() then
       
             for id = 1, 40 do
-                --Use for
+
                 local spell = {'Savage Peck', 'Barkbreaker','Shield of Light','Savage Blade', 
                                 'Bloodletting Sweep','Stormslam','Deathspike','Infused Strike',
                                 'Arcane Cleave','Dragon Strike','Frigid Shard','Searing Blows',
@@ -254,11 +232,62 @@ local function mitigate()
      return false
 end
 
+local function kickprio()
+    -- list of m+ abilities that should be kicked
+    local KickSpells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
+        'Suppress', 'Drifting Embers',  --CoS
+        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
+        'Roaring Blaze','Lightning Bolt','Flashfire', --RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
+        'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
+        'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
+
+    }
+
+    local currentSpell = select(1, UnitCastingInfo('target'))
+
+    for i = 1, #KickSpells do
+        if currentSpell == KickSpells[i] then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function stunprio()
+    -- list of m+ abilities that should be stunned
+    local stunspells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
+        'Suppress', 'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis Bat',  --CoS
+        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
+        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance',--RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit','Void Slash','Cry of Anguish', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep',--TotJS
+        'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
+        'Rally the Clan','Tempest','Stormbolt','Death Bolt Volley','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
+
+    }
+
+    local currentSpell = select(1, UnitCastingInfo('target'))
+
+    for i = 1, #stunspells do
+        if currentSpell == stunspells[i] then
+            return true
+        end
+    end
+
+    return false
+end
 
 
 --- ======= ACTION LISTS =======
 local function APL()
     mitigate()
+    kickprio()
+    stunprio()
 
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
@@ -311,10 +340,11 @@ local function APL()
 
 
 
-    if RubimRH.CDsON() and Target:IsInRange(8) and Player:CanAttack(Target) then
-        local ShouldReturn = UseItems();
-        if ShouldReturn then return ShouldReturn; end
-    end
+        if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
+            local ShouldReturn = UseItems();
+            if ShouldReturn then return ShouldReturn; end
+        end
+        
 
 
     if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and
@@ -383,12 +413,21 @@ local function APL()
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
+    --Kick
+        if Target:CastPercentage() > math.random(43, 87) and
+            RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() and kickprio() then
+            return S.Rebuke:Cast()
+        end
 
-    if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(43, 87) and
-        RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() then
-        return S.Rebuke:Cast()
-    end
+    --Stun
+        if Target:CastPercentage() > math.random(15, 87) and
+            RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
+            return S.HammerofJustice:Cast()
+        end
 
+        if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
+            return S.HammerofJustice:Cast()
+        end
 
     if not IsCurrentSpell(6603) and Player:CanAttack(Target)
         and Target:AffectingCombat() and Player:AffectingCombat() and Target:IsInRange(20) then
@@ -426,7 +465,7 @@ if Player:AffectingCombat() then
                         return S.EyeofTyr:Cast()
                     end
 
-                    if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance)  and 
+                    if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance)  and S.FinalStand:IsAvailable() and 
                         Cache.EnemiesCount[10] >= 1  and (Player:NeedPanicHealing() and Player:HealthPercentage()<30 or Player:HealthPercentage()<20) and not Player:Buff(S.ArdentDefenderBuff) 
                         and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
                         and S.ArdentDefender:CooldownRemains()>Player:GCD() and S.LayonHands:CooldownRemains()>Player:GCD() then
@@ -435,7 +474,7 @@ if Player:AffectingCombat() then
             end
 
             -- defensives for bosses
-            if (IsEncounterInProgress(Boss) and mitigate() and level > 12 or mitigate() and level> 12)then
+            if (IsEncounterInProgress(Boss) and mitigate() and level > 12 or mitigate() and level>= 12)then
                     if S.GuardianofAncientKings:IsCastable() and S.ArdentDefender:TimeSinceLastCast()>0.5 and 
                     Cache.EnemiesCount[10] >= 1 
                     and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
@@ -456,7 +495,7 @@ if Player:AffectingCombat() then
                     return S.EyeofTyr:Cast()
                 end
 
-                if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance) and 
+                if S.DivineShield:IsCastable() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() and 
                     Cache.EnemiesCount[10] >= 1  
                     and not Player:Buff(S.ArdentDefenderBuff) and S.ArdentDefender:CooldownRemains()>Player:GCD()
                     and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains()>Player:GCD() 
@@ -475,28 +514,20 @@ if Player:AffectingCombat() then
                 -- return S.BlessingofProtection:Cast()
                 -- end
 
-
-
-
             end
-
-
 
         -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
         if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and 
           (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight) or Player:HealthPercentage()<45) then
         return S.WordofGlory:Cast()
         end
-        
-      
+              
         if S.ShieldoftheRighteous:IsReady() and Target:IsInRange(5) 
         and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
         and (ActiveMitigationNeeded 
         or Player:HealthPercentage() <=80)) then
             return S.ShieldoftheRighteous:Cast()
         end
-
-
 
 
     if S.BastionofLight:IsReadyP() and Cache.EnemiesCount[8] >= 1 and RubimRH.CDsON() then
@@ -712,10 +743,7 @@ end
         if S.DevotionAura:IsCastable() and not Player:BuffP(S.DevotionAura) then
             return S.DevotionAura:Cast()
         end
-        if S.MomentofGlory:IsCastable() and Cache.EnemiesCount[25] >= 1 and RubimRH.CDsON() then
-            return S.MomentofGlory:Cast()
-        end
-
+ 
 
         -- if S.Steward:IsCastable() and I.phialofserenity:Count() <= 1 and Cache.EnemiesCount[20] == 0 then
         --     return S.Steward:Cast()

@@ -405,7 +405,55 @@ local function RtB_Reroll()
 end
   
 
+local function kickprio()
+    -- list of m+ abilities that should be kicked
+    local KickSpells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
+        'Suppress', 'Drifting Embers',  --CoS
+        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
+        'Roaring Blaze','Lightning Bolt','Flashfire', --RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
+        'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
+        'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
 
+    }
+
+    local currentSpell = select(1, UnitCastingInfo('target'))
+
+    for i = 1, #KickSpells do
+        if currentSpell == KickSpells[i] then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function stunprio()
+    -- list of m+ abilities that should be stunned
+    local stunspells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
+        'Suppress', 'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis Bat',  --CoS
+        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
+        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance',--RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit','Void Slash','Cry of Anguish', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep',--TotJS
+        'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
+        'Rally the Clan','Tempest','Stormbolt','Death Bolt Volley','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
+
+    }
+
+    local currentSpell = select(1, UnitCastingInfo('target'))
+
+    for i = 1, #stunspells do
+        if currentSpell == stunspells[i] then
+            return true
+        end
+    end
+
+    return false
+end
 
 local function UseItems()
 
@@ -424,6 +472,8 @@ end
 
 
 local function APL()
+    kickprio()
+    stunprio()
 HL.GetEnemies(10);
 HL.GetEnemies(12);
 HL.GetEnemies(20);
@@ -536,13 +586,23 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------Interrupts-----------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(27, 90) and RubimRH.InterruptsON() and S.Kick:IsCastableQueue(8) and Player:AffectingCombat() then
+    --Kick
+    if Target:CastPercentage() > math.random(43, 87) and
+    RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() and kickprio() then
     return S.Kick:Cast()
+end
+
+--Stun
+if Target:CastPercentage() > math.random(15, 87) and
+    RubimRH.InterruptsON() and S.KidneyShot:IsReady(10) and Player:AffectingCombat() and stunprio() then
+    return S.KidneyShot:Cast()
 end
 
 if (select(4, UnitAura("target", 1)) == "" and RubimRH.InterruptsON() and S.Shiv:IsCastableQueue(8) and Player:AffectingCombat() and Target:TimeToDie() > 4) then
 	return S.Shiv:Cast()
 end
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------Out of Combat--------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -594,13 +654,13 @@ if not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or Pl
     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
--- if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and (Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or Player:Debuff(S.lust5)) then
-    -- RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
--- end
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and (Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or Player:Debuff(S.lust5)) then
+    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
 
--- if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and IsUsableItem(193470) and GetItemCooldown(193470) == 0) then
-    -- return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
--- end
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and IsUsableItem(193470) and GetItemCooldown(193470) == 0 then
+    return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+end
 
 if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:Debuff(S.CheapShot) or Target:Debuff(S.KidneyShot) or Target:Debuff(S.Blind) or Target:Debuff(S.Gouge)) then
     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
@@ -623,6 +683,9 @@ end
 if S.PistolShot:IsCastableQueue() and UnitName('target') == 'Explosives' then
     return S.PistolShot:Cast()
 end
+if S.KidneyShot:IsReady(8) and UnitName('target') == 'Spiteful Shade' and Player:ComboPoints()>=4 then
+    return S.KidneyShot:Cast()
+end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------Cooldowns------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -641,7 +704,8 @@ end
 
 
 
-if Target:IsInRange(8) and RubimRH.CDsON() and Player:CanAttack(Target) then
+
+if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
 end
@@ -752,7 +816,7 @@ end
 -----------------------------------------------------------------Finishers------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if finishcondition then
-	if S.BetweentheEyes:IsCastableQueue(20) and Target:TimeToDie() > 3 and not Target:Debuff(S.Blind) and not Player:Buff(S.Stealth) and Player:AffectingCombat() and not Player:Buff(S.VanishBuff) 
+	if S.BetweentheEyes:IsCastableQueue(20) and UnitName('target') ~= 'Spiteful Shade' and Target:TimeToDie() > 3 and not Target:Debuff(S.Blind) and not Player:Buff(S.Stealth) and Player:AffectingCombat() and not Player:Buff(S.VanishBuff) 
 	and (Target:DebuffRemainsP(S.BetweentheEyes) < 4 or ((S.GreenSkinsWickers:IsAvailable() and not Player:Buff(S.GreenSkinsWickersBuff)) or (not S.GreenSkinsWickers:IsAvailable() and Player:Buff(S.RuthlessPrecision)))) then
         return S.BetweentheEyes:Cast()
     end
