@@ -411,11 +411,11 @@ local function kickprio()
         'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
         'Suppress', 'Drifting Embers',  --CoS
         'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
-        'Roaring Blaze','Lightning Bolt','Flashfire', --RLP
+        'Roaring Blaze','Lightning Bolt','Flashfire','Cinderbolt', --RLP
         'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
         'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
         'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
-        'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
+        'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Thunderstrike', 'Desacrating Blow',-- NO
 
     }
 
@@ -434,13 +434,13 @@ local function stunprio()
     -- list of m+ abilities that should be stunned
     local stunspells = {
         'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
-        'Suppress', 'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis Bat',  --CoS
-        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
-        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance',--RLP
-        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit','Void Slash','Cry of Anguish', --SMBG
-        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep',--TotJS
+        'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
+        'Thunderous Bolt','Holy Radiance','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
+        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
         'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
-        'Rally the Clan','Tempest','Stormbolt','Death Bolt Volley','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', -- NO
+        'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
 
     }
 
@@ -587,14 +587,14 @@ end
 -----------------------------------------------------------------Interrupts-----------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
     --Kick
-    if Target:CastPercentage() > math.random(43, 87) and
+    if (Target:CastPercentage() > 26 and Target:CastPercentage() <86 or Target:IsChanneling()) and 
     RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() and kickprio() then
     return S.Kick:Cast()
 end
 
 --Stun
-if Target:CastPercentage() > math.random(15, 87) and
-    RubimRH.InterruptsON() and S.KidneyShot:IsReady(10) and Player:AffectingCombat() and stunprio() then
+if (Target:CastPercentage() > 26 and Target:CastPercentage() <86 or Target:IsChanneling()) and 
+RubimRH.InterruptsON() and S.KidneyShot:IsReady(10) and Player:AffectingCombat() and stunprio() then
     return S.KidneyShot:Cast()
 end
 
@@ -683,9 +683,9 @@ end
 if S.PistolShot:IsCastableQueue() and UnitName('target') == 'Explosives' then
     return S.PistolShot:Cast()
 end
-if S.KidneyShot:IsReady(8) and UnitName('target') == 'Spiteful Shade' and Player:ComboPoints()>=4 then
-    return S.KidneyShot:Cast()
-end
+-- if S.KidneyShot:IsReady(8) and UnitName('target') == 'Spiteful Shade' and Player:ComboPoints()>=4 then
+--     return S.KidneyShot:Cast()
+-- end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------Cooldowns------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
