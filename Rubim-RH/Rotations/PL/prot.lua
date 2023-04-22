@@ -169,10 +169,9 @@ Item.Paladin.Protection = {
 };
 local I = Item.Paladin.Protection;
 
-
-local function allMobsinRange(range)
+local function combatmobs40()
     local totalRange40 = 0
-    local allMobsinRange = false
+
 
     for id = 1, 40 do
         local unitID = "nameplate" .. id
@@ -182,16 +181,11 @@ local function allMobsinRange(range)
         end
     end
 
-    if range == totalRange40 and totalRange40 >= 1 then
-        allMobsinRange = true
-    else
-        allMobsinRange = false
-    end
 
-    return allMobsinRange
+return totalRange40
+
 
 end
-
 
 local function UseItems()
 
@@ -218,7 +212,7 @@ local function mitigate()
                 local spell = {'Savage Peck', 'Barkbreaker','Shield of Light','Savage Blade', 'Dark Claw','Jade Serpent Strike',
                                 'Bloodletting Sweep','Stormslam','Deathspike','Infused Strike','Haunting Gaze',
                                 'Arcane Cleave','Dragon Strike','Frigid Shard','Searing Blows',
-                                'Lightning Strike','Brutalize','Savage Strike','Void Slash', 'Severing Slash', 'Ice Cutter'}
+                                'Lightning Strike','Brutalize','Savage Strike','Void Slash', 'Severing Slash', 'Ice Cutter','Lightning Breath',}
                                 local unitID = "nameplate" .. id
                 local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
                 local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
@@ -263,7 +257,7 @@ local function stunprio()
     local stunspells = {
         'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
         'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
-        'Thunderous Bolt','Holy Radiance','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
+        'Thunderous Bolt','Holy Radiance', 'Rune of Healing','Etch','Surge',-- HoV
         'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
         'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
         'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
@@ -289,6 +283,7 @@ local function APL()
     mitigate()
     kickprio()
     stunprio()
+    combatmobs40()
 
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
@@ -317,7 +312,7 @@ local function APL()
     Enemies30y = Cache.EnemiesCount[30]
     Enemies35y = Cache.EnemiesCount[35]
     Enemies40y = Cache.EnemiesCount[40]
-    allMobsinRange()
+    combatmobs40()
     tarSpeed, _, _, _ = GetUnitSpeed('target')
 
     wordofglorycast = (
@@ -330,6 +325,7 @@ local function APL()
             else
                 elite = false
             end
+
     -- Define a list of dungeon boss encounter IDs
         local Boss = {
         'Overgrown Ancient','Crawth', -- Algeth'ar Academy
@@ -343,6 +339,16 @@ local function APL()
         --
 
         }
+
+        validmobsinrange12y =Enemies12y/.7
+
+        if validmobsinrange12y>combatmobs40() and combatmobs40()>0 then
+            aoecds12y = true
+        else
+            aoecds12y = false
+            -- print('at least 70% of mobs are that are in combat are in range 10y')
+        end
+
 
         -- local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unit)
         -- local currentTimeMS = GetTime() * 1000
@@ -408,7 +414,9 @@ local function APL()
     end
 
 
-
+    if Player:PrevGCD(1, S.CleanseToxins) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
 
 
     if RubimRH.QueuedSpell():IsReadyQueue() then
@@ -464,7 +472,7 @@ local function APL()
 
 
     -------------DEFENSIVES_-------------
-if Player:AffectingCombat() then 
+if (Player:AffectingCombat() or Target:AffectingCombat() and Player:CanAttack(Target) and not Target:IsDeadOrGhost()) then 
 
      
 
@@ -561,10 +569,9 @@ if Player:AffectingCombat() then
         return S.WordofGlory:Cast()
         end
               
-        if S.ShieldoftheRighteous:IsReady() and Target:IsInRange(5) 
-        and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
-        and (ActiveMitigationNeeded 
-        or Player:HealthPercentage() <=80)) then
+        if S.ShieldoftheRighteous:IsReady() and (Target:IsInRange(8) or Enemies12y)
+        and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
+         then
             return S.ShieldoftheRighteous:Cast()
         end
 
@@ -625,10 +632,8 @@ end
 
 
     consecrationdrop = (
-        Player:CanAttack(Target) and Target:IsInRange(8) and
-            (Player:MovingFor() <= Player:GCD() or allMobsinRange(10) and tarSpeed == 0) or Cache.EnemiesCount[5] >= 2)
+        (Player:CanAttack(Target) and Target:IsInRange(8) and aoecds12y) or Cache.EnemiesCount[8] >= 3)
 
-    --consecrationdrop = (not Player:IsMoving() and Cache.EnemiesCount[8]>=1 or Player:IsMoving() and Cache.EnemiesCount[5]>=1)
 
 
     -- shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
@@ -783,6 +788,11 @@ end
             return S.DevotionAura:Cast()
         end
  
+        if S.BlessedHammer:IsCastable() and Player:IsMoving() and IsResting("player") == false and Cache.EnemiesCount[40] >= 1 and Cache.EnemiesCount[15] == 0 and (S.BlessedHammer:ChargesFractional() >= 1.9 and Player:HolyPower()<5 or
+        S.BlessedHammer:ChargesFractional() >= 1 and Player:HolyPower()<3)
+        then
+            return S.BlessedHammer:Cast()
+        end
 
         -- if S.Steward:IsCastable() and I.phialofserenity:Count() <= 1 and Cache.EnemiesCount[20] == 0 then
         --     return S.Steward:Cast()

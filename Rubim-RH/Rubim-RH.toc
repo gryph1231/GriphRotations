@@ -50,3 +50,6 @@ Rotations\MK\wind.lua
 Rotations\MK\brew.lua
 
 
+Rotations\MG\fire.lua
+Rotations\MG\frost.lua
+
