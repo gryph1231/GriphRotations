@@ -408,52 +408,54 @@ end
 local function kickprio()
     -- list of m+ abilities that should be kicked
     local KickSpells = {
-        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
-        'Suppress', 'Drifting Embers',  --CoS
-        'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
-        'Roaring Blaze','Lightning Bolt','Flashfire','Cinderbolt', --RLP
-        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
-        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
-        'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
-        'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Thunderstrike', 'Desacrating Blow',-- NO
-
+    'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
+    'Suppress', 'Drifting Embers',  --CoS
+    'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
+    'Roaring Blaze','Lightning Bolt','Flashfire','Cinderbolt', --RLP
+    'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
+    'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
+    'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
+    'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Thunderstrike', 'Desacrating Blow',-- NO
+    
     }
-
-    local currentSpell = select(1, UnitCastingInfo('target'))
-
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
     for i = 1, #KickSpells do
-        if currentSpell == KickSpells[i] then
-            return true
-        end
+    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
+    return true
     end
-
+    end
+    
     return false
-end
-
-local function stunprio()
+    end
+    
+    local function stunprio()
     -- list of m+ abilities that should be stunned
     local stunspells = {
-        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
-        'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
-        'Thunderous Bolt','Holy Radiance','Unruly Yell', 'Rune of Healing','Etch','Surge',-- HoV
-        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
-        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
-        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
-        'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
-        'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
-
+    'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
+    'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
+    'Thunderous Bolt','Holy Radiance', 'Rune of Healing','Etch','Surge',-- HoV
+    'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
+    'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
+    'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
+    'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
+    'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
+    
     }
-
-    local currentSpell = select(1, UnitCastingInfo('target'))
-
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
     for i = 1, #stunspells do
-        if currentSpell == stunspells[i] then
-            return true
-        end
+    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+    return true
     end
-
+    end
+    
     return false
-end
+    end
 
 local function UseItems()
 
@@ -483,7 +485,14 @@ HL.GetEnemies(30);
 
 IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
-
+local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+castTime = elapsedTimeca / 1000
+local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+channelTime = elapsedTimech/1000
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Functions/Top Priorities-------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -586,17 +595,20 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------Interrupts-----------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-    --Kick
-    if (Target:CastPercentage() > 26 and Target:CastPercentage() <86 or Target:IsChanneling()) and 
-    RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() and kickprio() then
-    return S.Kick:Cast()
-end
+                --Kick
+                if (castTime>0.35 or channelTime>0.35) and 
+                RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() and kickprio() then
+                return S.Kick:Cast()
+                end
 
---Stun
-if (Target:CastPercentage() > 26 and Target:CastPercentage() <86 or Target:IsChanneling()) and 
-RubimRH.InterruptsON() and S.KidneyShot:IsReady(10) and Player:AffectingCombat() and stunprio() then
-    return S.KidneyShot:Cast()
-end
+                --Stun
+
+                if (castTime>0.1 or channelTime>0.1)  
+                and RubimRH.InterruptsON() and S.KidneyShot:IsReady(10) and Player:AffectingCombat() and stunprio() then
+                return S.KidneyShot:Cast()
+                end
+
+  
 
 if (select(4, UnitAura("target", 1)) == "" and RubimRH.InterruptsON() and S.Shiv:IsCastableQueue(8) and Player:AffectingCombat() and Target:TimeToDie() > 4) then
 	return S.Shiv:Cast()

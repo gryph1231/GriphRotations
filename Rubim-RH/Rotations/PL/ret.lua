@@ -250,57 +250,88 @@ end
 
 
 local function kickprio()
--- list of m+ abilities that should be kicked
-local KickSpells = {
-'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
-'Suppress', 'Drifting Embers',  --CoS
-'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
-'Roaring Blaze','Lightning Bolt','Flashfire','Cinderbolt', --RLP
-'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
-'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
-'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
-'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Thunderstrike', 'Desacrating Blow',-- NO
+    -- list of m+ abilities that should be kicked
+    local KickSpells = {
+    'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
+    'Suppress', 'Drifting Embers',  --CoS
+    'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
+    'Roaring Blaze','Lightning Bolt','Flashfire','Cinderbolt', --RLP
+    'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
+    'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
+    'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
+    'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Thunderstrike', 'Desacrating Blow',-- NO
+    
+    }
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #KickSpells do
+    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+    
+    local function stunprio()
+    -- list of m+ abilities that should be stunned
+    local stunspells = {
+    'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
+    'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
+    'Thunderous Bolt','Holy Radiance', 'Rune of Healing','Etch','Surge',-- HoV
+    'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
+    'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
+    'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
+    'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
+    'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
+    
+    }
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #stunspells do
+    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+    
+    
+    local function blindprio()
+        -- list of m+ abilities that should be stunned
+        local blindspells = {
+        'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
+        'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
+        'Thunderous Bolt','Holy Radiance', 'Rune of Healing','Etch','Surge',-- HoV
+        'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
+        'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
+        'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
+        'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
+        'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
+        
+        }
+        
+        local currentspellchannel = select(1,UnitChannelInfo('target'))
+        local currentspellcast = select(1, UnitCastingInfo('target'))
+        
+        for i = 1, #blindspells do
+        if currentspellcast == blindspells[i] or currentspellchannel == blindspells[i] then
+        return true
+        end
+        end
+        
+        return false
+        end
+    
 
-}
-
-local currentSpell = select(1, UnitCastingInfo('target'))
-
-for i = 1, #KickSpells do
-if currentSpell == KickSpells[i] then
-return true
-end
-end
-
-return false
-end
-
-local function stunprio()
--- list of m+ abilities that should be stunned
-local stunspells = {
-'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
-'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
-'Thunderous Bolt','Holy Radiance', 'Rune of Healing','Etch','Surge',-- HoV
-'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
-'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
-'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
-'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
-'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
-
-}
-local currentSpell = select(1, UnitCastingInfo('target'))
-
-for i = 1, #stunspells do
-if currentSpell == stunspells[i] then
-return true
-end
-end
-
-return false
-end
 
 local function combatmobs40()
     local totalRange40 = 0
-
 
     for id = 1, 40 do
         local unitID = "nameplate" .. id
@@ -313,12 +344,13 @@ local function combatmobs40()
 
 return totalRange40
 
-
 end
 
 
 local function APL()
     combatmobs40()
+    blindprio()
+
         stunprio()
         kickprio()
         ConsecrationTime()
@@ -362,24 +394,35 @@ local function APL()
 
         IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
-        validmobsinrange8y =Enemies8y/.7
-        validmobsinrange15y =Enemies15y/.7
+        validmobsinrange8y =combatmobs40()*.7
+        validmobsinrange15y =combatmobs40()*.7
 
 
-if validmobsinrange8y>combatmobs40() and combatmobs40()>0 then
+if Enemies8y>validmobsinrange8y and combatmobs40()>0 then
     aoecds8y = true
 else
     aoecds8y = false
-    -- print('at least 70% of mobs are that are in combat are in range 10y')
 end
 
-if validmobsinrange15y>combatmobs40() and combatmobs40()>0 then
+if Enemies15y>validmobsinrange15y and combatmobs40()>0 then
     aoecds15y = true
 else
     aoecds15y = false
-    -- print('at least 70% of mobs are that are in combat are in range 10y')
 end
 
+print('valid mobs in 8y range:', Enemies8y)
+print('70% mobs 40y in combat:',validmobsinrange8y)
+
+
+
+local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+castTime = elapsedTimeca / 1000
+local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+channelTime = elapsedTimech/1000
 
 
         if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) 
@@ -501,19 +544,24 @@ end
         return S.crusaderstrike:Cast()
         end
 
+                --Kick
+                if (castTime>0.35 or channelTime>0.35) and 
+                RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() and kickprio() then
+                return S.Rebuke:Cast()
+                end
 
-        --Kick
-        if (Target:CastPercentage() > 26 and Target:CastPercentage() <86 or Target:IsChanneling()) and 
-        RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() and kickprio() then
-        return S.Rebuke:Cast()
-        end
+                --Stun
 
-        --Stun
-        if (Target:CastPercentage() > 26 and Target:CastPercentage() <86 or Target:IsChanneling()) and 
-        RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() and not Target:Debuff(S.HammerofJustice) then
-        return S.HammerofJustice:Cast()
-        end
+                if (castTime>0.1 or channelTime>0.1)  
+                and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
+                return S.HammerofJustice:Cast()
+                end
 
+                --Blind
+                if (castTime>0.1 or channelTime>0.1) and S.HammerofJustice:CooldownRemains()>Player:GCD()
+                and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >=1 and Player:AffectingCombat() and blindprio() then
+                return S.BlindingLight:Cast()
+                end
         -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
         --     return S.HammerofJustice:Cast()
         -- end
@@ -555,7 +603,6 @@ end
                 end
 
                 -- crusade,if=holy_power>=5&time<5|holy_power>=3&time>5
-
                 if S.Crusade:IsCastable() and (HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 and HL.CombatTime() >= 5) then
                 return S.Crusade:Cast()
                 end
@@ -568,16 +615,16 @@ end
                 end
 
                 -- final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&time>=8|holy_power>=2&talent.divine_auxiliary)&(cooldown.avenging_wrath.remains>gcd|cooldown.crusade.remains&(!buff.crusade.up|buff.crusade.stack>=10))&(time_to_hpg>0|holy_power=5|holy_power>=2&talent.divine_auxiliary)&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)
-                if S.FinalReckoning:IsCastable() and RubimRH.CDsON() 
-                and aoecds8y
-                -- and Target:IsInRange(5) and Player:MovingFor()<Player:GCD()
-                and ((HolyPower >= 4 and HL.CombatTime() < 8 
-                or HolyPower >= 3 and HL.CombatTime() >= 8 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
-                and (S.AvengingWrath:CooldownRemains() > Player:GCD() or S.Crusade:CooldownDown() 
-                and (not Player:Buff(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) 
-                and (TimeToHPG > 0 or HolyPower == 5 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable())) then
-                return S.FinalReckoning:Cast()
-                end
+                -- if S.FinalReckoning:IsCastable() and RubimRH.CDsON() 
+                -- and aoecds8y
+                -- -- and Target:IsInRange(5) and Player:MovingFor()<Player:GCD()
+                -- and ((HolyPower >= 4 and HL.CombatTime() < 8 
+                -- or HolyPower >= 3 and HL.CombatTime() >= 8 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
+                -- and (S.AvengingWrath:CooldownRemains() > Player:GCD() or S.Crusade:CooldownDown() 
+                -- and (not Player:Buff(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) 
+                -- and (TimeToHPG > 0 or HolyPower == 5 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable())) then
+                -- return S.FinalReckoning:Cast()
+                -- end
 
 
             end
@@ -646,8 +693,8 @@ end
 
             end
 
-
-        Generators = function()
+ 
+            Generators = function()
 
                     -- --burst AOE
                     if RubimRH.AoEON() and Cache.EnemiesCount[12]>=2 then
@@ -661,12 +708,11 @@ end
                         return S.Crusade:Cast()
                     end
 
-                    if S.FinalReckoning:IsReady() and RubimRH.CDsON() 
-                    -- and Player:MovingFor()<Player:GCD() 
+                    if S.FinalReckoning:IsReady() 
+                    and RubimRH.CDsON() 
                     and Target:IsInRange(5) 
-                    -- and Cache.EnemiesCount[8]>=2 
                     and aoecds8y
-
+            
                     then                        
                         return S.FinalReckoning:Cast()
                     end
