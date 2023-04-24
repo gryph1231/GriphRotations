@@ -402,19 +402,22 @@ local function APL()
 -- print(castTime)
 -- print(channelTime)
 
-                validmobsinrange8y =Enemies8y/.7
-                if validmobsinrange8y>combatmobs40() and combatmobs40()>0 then
-                    aoecds8y = true
-                else
-                    aoecds8y = false
-                end
-                
-                validmobsinrange10y =Enemies10y/.7 -- at least 70% of mobs in combat (within 40 yards) are in range of 12y
-                if validmobsinrange10y>combatmobs40() and combatmobs40()>0 then
-                aoecds10y = true
-                else
-                aoecds10y = false
-                end
+
+validmobsinrange8y =combatmobs40()*.7
+validmobsinrange10y =combatmobs40()*.7
+
+
+if Enemies8y>validmobsinrange8y and combatmobs40()>0 then
+aoecds8y = true
+else
+aoecds8y = false
+end
+
+if Enemies10y>validmobsinrange10y and combatmobs40()>0 then
+aoecds10y = true
+else
+aoecds10y = false
+end
 
                 consecrationdrop = (
                 (Player:CanAttack(Target) and Target:IsInRange(5) and aoecds10y) or Cache.EnemiesCount[5] >= 3)

@@ -32,6 +32,7 @@ Modules\MiniMap.lua
 Rotations\Shared.lua
 
 Rotations\RG\outlaw.lua
+Rotations\RG\sub.lua
 Rotations\PL\ret.lua
 Rotations\PL\prot.lua
 

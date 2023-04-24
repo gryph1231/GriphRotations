@@ -248,6 +248,26 @@ return I.tx2:Cast()
 end
 end
 
+local function freedom()
+    if Player:AffectingCombat() then
+    
+    for id = 1, 40 do
+    
+    local spell = {'Crystalline Rupture',}
+    local unitID = "nameplate" .. id
+    local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
+    local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+    
+    for idx = 1, #spell do
+    if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+    return true
+    end
+    end
+    end
+    end
+    return false
+    end
+    
 
 local function kickprio()
     -- list of m+ abilities that should be kicked
@@ -328,31 +348,30 @@ local function kickprio()
         return false
         end
     
-
-
-local function combatmobs40()
-    local totalRange40 = 0
-
-    for id = 1, 40 do
-        local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and Cache.EnemiesCount[40]
-            and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
-            totalRange40 = totalRange40 + 1
+        local function combatmobs40()
+            local totalmobsincombat = 0
+        
+            for id = 1, 40 do
+                local unitID = "nameplate" .. id
+                local unitName = UnitName(unitID)
+                if (UnitCanAttack("player", unitID) and UnitHealthMax(unitID) > 5
+                 and UnitAffectingCombat(unitID) and IsItemInRange(835, unitID) 
+                 or (unitName and string.sub(unitName, -5) == "Dummy" and IsItemInRange(32321, unitID))) then
+                    totalmobsincombat = totalmobsincombat + 1
+                end
+            end
+        
+            return totalmobsincombat
         end
-    end
-
-
-return totalRange40
-
-end
-
+-- string.sub(UnitName('nameplate'), -5) == "Dummy"
 
 local function APL()
     combatmobs40()
     blindprio()
+    freedom()
+    stunprio()
+    kickprio()
 
-        stunprio()
-        kickprio()
         ConsecrationTime()
         ComputeTimeToHPG()
         HL.GetEnemies(5);
@@ -378,6 +397,7 @@ local function APL()
         Enemies40y = Cache.EnemiesCount[40]
 
         HolyPower = Player:HolyPower()
+        local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
      
         tarSpeed, _, _, _ = GetUnitSpeed('target')
@@ -390,29 +410,45 @@ local function APL()
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
         end
 
+ 
+--item ids for wotlk range checks with nameplate
+--<5 37727
+--<8 34368
+--<10 32321
+--<15 33069
+--<20 10645
+--<25 13289
+--<30 835
+--<35 18904
+--<40 4945 -- check
 
+
+-- print(combatmobs40())
 
         IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
-        validmobsinrange8y =combatmobs40()*.7
-        validmobsinrange15y =combatmobs40()*.7
+        validmobsinrange8y = combatmobs40()*.7
+        validmobsinrange15y = combatmobs40()*.7
 
 
-if Enemies8y>validmobsinrange8y and combatmobs40()>0 then
+if Enemies8y>validmobsinrange8y 
+and combatmobs40()>0 --target this line out for target dummy aoe testing
+then
     aoecds8y = true
 else
     aoecds8y = false
 end
 
-if Enemies15y>validmobsinrange15y and combatmobs40()>0 then
+if Enemies15y>validmobsinrange15y 
+and combatmobs40()>0 --target this line out for target dummy aoe testing
+then
     aoecds15y = true
 else
     aoecds15y = false
 end
 
-print('valid mobs in 8y range:', Enemies8y)
-print('70% mobs 40y in combat:',validmobsinrange8y)
-
+-- print('total mobs in 8y range:', Enemies8y)
+-- print('70% mobs 40y in combat:',validmobsinrange8y)
 
 
 local startTimeMS = select(4, UnitCastingInfo('target')) or 0
@@ -519,8 +555,12 @@ channelTime = elapsedTimech/1000
         end
 
         if S.WordofGlory:IsReady() 
-        and HolyPower>=3 and not Player:Buff(S.DivineShield) and (Player:HealthPercentage()<60 and Player:HealthPercentage()>=40 and 
-        not Player:BuffP(S.ShieldofVengeance) and not Player:Buff(S.DivineProtection) or Player:HealthPercentage()<40) then
+        and HolyPower>=3 
+        and not Player:Buff(S.DivineShield) 
+        and (Player:HealthPercentage()<60 
+        and Player:HealthPercentage()>=40 
+        and not Player:BuffP(S.ShieldofVengeance) 
+        and not Player:Buff(S.DivineProtection) or Player:HealthPercentage()<40) then
         return S.WordofGlory:Cast()
         end
 
@@ -552,16 +592,24 @@ channelTime = elapsedTimech/1000
 
                 --Stun
 
-                if (castTime>0.1 or channelTime>0.1)  
+                if (castTime>0.1 or channelTime>0.1) and level>13 
                 and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
                 return S.HammerofJustice:Cast()
                 end
 
                 --Blind
-                if (castTime>0.1 or channelTime>0.1) and S.HammerofJustice:CooldownRemains()>Player:GCD()
+                if (castTime>0.1 or channelTime>0.1) and S.HammerofJustice:CooldownRemains()>Player:GCD() and level>13 
                 and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >=1 and Player:AffectingCombat() and blindprio() then
                 return S.BlindingLight:Cast()
                 end
+
+                --Freedom
+                if S.BlessingofFreedom:IsReady() and freedom() and Enemies15y>=1 and level>13 then
+                    return S.BlessingofFreedom:Cast()
+                end
+
+
+
         -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
         --     return S.HammerofJustice:Cast()
         -- end
@@ -615,16 +663,16 @@ channelTime = elapsedTimech/1000
                 end
 
                 -- final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&time>=8|holy_power>=2&talent.divine_auxiliary)&(cooldown.avenging_wrath.remains>gcd|cooldown.crusade.remains&(!buff.crusade.up|buff.crusade.stack>=10))&(time_to_hpg>0|holy_power=5|holy_power>=2&talent.divine_auxiliary)&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)
-                -- if S.FinalReckoning:IsCastable() and RubimRH.CDsON() 
-                -- and aoecds8y
-                -- -- and Target:IsInRange(5) and Player:MovingFor()<Player:GCD()
-                -- and ((HolyPower >= 4 and HL.CombatTime() < 8 
-                -- or HolyPower >= 3 and HL.CombatTime() >= 8 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
-                -- and (S.AvengingWrath:CooldownRemains() > Player:GCD() or S.Crusade:CooldownDown() 
-                -- and (not Player:Buff(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) 
-                -- and (TimeToHPG > 0 or HolyPower == 5 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable())) then
-                -- return S.FinalReckoning:Cast()
-                -- end
+                if S.FinalReckoning:IsCastable() and RubimRH.CDsON() 
+                and aoecds8y
+                -- and Target:IsInRange(5) and Player:MovingFor()<Player:GCD()
+                and ((HolyPower >= 4 and HL.CombatTime() < 8 
+                or HolyPower >= 3 and HL.CombatTime() >= 8 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
+                and (S.AvengingWrath:CooldownRemains() > Player:GCD() or S.Crusade:CooldownDown() 
+                and (not Player:Buff(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) 
+                and (TimeToHPG > 0 or HolyPower == 5 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable())) then
+                return S.FinalReckoning:Cast()
+                end
 
 
             end
@@ -700,44 +748,44 @@ channelTime = elapsedTimech/1000
                     if RubimRH.AoEON() and Cache.EnemiesCount[12]>=2 then
 
 
-                    if S.AvengingWrath:IsReadyP() and not Player:BuffP(S.AvengingWrath) and RubimRH.CDsON() and Target:IsInRange(8) then   
-                        return S.AvengingWrath:Cast()
-                    end
+                        if S.AvengingWrath:IsReadyP() and not Player:BuffP(S.AvengingWrath) and RubimRH.CDsON() and Target:IsInRange(8) then   
+                            return S.AvengingWrath:Cast()
+                        end
 
-                    if S.Crusade:IsReadyP() and not Player:BuffP(S.Crusade) and RubimRH.CDsON() and Target:IsInRange(8) then                        
-                        return S.Crusade:Cast()
-                    end
+                        if S.Crusade:IsReadyP() and not Player:BuffP(S.Crusade) and RubimRH.CDsON() and Target:IsInRange(8) then                        
+                            return S.Crusade:Cast()
+                        end
 
-                    if S.FinalReckoning:IsReady() 
-                    and RubimRH.CDsON() 
-                    and Target:IsInRange(5) 
-                    and aoecds8y
-            
-                    then                        
-                        return S.FinalReckoning:Cast()
-                    end
+                        if S.FinalReckoning:IsReady() 
+                        and RubimRH.CDsON() 
+                        and Target:IsInRange(8) 
+                        and aoecds8y
+                
+                        then                        
+                            return S.FinalReckoning:Cast()
+                        end
 
-                    if S.DivineStorm:IsReady() and Player:HolyPower()>=5 and Target:IsInRange(12) then                        
-                        return S.DivineStorm:Cast()
-                    end
+                        if S.DivineStorm:IsReady() and HolyPower>=5 and Target:IsInRange(12) then                        
+                            return S.DivineStorm:Cast()
+                        end
 
-                    if S.WakeofAshes:IsReady() 
-                    and RubimRH.CDsON() 
-                    and Cache.EnemiesCount[8]>=2 
-                    and Target:IsInRange(8) and aoecds8y 
-                    and  (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
-                    then
-                        return S.WakeofAshes:Cast()
-                    end
+                        if S.WakeofAshes:IsReady() 
+                        and RubimRH.CDsON() 
+                        and HolyPower<=2
+                        and Cache.EnemiesCount[8]>=2 
+                        and Target:IsInRange(8) and aoecds8y 
+                        and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
+                        then
+                            return S.WakeofAshes:Cast()
+                        end
 
 
-                    if S.DivineToll:IsCastable() and RubimRH.CDsON() and Target:IsInRange(15) and aoecds15y
-                    and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5) 
-                    and (not S.WakeofAshes:IsAvailable() or S.WakeofAshes:CooldownRemains() > 5) 
-
-                    then
-                        return S.DivineToll:Cast()
-                    end
+                        if S.DivineToll:IsCastable() and HolyPower<=2 and RubimRH.CDsON() and Target:IsInRange(15) and aoecds15y
+                        and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5) 
+                        and (not S.WakeofAshes:IsAvailable() or S.WakeofAshes:CooldownRemains() > 5) 
+                        then
+                            return S.DivineToll:Cast()
+                        end
             
 
                     end
@@ -751,7 +799,7 @@ channelTime = elapsedTimech/1000
                     end
                     -- wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
                     if S.WakeofAshes:IsCastable() 
-                    and RubimRH.CDsON() and Target:IsInRange(5) 
+                    and RubimRH.CDsON() and Target:IsInRange(8) 
                     and aoecds8y
                     and (HolyPower <= 2 and (S.AvengingWrath:CooldownDown() or S.Crusade:CooldownDown()) 
                     and ((not S.ExecutionSentence:IsAvailable()) or S.ExecutionSentence:CooldownRemains() > 4 or Target:TimeToDie() < 8))  
@@ -761,7 +809,7 @@ channelTime = elapsedTimech/1000
                     return S.WakeofAshes:Cast()
                     end
                     -- divine_toll,if=holy_power<=2&!debuff.judgment.up&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|fight_remains<8)
-                    if S.DivineToll:IsCastable() 
+                    if S.DivineToll:IsCastable() and HolyPower<=2
                     and RubimRH.CDsON() and not Target:Debuff(S.JudgmentDebuff)
                     and ((Target:TimeToDie() < 8 or Cache.EnemiesCount[8] >= 5)
                     and (S.AvengingWrath:CooldownRemains() > 15 
@@ -786,9 +834,10 @@ channelTime = elapsedTimech/1000
                     return S.Judgment:Cast()
                     end
                     -- blade_of_justice,if=(holy_power<=3|!talent.holy_blade)&spell_targets.divine_storm>=2
-                    if S.BladeofJustice:IsCastable() and ((HolyPower <= 3 or not S.HolyBlade:IsAvailable()) and Cache.EnemiesCount[8] >= 2) then
+                    if S.BladeofJustice:IsCastable() and ((HolyPower <= 3 or not S.HolyBlade:IsAvailable()) and Cache.EnemiesCount[12] >= 2) then
                     return S.BladeofJustice:Cast()
                     end
+
                     -- hammer_of_wrath,if=(spell_targets.divine_storm<2|!talent.blessed_champion)&(holy_power<=3|target.health.pct>20|!talent.vanguards_momentum)
                     if S.HammerofWrath:IsReady() and ((Cache.EnemiesCount[12] < 2 or not S.BlessedChampion:IsAvailable()) and (HolyPower <= 3 or Target:HealthPercentage() > 20 or not S.VanguardsMomentum:IsAvailable())) then
                     return S.HammerofWrath:Cast()
@@ -800,11 +849,11 @@ channelTime = elapsedTimech/1000
                     return S.crusaderstrike:Cast()
                     end
                     -- blade_of_justice,if=holy_power<=3|!talent.holy_blade
-                    if S.BladeofJustice:IsCastable() and (HolyPower <= 3 or not S.HolyBlade:IsAvailable()) then
+                    if S.BladeofJustice:IsCastable() and Target:IsInRange(15) and (HolyPower <= 3 or not S.HolyBlade:IsAvailable()) then
                     return S.BladeofJustice:Cast()
                     end
                     -- judgment,if=!debuff.judgment.up&(holy_power<=3|!talent.boundless_judgment)
-                    if S.Judgment:IsReady() and (not Target:Debuff(S.JudgmentDebuff) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable())) then
+                    if S.Judgment:IsReady() and Target:IsInRange(30) and (not Target:Debuff(S.JudgmentDebuff) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable())) then
                     return S.Judgment:Cast()
                     end
                     -- call_action_list,name=finishers,if=(target.health.pct<=20|buff.avenging_wrath.up|buff.crusade.up|buff.empyrean_power.up)
@@ -830,27 +879,27 @@ channelTime = elapsedTimech/1000
                     return Finishers()
                     end
                     -- templar_slash
-                    if IsUsableSpell("Templar Slash") and S.TemplarSlash:CooldownRemains() == 0 then
+                    if IsUsableSpell("Templar Slash") and S.TemplarSlash:CooldownRemains() == 0 and Target:IsInRange(8) then
                     return S.crusaderstrike:Cast()
                     end
                     -- templar_strike
-                    if S.TemplarStrike:IsReady() then
+                    if S.TemplarStrike:IsReady() and Target:IsInRange(8) then
                     return S.crusaderstrike:Cast()
                     end
                     -- judgment,if=holy_power<=3|!talent.boundless_judgment
-                    if S.Judgment:IsReady() and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
+                    if S.Judgment:IsReady() and Target:IsInRange(30) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
                     return S.Judgment:Cast()
                     end
                     -- hammer_of_wrath,if=holy_power<=3|target.health.pct>20|!talent.vanguards_momentum
-                    if S.HammerofWrath:IsReady() and (HolyPower <= 3 or Target:HealthPercentage() > 20 or not S.VanguardsMomentum:IsAvailable()) then
+                    if S.HammerofWrath:IsReady() and Target:IsInRange(30) and (HolyPower <= 3 or Target:HealthPercentage() > 20 or not S.VanguardsMomentum:IsAvailable()) then
                     return S.HammerofWrath:Cast()
                     end
                     -- crusader_strike
-                    if S.CrusaderStrike:IsCastable() then
+                    if S.CrusaderStrike:IsCastable() and Target:IsInRange(8) then
                     return S.crusaderstrike:Cast()
                     end
                     -- arcane_torrent
-                    if S.ArcaneTorrent:IsCastable() then
+                    if S.ArcaneTorrent:IsCastable() and Target:IsInRange(8) then
                     return S.ArcaneTorrent:Cast()
                     end
                     -- consecration
