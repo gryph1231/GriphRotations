@@ -1,1719 +1,1034 @@
--------------------------------
--- Taste TMW Action Rotation --
--------------------------------
-local _G, setmetatable                            = _G, setmetatable
-local TMW                                       = TMW
-local CNDT                                      = TMW.CNDT
-local Env                                       = CNDT.Env
-local A                                         = _G.Action
-local Listener                                  = Action.Listener
-local Create                                    = Action.Create
-local GetToggle                                 = Action.GetToggle
-local SetToggle                                 = Action.SetToggle
-local GetGCD                                    = Action.GetGCD
-local GetCurrentGCD                             = Action.GetCurrentGCD
-local GetPing                                   = Action.GetPing
-local ShouldStop                                = Action.ShouldStop
-local BurstIsON                                 = Action.BurstIsON
-local AuraIsValid                               = Action.AuraIsValid
-local InterruptIsValid                          = Action.InterruptIsValid
-local FrameHasSpell                             = Action.FrameHasSpell
-local Azerite                                   = LibStub("AzeriteTraits")
-local Utils                                     = Action.Utils
-local TeamCache                                 = Action.TeamCache
-local EnemyTeam                                 = Action.EnemyTeam
-local FriendlyTeam                              = Action.FriendlyTeam
-local LoC                                       = Action.LossOfControl
-local Player                                    = Action.Player 
-local MultiUnits                                = Action.MultiUnits
-local UnitCooldown                              = Action.UnitCooldown
-local Unit                                      = Action.Unit 
-local IsUnitEnemy                               = Action.IsUnitEnemy
-local IsUnitFriendly                            = Action.IsUnitFriendly
-local HealingEngine                             = Action.HealingEngine
-local ActiveUnitPlates                          = MultiUnits:GetActiveUnitPlates()
-local TeamCacheFriendly                         = TeamCache.Friendly
-local TeamCacheFriendlyIndexToPLAYERs           = TeamCacheFriendly.IndexToPLAYERs
-local IsIndoors, UnitIsUnit                     = IsIndoors, UnitIsUnit
-local TR                                        = Action.TasteRotation
-local Pet                                       = LibStub("PetLibrary")
-local next, pairs, type, print                  = next, pairs, type, print 
-local math_floor                                = math.floor
-local math_ceil                                 = math.ceil
-local tinsert                                   = table.insert 
-local select, unpack, table                     = select, unpack, table 
-local CombatLogGetCurrentEventInfo              = _G.CombatLogGetCurrentEventInfo
-local UnitGUID, UnitIsUnit, UnitDamage, UnitAttackSpeed, UnitAttackPower = UnitGUID, UnitIsUnit, UnitDamage, UnitAttackSpeed, UnitAttackPower
-local select, math                              = select, math 
-local huge                                      = math.huge  
-local UIParent                                  = _G.UIParent 
-local CreateFrame                               = _G.CreateFrame
-local wipe                                      = _G.wipe
-local IsUsableSpell                             = IsUsableSpell
-local UnitPowerType                             = UnitPowerType 
+--- Localize Vars
+-- Addon
+local addonName, addonTable = ...;
+-- HeroLib
+local HL = HeroLib;
+local Cache = HeroCache;
+local Unit = HL.Unit;
+local Player = Unit.Player;
+local Target = Unit.Target;
+local Spell = HL.Spell;
+local Item = HL.Item;
+local MouseOver = Unit.MouseOver;
+-- Lua
+local pairs = pairs;
+local tableconcat = table.concat;
+local tostring = tostring;
+local tableinsert = table.insert;
 
---- ============================ CONTENT ===========================
---- ======= APL LOCALS =======
--- luacheck: max_line_length 9999
+if not Spell.Paladin then
+Spell.Paladin = {};
+end
 
--- Spells
-Action[ACTION_CONST_PALADIN_PROTECTION] = {
-    -- Racial
-    ArcaneTorrent                          = Action.Create({ Type = "Spell", ID = 50613     }),
-    BloodFury                              = Action.Create({ Type = "Spell", ID = 20572      }),
-    Fireblood                              = Action.Create({ Type = "Spell", ID = 265221     }),
-    AncestralCall                          = Action.Create({ Type = "Spell", ID = 274738     }),
-    Berserking                             = Action.Create({ Type = "Spell", ID = 26297    }),
-    ArcanePulse                            = Action.Create({ Type = "Spell", ID = 260364    }),
-    QuakingPalm                            = Action.Create({ Type = "Spell", ID = 107079     }),
-    Haymaker                               = Action.Create({ Type = "Spell", ID = 287712     }), 
-    BullRush                               = Action.Create({ Type = "Spell", ID = 255654     }),    
-    WarStomp                               = Action.Create({ Type = "Spell", ID = 20549     }),
-    GiftofNaaru                            = Action.Create({ Type = "Spell", ID = 59544    }),
-    Shadowmeld                             = Action.Create({ Type = "Spell", ID = 58984    }), -- usable in Action Core 
-    Stoneform                              = Action.Create({ Type = "Spell", ID = 20594    }), 
-    WilloftheForsaken                      = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
-    EscapeArtist                           = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
-    EveryManforHimself                     = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
-    PetKick                                 = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),
-    -- Generic Spells
-    Consecration                           = Action.Create({ Type = "Spell", ID = 26573     }),
-    LightsJudgment                         = Action.Create({ Type = "Spell", ID = 255647     }),
-    Fireblood                              = Action.Create({ Type = "Spell", ID = 265221     }),
-    Seraphim                               = Action.Create({ Type = "Spell", ID = 152262     }),
-    ShieldoftheRighteous                   = Action.Create({ Type = "Spell", ID = 53600     }),
-    AvengingWrath                          = Action.Create({ Type = "Spell", ID = 31884     }),
-    BastionofLight                         = Action.Create({ Type = "Spell", ID = 204035     }),
-    Judgment                               = Action.Create({ Type = "Spell", ID = 275779     }),
-    CrusadersJudgment                      = Action.Create({ Type = "Spell", ID = 204023     }),
-    AvengersShield                         = Action.Create({ Type = "Spell", ID = 31935     }),
-    BlessedHammer                          = Action.Create({ Type = "Spell", ID = 204019     }),
-    HammeroftheRighteous                   = Action.Create({ Type = "Spell", ID = 53595     }),
-    HeartEssence                           = Action.Create({ Type = "Spell", ID = 298554     }),
-    RecklessForceBuff                      = Action.Create({ Type = "Spell", ID = 302932, Hidden = true      }),
-    ConcentratedFlameBurn                  = Action.Create({ Type = "Spell", ID = 295368     }),
-    -- PvP
-    UltimateSacrifice                      = Action.Create({ Type = "Spell", ID = 199452 }),
-    -- Buffs 
-    ShieldoftheRighteousBuff               = Action.Create({ Type = "Spell", ID = 132403, Hidden = true      }),    
-    AvengersValorBuff                      = Action.Create({ Type = "Spell", ID = 197561, Hidden = true      }),
-    SeraphimBuff                           = Action.Create({ Type = "Spell", ID = 152262, Hidden = true      }),
-    AvengingWrathBuff                      = Action.Create({ Type = "Spell", ID = 31884, Hidden = true      }),
-    ConsecrationBuff                       = Action.Create({ Type = "Spell", ID = 188370, Hidden = true      }),
-    -- Utilities
-    Rebuke                                 = Action.Create({ Type = "Spell", ID = 96231     }),
-    FistofJustice                          = Action.Create({ Type = "Spell", ID = 198054     }),
-    Repentance                             = Action.Create({ Type = "Spell", ID = 20066     }), 
-    Cavalier                               = Action.Create({ Type = "Spell", ID = 190784     }),
-    BlessingofProtectionYellow             = Action.Create({ Type = "Spell", ID = 1022, Color = "YELLOW", Desc = "YELLOW Color for Party Blessing"     }),    
-    BlessingofProtection                   = Action.Create({ Type = "Spell", ID = 1022     }), 
-    WordofGlory                            = Action.Create({ Type = "Spell", ID = 210191     }),
-    BlessingofFreedom                      = Action.Create({ Type = "Spell", ID = 1044     }),
-    BlessingofFreedomYellow                = Action.Create({ Type = "Spell", ID = 1044, Color = "YELLOW", Desc = "YELLOW Color for Party Blessing"     }),    
-    BlessingofSanctuary                    = Action.Create({ Type = "Spell", ID = 210256     }),
-    HammerofJustice                        = Action.Create({ Type = "Spell", ID = 853     }),
-    HammerofJusticeGreen                   = Action.Create({ Type = "SpellSingleColor", ID = 853, Color = "GREEN", Desc = "[1] CC", QueueForbidden = true }),
-    DivineShield                           = Action.Create({ Type = "Spell", ID = 642     }),
-    BlindingLight                          = Action.Create({ Type = "Spell", ID = 115750  }),
-    CleanseToxins                          = Action.Create({ Type = "Spell", ID = 213644   }),
-    BlessingofSacrifice                    = Action.Create({ Type = "Spell", ID = 6940 }),
-    -- Defensives
-    LightoftheProtector                    = Action.Create({ Type = "Spell", ID = 184092     }),
-    HandoftheProtector                     = Action.Create({ Type = "Spell", ID = 213652     }),
-    HandofReckoning                        = Action.Create({ Type = "Spell", ID = 62124     }), -- Taunt
-    ArdentDefender                         = Action.Create({ Type = "Spell", ID = 31850     }),
-    GuardianofAncientKings                 = Action.Create({ Type = "Spell", ID = 86659     }),
-    LayonHands                             = Action.Create({ Type = "Spell", ID = 633     }),
-    FinalStand                             = Action.Create({ Type = "Spell", ID = 204077     }),
-    DivineProtection                       = Action.Create({ Type = "Spell", ID = 498 }),
-    -- Potions
-    PotionofUnbridledFury                  = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }), 
-    BattlePotionOfAgility                  = Action.Create({ Type = "Potion", ID = 163223, QueueForbidden = true }),  
-    SuperiorPotionofUnbridledFury          = Action.Create({ Type = "Potion", ID = 168489, QueueForbidden = true }), 
-    SuperiorSteelskinPotion                = Action.Create({ Type = "Potion", ID = 168501, QueueForbidden = true }), 
-    AbyssalHealingPotion                   = Action.Create({ Type = "Potion", ID = 169451, QueueForbidden = true }),     
-    PotionofFocusedResolve                 = Action.Create({ Type = "Potion", ID = 168506 }),
-    SuperiorBattlePotionofStrength         = Action.Create({ Type = "Potion", ID = 168500 }),
-    PotionofEmpoweredProximity             = Action.Create({ Type = "Potion", ID = 168529 }),
-    -- Trinkets
-    AzsharasFontofPower                    = Action.Create({ Type = "Trinket", ID = 169314 }),
-    PocketsizedComputationDevice           = Action.Create({ Type = "Trinket", ID = 167555 }),
-    RotcrustedVoodooDoll                   = Action.Create({ Type = "Trinket", ID = 159624 }),
-    ShiverVenomRelic                       = Action.Create({ Type = "Trinket", ID = 168905 }),
-    AquipotentNautilus                     = Action.Create({ Type = "Trinket", ID = 169305 }),
-    TidestormCodex                         = Action.Create({ Type = "Trinket", ID = 165576 }),
-    VialofStorms                           = Action.Create({ Type = "Trinket", ID = 158224 }),
-    GalecallersBoon                        = Action.Create({ Type = "Trinket", ID = 159614 }),
-    InvocationOfYulon                      = Action.Create({ Type = "Trinket", ID = 165568 }),
-    LustrousGoldenPlumage                  = Action.Create({ Type = "Trinket", ID = 159617 }),
-    LurkersInsidiousGift                   = Action.Create({ Type = "Trinket", ID = 167866 }),
-    VigorTrinket                           = Action.Create({ Type = "Trinket", ID = 165572 }),
-    AshvanesRazorCoral                     = Action.Create({ Type = "Trinket", ID = 169311 }),
-    MalformedHeraldsLegwraps               = Action.Create({ Type = "Trinket", ID = 167835 }),
-    HyperthreadWristwraps                  = Action.Create({ Type = "Trinket", ID = 168989 }),
-    NotoriousAspirantsBadge                = Action.Create({ Type = "Trinket", ID = 167528 }),
-    NotoriousGladiatorsBadge               = Action.Create({ Type = "Trinket", ID = 167380 }),
-    SinisterGladiatorsBadge                = Action.Create({ Type = "Trinket", ID = 165058 }),
-    SinisterAspirantsBadge                 = Action.Create({ Type = "Trinket", ID = 165223 }),
-    DreadGladiatorsBadge                   = Action.Create({ Type = "Trinket", ID = 161902 }),
-    DreadAspirantsBadge                    = Action.Create({ Type = "Trinket", ID = 162966 }),
-    DreadCombatantsInsignia                = Action.Create({ Type = "Trinket", ID = 161676 }),
-    NotoriousAspirantsMedallion            = Action.Create({ Type = "Trinket", ID = 167525 }),
-    NotoriousGladiatorsMedallion           = Action.Create({ Type = "Trinket", ID = 167377 }),
-    SinisterGladiatorsMedallion            = Action.Create({ Type = "Trinket", ID = 165055 }),
-    SinisterAspirantsMedallion             = Action.Create({ Type = "Trinket", ID = 165220 }),
-    DreadGladiatorsMedallion               = Action.Create({ Type = "Trinket", ID = 161674 }),
-    DreadAspirantsMedallion                = Action.Create({ Type = "Trinket", ID = 162897 }),
-    DreadCombatantsMedallion               = Action.Create({ Type = "Trinket", ID = 161811 }),
-    IgnitionMagesFuse                      = Action.Create({ Type = "Trinket", ID = 159615 }),
-    TzanesBarkspines                       = Action.Create({ Type = "Trinket", ID = 161411 }),
-    AzurethosSingedPlumage                 = Action.Create({ Type = "Trinket", ID = 161377 }),
-    AncientKnotofWisdomAlliance            = Action.Create({ Type = "Trinket", ID = 161417 }),
-    AncientKnotofWisdomHorde               = Action.Create({ Type = "Trinket", ID = 166793 }),
-    ShockbitersFang                        = Action.Create({ Type = "Trinket", ID = 169318 }),
-    NeuralSynapseEnhancer                  = Action.Create({ Type = "Trinket", ID = 168973 }),
-    BalefireBranch                         = Action.Create({ Type = "Trinket", ID = 159630 }),
-    GrongsPrimalRage                       = Action.Create({ Type = "Trinket", ID = 165574 }),
-    BygoneBeeAlmanac                       = Action.Create({ Type = "Trinket", ID = 163936 }),
-    RampingAmplitudeGigavoltEngine         = Action.Create({ Type = "Trinket", ID = 165580 }),
-    VisionofDemise                         = Action.Create({ Type = "Trinket", ID = 169307 }),
-    JesHowler                              = Action.Create({ Type = "Trinket", ID = 159627 }),
-    GalecallersBeak                        = Action.Create({ Type = "Trinket", ID = 161379 }),
-    DribblingInkpod                        = Action.Create({ Type = "Trinket", ID = 169319 }),
-    RazdunksBigRedButton                   = Action.Create({ Type = "Trinket", ID = 159611 }),
-    MerekthasFang                          = Action.Create({ Type = "Trinket", ID = 158367 }),    
-    GrongsPrimalRage                       = Action.Create({ Type = "Trinket", ID = 165574 }),
-    BygoneBeeAlmanac                       = Action.Create({ Type = "Trinket", ID = 163936 }),
-    RampingAmplitudeGigavoltEngine         = Action.Create({ Type = "Trinket", ID = 165580 }),
-    VisionofDemise                         = Action.Create({ Type = "Trinket", ID = 169307 }),
-    JesHowler                              = Action.Create({ Type = "Trinket", ID = 159627 }),
-    GalecallersBeak                        = Action.Create({ Type = "Trinket", ID = 161379 }),
-    DribblingInkpod                        = Action.Create({ Type = "Trinket", ID = 169319 }),
-    MerekthasFang                          = Action.Create({ Type = "Trinket", ID = 158367 }),
-    KnotofAncientFuryAlliance              = Action.Create({ Type = "Trinket", ID = 161413 }),
-    KnotofAncientFuryHorde                 = Action.Create({ Type = "Trinket", ID = 166795 }),
-    FirstMatesSpyglass                     = Action.Create({ Type = "Trinket", ID = 158163 }),
-    VialofAnimatedBlood                    = Action.Create({ Type = "Trinket", ID = 159625 }),
-    -- Misc
-    Channeling                             = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),    -- Show an icon during channeling
-    TargetEnemy                            = Action.Create({ Type = "Spell", ID = 44603, Hidden = true     }),    -- Change Target (Tab button)
-    StopCast                               = Action.Create({ Type = "Spell", ID = 61721, Hidden = true     }),        -- spell_magic_polymorphrabbit
-    CyclotronicBlast                       = Action.Create({ Type = "Spell", ID = 293491, Hidden = true}),
-    ConcentratedFlameBurn                  = Action.Create({ Type = "Spell", ID = 295368, Hidden = true}),
-    RazorCoralDebuff                       = Action.Create({ Type = "Spell", ID = 303568, Hidden = true     }),
-    ConductiveInkDebuff                    = Action.Create({ Type = "Spell", ID = 302565, Hidden = true     }),
-    -- Hidden Heart of Azeroth
-    -- added all 3 ranks ids in case used by rotation
-    VisionofPerfectionMinor                = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
-    VisionofPerfectionMinor2               = Action.Create({ Type = "Spell", ID = 299367, Hidden = true}),
-    VisionofPerfectionMinor3               = Action.Create({ Type = "Spell", ID = 299369, Hidden = true}),
-    UnleashHeartOfAzeroth                  = Action.Create({ Type = "Spell", ID = 280431, Hidden = true}),
-    RecklessForceBuff                      = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),     
-    BuryTheHatchet                         = Action.Create({ Type = "Spell", ID = 280128, Hidden = true     }),     
-    CracklingThunder                       = Action.Create({ Type = "Spell", ID = 203201, Hidden = true     }),     
-    GrandDelusionsDebuff                   = Action.Create({ Type = "Spell", ID = 319695, Hidden = true     }), -- Corruption pet chasing you
-    Cyclone                                = Action.Create({ Type = "Spell", ID = 33786, Hidden = true   }), -- Debuff check
+RubimRH.Spell[70] = {
+autoattack             = Spell(59752), -- will to survive (human racial)
+TotLB = Spell(383396),
+-- Racials
+--  AncestralCall                         = Spell(274738),
+ArcanePulse                           = Spell(260364),
+ArcaneTorrent                         = Spell(50613),
+BagofTricks                           = Spell(312411),
+Berserking                            = Spell(26297),
+BloodFury                             = Spell(20572),
+Fireblood                             = Spell(265221),
+GiftoftheNaaru                        = Spell(59542),
+-- Abilities
+Consecration                          = Spell(26573),
+CrusaderStrike                        = Spell(35395),
+crusaderstrike = Spell(205191), -- eye for an eye
+DivineShield                          = Spell(642),
+DivineSteed                           = Spell(190784),
+FlashofLight                          = Spell(19750),
+HammerofJustice                       = Spell(853),
+HandofReckoning                       = Spell(62124),
+Judgment                              = Spell(20271),
+Rebuke                                = Spell(96231),
+ShieldoftheRighteous                  = Spell(53600),
+WordofGlory                           = Spell(85673),
+-- Talents
+AvengingWrath                         = Spell(31884),
+HammerofWrath                         = Spell(24275),
+HolyAvenger                           = Spell(105809),
+LayonHands                            = Spell(633),
+Seraphim                              = Spell(152262),
+ZealotsParagon                        = Spell(391142),
+-- Auras
+ConcentrationAura                     = Spell(317920),
+CrusaderAura                          = Spell(32223),
+DevotionAura                          = Spell(465),
+RetributionAura                       = Spell(183435),
+-- Buffs
+AvengingWrathBuff                     = Spell(31884),
+BlessingofDuskBuff                    = Spell(385126),
+ConsecrationBuff                      = Spell(188370),
+DivinePurposeBuff                     = Spell(223819),
+HolyAvengerBuff                       = Spell(105809),
+SeraphimBuff                          = Spell(152262),
+ShieldoftheRighteousBuff              = Spell(132403),
+DivineProtection = Spell(403876),
+-- Debuffs
+ConsecrationDebuff                    = Spell(204242),
+JudgmentDebuff                        = Spell(197277),
+-- Pool
+Pool                                  = Spell(999910),
+
+
+TemplarsVerdict                       = Spell(85256),
+-- Talents
+AshestoDust                           = Spell(383300),
+BladeofJustice                        = Spell(184575),
+BladeofWrath                          = Spell(231832),
+BlessedChampion                       = Spell(403010),
+BoundlessJudgment                     = Spell(405278),
+Crusade                               = Spell(231895),
+DivineAuxiliary                       = Spell(406158),
+DivineHammer                          = Spell(198034),
+DivineResonance                       = Spell(384027),
+DivineStorm                           = Spell(53385),
+DivineToll                            = Spell(375576),
+EmpyreanLegacy                        = Spell(387170),
+EmpyreanPower                         = Spell(326732),
+ExecutionSentence                     = Spell(343527),
+ExecutionersWrath                     = Spell(387196),
+Exorcism                              = Spell(383185),
+Expurgation                           = Spell(383344),
+FinalReckoning                        = Spell(343721),
+FinalVerdict                          = Spell(383328),
+FiresofJustice                        = Spell(203316),
+HolyBlade                             = Spell(383342),
+JusticarsVengeance                    = Spell(215661),
+Burst = Spell(243237),
+RighteousVerdict                      = Spell(267610),
+ShieldofVengeance                     = Spell(184662),
+TemplarSlash                          = Spell(406647),
+TemplarStrike                         = Spell(407480),
+VanguardsMomentum                     = Spell(383314),
+WakeofAshes                           = Spell(255937),
+Zeal                                  = Spell(269569),
+-- Buffs
+CrusadeBuff                           = Spell(231895),
+DivineArbiterBuff                     = Spell(406975),
+DivineResonanceBuff                   = Spell(384029),
+EmpyreanLegacyBuff                    = Spell(387178),
+EmpyreanPowerBuff                     = Spell(326733),
+divineprotection = Spell(210256), -- blessing of sanctuary
+BlessingofFreedom = Spell(1044),
+BlindingLight = Spell(115750),
+SenseUndead = Spell(5502),
+
+
+
+
+lust1                    = Spell(57724),
+lust2                    = Spell(57723),
+lust3                    = Spell(80354),
+lust4                    = Spell(95809),
+lust5                    = Spell(264689),
+lustAT                   = Spell(20549), -- war stomp
+IcyBindings = Spell(377488),
+
+
+DivineSteedBuff          = Spell(221886),
+BlessingofProtection     = Spell(1022),
+Forbearance              = Spell(25771),
+-- Racials
+
+
+DivinePurpose            = Spell(223817),
+-- DivineTollCov                         = Spell(304971),
+DoorofShadows            = Spell(300728),
+Fleshcraft               = Spell(324631),
+Soulshape                = Spell(310143),
+SummonSteward            = Spell(324739),
+VanquishersHammer        = Spell(328204),
+VanquishersHammerBuff    = Spell(328204),
+-- Soulbinds/Conduits (Shadowlands)
+
+PustuleEruption          = Spell(351094),
+VengefulShock            = Spell(340006),
+VengefulShockDebuff      = Spell(340007),
+VolatileSolvent          = Spell(323074),
+VolatileSolventHumanBuff = Spell(323491),
+-- Auras
+
+-- Buffs
+Intercession             = Spell(391054),
+intercession           = Spell(105809), --holy avenger
+trinket                  = Spell(59547), -- gift of narru
+
+
+ScarsofFraternalStrifeBuff4 = Spell(368638),
+
+TemptationBuff              = Spell(234143),
+-- Debuffs
+
+CruelGarroteDebuff          = Spell(230011),
+-- Legendary Effects
+
+FinalVerdictBuff            = Spell(337228),
+
+
+CrusadeTalent       = Spell(384392),
+
+
+}
+
+local S = RubimRH.Spell[70]
+local G = RubimRH.Spell[1] -- General Skills
+
+S.AvengingWrath.TextureSpellID = { 55748 }
+S.Crusade.TextureSpellID = { 55748 }
+
+
+-- Items
+if not Item.Paladin then Item.Paladin = {} end
+
+Item.Paladin.Retribution = {
+phialofserenity = Item(177278),
+tempest = Item(171416),
+HPIcon = Item(169451),
+tx1 = Item(118330),
+tx2 = Item(114616),
+healingpot = Item(187802),
+healingpoticon = Item(169451),
+healthstone = Item(5512), --health stone
+drums = Item(193470),
 };
-
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_PALADIN_PROTECTION)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
-local A = setmetatable(Action[ACTION_CONST_PALADIN_PROTECTION], { __index = Action })
+local I = Item.Paladin.Retribution;
 
 
-local function num(val)
-    if val then return 1 else return 0 end
+local function ConsecrationTime()
+for i = 1, 5 do
+local active, totemName, startTime, duration, textureId = GetTotemInfo(i)
+if active == true then
+return startTime + duration - GetTime()
+end
+end
+return 0
 end
 
-local function bool(val)
-    return val ~= 0
-end
-local player = "player"
-------------------------------------------
--------------- COMMON PREAPL -------------
-------------------------------------------
-local Temp = {
-    TotalAndPhys                            = {"TotalImun", "DamagePhysImun"},
-    TotalAndCC                              = {"TotalImun", "CCTotalImun"},
-    TotalAndPhysKick                        = {"TotalImun", "DamagePhysImun", "KickImun"},
-    TotalAndPhysAndCC                       = {"TotalImun", "DamagePhysImun", "CCTotalImun"},
-    TotalAndPhysAndStun                     = {"TotalImun", "DamagePhysImun", "StunImun"},
-    TotalAndPhysAndCCAndStun                = {"TotalImun", "DamagePhysImun", "CCTotalImun", "StunImun"},
-    TotalAndMag                             = {"TotalImun", "DamageMagicImun"},
-    TotalAndMagKick                         = {"TotalImun", "DamageMagicImun", "KickImun"},
-    DisablePhys                             = {"TotalImun", "DamagePhysImun", "Freedom", "CCTotalImun"},
-    DisableMag                              = {"TotalImun", "DamageMagicImun", "Freedom", "CCTotalImun"},
-    BigDeff                                 = {A.GuardianofAncientKings.ID, A.DivineShield.ID},
-}
+local function ComputeTimeToHPG()
+local GCDRemains = Player:GCDRemains()
+local ShortestHPGTime = math.min(
+S.CrusaderStrike:CooldownRemains(),
+S.BladeofJustice:CooldownRemains(),
+S.Judgment:CooldownRemains(),
+S.HammerofWrath:IsUsable() and S.HammerofWrath:CooldownRemains() or 10, -- if not usable, return a dummy 10
+S.WakeofAshes:CooldownRemains()
+)
 
-local IsIndoors, UnitIsUnit, UnitName = IsIndoors, UnitIsUnit, UnitName
-
-local function IsHolySchoolFree()
-    return LoC:IsMissed("SILENCE") and LoC:Get("SCHOOL_INTERRUPT", "HOLY") == 0
-end 
-
--- [1] CC AntiFake Rotation
-local function AntiFakeStun(unit) 
-    return 
-    A.IsUnitEnemy(unit) and  
-    Unit(unit):GetRange() <= 10 and 
-    Unit(unit):IsControlAble("stun", 0) and 
-    A.HammerofJusticeGreen:AbsentImun(unit, Temp.TotalAndPhysAndCCAndStun, true)          
-end 
-A[1] = function(icon)    
-    if     A.HammerofJusticeGreen:IsReady(nil, nil, nil, true) and 
-    (
-        AntiFakeStun("mouseover") or 
-        AntiFakeStun("target") or 
-        (
-            not A.IsUnitEnemy("mouseover") and 
-            not A.IsUnitEnemy("target") and                     
-            (
-                (A.IsInPvP and EnemyTeam():PlayersInRange(1, 10)) or 
-                (not A.IsInPvP and MultiUnits:GetByRange(10, 1) >= 1)
-            )
-        )
-    )
-    then 
-        return A.HammerofJusticeGreen:Show(icon)         
-    end                                                                     
+if GCDRemains > ShortestHPGTime then
+return GCDRemains
 end
 
--- [2] Kick AntiFake Rotation
-A[2] = function(icon)        
-    local unit
-    if A.IsUnitEnemy("mouseover") then 
-        unit = "mouseover"
-    elseif A.IsUnitEnemy("target") then 
-        unit = "target"
-    end 
+return ShortestHPGTime
+end
+
+
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+frame:SetScript("OnEvent", UpdateTemplarsVerdictSpellId)
+
+
+
+local VarDsCastable
+
+local function UseItems()
+
+local trinket1 = GetInventoryItemID("player", 13)
+local trinket2 = GetInventoryItemID("player", 14)
+local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+if trinket1ready then
+return I.tx1:Cast()
+end
+if trinket2ready then
+return I.tx2:Cast()
+end
+end
+
+local function freedom()
+    if Player:AffectingCombat() then
     
-    if unit then         
-        local castLeft, _, _, _, notKickAble = Unit(unit):IsCastingRemains()
-        if castLeft > 0 then             
-            if not notKickAble and A.Rebuke:IsReady(unit, nil, nil, true) and A.Rebuke:AbsentImun(unit, Temp.TotalAndMag, true) then
-                return A.Rebuke:Show(icon)                                                  
-            end 
-            
-            -- Racials 
-            if A.QuakingPalm:IsRacialReadyP(unit, nil, nil, true) then 
-                return A.QuakingPalm:Show(icon)
-            end 
-            
-            if A.Haymaker:IsRacialReadyP(unit, nil, nil, true) then 
-                return A.Haymaker:Show(icon)
-            end 
-            
-            if A.WarStomp:IsRacialReadyP(unit, nil, nil, true) then 
-                return A.WarStomp:Show(icon)
-            end 
-            
-            if A.BullRush:IsRacialReadyP(unit, nil, nil, true) then 
-                return A.BullRush:Show(icon)
-            end                         
-        end 
-    end                                                                                 
-end
-
-local function InRange(unit)
-    -- @return boolean 
-    return A.Judgment:IsInRange(unit)
-end 
-InRange = A.MakeFunctionCachedDynamic(InRange)
-
-local function GetByRange(count, range, isStrictlySuperior, isStrictlyInferior, isCheckEqual, isCheckCombat)
-    -- @return boolean 
-    local c = 0 
+    for id = 1, 40 do
     
-    if isStrictlySuperior == nil then
-        isStrictlySuperior = false
+        local spell = { 'Crystalline Rupture','Arcane Lockdown', }
+        local unitID = "nameplate" .. id
+    local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
+    local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+    
+    for idx = 1, #spell do
+    if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+    return true
+    end
+    end
+    end
+    end
+    return false
     end
     
-    if isStrictlyInferior == nil then
-        isStrictlyInferior = false
-    end    
+
+    local function kickprio()
+        -- list of m+ abilities that should be kicked
+        local KickSpells = {
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
+            'Healing Touch',    -- AA
+            'Suppress',
+            'Drifting Embers', 'Bewitch', --CoS
+            'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
+            'Surge',            -- HoV
+            'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
+            'Cinderbolt',       --RLP
+            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
+            'Plague Spit',      --SMBG
+            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
+            'Defiling Mist',    --TotJS
+            'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
+            'Illusionary Bolt', --AV
+            'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
+            'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
+            'Desacrating Blow', -- NO
     
-    for unit in pairs(ActiveUnitPlates) do 
-        if (not isCheckEqual or not UnitIsUnit("target", unit)) and (not isCheckCombat or Unit(unit):CombatTime() > 0) then 
-            if InRange(unit) then 
-                c = c + 1
-            elseif range then 
-                local r = Unit(unit):GetRange()
-                if r > 0 and r <= range then 
-                    c = c + 1
-                end 
-            end 
-            -- Strictly superior than >
-            if isStrictlySuperior and not isStrictlyInferior then
-                if c > count then
-                    return true
-                end
-            end
-            
-            -- Stryctly inferior <
-            if isStrictlyInferior and not isStrictlySuperior then
-                if c < count then
-                    return true
-                end
-            end
-            
-            -- Classic >=
-            if not isStrictlyInferior and not isStrictlySuperior then
-                if c >= count then 
-                    return true 
-                end 
-            end
-        end 
+        }
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #KickSpells do
+    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+    
+    local function stunprio()
+        -- list of m+ abilities that should be stunned
+        local stunspells = {
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
+            'Astral Whirlwind', -- AA
+            'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
+            'Hypnosis',         --CoS
+            'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
+            'Surge',            -- HoV
+            'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
+            'Cinderbolt',       --RLP
+            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
+            'Cry of Anguish',   --SMBG
+            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
+            'Leg Sweep',        --TotJS
+            'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
+            'Null Stomp',       --AV
+            'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
+            'Storm Bolt',
+            'Desacrating Blow', -- NO
+    
+        }
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #stunspells do
+    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+    
+    
+    local function blindprio()
+        -- list of m+ abilities that should be stunned
+        local blindspells = {
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
+            'Astral Whirlwind', -- AA
+            'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
+            'Hypnosis',         --CoS
+            'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
+            'Surge',            -- HoV
+            'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
+            'Cinderbolt',       --RLP
+            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
+            'Cry of Anguish',   --SMBG
+            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
+            'Leg Sweep',        --TotJS
+            'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
+            'Null Stomp',       --AV
+            'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
+            'Storm Bolt',
+            'Desacrating Blow', -- NO
+    
+        }
         
-    end
-    
-end  
-GetByRange = A.MakeFunctionCachedDynamic(GetByRange)
-
-local function isCurrentlyTanking()
-    -- is player currently tanking any enemies within 16 yard radius
-    local IsTanking = Unit(player):IsTankingAoE(16) or Unit(player):IsTanking("target", 16);
-    return IsTanking;
-end
-
-local StunsBlackList = {
-    -- Atal'Dazar
-    [87318] = "Dazar'ai Colossus",
-    [122984] = "Dazar'ai Colossus",
-    [128455] = "T'lonja",
-    [129553] = "Dinomancer Kish'o",
-    [129552] = "Monzumi",
-    -- Freehold
-    [129602] = "Irontide Enforcer",
-    [130400] = "Irontide Crusher",
-    -- King's Rest
-    [133935] = "Animated Guardian",
-    [134174] = "Shadow-Borne Witch Doctor",
-    [134158] = "Shadow-Borne Champion",
-    [137474] = "King Timalji",
-    [137478] = "Queen Wasi",
-    [137486] = "Queen Patlaa",
-    [137487] = "Skeletal Hunting Raptor",
-    [134251] = "Seneschal M'bara",
-    [134331] = "King Rahu'ai",
-    [137484] = "King A'akul",
-    [134739] = "Purification Construct",
-    [137969] = "Interment Construct",
-    [135231] = "Spectral Brute",
-    [138489] = "Shadow of Zul",
-    -- Shrine of the Storm
-    [134144] = "Living Current",
-    [136214] = "Windspeaker Heldis",
-    [134150] = "Runecarver Sorn",
-    [136249] = "Guardian Elemental",
-    [134417] = "Deepsea Ritualist",
-    [136353] = "Colossal Tentacle",
-    [136295] = "Sunken Denizen",
-    [136297] = "Forgotten Denizen",
-    -- Siege of Boralus
-    [129369] = "Irontide Raider",
-    [129373] = "Dockhound Packmaster",
-    [128969] = "Ashvane Commander",
-    [138255] = "Ashvane Spotter",
-    [138465] = "Ashvane Cannoneer",
-    [135245] = "Bilge Rat Demolisher",
-    -- Temple of Sethraliss
-    [134991] = "Sandfury Stonefist",
-    [139422] = "Scaled Krolusk Tamer",
-    [136076] = "Agitated Nimbus",
-    [134691] = "Static-charged Dervish",
-    [139110] = "Spark Channeler",
-    [136250] = "Hoodoo Hexer",
-    [139946] = "Heart Guardian",
-    -- MOTHERLODE!!
-    [130485] = "Mechanized Peacekeeper",
-    [136139] = "Mechanized Peacekeeper",
-    [136643] = "Azerite Extractor",
-    [134012] = "Taskmaster Askari",
-    [133430] = "Venture Co. Mastermind",
-    [133463] = "Venture Co. War Machine",
-    [133436] = "Venture Co. Skyscorcher",
-    [133482] = "Crawler Mine",
-    -- Underrot
-    [131436] = "Chosen Blood Matron",
-    [133912] = "Bloodsworn Defiler",
-    [138281] = "Faceless Corruptor",
-    -- Tol Dagor
-    [130025] = "Irontide Thug",
-    -- Waycrest Manor
-    [131677] = "Heartsbane Runeweaver",
-    [135329] = "Matron Bryndle",
-    [131812] = "Heartsbane Soulcharmer",
-    [131670] = "Heartsbane Vinetwister",
-    [135365] = "Matron Alma"
-}
-
-local HOJ_unitList = {
-    [131009] = "Spirit of Gold",
-    [134388] = "A Knot of Snakes",
-    [129758] = "Irontide Grenadier"
-}
-
-local HOJ_list = {
-    274400,
-    274383,
-    257756,
-    276292,
-    268273,
-    256897,
-    272542,
-    272888,
-    269266,
-    258317,
-    258864,
-    259711,
-    258917,
-    264038,
-    253239,
-    269931,
-    270084,
-    270482,
-    270506,
-    270507,
-    267433,
-    267354,
-    268702,
-    268846,
-    268865,
-    258908,
-    264574,
-    272659,
-    272655,
-    267237,
-    265568,
-    277567,
-    265540
-}
-
--- Auto cancel Blessing of Protection
-local function AutoCancelBoP()
-    if AutoCancelBop then
-        if Unit(player):HasBuffs(A.BlessingofProtection.ID, true) > 0 then
-            Player:CancelBuff(A.BlessingofProtection:Info())
-        end
-        if Unit(player):HasBuffs(A.DivineShield.ID, true) > 0 and not A.FinalStand:IsSpellLearned() then
-            Player:CancelBuff(A.DivineShield:Info())
-        end
-    end
-end
-
--- SelfDefensives
-local function SelfDefensives()
-    local HPLoosePerSecond = Unit(player):GetDMG() * 100 / Unit(player):HealthMax()
-    
-    if Unit(player):CombatTime() == 0 then 
-        return 
-    end 
-    
-    -- memory_of_lucid_dreams
-    if A.MemoryofLucidDreams:AutoHeartOfAzerothP(player, true) and Action.GetToggle(1, "HeartOfAzeroth") then 
-        local LucidDreamTTD = GetToggle(2, "LucidDreamTTD")    
-        local LucidDreamHP = GetToggle(2, "LucidDreamHP")
+        local currentspellchannel = select(1,UnitChannelInfo('target'))
+        local currentspellcast = select(1, UnitCastingInfo('target'))
         
-        if  (    
-            ( LucidDreamHP      >= 0     or LucidDreamTTD                    >= 0                                        ) and 
-            ( LucidDreamHP      <= 0     or Unit(player):HealthPercent()     <= LucidDreamHP                             ) and 
-            ( LucidDreamTTD     <= 0     or Unit(player):TimeToDie()         <= LucidDreamTTD                            ) 
-        )                 
-        then                
-            return A.MemoryofLucidDreams
-        end 
-    end
-    
-    -- ShieldoftheRighteous (any role, whenever have physical damage)
-    local ShieldoftheRighteousHPLost = GetToggle(2, "ShieldoftheRighteousHPLost")
-    if (HPLoosePerSecond >= ShieldoftheRighteousHPLost or Player:ActiveMitigationNeeded()) and A.ShieldoftheRighteous:IsReady(player) and Unit(player):HasBuffs(A.ShieldoftheRighteousBuff.ID, true) < A.GetGCD() + 0.1 and Unit(player):HasBuffs(A.ArdentDefender.ID, true) == 0 and Unit(player):GetRealTimeDMG(3) > 0 then 
-        return A.ShieldoftheRighteous
-    end 
-    
-    -- LightoftheProtector 
-    local LightoftheProtectorHPLost = GetToggle(2, "LightoftheProtectorHPLost")
-    local LightoftheProtectorHP = GetToggle(2, "LightoftheProtectorHP")
-    if not A.HandoftheProtector:IsSpellLearned() and A.LightoftheProtector:IsReady(player) and 
-    (
-        Unit(player):HealthPercent() <= LightoftheProtectorHP 
-        or 
-        Unit(player):TimeToDie() < 10 
-        or 
-        Unit(player):HealthPercent() < 97
-    )
-    then 
-        return A.LightoftheProtector
-    end 
-    
-    -- ArdentDefender
-    if A.ArdentDefender:IsReadyByPassCastGCD(player) and (not A.GetToggle(2, "ArdentDefenderIgnoreBigDeff") or Unit(player):HasBuffs(Temp.BigDeff) == 0) and
-    -- Divine Shield and BoP and PvP Divine Shield (prot)
-    Unit(player):HasBuffs({642, 1022, 228050}, true) == 0
-    then 
-        local AD_HP                 = A.GetToggle(2, "ArdentDefenderHP")
-        local AD_TTD                = A.GetToggle(2, "ArdentDefenderTTD")
-        
-        if  (    
-            ( AD_HP     >= 0     or AD_TTD                           >= 0                                        ) and 
-            ( AD_HP     <= 0     or Unit(player):HealthPercent()     <= AD_HP                                    ) and 
-            ( AD_TTD    <= 0     or Unit(player):TimeToDie()         <= AD_TTD                                   ) 
-        ) 
-        or 
-        (
-            A.GetToggle(2, "ArdentDefenderCatchKillStrike") and 
-            (
-                ( Unit(player):GetDMG()       >= Unit(player):Health() and Unit(player):HealthPercent() <= 10 ) or 
-                Unit(player):GetRealTimeDMG() >= Unit(player):Health() or 
-                Unit(player):TimeToDie()      <= A.GetGCD()
-            )
-        )                
-        then                
-            return A.ArdentDefender
-        end 
-    end
-    
-    
-    -- Guardian of Ancient Kings
-    if A.GuardianofAncientKings:IsReadyByPassCastGCD(player) and
-    -- Divine Shield and BoP and PvP Divine Shield (prot)
-    Unit(player):HasBuffs({642, 1022, 228050}, true) == 0
-    then 
-        local GoAK_HP                 = A.GetToggle(2, "GuardianofAncientKingsHP")
-        local GoAK_TTD                = A.GetToggle(2, "GuardianofAncientKingsTTD")
-        
-        if  (    
-            ( GoAK_HP     >= 0     or GoAK_TTD                         >= 0             ) and 
-            ( GoAK_HP     <= 0     or Unit(player):HealthPercent()     <= GoAK_HP       ) and 
-            ( GoAK_TTD    <= 0     or Unit(player):TimeToDie()         <= GoAK_TTD      )  
-        ) 
-        or 
-        (
-            A.GetToggle(2, "GuardianofAncientKingsCatchKillStrike") and 
-            (
-                ( Unit(player):GetDMG()       >= Unit(player):Health() and Unit(player):HealthPercent() <= 20 ) or 
-                Unit(player):GetRealTimeDMG() >= Unit(player):Health() or 
-                Unit(player):TimeToDie()      <= A.GetGCD() + A.GetCurrentGCD()
-            )
-        )                
-        then
-            -- ShieldoftheRighteous
-            if A.ShieldoftheRighteous:IsReadyByPassCastGCD(player) and Unit(player):HasBuffs(A.ShieldoftheRighteousBuff.ID, true) < A.GetGCD() + 0.1 and Unit(player):HasBuffs(A.ArdentDefender.ID, true) == 0 then  
-                return A.ShieldoftheRighteous        -- #4
-            end 
-            
-            -- GuardianofAncientKings
-            return A.GuardianofAncientKings         -- #3                  
-            
-        end 
-    end
-    
-    -- Lay on Hands @Player
-    if A.LayonHands:IsReady(player) and
-    A.Zone ~= "arena" and
-    not Action.InstanceInfo.isRated and
-    Unit("player"):CombatTime() > 0 and
-    Unit("player"):Health() <= Unit("player"):HealthMax() * 0.13 and
-    Unit("player"):HasDeBuffs(25771, true) == 0 and -- Forbearance and
-    (
-        Unit("player"):HasBuffs(31850, true) <= 0.1 -- Ardent Defender    
-    )     
-    or 
-    (
-        A.GetToggle(2, "LayonHandsCatchKillStrike") and 
-        (
-            ( Unit(player):GetDMG()       >= Unit(player):Health() and Unit(player):HealthPercent() <= 15 ) or 
-            Unit(player):GetRealTimeDMG() >= Unit(player):Health() or 
-            Unit(player):TimeToDie()      <= A.GetGCD() + A.GetCurrentGCD()
-        )
-    )   
-    then 
-        return A.LayonHands
-    end
-    
-    
-    -- HealingPotion
-    local AbyssalHealingPotion = A.GetToggle(2, "AbyssalHealingPotionHP")
-    if     AbyssalHealingPotion >= 0 and A.AbyssalHealingPotion:IsReady(player) and 
-    (
-        (     -- Auto 
-            AbyssalHealingPotion >= 100 and 
-            (
-                -- HP lose per sec >= 20
-                Unit(player):GetDMG() * 100 / Unit(player):HealthMax() >= 10 or 
-                Unit(player):GetRealTimeDMG() >= Unit(player):HealthMax() * 0.10 or 
-                -- TTD 
-                Unit(player):TimeToDieX(20) < 5 or 
-                (
-                    A.IsInPvP and 
-                    (
-                        Unit(player):UseDeff() or 
-                        (
-                            Unit(player, 5):HasFlags() and 
-                            Unit(player):GetRealTimeDMG() > 0 and 
-                            Unit(player):IsFocused() 
-                        )
-                    )
-                )
-            ) and 
-            Unit(player):HasBuffs("DeffBuffs", true) == 0
-        ) or 
-        (    -- Custom
-            AbyssalHealingPotion < 100 and 
-            Unit(player):HealthPercent() <= AbyssalHealingPotion
-        )
-    ) 
-    then 
-        return A.AbyssalHealingPotion
-    end             
-    
-end 
-SelfDefensives = A.MakeFunctionCachedDynamic(SelfDefensives)
-
--- Non GCD spell check
-local function countInterruptGCD(unit)
-    if not A.Rebuke:IsReadyByPassCastGCD(unit) or not A.Rebuke:AbsentImun(unit, Temp.TotalAndMagKick) then
+        for i = 1, #blindspells do
+        if currentspellcast == blindspells[i] or currentspellchannel == blindspells[i] then
         return true
-    end
-end
-
--- Interrupts spells
-local function Interrupts(unit)
-    if A.GetToggle(2, "TasteInterruptList") and (IsInRaid() or A.InstanceInfo.KeyStone > 1) then
-        useKick, useCC, useRacial, notInterruptable, castRemainsTime, castDoneTime = Action.InterruptIsValid(unit, "TasteBFAContent", true, countInterruptGCD(unit))
-    else
-        useKick, useCC, useRacial, notInterruptable, castRemainsTime, castDoneTime = Action.InterruptIsValid(unit, nil, nil, countInterruptGCD(unit))
-    end
-    
-    if castRemainsTime >= A.GetLatency() then
-        if useKick and A.Rebuke:IsReady(unit) and A.Rebuke:AbsentImun(unit, Temp.TotalAndMagKick, true) then 
-            -- Notification                    
-            Action.SendNotification("Rebuke interrupting...", A.Rebuke.ID)
-            return A.Rebuke
-        end 
-        
-        if useCC and A.HammerofJustice:IsReady(unit) and A.HammerofJustice:AbsentImun(unit, Temp.TotalAndCC, true) and Unit(unit):IsControlAble("stun", 0) then 
-            -- Notification                    
-            Action.SendNotification("Hammer of Justice interrupting...", A.HammerofJustice.ID)
-            return A.HammerofJustice              
-        end  
-        
-        if useRacial and A.QuakingPalm:AutoRacial(unit) then 
-            return A.QuakingPalm
-        end 
-        
-        if useRacial and A.Haymaker:AutoRacial(unit) then 
-            return A.Haymaker
-        end 
-        
-        if useRacial and A.WarStomp:AutoRacial(unit) then 
-            return A.WarStomp
-        end 
-        
-        if useRacial and A.BullRush:AutoRacial(unit) then 
-            return A.BullRush
-        end 
-    end
-end
-
-local DispelSpell = {
-    -- Spell ID
-    ["CleansingLight"] = 236186, -- PvP AoE Dispel 15 yards (Cleansing Light)
-    [70] = 213644, -- Retribution
-    [66] = 213644, -- Protection
-    [65] = 4987, -- Holy
-    -- DeBuffs Poison and Disease
-    ["Slow"] = {
-        3408, -- Crippling Poison
-        58180, -- Infected Wounds
-        197091, -- Neurotoxin
-        -- 55095б -- Frost DK dot (no reason spend gcd for that)
-    },
-}
-
-local function Dispel(unit)    
-    return 
-    (
-        -- SELF 
-        (
-            UnitIsUnit(unit, player) and 
-            (
-                (
-                    not Unit(player):HasSpec(65) and -- Holy            
-                    A.CleansingLight:IsSpellLearned() and -- AoE Dispel 
-                    A.Cleanse:IsReady(unit) and 
-                    A.LastPlayerCastID ~= DispelSpell["CleansingLight"]
-                ) or 
-                (
-                    not A.CleansingLight:IsSpellLearned() and -- AoE Dispel 
-                    A.Cleanse:IsReady(unit) and 
-                    A.LastPlayerCastID ~= 4987
-                )
-            ) and 
-            Unit(unit):HasDeBuffs(DispelSpell["Slow"], true) > 2 and 
-            Unit(unit):GetCurrentSpeed() > 0 and
-            Unit(unit):GetCurrentSpeed() < 100 and
-            (
-                not Unit(player):HasSpec(65) or -- Holy
-                (
-                    not AutoFreedom or 
-                    not A.BlessingofFreedom:IsReady(unit) -- Freedom
-                )
-            )
-        ) or 
-        -- PvE: ANOTHER UNIT   
-        (
-            -- Useable conditions
-            not A.IsInPvP and
-            Unit(unit):IsExists() and
-            --not UnitIsUnit(unit, player) and 
-            Unit(unit):HasDeBuffs(A.Cyclone.ID, true) == 0 and -- Cyclone
-            Env.PvEDispel(unit)             
-        ) or
-        -- PvP: ANOTHER UNIT   
-        (
-            -- Useable conditions
-            A.IsInPvP and
-            Unit(unit):IsExists() and
-            --not UnitIsUnit(unit, player) and 
-            Unit(unit):HasDeBuffs(A.Cyclone.ID, true) == 0 and -- Cyclone
-            (
-                (
-                    not Unit(player):HasSpec(65) and -- Holy            
-                    A.CleansingLight:IsSpellLearned() and -- AoE Dispel 
-                    A.Cleanse:IsReady(unit) and 
-                    A.LastPlayerCastID ~= DispelSpell["CleansingLight"] and
-                    Unit(unit):GetRange() <= 15 
-                ) or 
-                (
-                    not A.CleansingLight:IsSpellLearned() and -- AoE Dispel 
-                    A.Cleanse:IsReady(unit) and 
-                    A.LastPlayerCastID ~= 4987 and
-                    --not Unit(unit):InLOS() and 
-                    A.Cleanse:IsInRange(unit)
-                )
-            ) and 
-            -- Dispel types 
-            (
-                -- Poison CC 
-                Unit(unit):HasDeBuffs("Poison") > 2 or
-                (
-                    -- Holy Paladin Magic CC 
-                    Unit(player):HasSpec(65) and -- Holy
-                    (
-                        Unit(unit):HasDeBuffs("Magic") > 2 or 
-                        -- Magic Rooted (if not available freedom)
-                        (                            
-                            (
-                                not AutoFreedom or 
-                                not A.BlessingofFreedom:IsReady(unit) -- Freedom
-                            ) and 
-                            select(2, UnitClass(unit)) ~= "DRUID" and
-                            Unit(unit):HasDeBuffs("MagicRooted") > 3 and 
-                            Unit(unit):IsMelee() and
-                            Unit(unit):GetRealTimeDMG() <= Unit(unit):HealthMax() * 0.1 
-                        )
-                    )
-                ) or 
-                -- Poison Slowed 
-                (
-                    not Unit(player):HasSpec(65) and -- Holy 
-                    (
-                        not AutoFreedom or 
-                        not A.BlessingofFreedom:IsReady(unit) -- Freedom
-                    ) and     
-                    select(2, UnitClass(unit)) ~= "DRUID" and
-                    Unit(unit):HasDeBuffs(DispelSpell["Slow"], true) > 5 and                        
-                    Unit(unit):HasDeBuffs("DamageBuffs_Melee") > 6
-                )
-            )
-        )
-    ) and
-    -- Check another CC types     
-    Unit(unit):HasDeBuffs("Physical") <= GetCurrentGCD() and 
-    -- Hex
-    Unit(unit):HasDeBuffs(51514, true) <= GetCurrentGCD()
-end
-
--- Blessing of Sanctuary
-local function BoS(unit)    
-    return
-    A.BlessingofSanctuary:IsSpellLearned() and 
-    A.BlessingofSanctuary:IsReady() and 
-    UnitExists(unit) and      
-    A.BlessingofSanctuary:IsSpellInRange(unit) and     
-    Unit(unit):HasDeBuffs(33786, true) == 0 and -- Cyclone
-    (
-        (
-            --MacroSpells(Icon, "HoS") and 
-            (
-                Unit(unit):HasDeBuffs("Stuned") > 1.5 or 
-                Unit(unit):HasDeBuffs("Fear") > 1.5 or 
-                (
-                    Unit(unit):HasDeBuffs("Silenced") > 1.5 and 
-                    Unit(unit):HasDeBuffs(78675, true) == 0 -- Solar Beam
-                )
-            )
-        ) or 
-        (
-            HoS_toggle and 
-            (
-                Unit(unit):HasDeBuffs({115080, 79140}, true) == 0 or -- Touch of Death, Vendetta
-                not BlessingofProtection:IsReady() or -- BoP
-                Unit(unit):HasDeBuffs(25771, true) > 1 -- Forbearance
-            ) and 
-            (
-                (
-                    (
-                        Unit(unit):HasDeBuffs(5246, true) > 3.5 and -- Intimidating Shout                
-                        not Unit(unit):IsFocused() 
-                    ) or 
-                    (
-                        Unit(unit):HasDeBuffs("PhysStuned") > 3.5 and 
-                        (
-                            Unit(unit):HasBuffs("DamageBuffs") > 3 or 
-                            (
-                                Unit(unit):HasDeBuffs(76577, true) > 0 and -- Smoke Bomb
-                                Unit(unit):IsFocused("MELEE")
-                            )
-                        )
-                    ) or             
-                    (
-                        Unit(unit):Role("HEALER") and 
-                        (
-                            Unit(unit):HasDeBuffs("Stuned") > 3.5 or
-                            Unit(unit):HasDeBuffs("Fear") > 3.5 or 
-                            (
-                                Unit(unit):HasDeBuffs("Silenced") > 3.5 and 
-                                Unit(unit):HasDeBuffs(78675, true) == 0 -- Solar Beam
-                            ) 
-                        )  
-                    ) 
-                ) and 
-                -- Hex, Polly, Repentance, Blind, Wyvern Sting, Ring of Frost, Paralysis, Freezing Trap, Mind Control
-                Unit(unit):HasDeBuffs({51514, 118, 20066, 2094, 19386, 82691, 115078, 3355, 605}, true) <= GetCurrentGCD() 
-            )
-        ) 
-    )
-end
-
-local function HoF(unit)    
-    --local msg = MacroSpells(Icon, "Freedom")
-    return
-    --(
-    --     msg or 
-    --     HoF_toggle  
-    -- ) and
-    A.BlessingofFreedom:IsReady(unit) and 
-    Unit(unit):IsPlayer() and
-    (
-        -- SELF
-        (
-            UnitIsUnit(unit, player) and 
-            (
-                Unit(unit):HasDeBuffs("Rooted") > GetCurrentGCD() + GetGCD() or 
-                (
-                    Unit(player):GetCurrentSpeed() > 0 and 
-                    Unit(player):GetMaxSpeed() < 100
-                )
-            )
-        ) or
-        -- ANOTHER UNIT 
-        (
-            -- Useable conditions
-            Unit(unit):IsExists() and 
-            not UnitIsUnit(unit, player) and 
-            select(2, UnitClass(unit)) ~= "DRUID" and
-            --not Unit(unit):InLOS() and         
-            A.BlessingofFreedom:IsInRange(unit)    and        
-            Unit(unit):HasDeBuffs(A.Cyclone.ID, true) == 0 and -- Cyclone    
-            (
-                -- MSG System
-                -- msg or 
-                -- Rooted and Solar Beam
-                (
-                    Unit(unit):HasDeBuffs(78675, true) > 0 and  
-                    Unit(unit):HasDeBuffs("Rooted") > GetCurrentGCD()
-                ) 
-                or 
-                -- Rooted without inc dmg 
-                (
-                    Unit(unit):HasDeBuffs("Rooted") > 3 and
-                    Unit(unit):GetRealTimeDMG() <= Unit(unit):HealthMax() * 0.1 
-                ) 
-                or 
-                -- Slowed (if we no need freedom for self)
-                (
-                    (
-                        -- 8.2 changes Unbound Freedom
-                        A.IsSpellLearned(305394) or 
-                        not Unit(player):IsFocused() or 
-                        Unit(player):GetMaxSpeed() >= 100
-                    ) and
-                    Unit(unit):GetCurrentSpeed() > 0 and 
-                    Unit(unit):GetMaxSpeed() < 80 and 
-                    (
-                        (
-                            -- 8.2 changes Unbound Freedom
-                            A.IsSpellLearned(305394) and 
-                            Unit(player):GetCurrentSpeed() < 100
-                        ) or 
-                        (
-                            Unit(unit):HasBuffs("DamageBuffs") > 6 and 
-                            Unit(unit):HasDeBuffs("Slowed") > 0 and 
-                            Unit(unit):HasDeBuffs("Disarmed") <= GetCurrentGCD()
-                        )
-                    )
-                ) 
-                or 
-                (                
-                    Action.ZoneID == 1580 and                   -- Ny'alotha - Vision of Destiny
-                    Unit(unit):HasDeBuffsStacks(307056) >= 40 -- Burning Madness
-                )
-            )
-        )
-    ) and
-    -- Check another CC types 
-    -- Hex, Polly, Repentance, Blind, Wyvern Sting, Ring of Frost, Paralysis, Freezing Trap, Mind Control
-    Unit(unit):HasDeBuffs({51514, 118, 20066, 2094, 19386, 82691, 115078, 3355, 605}, true) <= GetCurrentGCD() and 
-    Unit(unit):HasDeBuffs("Incapacitated") <= GetCurrentGCD() and 
-    Unit(unit):HasDeBuffs("Disoriented") <= GetCurrentGCD() and 
-    Unit(unit):HasDeBuffs("Fear") <= GetCurrentGCD() and 
-    Unit(unit):HasDeBuffs("Stuned") <= GetCurrentGCD()  
-end    
-
-local function SacrificeAble(unit)
-    -- Function to check if we can use sacriface with max profit time duration on unit
-    local dmg, u_ttd, bubble, shield = Unit(unit):GetDMG() * 0.7, Unit(unit):TimeToDie() * 0.7, Unit(player):HasBuffs(642, true), 1
-    -- -20% incoming damage
-    local shield_buff = Unit(player):HasBuffs(498, true)
-    if shield_buff > 0 then 
-        shield = dmg * ( 0.2 - (0.2 - (shield_buff * 0.2 / 8)) )
-    end
-    
-    local p_ttd, p_chp = 0, Unit(player):Health()
-    if not A.UltimateSacrifice:IsSpellLearned() or not A.IsInPvP then
-        -- Real player's ttd to lower 20% under sacriface and shield buff
-        local p_mhp = Unit(player):HealthMax() * 0.2
-        if p_chp > p_mhp and dmg > 0 and u_ttd > 0 then 
-            local muliplier = 0.75
-            -- If Protection then 100% receiving damage by Sacriface
-            if Unit(player):HasSpec(66) then 
-                muliplier = 1
-            end     
-            p_ttd = math.abs(        
-                -- Current HP without 20% / incdmg by Sacriface + already exist incdmg for yourself
-                (p_chp - p_mhp) /
-                (( dmg * muliplier * (1 - (GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE)/2/100)) ) + Unit(player):GetDMG() )
-            )     
         end
-    else
-        p_ttd = math.abs(        
-            -- Current HP / incdmg by Sacriface + already exist incdmg for yourself
-            p_chp /
-            (( dmg * (1 - (GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE)/2/100)) ) + Unit(player):GetDMG() )
-        )    
-    end 
-    
-    if bubble > 0 then 
-        p_ttd = p_ttd + bubble
-    end
-    
-    return p_ttd + GetCurrentGCD() >= u_ttd, p_ttd
-end
-
--- Hand of Sacrifice
-local function HoS(unit, hp, IsRealDMG, IsDeffensed)  
-    return 
-    Unit(unit):IsExists() and 
-    Unit(unit):IsPlayer() and
-    not UnitIsUnit(unit, player) and
-    --not Unit(unit):InLOS() and 
-    (UnitInRaid(unit) or UnitInParty(unit)) and 
-    A.BlessingofSacrifice:IsReady(unit) and
-    A.BlessingofSacrifice:IsInRange(unit) and 
-    Unit(unit):HasDeBuffs(A.Cyclone.ID, true) == 0 and -- Cyclone 
-    Unit(player):Health() > Unit(player):HealthMax() * 0.2 and       
-    (
-        -- MSG System TO ACTION
-        --(
-        --    Icon and 
-        --   MacroSpells(Icon, "HoS") 
-        --) or  
-        -- HoS conditions 
-        (
-            -- HoS_toggle and 
-            SacrificeAble(unit) and 
-            Unit(unit):HasBuffs(1022, true) == 0 and -- BoP
-            -- Check args
-            (
-                not IsRealDMG or
-                Unit(unit):GetRealTimeDMG() > 0
-            ) and 
-            ( 
-                not IsDeffensed or 
-                Unit(unit):HasBuffs("DeffBuffs", true) == 0
-            ) and 
-            -- Check if unit don't will be killed 
-            (
-                not Unit(player):HasSpec(65) or -- Holy
-                Unit(unit):TimeToDie() >= 4 
-            ) and 
-            -- Conditions
-            (
-                -- Check for HP arg
-                ( 
-                    hp and 
-                    Unit(unit):Health() <= Unit(unit):HealthMax() * (hp / 100)
-                ) or 
-                -- Another check 
-                (
-                    Unit(unit):TimeToDie() < 14 and 
-                    (
-                        (
-                            Unit(unit):Health() <= Unit(unit):HealthMax() * 0.35 and 
-                            (
-                                Unit(unit):GetHEAL()  * 1.4 < Unit(unit):GetDMG() or
-                                Unit(unit):Health() <= Unit(unit):GetDMG() * 3.5 
-                            ) 
-                        ) or 
-                        -- if unit has 35% dmg per sec 
-                        Unit(unit):GetRealTimeDMG() >= Unit(unit):HealthMax() * 0.35 or 
-                        -- if unit has sustain 20% dmg per sec 
-                        Unit(unit):GetDMG() >= Unit(unit):HealthMax() * 0.2
-                    )
-                )
-            )
-        )
-    )
-end 
-
-local function BoP(unit)
-    local id = 1022
-    
-    return
-    A.BlessingofProtection:IsReady(unit) and 
-    Unit(unit):IsExists() and 
-    Unit(unit):IsPlayer() and
-    not Unit(unit):IsTank() and
-    (
-        not UnitIsUnit(unit, player) or
-        -- Divine Shield
-        A.DivineShield:GetCooldown() > 5
-    ) and
-    --not Unit(unit):InLOS() and    
-    (UnitInRaid(unit) or UnitInParty(unit)) and
-    A.BlessingofProtection:IsInRange(unit) and     
-    Unit(unit):HasDeBuffs({33786, 25771}, true) == 0 and -- Cyclone and Forbearance   
-    ( 
-        not A.IsInPvP or
-        not Unit(unit):HasFlags()       
-    ) and
-    (
-        -- ( 
-        --     Icon and 
-        --     MacroSpells(Icon, "BoP")
-        -- ) or 
-        (
-            --BoP_toggle and 
-            id == 1022 and 
-            (
-                -- Deffensive
-                (            
-                    Unit(unit):GetDMG(3) > 0 and 
-                    (
-                        (
-                            Unit(player):HasSpec(65) and -- Holy
-                            Unit(unit):HealthPercent() <= 38 and 
-                            -- Physical real damage still appear
-                            select(3, Unit(unit):GetRealTimeDMG()) > 0
-                        ) or
-                        (
-                            not Unit(player):HasSpec(65) and -- Holy                            
-                            Unit(unit):HealthPercent() <= 31 and 
-                            (
-                                FriendlyTeam("HEALER"):GetCC() or
-                                Unit(unit):TimeToDieX(20) < 2
-                            ) and
-                            Unit(unit):HasBuffs("DeffBuffs") == 0 
-                        )
-                    ) and                     
-                    (
-                        -- PvP 
-                        (
-                            A.IsInPvP and
-                            (
-                                Unit(unit):IsFocused("MELEE") or
-                                (
-                                    Unit(unit):UseDeff() and 
-                                    -- Physical real damage still appear
-                                    select(3, Unit(unit):GetRealTimeDMG()) > 0
-                                )
-                            )
-                        ) or
-                        -- PvE 
-                        not A.IsInPvP 
-                    )
-                ) or 
-                -- Damage DeBuffs
-                Unit(unit):HasDeBuffs({115080, 122470}, true) > 4 or -- Touch of Death and KARMA
-                Unit(unit):HasDeBuffs(79140, true) > 15 or -- Vendetta
-                -- CC Physical DeBuffs
-                (
-                    (
-                        -- Disarmed
-                        (
-                            not Unit(player):HasSpec(70) and -- Retribution
-                            Unit(unit):IsMelee() and 
-                            Unit(unit):HasDeBuffs("Disarmed") > 4.5 and                             
-                            Unit(unit):HasBuffs("DamageBuffs") > 4                      
-                        ) or 
-                        -- Another BreakAble CC 
-                        (
-                            (
-                                Unit(unit):HasDeBuffs(2094, true) > 3.2 or -- Blind
-                                (
-                                    Unit(unit):HasDeBuffs(5246, true) > 3.2 and -- Intimidating Shout
-                                    (
-                                        not Unit(player):HasSpec(70) or -- Retribution
-                                        -- Blessing of Sanctuary
-                                        not A.BlessingofSanctuary:IsSpellLearned() or 
-                                        not A.BlessingofSanctuary:IsReady(unit)
-                                    )
-                                )
-                            ) and 
-                            (
-                                not A.IsInPvP or 
-                                not Unit(unit):IsFocused()
-                            )
-                        ) or 
-                        -- HEALER HELP 
-                        (
-                            Unit(unit):Role("HEALER") and 
-                            (
-                                Unit(unit):HasDeBuffs("Stuned") >= 4 or 
-                                -- Garrote
-                                Unit(unit):HasDeBuffs(1330, true) >= 2.5
-                            ) and 
-                            (
-                                not Unit(player):HasSpec(70) or -- Retribution
-                                -- Blessing of Sanctuary
-                                not A.BlessingofSanctuary:IsSpellLearned() or  
-                                not A.BlessingofSanctuary:IsReady(unit)
-                            ) and 
-                            Unit(unit):HasBuffs("DeffBuffs") <= GetCurrentGCD() and
-                            (
-                                not A.IsInPvP or 
-                                -- if enemy melee bursting 
-                                Unit(unit):IsFocused("MELEE") 
-                            )
-                        ) 
-                    ) and 
-                    -- Check for non physical CC 
-                    (
-                        Unit(unit):HasDeBuffs("Silenced") <= GetCurrentGCD() or 
-                        -- Garrote
-                        Unit(unit):HasDeBuffs(1330, true) >= 2.5
-                    ) and 
-                    Unit(unit):HasDeBuffs("Magic") <= GetCurrentGCD() and 
-                    -- Hex
-                    Unit(unit):HasDeBuffs(51514, true) <= GetCurrentGCD()
-                )
-            )
-        )
-    )
-end
-
--- Return number
--- Consecration duration left
-local function Consecration()
-    for i = 1, 5 do
-        local active, totemName, startTime, duration, textureId  = GetTotemInfo(i)
-        if active == true and textureId == 135926 then
-            return startTime + duration - GetTime()
         end
-    end
-    return 0
-end
-
--- ExpectedCombatLength
-local function ExpectedCombatLength()
-    local BossTTD = 0
-    if not A.IsInPvP then 
-        for i = 1, MAX_BOSS_FRAMES do 
-            if Unit("boss" .. i):IsExists() and not Unit("boss" .. i):IsDead() then 
-                BossTTD = Unit("boss" .. i):TimeToDie()
-            end 
-        end 
-    end 
-    return BossTTD
-end 
-ExpectedCombatLength = A.MakeFunctionCachedStatic(ExpectedCombatLength)
-
-local function TargetWithAgroExsist()
+        
+        return false
+        end
     
-    local agroLevels = {}
-    agroLevels[0] = false
-    agroLevels[1] = false
-    agroLevels[2] = false
-    agroLevels[3] = false
-    
-    local HandofReckoning_Nameplates = MultiUnits:GetActiveUnitPlates()
-    if HandofReckoning_Nameplates then
-        for HandofReckoning_UnitID in pairs(HandofReckoning_Nameplates) do
-            if Unit(HandofReckoning_UnitID):CombatTime() > 0
-            and Unit(HandofReckoning_UnitID):GetRange() <= 30
-            and not Unit(HandofReckoning_UnitID):IsTotem()
-            and not Unit(HandofReckoning_UnitID):IsPlayer()
-            and not Unit(HandofReckoning_UnitID):IsExplosives()
-            and not Unit(HandofReckoning_UnitID):IsDummy()
-            then
-                if Unit(player):ThreatSituation(HandofReckoning_UnitID) ~= nil then
-                    agroLevels[Unit(player):ThreatSituation(HandofReckoning_UnitID)] = true
+        local function combatmobs40()
+            local totalmobsincombat = 0
+        
+            for id = 1, 40 do
+                local unitID = "nameplate" .. id
+                local unitName = UnitName(unitID)
+                if (UnitCanAttack("player", unitID) and UnitHealthMax(unitID) > 5
+                 and UnitAffectingCombat(unitID) and IsItemInRange(835, unitID) 
+                 or (unitName and string.sub(unitName, -5) == "Dummy" and IsItemInRange(32321, unitID))) then
+                    totalmobsincombat = totalmobsincombat + 1
                 end
             end
+        
+            return totalmobsincombat
         end
-    end
-    return agroLevels
-end
 
---- ======= ACTION LISTS =======
--- [3] Single Rotation
-A[3] = function(icon, isMulti)
-    --------------------
-    --- ROTATION VAR ---
-    --------------------
-    local isMoving = A.Player:IsMoving()
-    local inCombat = Unit("player"):CombatTime() > 0
-    local combatTime = Unit("player"):CombatTime()
-    local ShouldStop = Action.ShouldStop()
-    local Pull = Action.BossMods:GetPullTimer()
-    -- Trinkets vars
-    local Trinket1IsAllowed, Trinket2IsAllowed = TR:TrinketIsAllowed()
-    local expected_combat_length = ExpectedCombatLength()
-    local isMovingFor = A.Player:IsMovingTime()
-    local DBM = GetToggle(1 ,"DBM")
-    local Potion = GetToggle(1, "Potion")
-    local Racial = GetToggle(1, "Racial")
-    local HeartOfAzeroth = GetToggle(1, "HeartOfAzeroth")
-    local isCurrentlyTanking = isCurrentlyTanking()
-    local SmartHoJ = Action.GetToggle(2, "SmartHoJ")
-    local UseCavalier = GetToggle(2, "UseCavalier")
-    local CavalierTime = GetToggle(2, "CavalierTime")
-    local HandoftheProtectorHP = GetToggle(2, "HandoftheProtectorHP")
+
+local function APL()
+    combatmobs40()
+    blindprio()
+    freedom()
+    stunprio()
+    kickprio()
+
+        ConsecrationTime()
+        ComputeTimeToHPG()
+        HL.GetEnemies(5);
+        HL.GetEnemies("Melee");
+        HL.GetEnemies(8);
+        HL.GetEnemies(10);
+        HL.GetEnemies(12);
+        HL.GetEnemies(15);
+        HL.GetEnemies(20);
+        HL.GetEnemies(25);
+        HL.GetEnemies(30);
+        HL.GetEnemies(35);
+        HL.GetEnemies(40);
+        Enemies5y = Cache.EnemiesCount[5]
+        Enemies8y = Cache.EnemiesCount[8]
+        Enemies10y = Cache.EnemiesCount[10]
+        Enemies12y = Cache.EnemiesCount[12]
+        Enemies15y = Cache.EnemiesCount[15]
+        Enemies20y = Cache.EnemiesCount[20]
+        Enemies25y = Cache.EnemiesCount[25]
+        Enemies30y = Cache.EnemiesCount[30]
+        Enemies35y = Cache.EnemiesCount[35]
+        Enemies40y = Cache.EnemiesCount[40]
+
+        HolyPower = Player:HolyPower()
+        local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
+
+     
+        tarSpeed, _, _, _ = GetUnitSpeed('target')
+        consecrationdrop = Target:IsInRange(8) and
+        (Player:MovingFor() <= Player:GCD() or ( tarSpeed == 0))
+
+        TimeToHPG = ComputeTimeToHPG()
+        -- Spell Queue
+        if Player:IsChanneling() or Player:IsCasting() then
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+        end
+
+        HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
+
+--item ids for wotlk range checks with nameplate
+--<5 37727
+--<8 34368
+--<10 32321
+--<15 33069
+--<20 10645
+--<25 13289
+--<30 835
+--<35 18904
+--<40 4945 -- check
+
+        IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+
+        validmobsinrange8y = combatmobs40() * .7
+        validmobsinrange15y = combatmobs40() * .7
     
     
-    ------------------------------------------------------
-    ---------------- ENEMY UNIT ROTATION -----------------
-    ------------------------------------------------------
-    local function EnemyRotation(unit)
-        
-        -- Cavalier if out of range 
-        if A.Cavalier:IsReady(player) and Unit(player):HasBuffs(A.Cavalier.ID, true) == 0 and isMovingFor > CavalierTime and UseCavalier then
-            return A.Cavalier:Show(icon)
-        end    
-        
-        -- LightoftheProtector @mouseover friendly        
-        if A.HandoftheProtector:IsSpellLearned() and Unit("mouseover"):IsPlayer() 
-        and IsUnitFriendly("mouseover") 
-        --and A.LightOfProtector:PredictHeal("LightOfProtector", "mouseover") 
-        and A.HandoftheProtector:IsReady("mouseover") 
-        and Unit("mouseover"):HealthPercent() <= HandoftheProtectorHP 
-        then 
-            return A.HandoftheProtector:Show(icon)
-        end 
-        
-        --Precombat
-        if combatTime == 0 and unit ~= "mouseover" then
-            -- flask
-            -- food
-            -- augmentation
-            -- snapshot_stats
-            
-            -- potion
-            if A.SuperiorSteelskinPotion:IsReady(unit) and Action.GetToggle(1, "Potion") then
-                return A.SuperiorSteelskinPotion:Show(icon)
-            end
-            
-            -- consecration
-            if A.Consecration:IsReady("player") and Unit(unit):GetRange() <= 5 and Consecration() <= 3 then
-                return A.Consecration:Show(icon)
-            end
-            
-            -- lights_judgment
-            if A.LightsJudgment:IsReady(unit) and A.BurstIsON(unit) then
-                return A.LightsJudgment:Show(icon)
-            end
-            
+        if Enemies8y > validmobsinrange8y and combatmobs40() > 0 then
+            aoecds8y = true
+        else
+            aoecds8y = false
         end
-        
-        -- BURST
-        if A.BurstIsON(unit) and inCombat and unit ~= "mouseover" then
-            
-            -- fireblood,if=buff.avenging_wrath.up
-            if A.Fireblood:AutoRacial(unit) and Action.GetToggle(1, "Racial") and Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) > 0 then
-                return A.Fireblood:Show(icon)
-            end
-            
-            -- use_item,name=azsharas_font_of_power,if=cooldown.seraphim.remains<=10|!talent.seraphim.enabled
-            if A.AzsharasFontofPower:IsReady("player") and (A.Seraphim:GetCooldown() <= 10 or not A.Seraphim:IsSpellLearned()) then
-                return A.AzsharasFontofPower:Show(icon)
-            end
-            
-            -- use_item,name=ashvanes_razor_coral,if=(debuff.razor_coral_debuff.stack>7&buff.avenging_wrath.up)|debuff.razor_coral_debuff.stack=0
-            if A.AshvanesRazorCoral:IsReady(unit) and ((Unit(unit):HasDeBuffsStacks(A.RazorCoralDebuff.ID, true) > 7 and Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) > 0) or Unit(unit):HasDeBuffsStacks(A.RazorCoralDebuff.ID, true) == 0) then
-                return A.AshvanesRazorCoral:Show(icon)
-            end
-            
-            -- seraphim,if=cooldown.shield_of_the_righteous.charges_fractional>=2
-            if A.Seraphim:IsReady(unit) and (A.ShieldoftheRighteous:GetSpellChargesFrac() >= 2) then
-                return A.Seraphim:Show(icon)
-            end
-            
-            -- avenging_wrath,if=buff.seraphim.up|cooldown.seraphim.remains<2|!talent.seraphim.enabled
-            if A.AvengingWrath:IsReady(unit) and (Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0 or A.Seraphim:GetCooldown() < 2 or not A.Seraphim:IsSpellLearned()) then
-                return A.AvengingWrath:Show(icon)
-            end
-            
-            -- memory_of_lucid_dreams,if=!talent.seraphim.enabled|cooldown.seraphim.remains<=gcd|buff.seraphim.up
-            if A.MemoryofLucidDreams:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") and (not A.Seraphim:IsSpellLearned() or A.Seraphim:GetCooldown() <= A.GetGCD() or Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0) then
-                return A.MemoryofLucidDreams:Show(icon)
-            end
-            
-            -- bastion_of_light,if=cooldown.shield_of_the_righteous.charges_fractional<=0.5
-            if A.BastionofLight:IsReady(unit) and (A.ShieldoftheRighteous:GetSpellChargesFrac() <= 0.5) then
-                return A.BastionofLight:Show(icon)
-            end
-            
-            -- potion,if=buff.avenging_wrath.up
-            if A.SuperiorSteelskinPotion:IsReady(unit) and Action.GetToggle(1, "Potion") and (Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) > 0) then
-                return A.SuperiorSteelskinPotion:Show(icon)
-            end
-            
-            -- use_items,if=buff.seraphim.up|!talent.seraphim.enabled
-            -- use_item,name=grongs_primal_rage,if=cooldown.judgment.full_recharge_time>4&cooldown.avengers_shield.remains>4&(buff.seraphim.up|cooldown.seraphim.remains+4+gcd>expected_combat_length-time)&consecration.up
-            if A.GrongsPrimalRage:IsReady(unit) and (A.Judgment:GetSpellChargesFullRechargeTime() > 4 and A.AvengersShield:GetCooldown() > 4 and (Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0 or A.Seraphim:GetCooldown() + 4 + A.GetGCD() > expected_combat_length - combatTime) and Unit("player"):HasBuffs(A.ConsecrationBuff.ID, true) > 0) then
-                return A.GrongsPrimalRage:Show(icon)
-            end
-            
-            -- use_item,name=pocketsized_computation_device,if=cooldown.judgment.full_recharge_time>4*spell_haste&cooldown.avengers_shield.remains>4*spell_haste&(!equipped.grongs_primal_rage|!trinket.grongs_primal_rage.cooldown.up)&consecration.up
-            if A.PocketsizedComputationDevice:IsReady(unit) and (A.Judgment:GetSpellChargesFullRechargeTime() > 4 * Player:SpellHaste() and A.AvengersShield:GetCooldown() > 4 * Player:SpellHaste() and Unit("player"):HasBuffs(A.ConsecrationBuff.ID, true) > 0) then
-                return A.PocketsizedComputationDevice:Show(icon)
-            end
-            
-            -- use_item,name=merekthas_fang,if=!buff.avenging_wrath.up&(buff.seraphim.up|!talent.seraphim.enabled)
-            if A.MerekthasFang:IsReady(unit) and (Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) == 0 and (Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0 or not A.Seraphim:IsSpellLearned())) then
-                return A.MerekthasFang:Show(icon)
-            end
-            
-            -- use_item,name=razdunks_big_red_button
-            if A.RazdunksBigRedButton:IsReady(unit) then
-                return A.RazdunksBigRedButton:Show(icon)
-            end
-            
+    
+        if Enemies15y > validmobsinrange15y and combatmobs40() > 0 then
+            aoecds15y = true
+        else
+            aoecds15y = false
         end
-        
-        if inCombat and unit ~= "mouseover" then
+    
+-- print('total mobs in 8y range:', Enemies8y)
+-- print('70% mobs 40y in combat:',validmobsinrange8y)
+
+local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+castTime = elapsedTimeca / 1000
+local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+channelTime = elapsedTimech/1000
+
+
+
+
+
+        if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) 
+        and (GetItemCooldown(191380) == 0 or GetItemCooldown(191379) == 0 or GetItemCooldown(191378) == 0) 
+        and (GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1 or GetItemCount(191378) >= 1) 
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+        end
+
+
+
+        if S.ShieldofVengeance:IsCastable() and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and
+        (Player:InArena() or Player:InBattlegrounds() or Target:IsAPlayer()) then
+        return S.ShieldofVengeance:Cast()
+        end
+
+
+
+        if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() then
+        return S.intercession:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+        end
+
+        if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+        return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+        end
+
+        if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+        (
+        Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
+        Player:Debuff(S.lust5)) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+        if S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffStackP(S.SelfLessHealerBuff) < 4 then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+
+        if S.DivineShield:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+        if S.BlessingofProtection:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+        if S.LayonHands:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffP(S.Forbearance) or
+        S.LayonHands:ID() == RubimRH.queuedSpell[1]:ID() and Player:InArena() then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+
+        if RubimRH.QueuedSpell():IsReadyQueue() then
+        return RubimRH.QueuedSpell():Cast()
+        end
+
+        if not RubimRH.queuedSpell[1]:CooldownUp() 
+        or Cache.EnemiesCount[20] == 0 
+        or not Player:AffectingCombat()
+        then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+        if S.DivineShield:IsReady() and Player:HealthPercentage() <= 50 and not Player:Debuff(S.Forbearance) and
+        not Player:BuffP(S.ShieldofVengeance) and (Player:InArena() or Player:InBattlegrounds() or Target:IsAPlayer()) then
+        return S.DivineShield:Cast()
+        end
+
+        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and ((Player:HealthPercentage() <= 40 and
+        not Player:Buff(S.ShieldofVengeance) and not Player:Buff(S.DivineProtection)) or Player:HealthPercentage()<=25) then
+        return S.DivineShield:Cast()
+        end
+
+        if S.LayonHands:IsReady() and Player:HealthPercentage() <= 25 and not Player:Debuff(S.Forbearance) 
+        and S.DivineShield:CooldownRemains() > Player:GCD() then
+        return S.LayonHands:Cast()
+        end
+
+        if S.DivineProtection:IsReady() and Player:AffectingCombat() 
+        and not Player:BuffP(S.ShieldofVengeance) and (Player:HealthPercentage() <= 65 or HPpercentloss>10) 
+        and S.DivineShield:CooldownRemainsP() > Player:GCD() and
+        S.LayonHands:CooldownRemainsP() > Player:GCD() and Cache.EnemiesCount[20] >= 1 then
+        return S.divineprotection:Cast()
+        end
+
+        if S.ShieldofVengeance:IsReady() and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and Player:AffectingCombat() 
+        and not Player:Buff(S.DivineProtection) and not Player:Buff(S.DivineShield) and Cache.EnemiesCount[20] >= 1 then
+        return S.ShieldofVengeance:Cast()
+        end
+
+        if S.WordofGlory:IsReady() 
+        and Cache.EnemiesCount[30]==0
+        and Player:HealthPercentage()<70 and HolyPower>=3 then
+        return S.WordofGlory:Cast()
+        end
+
+        if S.WordofGlory:IsReady() 
+        and HolyPower>=3 
+        and (not Player:InArena() and not Player:InBattlegrounds() and not Target:IsAPlayer())
+        and not Player:Buff(S.DivineShield) 
+        and (Player:HealthPercentage()<55 
+        and Player:HealthPercentage()>=35 
+        and not Player:BuffP(S.ShieldofVengeance) 
+        and not Player:Buff(S.DivineProtection) or Player:HealthPercentage()<35) then
+        return S.WordofGlory:Cast()
+        end
+
+
+        if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target) then 
+
+
+        if not IsCurrentSpell(6603) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and Target:AffectingCombat() and Target:IsInRange(20) then
+        return S.autoattack:Cast()
+        end
+
+        if S.HammerofWrath:IsReady() and UnitName('target') == 'Explosives' then
+        return S.HammerofWrath:Cast()
+        end
+
+        if S.Judgment:IsReady() and UnitName('target') == 'Explosives' then
+        return S.Judgment:Cast()
+        end
+
+        if (IsUsableSpell("Templar Slash") or S.TemplarStrike:IsReady() or S.CrusaderStrike:IsReady()) and UnitName('target') == 'Explosives' then
+        return S.crusaderstrike:Cast()
+        end
+
+                --Kick
+                if (castTime>0.35 or channelTime>0.35) and 
+                RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() and kickprio() then
+                return S.Rebuke:Cast()
+                end
+
+                --Stun
+
+                if (castTime>0.1 or channelTime>0.1) and level>13 
+                and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
+                return S.HammerofJustice:Cast()
+                end
+
+                --Blind
+                if (castTime>0.1 or channelTime>0.1) and S.HammerofJustice:CooldownRemains()>Player:GCD() and level>13 
+                and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >=1 and Player:AffectingCombat() and blindprio() then
+                return S.BlindingLight:Cast()
+                end
+
+                --Freedom
+                if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and Enemies15y >= 1 then
+                    return S.BlessingofFreedom:Cast()
+                end
+
+
+        -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
+        --     return S.HammerofJustice:Cast()
+        -- end
+
+
+            Ranged = function()
+
+                if Player:AffectingCombat() then
+                if S.HammerofWrath:IsReadyP() and Target:IsInRange(30) and (Player:BuffP(S.AvengingWrath) or Player:BuffP(S.Crusade) or Target:HealthPercentage()<=20) then
+                return S.HammerofWrath:Cast()
+                end
+
+
+                if S.Judgment:IsCastable() and Target:IsInRange(30) then
+                return S.Judgment:Cast()
+                end
+                end
+
+            end
+
+
+            Cooldowns = function()
+
+                if RubimRH.CDsON() and Target:IsInRange(5)
+                and ((Player:Buff(S.AvengingWrath) or S.AvengingWrath:CooldownRemains()>20 and not S.Crusade:IsAvailable()) 
+                or (Player:Buff(S.Crusade) or S.Crusade:CooldownRemains()>20 and S.Crusade:IsAvailable()))
+                and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
+                local ShouldReturn = UseItems();
+                if ShouldReturn then return ShouldReturn; end
+                end
+
+                -- avenging_wrath,if=holy_power>=4&time<5|holy_power>=3&time>5|holy_power>=2&talent.divine_auxiliary
+                -- &(cooldown.execution.remains=0|cooldown.final_reckoning.remains=0)
+
+                if S.AvengingWrath:IsCastable() and (HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 
+                and HL.CombatTime() > 5 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable() 
+                and (S.ExecutionSentence:CooldownUp() or S.FinalReckoning:CooldownUp())) then
+                return S.AvengingWrath:Cast()
+                end
+
+                -- crusade,if=holy_power>=5&time<5|holy_power>=3&time>5
+                if S.Crusade:IsCastable() and (HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 and HL.CombatTime() >= 5) then
+                return S.Crusade:Cast()
+                end
+
+                -- execution_sentence,if=(!buff.crusade.up&cooldown.crusade.remains>10|buff.crusade.stack=10|cooldown.avenging_wrath.remains>10)&(holy_power>=3|holy_power>=2&talent.divine_auxiliary)&target.time_to_die>8
+                if S.ExecutionSentence:IsCastable() and ((not Player:Buff(S.CrusadeBuff) and S.Crusade:CooldownRemains() > 10 
+                or Player:BuffStack(S.CrusadeBuff) == 10 or S.AvengingWrath:CooldownRemains() > 10) 
+                and (HolyPower >= 3 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) and Target:TimeToDie() > 8) then
+                    return S.ExecutionSentence:Cast()
+                end
+
+                -- final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&time>=8|holy_power>=2&talent.divine_auxiliary)
+                -- &(cooldown.avenging_wrath.remains>gcd|cooldown.crusade.remains&(!buff.crusade.up|buff.crusade.stack>=10))
+                -- &(time_to_hpg>0|holy_power=5|holy_power>=2&talent.divine_auxiliary)
+                -- &(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)
+                if S.FinalReckoning:IsCastable() and RubimRH.CDsON()
+                and aoecds8y
+                and Target:IsInRange(5) and Player:MovingFor()<Player:GCD()
+                and ((HolyPower >= 4 and HL.CombatTime() < 8 
+                or HolyPower >= 3 and HL.CombatTime() >= 8 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
+                and (S.AvengingWrath:CooldownRemains() > Player:GCD() or S.Crusade:CooldownRemains() > Player:GCD()
+                and (not Player:Buff(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) 
+                and (TimeToHPG > 0 or HolyPower == 5 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable())) then
+                    return S.FinalReckoning:Cast()
+                end
+
+
+            end
+
+
+
+
+            Finishers = function()
+
+
+
+                if true then
+                VarDsCastable = (
+                (Cache.EnemiesCount[12] >= 2 and S.TotLB:IsAvailable() or
+                Cache.EnemiesCount[8] >= 2 and not S.TotLB:IsAvailable()
+                or Player:BuffP(S.EmpyreanPowerBuff))
+                and RubimRH.AoEON()
+                )
+                end
+
+   
+                -- divine_storm,if=variable.ds_castable&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
+                -- &((!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8
+                -- |cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)
+                -- |buff.crusade.up&buff.crusade.stack<10)
+
+                if S.DivineStorm:IsReady() and VarDsCastable and (
+                not RubimRH.CDsON() or RubimRH.CDsON() and not Player:Buff(S.EmpyreanLegacyBuff)
+                and not (Player:Buff(S.DivineArbiterBuff) and Player:BuffStack(S.DivineArbiterBuff) > 24)
+                and (
+                (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3)
+                and (not S.ExecutionSentence:IsAvailable()
+                or S.DivineAuxiliary:IsAvailable()
+                or Target:TimeToDie() < 8
+                or S.ExecutionSentence:CooldownRemains() > Player:GCD() * 2
+                )
+                and (
+                not S.FinalReckoning:IsAvailable()
+                or S.DivineAuxiliary:IsAvailable()
+                or S.FinalReckoning:CooldownRemains() > Player:GCD() * 2
+                )
+                or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10
+                )
+                ) then
+                return S.DivineStorm:Cast() 
+                end
+
+                -- justicars_vengeance,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8|cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)|buff.crusade.up&buff.crusade.stack<10
+                if S.JusticarsVengeance:IsReady() and (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
+                and ((not S.ExecutionSentence:IsAvailable()) or S.DivineAuxiliary:IsAvailable() or Target:TimeToDie() < 8 
+                or S.ExecutionSentence:CooldownRemains() > Player:GCD() * 2) 
+                and ((not S.FinalReckoning:IsAvailable()) or S.DivineAuxiliary:IsAvailable() or S.FinalReckoning:CooldownRemains() > Player:GCD() * 2)
+                or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10)) then
+                return S.JusticarsVengeance:Cast()
+                end
+
+                --   templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence|talent.divine_auxiliary|target.time_to_die<8|cooldown.execution_sentence.remains>gcd*2)&(!talent.final_reckoning|talent.divine_auxiliary|cooldown.final_reckoning.remains>gcd*2)|buff.crusade.up&buff.crusade.stack<10
+                if (IsUsableSpell('Final Verdict') or IsUsableSpell(85256)) and 
+                (not RubimRH.CDsON() or RubimRH.CDsON() and (((not S.Crusade:IsAvailable()) or S.Crusade:CooldownRemains() > Player:GCD() * 3) 
+                and ((not S.ExecutionSentence:IsAvailable()) or S.DivineAuxiliary:IsAvailable() or Target:TimeToDie() < 8 
+                or S.ExecutionSentence:CooldownRemains() > Player:GCD() * 2) and ((not S.FinalReckoning:IsAvailable()) or S.DivineAuxiliary:IsAvailable() 
+                or S.FinalReckoning:CooldownRemains() > Player:GCD() * 2) or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10)) then
+                return S.TemplarsVerdict:Cast()
+                end
+
+
+            end
+
+ 
+            Generators = function()
+                    -- --burst AOE
+                    if RubimRH.AoEON() and Enemies12y>=2 then
+
+
+                        if S.AvengingWrath:IsReadyP() and not Player:BuffP(S.AvengingWrath) and RubimRH.CDsON() and Target:IsInRange(8) then   
+                            return S.AvengingWrath:Cast()
+                        end
+
+                        if S.Crusade:IsReadyP() and not Player:BuffP(S.Crusade) and RubimRH.CDsON() and Target:IsInRange(8) then                        
+                            return S.Crusade:Cast()
+                        end
+
+                        if S.FinalReckoning:IsReady() 
+                        and RubimRH.CDsON() 
+                        and Target:IsInRange(8) 
+                        and aoecds8y
+                        then                        
+                            return S.FinalReckoning:Cast()
+                        end
+
+                        if S.DivineStorm:IsReady() and HolyPower>=5 and Target:IsInRange(12) then                        
+                            return S.DivineStorm:Cast()
+                        end
+
+                        if S.WakeofAshes:IsReady() 
+                        and RubimRH.CDsON() 
+                        and HolyPower<=2
+                        and Target:IsInRange(8) and aoecds8y 
+                        and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
+                        then
+                            return S.WakeofAshes:Cast()
+                        end
+
+
+                        if S.DivineToll:IsCastable() and HolyPower<=2 and RubimRH.CDsON() and Target:IsInRange(15) and aoecds15y
+                        and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5) 
+                        and (not S.WakeofAshes:IsAvailable() or S.WakeofAshes:CooldownRemains() > 5) 
+                        then
+                            return S.DivineToll:Cast()
+                        end
             
-            
-            -- Auto taunt logic
-            if A.GetToggle(2, "AutoTaunt") and combatTime > 0 then
-                if not Unit(unit):IsBoss() and
-                A.HandofReckoning:IsReady(unit) --or
-                --A.DivineShield:IsReady(unit) and A.FinalStand:IsSpellLearned()
+
+                    end
+
+
+                    -- call_action_list,name=finishers,if=holy_power=5|(debuff.judgment.up|holy_power=4)&buff.divine_resonance.up
+                    if (HolyPower >= 5 or (Target:Debuff(S.JudgmentDebuff) or HolyPower == 4) and Player:Buff(S.DivineResonanceBuff)) then
+                    if Finishers() ~= nil then
+                        return Finishers()
+                    end
+                    end
+                    -- wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
+                    if S.WakeofAshes:IsCastable() 
+                    and RubimRH.CDsON() and Target:IsInRange(8) 
+                    and aoecds8y
+                    and (HolyPower <= 2 and (S.AvengingWrath:CooldownDown() or S.Crusade:CooldownDown()) 
+                    and ((not S.ExecutionSentence:IsAvailable()) or S.ExecutionSentence:CooldownRemains() > 4 or Target:TimeToDie() < 8))  
+                    and (Cache.EnemiesCount[12]>1 and S.FinalReckoning:CooldownRemains()>Player:GCD() or not S.FinalReckoning:IsAvailable() 
+                    or Cache.EnemiesCount[12]==1 or not RubimRH.AoEON())
+                    then
+                    return S.WakeofAshes:Cast()
+                    end
+
+                    -- divine_toll,if=holy_power<=2&!debuff.judgment.up
+                    -- &(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)
+                    -- &(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|fight_remains<8)
+                    if S.DivineToll:IsCastable() and HolyPower<=2
+                    and RubimRH.CDsON() and not Target:Debuff(S.JudgmentDebuff)
+                    and ( Enemies8y >= 5 or aoecds15y and Target:IsInRange(15)
+                    and (S.AvengingWrath:CooldownRemains() > 15 
+                    or S.Crusade:CooldownRemains() > 15)) 
+                    then
+                    return S.DivineToll:Cast()
+                    end
+
+                    -- call_action_list,name=finishers,if=holy_power>=3&buff.crusade.up&buff.crusade.stack<10
+                    if (HolyPower >= 3 and Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then
+                    if Finishers() ~= nil then
+                        return Finishers()
+                    end
+                    end
+
+                    -- templar_slash,if=buff.templar_strikes.remains<gcd&spell_targets.divine_storm>=2
+                    if IsUsableSpell("Templar Slash") and Target:IsInRange(10) and S.TemplarSlash:CooldownRemains() == 0 and (4 - S.TemplarStrike:TimeSinceLastCast() < Player:GCD() and Cache.EnemiesCount[8] >= 2) then
+                    return S.crusaderstrike:Cast()
+                    end
+                    -- judgment,if=!debuff.judgment.up
+                    -- &(holy_power<=3|!talent.boundless_judgment)
+                    -- &spell_targets.divine_storm>=2
+                    if S.Judgment:IsReady() and Target:IsInRange(30) and not Target:Debuff(S.JudgmentDebuff) and Enemies12y>=2
+                    and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
+                    return S.Judgment:Cast()
+                    end
+
+                    -- blade_of_justice,if=(holy_power<=3|!talent.holy_blade)&spell_targets.divine_storm>=2
+                    if S.BladeofJustice:IsCastable() and Target:IsInRange(15) and ((HolyPower <= 3 or not S.HolyBlade:IsAvailable()) and Cache.EnemiesCount[12] >= 2) then
+                    return S.BladeofJustice:Cast()
+                    end
+
+                    -- hammer_of_wrath,if=(spell_targets.divine_storm<2|!talent.blessed_champion)
+                    -- &(holy_power<=3|target.health.pct>20|!talent.vanguards_momentum)
+                    if S.HammerofWrath:IsReady() and Target:IsInRange(30) and ((Enemies12y < 2 or not S.BlessedChampion:IsAvailable()) 
+                    and (HolyPower <= 3 or Target:HealthPercentage() > 20 or not S.VanguardsMomentum:IsAvailable())) then
+                    return S.HammerofWrath:Cast()
+                    end
+
+                    -- templar_slash,if=buff.templar_strikes.remains<gcd
+                    if IsUsableSpell("Templar Slash") and Target:IsInRange(10) and S.TemplarSlash:CooldownRemains() == 0 and (4 - S.TemplarStrike:TimeSinceLastCast() < Player:GCD()) then
+                    return S.crusaderstrike:Cast()
+                    end
+                    -- blade_of_justice,if=holy_power<=3|!talent.holy_blade
+                    if S.BladeofJustice:IsCastable() and Target:IsInRange(15) and (HolyPower <= 3 or not S.HolyBlade:IsAvailable()) then
+                    return S.BladeofJustice:Cast()
+                    end
+                    -- judgment,if=!debuff.judgment.up&(holy_power<=3|!talent.boundless_judgment)
+                    if S.Judgment:IsReady() and Target:IsInRange(30) and (not Target:Debuff(S.JudgmentDebuff) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable())) then
+                    return S.Judgment:Cast()
+                    end
+                    -- call_action_list,name=finishers,if=(target.health.pct<=20|buff.avenging_wrath.up|buff.crusade.up|buff.empyrean_power.up)
+                    if (Target:HealthPercentage() <= 20 or Player:Buff(S.AvengingWrathBuff) or Player:Buff(S.CrusadeBuff) or Player:Buff(S.EmpyreanPowerBuff)) then
+                    if Finishers() ~= nil then
+                        return Finishers()
+                    end
+                    end
+                    -- consecration,if=!consecration.up&spell_targets.divine_storm>=2
+                    if S.Consecration:IsCastable() and Target:IsInRange(8) and not Target:Debuff(S.ConsecrationDebuff) and Enemies8y >= 2 then
+                    return S.Consecration:Cast()
+                    end
+                    -- divine_hammer,if=spell_targets.divine_storm>=2
+                    if S.DivineHammer:IsCastable() and (Enemies8y >= 2) then
+                    return S.DivineHammer:Cast()
+                    end
+                    -- crusader_strike,if=cooldown.crusader_strike.charges_fractional>=1.75&(holy_power<=2|holy_power<=3&cooldown.blade_of_justice.remains>gcd*2|holy_power=4&cooldown.blade_of_justice.remains>gcd*2&cooldown.judgment.remains>gcd*2)
+                    if S.CrusaderStrike:IsCastable() and (S.CrusaderStrike:ChargesFractional() >= 1.75 and (HolyPower <= 2 or HolyPower <= 3 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 or HolyPower == 4 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 and S.Judgment:CooldownRemains() > Player:GCD() * 2)) then
+                    return S.crusaderstrike:Cast()
+                    end
+                    -- call_action_list,name=finishers
+                    if Finishers() ~= nil then
+                    return Finishers()
+                    end
+                    -- templar_slash
+                    if IsUsableSpell("Templar Slash") and S.TemplarSlash:CooldownRemains() == 0 and Target:IsInRange(10) then
+                    return S.crusaderstrike:Cast()
+                    end
+                    -- templar_strike
+                    if S.TemplarStrike:IsReady() and Target:IsInRange(10) then
+                    return S.crusaderstrike:Cast()
+                    end
+                    -- judgment,if=holy_power<=3|!talent.boundless_judgment
+                    if S.Judgment:IsReady() and Target:IsInRange(30) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
+                    return S.Judgment:Cast()
+                    end
+
+                    --hammer_of_wrath,if=holy_power<=3|target.health.pct>20|!talent.vanguards_momentum
+                    if S.HammerofWrath:IsReady() and Target:IsInRange(30) and (HolyPower <= 3 or Target:HealthPercentage() > 20 or not S.VanguardsMomentum:IsAvailable()) then
+                    return S.HammerofWrath:Cast()
+                    end
+                    -- crusader_strike
+                    if S.CrusaderStrike:IsCastable() and Target:IsInRange(10) then
+                    return S.crusaderstrike:Cast()
+                    end
+                    -- arcane_torrent
+                    if S.ArcaneTorrent:IsCastable() and Target:IsInRange(8) then
+                    return S.ArcaneTorrent:Cast()
+                    end
+                    -- consecration
+                    if S.Consecration:IsCastable() and Target:IsInRange(8) then
+                    return S.Consecration:Cast()
+                    end
+                    -- divine_hammer
+                    if S.DivineHammer:IsCastable() and Target:IsInRange(10) then
+                    return S.DivineHammer:Cast()
+                    end
+
+
+                end -- end generators function
+
+
+
+
+            if not Target:IsInRange(20) then
+            if Ranged() ~= nil then
+            return Ranged()
+            end
+            end
+
+            --actions+=/call_action_list,name=cooldowns
+            if Target:IsInRange(10) and RubimRH.CDsON() then
+            if Cooldowns() ~= nil then
+            return Cooldowns()
+            end
+            end
+
+            --actions+=/call_action_list,name=generators
+            if Generators() ~= nil then
+            return Generators()
+            end
+
+        end
+
+            -- Out of Combat
+            if not Player:AffectingCombat() then
+
+                if RubimRH.QueuedSpell():IsReadyQueue() then
+                return RubimRH.QueuedSpell():Cast()
+                end
+
+                if not RubimRH.queuedSpell[1]:CooldownUp() 
+                or Cache.EnemiesCount[20] == 0 
+                or not Player:AffectingCombat()
+
                 then
-                    local agroLevels = TargetWithAgroExsist()
-                    if agroLevels[0] and Unit(player):ThreatSituation(unit) ~= 0 then
-                        return A:Show(icon, ACTION_CONST_AUTOTARGET)
-                    end
-                    if agroLevels[1] and Unit(player):ThreatSituation(unit) > 1 then
-                        return A:Show(icon, ACTION_CONST_AUTOTARGET)
-                    end
-                    if agroLevels[2] and Unit(player):ThreatSituation(unit) > 2 then
-                        return A:Show(icon, ACTION_CONST_AUTOTARGET)
-                    end
+                RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
                 end
-            end
-            
-            -- Custom logic
-            if Unit(unit):GetRange() <= 30
-            and Unit(player):ThreatSituation(unit) ~= 3
-            and not Unit(unit):IsExplosives()
-            and not Unit(unit):IsDummy()
-            and not Unit(unit):IsPlayer()
-            and not Unit(unit):NPCID() == 160966 -- Thing From Beyong
-            and not Unit(unit):NPCID() == 161895 -- Thing From Beyong
-            and not Unit(unit):IsTotem() then
-                --  Try taunt enemy if no agro
-                if A.HandofReckoning:IsReady(unit) then
-                    if Unit(player):HasBuffs(A.BlessingofProtection.ID, true) > 0 or (Unit(player):HasBuffs(A.DivineShield.ID, true) > 0 and not A.FinalStand:IsSpellLearned()) then
-                        AutoCancelBoP()
-                    else
-                        return A.HandofReckoning:Show(icon)
-                    end
+
+
+
+                -- if Target:IsInRange(30) then
+                --     return S.crusaderstrike:Cast()
+                -- end
+
+                if S.RetributionAura:IsCastable() and not Player:BuffP(S.RetributionAura) then
+                return S.RetributionAura:Cast()
                 end
-                -- Try CC Enemy if no agro
-                if A.HammerofJustice:IsReady(unit) then
-                    return A.HammerofJustice:Show(icon)
+
+
+
+
+                if S.DivineShield:IsCastable() and Player:Debuff(S.Burst) and not Player:Debuff(S.Forbearance) and ((Player:HealthPercentage() <= 40 and
+                not Player:Buff(S.ShieldofVengeance) and not Player:Buff(S.DivineProtection)) or Player:HealthPercentage()<=20) then
+                return S.DivineShield:Cast()
                 end
-                -- Try Aoe CC Enemy if no agro
-                if A.BlindingLight:IsSpellLearned() and A.BlindingLight:IsReady(player) and Unit(unit):GetRange() <= 10 then
-                    return A.BlindingLight:Show(icon)
-                end
-                
-            end
-            
-            -- avengers_shield,if=cooldown_react
-            if A.AvengersShield:GetCooldown() < 1 then
-                return A.AvengersShield:Show(icon)
-            end
-            
-            -- worldvein_resonance,if=buff.lifeblood.stack<3
-            if A.WorldveinResonance:AutoHeartOfAzerothP(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") and (Unit("player"):HasBuffsStacks(A.LifebloodBuff.ID, true) < 3) then
-                return A.WorldveinResonance:Show(icon)
-            end
-            
-            -- shield_of_the_righteous,if=(buff.avengers_valor.up&cooldown.shield_of_the_righteous.charges_fractional>=2.5)&(cooldown.seraphim.remains>gcd|!talent.seraphim.enabled)
-            if A.ShieldoftheRighteous:IsReady(player) and Unit(player):HasBuffs(A.ShieldoftheRighteousBuff.ID, true) < A.GetGCD() + 0.1 and ((Unit("player"):HasBuffs(A.AvengersValorBuff.ID, true) > 0 and A.ShieldoftheRighteous:GetSpellChargesFrac() >= 2.5) and (A.Seraphim:GetCooldown() > A.GetGCD() or not A.Seraphim:IsSpellLearned())) then
-                return A.ShieldoftheRighteous:Show(icon)
-            end
-            
-            -- shield_of_the_righteous,if=(buff.avenging_wrath.up&!talent.seraphim.enabled)|buff.seraphim.up&buff.avengers_valor.up
-            if A.ShieldoftheRighteous:IsReady(player) and Unit(player):HasBuffs(A.ShieldoftheRighteousBuff.ID, true) < A.GetGCD() + 0.1 and A.ShieldoftheRighteous:GetSpellChargesFrac() >= 1.5 and ((Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) > 0 and not A.Seraphim:IsSpellLearned()) or Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0 and Unit("player"):HasBuffs(A.AvengersValorBuff.ID, true) > 0) then
-                return A.ShieldoftheRighteous:Show(icon)
-            end
-            
-            -- shield_of_the_righteous,if=(buff.avenging_wrath.up&buff.avenging_wrath.remains<4&!talent.seraphim.enabled)|(buff.seraphim.remains<4&buff.seraphim.up)
-            if A.ShieldoftheRighteous:IsReady(player) and Unit(player):HasBuffs(A.ShieldoftheRighteousBuff.ID, true) < A.GetGCD() + 0.1 and A.ShieldoftheRighteous:GetSpellChargesFrac() >= 1.5 and ((Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) > 0 and Unit("player"):HasBuffs(A.AvengingWrathBuff.ID, true) < 4 and not A.Seraphim:IsSpellLearned()) or (Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) < 4 and Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0)) then
-                return A.ShieldoftheRighteous:Show(icon)
-            end
-            
-            -- shield_of_the_righteous,if=(buff.avenging_wrath.up&buff.avenging_wrath.remains<4&!talent.seraphim.enabled)|(buff.seraphim.remains<4&buff.seraphim.up)
-            if A.ShieldoftheRighteous:IsReady(player) and A.ShieldoftheRighteous:GetSpellChargesFrac() == 3 and Unit(player):HasBuffs(A.ShieldoftheRighteousBuff.ID, true) < A.GetGCD() + 0.1 then
-                return A.ShieldoftheRighteous:Show(icon)
-            end
-            
-            -- lights_judgment,if=buff.seraphim.up&buff.seraphim.remains<3
-            if A.LightsJudgment:IsReady(unit) and A.BurstIsON(unit) and (Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0 and Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) < 3) then
-                return A.LightsJudgment:Show(icon)
-            end
-            
-            -- consecration,if=!consecration.up
-            if A.Consecration:IsReady(player)  and Unit(unit):GetRange() <= 5 and Consecration() <= 3 then
-                return A.Consecration:Show(icon)
-            end
-            
-            -- judgment,if=(cooldown.judgment.remains<gcd&cooldown.judgment.charges_fractional>1&cooldown_react)|!talent.crusaders_judgment.enabled
-            if A.Judgment:IsReady(unit) and ((A.Judgment:GetCooldown() < A.GetGCD() and A.Judgment:GetSpellChargesFrac() > 1 and A.Judgment:GetCooldown() == 0) or not A.CrusadersJudgment:IsSpellLearned()) then
-                return A.Judgment:Show(icon)
-            end
-            
-            -- avengers_shield,if=cooldown_react
-            --    if A.AvengersShield:IsReady(unit) then
-            --      return A.AvengersShield:Show(icon)
-            --end
-            
-            -- judgment,if=cooldown_react|!talent.crusaders_judgment.enabled
-            if A.Judgment:IsReady(unit) and (A.Judgment:GetCooldown() == 0 or not A.CrusadersJudgment:IsSpellLearned()) then
-                return A.Judgment:Show(icon)
-            end
-            
-            -- concentrated_flame,if=(!talent.seraphim.enabled|buff.seraphim.up)&!dot.concentrated_flame_burn.remains>0|essence.the_crucible_of_flame.rank<3
-            if A.ConcentratedFlame:AutoHeartOfAzerothP(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") and ((not A.Seraphim:IsSpellLearned() or Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0) and Unit(unit):HasDeBuffs(A.ConcentratedFlameBurn.ID, true) == 0 or A.ConcentratedFlame:GetAzeriteRank() < 3) then
-                return A.ConcentratedFlame:Show(icon)
-            end
-            
-            -- lights_judgment,if=!talent.seraphim.enabled|buff.seraphim.up
-            if A.LightsJudgment:IsReady(unit) and A.BurstIsON(unit) and (not A.Seraphim:IsSpellLearned() or Unit("player"):HasBuffs(A.SeraphimBuff.ID, true) > 0) then
-                return A.LightsJudgment:Show(icon)
-            end
-            
-            -- VigilantProtector
-            if A.VigilantProtector:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") then
-                return A.VigilantProtector:Show(icon)
-            end
-            
-            -- EmpoweredNullBarrier
-            if A.EmpoweredNullBarrier:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") then
-                return A.EmpoweredNullBarrier:Show(icon)
-            end
-            
-            -- AnimaofDeath
-            if A.AnimaofDeath:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") then
-                return A.AnimaofDeath:Show(icon)
-            end
-            
-            -- AzerothsUndyingGift
-            if A.AzerothsUndyingGift:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") then
-                return A.AzerothsUndyingGift:Show(icon)
-            end
-            
-            -- RippleinSpace
-            if A.RippleinSpace:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") then
-                return A.RippleinSpace:Show(icon)
-            end
-            
-            -- AegisoftheDeep
-            if A.AegisoftheDeep:AutoHeartOfAzeroth(unit, true) and Action.GetToggle(1, "HeartOfAzeroth") then
-                return A.AegisoftheDeep:Show(icon)
-            end
-            
-            -- blessed_hammer,strikes=3
-            if A.BlessedHammer:IsReady(unit) then
-                return A.BlessedHammer:Show(icon)
-            end
-            
-            -- hammer_of_the_righteous
-            if A.HammeroftheRighteous:IsReady(unit) and A.AvengersShield:GetCooldown() > 0 then
-                return A.HammeroftheRighteous:Show(icon)
-            end
-            
-            -- consecration
-            if A.Consecration:IsReady(player)  and Unit(unit):GetRange() <= 5 and Consecration() <= 3 then
-                return A.Consecration:Show(icon)
-            end
-            
-        end
         
-    end
-    -- End on EnemyRotation()
-    
-    -- Defensive
-    local SelfDefensive = SelfDefensives()
-    if SelfDefensive then 
-        return SelfDefensive:Show(icon)
-    end 
-    
-    -- Defensives trinkets
-    if Unit(player):CombatTime() > 0 and (Unit(player):HealthPercent() < 50 or Unit(player):TimeToDie() < 5) then 
-        if A.Trinket1:IsReady(player) and A.Trinket1:GetItemCategory() ~= "DPS" then 
-            return A.Trinket1:Show(icon)
-        end 
-        
-        if A.Trinket2:IsReady(player) and A.Trinket2:GetItemCategory() ~= "DPS" then 
-            return A.Trinket2:Show(icon)
-        end
-    end 
-    
-    -- Mouseover
-    if A.IsUnitEnemy("mouseover") then
-        unit = "mouseover"
-        if EnemyRotation(unit) then 
-            return true 
-        end 
-    end 
-    
-    -- Target  
-    if A.IsUnitEnemy("target") then 
-        unit = "target"
-        if EnemyRotation(unit) then 
-            return true
-        end 
-    end
-end
--- Finished
+                if S.LayonHands:IsCastable() and Player:Debuff(S.Burst) and Player:HealthPercentage() <= 20 and not Player:Debuff(S.Forbearance) 
+                and S.DivineShield:CooldownRemains() > Player:GCD() then
+                return S.LayonHands:Cast()
+                end
 
--- [4] AoE Rotation
-A[4] = function(icon)
-    return A[3](icon, true)
-end
-local function ArenaRotation(icon, unit)
-    if A.IsInPvP and (Action.Zone == "pvp" or Action.Zone == "arena") and not Player:IsStealthed() and not Player:IsMounted() then
-        -- Note: "arena1" is just identification of meta 6
-        if (unit == "arena1" or unit == "arena2" or unit == "arena3") then  
-            
-            -- Interrupt
-            local Interrupt = Interrupts(unit)
-            if Interrupt then 
-                return Interrupt:Show(icon)
-            end    
-            
-            -- Reflect Casting BreakAble CC
-            if A.HammerofJustice:IsReady() and A.HammerofJustice:IsSpellLearned() and EnemyTeam():IsCastingBreakAble(0.25) then 
-                return A.HammerofJustice
-            end 
-        end
-    end 
-end 
+                if S.WordofGlory:IsCastable() 
+                and Cache.EnemiesCount[25]==0
+                and Player:HealthPercentage()<75 and HolyPower>=3  then
+                return S.WordofGlory:Cast()
+                end
 
-local function PartyRotation(unit)
-    if (unit == "party1" and not A.GetToggle(2, "PartyUnits")[1]) or (unit == "party2" and not A.GetToggle(2, "PartyUnits")[2]) then 
-        return false 
-    end
-    
-    --Dispell
-    if A.CleanseToxins:IsReady(unit) and not UnitIsUnit("target", unit) and Dispel(unit)
-    then
-        return A.CleanseToxins
-    end
-    
-    -- BlessingofSacrifice
-    if A.BlessingofSacrifice:IsReady(unit) and
-    not UnitIsUnit("target", unit) and
-    (
-        -- Blessing of Sanctuary
-        BoS(unit) or
-        -- Hand of Sacriface
-        HoS(unit, 35, true, true)
-    )
-    then
-        return A.BlessingofSacrifice
-    end
-    
-    -- BlessingofFreedom
-    if A.BlessingofFreedom:IsReady(unit) and not UnitIsUnit("target", unit) and HoF(unit)
-    then
-        return A.BlessingofFreedom
-    end
-    
-    -- BlessingofProtection
-    if A.BlessingofProtection:IsReady(unit) and not UnitIsUnit("target", unit) and BoP(unit)
-    then
-        return A.BlessingofProtection
-    end
-    
-end 
 
-A[6] = function(icon)
-    
-    --if RotationPassive(icon) then 
-    --    return true 
-    --end 
-    
-    local Arena = ArenaRotation("arena1")
-    if Arena then 
-        return Arena:Show(icon)
-    end 
+
+
+
+            return 0, "Interface\\Addons\\Rubim-RH\\Media\\prot.tga"
+            end
+
+    return 0, 135328
+end -- end APL
+
+RubimRH.Rotation.SetAPL(70, APL);
+
+local function PASSIVE()
+
 end
 
-A[7] = function(icon)
-    --if RotationPassive(icon) then 
-    --    return true 
-    --end 
-    
-    local Party = PartyRotation("party1") 
-    if Party then 
-        return Party:Show(icon)
-    end   
-    
-    local Arena = ArenaRotation("arena2")
-    if Arena then 
-        return Arena:Show(icon)
-    end 
-end
-
-A[8] = function(icon)
-    --if RotationPassive(icon) then 
-    --    return true 
-    --end 
-    
-    local Party = PartyRotation("party2") 
-    if Party then 
-        return Party:Show(icon)
-    end     
-    
-    local Arena = ArenaRotation("arena3")
-    if Arena then 
-        return Arena:Show(icon)
-    end 
-end
-
+RubimRH.Rotation.SetPASSIVE(70, PASSIVE);

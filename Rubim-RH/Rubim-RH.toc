@@ -36,6 +36,9 @@ Rotations\RG\sub.lua
 Rotations\PL\ret.lua
 Rotations\PL\prot.lua
 
+Rotations\WL\affli.lua
+
+
 Rotations\WR\arms.lua
 Rotations\WR\fury.lua
 Rotations\WR\prot.lua
@@ -50,6 +53,8 @@ Rotations\DR\feral.lua
 Rotations\MK\wind.lua
 Rotations\MK\brew.lua
 
+Rotations\DK\unholy.lua
+Rotations\DK\frost.lua
 
 Rotations\MG\fire.lua
 Rotations\MG\frost.lua

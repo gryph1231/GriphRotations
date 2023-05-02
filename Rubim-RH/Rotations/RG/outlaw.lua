@@ -36,46 +36,10 @@ RubimRH.Spell[260] = {
     ThistleTea             = Spell(381623),
     HiddenOpportunity      = Spell(383281),
     autoattack             = Spell(274738), -- ancestral call
-    Polymorph              = Spell(118),
-    Repentance             = Spell(20066),
-    HexPvP                 = Spell(51514),
-    WyvernSting            = Spell(19386),
-    Fear                   = Spell(5782),
-    Dreadblades            = Spell(343142),
-    Cyclone                = Spell(33786),
-    MindControl            = Spell(605),
-    RevivePet              = Spell(982),
-    MassDispel             = Spell(32375),
-    GreatestPyroblast      = Spell(203286),
-    ChaosBolt              = Spell(116858),
-    Rebirth                = Spell(20484),
-    SniperShot             = Spell(203155),
-    Temptation             = Spell(234143),
-    Temptationz            = Spell(260364), -- arcane pulse
+
     Penance                = Spell(47540),
     ColdBlood              = Spell(382245),
-    ColdBloodz             = Spell(107079), -- quaking palm
-    PrayerofHealing        = Spell(596),
-    HealPvP                = Spell(2060),
-    FlashHeal              = Spell(2061),
-    BindingHeal            = Spell(32546),
-    PrayerofMending        = Spell(33076),
-    DivineHymn             = Spell(64843),
-    Halo                   = Spell(120517),
-    ShadowMend             = Spell(186263),
-    PowerWordRadiance      = Spell(194509),
-    HolyWordSalvation      = Spell(265202),
-    GreaterHeal            = Spell(289666),
-    Tranquility            = Spell(740),
-    ImprovedAdrenalineRush = Spell(395422),
-    CounttheOdds           = Spell(381982),
-    CounttheOddsConduit    = Spell(341546),
-    Regrowth               = Spell(8936),
-    WildGrowth             = Spell(48438),
-    SwiftSlasher           = Spell(381988),
-    Nourish                = Spell(289022),
-    ChainHeal              = Spell(1064),
-    HealingSurge           = Spell(8004),
+
     ShadowDance            = Spell(185313),
     ShadowDanceBuff        = Spell(185422),
     ClosestTarget = Spell(256948), -- spatial rift
@@ -95,90 +59,7 @@ RubimRH.Spell[260] = {
     --Enrage
     LoadedDiceBuff = Spell(256171),
 
-    UndyingRage = Spell(333227),
-    DarkLotus = Spell(328740),
-    DrainFluids = Spell(334748),
-    MeatShield = Spell(323190),
-    NecroticBolt = Spell(320462),
-    FrostboltVolley = Spell(328667),
-    ShadowWell = Spell(320571),
-    RaspingScream = Spell(324293),
-    Goresplatter = Spell(338353),
-    RepairFlesh = Spell(327130), -- channel
-    Bonemend = Spell(335143),
-    SpiritBolt = Spell(323057),
-    BramblethornCoat = Spell(324776),
-    NourishTheForest = Spell(324914),
-    StimulateResistance = Spell(326046),
-    StimulateRegeneration = Spell(340544), -- channel
-    ParasiticPacification = Spell(337235),
-    ParasiticIncapacitation = Spell(337251),
-    ParasiticDomination = Spell(337253),
-    HarvestEssence = Spell(322938), -- channel
-    BurdenofKnowledge = Spell(317963),
-    DarkLash = Spell(317959),
-    RebelliousFist = Spell(327413),
-    DarkLance = Spell(327481),
-    ForswornDoctrine = Spell(317936),
-    InsidiousVenom = Spell(317661),
-    InternalStrife = Spell(327648),
-    ForcedConfession = Spell(328331),
-    GreaterMending = Spell(328295),
-    DarkPulse = Spell(328137),
-    CurseofObliteration = Spell(325876),
-    WickedBolt = Spell(338003),
-    CollectSins = Spell(325700),
-    TurntoStone = Spell(326607),
-    VolleyofPower = Spell(323552),
-    BoltofPower = Spell(323538),
-    Scribe = Spell(328707),
-    DeathsEmbrace = Spell(333875),
-    Shadowcore = Spell(334076),
-    Heal = Spell(332706),
-    ShadowWordPain = Spell(332707),
-    Smite = Spell(332705),
-    HealingWave = Spell(332612),
-    Hex = Spell(332605),
-    LightningDischarge = Spell(332608),
-    Lubricate = Spell(331379),
-    SelfCleaningCycle = Spell(332084),
-    Frostbolt = Spell(320008),
-    BarkArmor = Spell(321764),
-    WonderGrow = Spell(328016),
-    Flagellation = Spell(323654),
-    BindingFungus = Spell(329917),
-    CreepyCrawlers = Spell(329239),
-    CorrosiveGunk = Spell(319070),
-    FantheHammer = Spell(381846),
-    GrippingInfection = Spell(328180),
-    PestilenceBolt = Spell(328094),
-    ViralGlobs = Spell(321999),
-    EnvelopingWebbing = Spell(328475),
-    DrainEssence = Spell(320861),
-    SapLifeblood = Spell(321105),
-    Engorge = Spell(334653), -- channel
-    HungeringDrain = Spell(319654),
-    CurseofSuppression = Spell(326836),
-    Stoneskin = Spell(322433),
-    GloomBurst = Spell(326837),
-    BarbedShackles = Spell(335305),
-    ExplosiveAnger = Spell(336277),
-    PlagueBolt = Spell(320120),
-    NecromanticBolt = Spell(320300),
-    DemoralizingShout = Spell(330562),
-    BattleTrance = Spell(342139),
-    BindSoul = Spell(330810),
-    BoneSpear = Spell(342675),
-    GraveSpike = Spell(341771),
-    NecroticBoltVolley = Spell(330868),
-    SpiritFrost = Spell(330875),
-    FieryCantrip = Spell(326952),
-    NecroticBoltToP = Spell(330784),
-    MeatShieldToP = Spell(341977),
-    WitheringDischarge = Spell(341969),
-    DecayingFilth = Spell(330703),
-    Discharge = Spell(332196),
-    Steward = Spell(324739),
+
     EchoingReprimand = Spell(385616),
     EchoingReprimandCP2 = Spell(323558),
     EchoingReprimandCP3 = Spell(323559),
@@ -299,24 +180,6 @@ local function num(val)
     end
 end
 
-local function target_is_dummy()
-    local x = UnitName("target")
-    local targetisdummy = false
-
-    if x then
-        name = x:sub(-5)
-    end
-
-    if Target:Exists() then
-        if name == 'Dummy' then
-            targetisdummy = true
-        end
-    else
-        targetisdummy = false
-    end
-
-    return targetisdummy
-end
 
 local function RtB_BuffRemains()
     if not Cache.APLVar.RtB_BuffRemains then
@@ -408,48 +271,102 @@ end
 local function kickprio()
     -- list of m+ abilities that should be kicked
     local KickSpells = {
-    'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch', -- AA
-    'Suppress', 'Drifting Embers',  --CoS
-    'Thunderous Bolt','Holy Radiance','Cleansing Flames','Unruly Yell','Rune of Healing','Etch', 'Surge',-- HoV
-    'Roaring Blaze','Lightning Bolt','Flashfire','Cinderbolt', --RLP
-    'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Void Bolt','Death Blast','Necrotic Burst','Plague Spit', --SMBG
-    'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist', --TotJS
-    'Erratic Growth','Mystic Vapors','Heavy Tome','Waking Bane','Icy Bindings','Illusionary Bolt',--AV
-    'Disruptive Shout','Tempest','Stormbolt','Death Bolt Volley','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Thunderstrike', 'Desacrating Blow',-- NO
-    
+        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
+        'Healing Touch',    -- AA
+        'Suppress',
+        'Drifting Embers', 'Bewitch', --CoS
+        'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
+        'Surge',            -- HoV
+        'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
+        'Cinderbolt',       --RLP
+        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
+        'Plague Spit',      --SMBG
+        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
+        'Defiling Mist',    --TotJS
+        'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
+        'Illusionary Bolt', --AV
+        'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
+        'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
+        'Desacrating Blow', -- NO
+
     }
-    
-    local currentspellchannel = select(1,UnitChannelInfo('target'))
-    local currentspellcast = select(1, UnitCastingInfo('target'))
-    
-    for i = 1, #KickSpells do
-    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
-    return true
-    end
-    end
-    
-    return false
-    end
-    
-    local function stunprio()
+
+local currentspellchannel = select(1,UnitChannelInfo('target'))
+local currentspellcast = select(1, UnitCastingInfo('target'))
+
+for i = 1, #KickSpells do
+if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
+return true
+end
+end
+
+return false
+end
+
+local function stunprio()
     -- list of m+ abilities that should be stunned
     local stunspells = {
-    'Mystic Blast','Monotonous Lecture','Arcane Missiles','Astral Bomb','Healing Touch','Astral Whirlwind', -- AA
-    'Drifting Embers','Quelling Strike','Sound Alarm','Eye Storm','Hypnosis',  --CoS
-    'Thunderous Bolt','Holy Radiance', 'Rune of Healing','Etch','Surge',-- HoV
-    'Lightning Bolt','Flashfire', 'Tectonic Slam','Cold Claws','Ice Shield','Flame Dance','Cinderbolt',--RLP
-    'Shadow Mend','Shadow Bolts','Domination','Rending Voidlash','Death Blast','Plague Spit','Cry of Anguish', --SMBG
-    'Tidal Burst','Haunting Gaze','Haunting Scream','Cat Nap','Defiling Mist','Leg Sweep', --TotJS
-    'Mystic Vapors','Shriek','Piercing Shards','Waking Bane','Icy Bindings','Illusionary Bolt','Null Stomp',--AV
-    'Rally the Clan','Tempest','Stormbolt','Grasp of the Dead','Dominate','Storm Shock','Bloodcurdling Shout','Storm Bolt', 'Desacrating Blow',-- NO
-    
+        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
+        'Astral Whirlwind', -- AA
+        'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
+        'Hypnosis',         --CoS
+        'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
+        'Surge',            -- HoV
+        'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
+        'Cinderbolt',       --RLP
+        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
+        'Cry of Anguish',   --SMBG
+        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
+        'Leg Sweep',        --TotJS
+        'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
+        'Null Stomp',       --AV
+        'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
+        'Storm Bolt',
+        'Desacrating Blow', -- NO
+
+    }
+
+local currentspellchannel = select(1,UnitChannelInfo('target'))
+local currentspellcast = select(1, UnitCastingInfo('target'))
+
+for i = 1, #stunspells do
+if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+return true
+end
+end
+
+return false
+end
+
+
+local function blindprio()
+    -- list of m+ abilities that should be stunned
+    local blindspells = {
+        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
+        'Astral Whirlwind', -- AA
+        'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
+        'Hypnosis',         --CoS
+        'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
+        'Surge',            -- HoV
+        'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
+        'Cinderbolt',       --RLP
+        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
+        'Cry of Anguish',   --SMBG
+        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
+        'Leg Sweep',        --TotJS
+        'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
+        'Null Stomp',       --AV
+        'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
+        'Storm Bolt',
+        'Desacrating Blow', -- NO
+
     }
     
     local currentspellchannel = select(1,UnitChannelInfo('target'))
     local currentspellcast = select(1, UnitCastingInfo('target'))
     
-    for i = 1, #stunspells do
-    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+    for i = 1, #blindspells do
+    if currentspellcast == blindspells[i] or currentspellchannel == blindspells[i] then
     return true
     end
     end
@@ -476,14 +393,17 @@ end
 local function APL()
     kickprio()
     stunprio()
+    blindprio()
 HL.GetEnemies(10);
 HL.GetEnemies(12);
 HL.GetEnemies(20);
 HL.GetEnemies(25);
 HL.GetEnemies(30);
-
+castchannelTime = math.random(250, 500) / 1000
 
 IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
+
 
 local startTimeMS = select(4, UnitCastingInfo('target')) or 0
 local currentTimeMS = GetTime() * 1000
@@ -493,6 +413,8 @@ local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChanne
 local currentTimeMS = GetTime() * 1000
 local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
 channelTime = elapsedTimech/1000
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Functions/Top Priorities-------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -596,19 +518,26 @@ end
 -----------------------------------------------------------------Interrupts-----------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
                 --Kick
-                if (castTime>0.35 or channelTime>0.35) and 
+                if (castTime>castchannelTime or channelTime>castchannelTime) and 
                 RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() and kickprio() then
                 return S.Kick:Cast()
                 end
 
                 --Stun
 
-                if (castTime>0.1 or channelTime>0.1)  
-                and RubimRH.InterruptsON() and S.KidneyShot:IsReady(10) and Player:AffectingCombat() and stunprio() then
+                if (castTime>castchannelTime or channelTime>castchannelTime)  
+                and RubimRH.InterruptsON() and S.KidneyShot:IsReady(8) and Player:AffectingCombat() and stunprio() then
                 return S.KidneyShot:Cast()
                 end
 
   
+                --Blind
+
+                if (castTime>castchannelTime or channelTime>castchannelTime)  
+                and RubimRH.InterruptsON() and S.Blind:IsReady(15) and Player:AffectingCombat() and blindprio() then
+                return S.Blind:Cast()
+                end
+
 
 if (select(4, UnitAura("target", 1)) == "" and RubimRH.InterruptsON() and S.Shiv:IsCastableQueue(8) and Player:AffectingCombat() and Target:TimeToDie() > 4) then
 	return S.Shiv:Cast()

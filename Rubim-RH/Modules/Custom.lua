@@ -815,6 +815,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 -- MyHealthTracker.lua
 MyHealthTracker = {}
 local frame = CreateFrame("Frame")
@@ -896,6 +904,236 @@ frame:SetScript("OnUpdate", OnUpdate)
 frame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Enter combat
 frame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Leave combat
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED") -- Combat log event
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- ExistingLuaFile.lua
+
+-- Add the following code to your existing Lua file
+
+_G.partyOrRaidDead = function()
+    local deadCount = 0
+
+    local function checkDeadOrGhost(unitID)
+        if UnitExists(unitID) and UnitIsDeadOrGhost(unitID) then
+            deadCount = deadCount + 1
+        end
+    end
+
+    -- Check party members
+    local numPartyMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)
+    for i = 1, numPartyMembers - 1 do -- Subtract 1 to exclude the player themselves
+        local unitID = "party" .. i
+        checkDeadOrGhost(unitID)
+    end
+
+    -- Check raid members
+    local numRaidMembers = GetNumGroupMembers(LE_PARTY_CATEGORY_INSTANCE)
+    for i = 1, numRaidMembers do
+        local unitID = "raid" .. i
+        checkDeadOrGhost(unitID)
+    end
+
+    return deadCount
+end
+
+-- Create a new frame
+local frame = CreateFrame("Frame")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

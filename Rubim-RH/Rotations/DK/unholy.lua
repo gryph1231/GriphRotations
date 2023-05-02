@@ -1,4 +1,4 @@
---- ============================ HEADER ============================
+--- Localize Vars
 -- Addon
 local addonName, addonTable = ...;
 -- HeroLib
@@ -6,539 +6,679 @@ local HL = HeroLib;
 local Cache = HeroCache;
 local Unit = HL.Unit;
 local Player = Unit.Player;
-local MouseOver = Unit.MouseOver
 local Pet = Unit.Pet;
 local Target = Unit.Target;
 local Spell = HL.Spell;
 local Item = HL.Item;
-
+local MouseOver = Unit.MouseOver;
 -- Lua
+local pairs = pairs;
+local tableconcat = table.concat;
+local tostring = tostring;
+local tableinsert = table.insert;
 
---- ============================ CONTENT ============================
-RubimRH.Spell[252] = {
-    RaiseDead = Spell(46584),
-    ArmyoftheDead = Spell(42650),
-    DeathAndDecay = Spell(43265),
-    DeathAndDecayBuff = Spell(188290),
-    Apocalypse = Spell(275699),
-    Defile = Spell(152280),
-    Epidemic = Spell(207317),
-    DeathCoil = Spell(47541),
-    ScourgeStrike = Spell(55090),
-    ClawingShadows = Spell(207311),
-    FesteringStrike = Spell(85948),
-    BurstingSores = Spell(207264),
-    FesteringWoundDebuff = Spell(194310),
-    SuddenDoomBuff = Spell(81340),
-    UnholyFrenzyBuff = Spell(207289),
-    ChainsofIce = Spell(45524),
-    UnholyStrengthBuff = Spell(53365),
-    ColdHeartItemBuff = Spell(235599),
-    MasterofGhoulsBuff = Spell(246995),
-    DarkTransformation = Spell(63560),
-    SummonGargoyle = Spell(49206),
-    UnholyFrenzy = Spell(207289),
-    SoulReaper = Spell(130736),
-    UnholyBlight = Spell(115989),
-    Pestilence = Spell(277234),
-    MindFreeze = Spell(47528),
-    ArcaneTorrent = Spell(50613),
-    BloodFury = Spell(20572),
-    Berserking = Spell(26297),
-    TemptationBuff = Spell(234143),
-    Outbreak = Spell(77575),
-    VirulentPlagueDebuff = Spell(191587),
-    DarkSuccor = Spell(101568),
-    DeathStrike = Spell(49998),
-    DeathsAdvance = Spell(48265),
-    DeathGrip = Spell(49576),
-    DeathPact = Spell(48743),
-    IceboundFortitude = Spell(48792),
-    NecroticStrike = Spell(223829),
-    RaiseAlly = Spell(61999),
-    DarkSimulacrum = Spell(77606),
-    Asphyxiate = Spell(108194),
-    AntiMagicShell = Spell(48707),
-    MagusoftheDead = Spell(288417),
-	
-          --8.2 Essences
-          UnleashHeartOfAzeroth = Spell(280431),
-          BloodOfTheEnemy       = Spell(297108),
-          BloodOfTheEnemy2      = Spell(298273),
-          BloodOfTheEnemy3      = Spell(298277),
-          ConcentratedFlame     = Spell(295373),
-          ConcentratedFlame2    = Spell(299349),
-          ConcentratedFlame3    = Spell(299353),
-          GuardianOfAzeroth     = Spell(295840),
-          GuardianOfAzeroth2    = Spell(299355),
-          GuardianOfAzeroth3    = Spell(299358),
-          FocusedAzeriteBeam    = Spell(295258),
-          FocusedAzeriteBeam2   = Spell(299336),
-          FocusedAzeriteBeam3   = Spell(299338),
-          RecklessForceCounterBuff2     = Spell(298409),
-          RecklessForceCounterBuff  = Spell(302917),
-          RecklessForceBuff     = Spell(302932),
-          PurifyingBlast        = Spell(295337),
-          PurifyingBlast2       = Spell(299345),
-          PurifyingBlast3       = Spell(299347),
-          TheUnboundForce       = Spell(298452),
-          TheUnboundForce2      = Spell(299376),
-          TheUnboundForce3      = Spell(299378),
-          RippleInSpace         = Spell(302731),
-          RippleInSpace2        = Spell(302982),
-          RippleInSpace3        = Spell(302983),
-          WorldveinResonance    = Spell(295186),
-          WorldveinResonance2   = Spell(298628),
-          WorldveinResonance3   = Spell(299334),
-          MemoryOfLucidDreams   = Spell(298357),
-          MemoryOfLucidDreams2  = Spell(299372),
-          MemoryOfLucidDreams3  = Spell(299374),
-};
-local S = RubimRH.Spell[252]
-S.ClawingShadows.TextureSpellID = { 241367 }
-
-if not Item.DeathKnight then
-    Item.DeathKnight = {}
+if not Spell.DeathKnight then
+Spell.DeathKnight = {};
 end
+
+RubimRH.Spell[252] = {
+autoattack             = Spell(59752), -- will to survive (human racial)
+
+
+
+lust1                    = Spell(57724),
+lust2                    = Spell(57723),
+lust3                    = Spell(80354),
+lust4                    = Spell(95809),
+lust5                    = Spell(264689),
+lustAT                   = Spell(20549), -- war stomp
+
+ -- Abilities
+ DeathAndDecay                         = Spell(43265),
+ DeathCoil                             = Spell(47541),
+ -- Talents
+ AbominationLimb                       = Spell(383269),
+ AntiMagicShell                        = Spell(48707),
+ AntiMagicZone                         = Spell(51052),
+ Asphyxiate                            = Spell(221562),
+ Assimilation                          = Spell(374383),
+ ChainsofIce                           = Spell(45524),
+ CleavingStrikes                       = Spell(316916),
+ DeathStrike                           = Spell(49998),
+ EmpowerRuneWeapon                     = Spell(47568),
+ IceboundFortitude                     = Spell(48792),
+ IcyTalons                             = Spell(194878),
+ RaiseDead                             = Spell(46585),
+ RunicAttenuation                      = Spell(207104),
+ SacrificialPact                       = Spell(327574),
+ SoulReaper                            = Spell(343294),
+ UnholyGround                          = Spell(374265),
+ -- Buffs
+ AbominationLimbBuff                   = Spell(383269),
+ DeathAndDecayBuff                     = Spell(188290),
+ DeathsDueBuff                         = Spell(324165), -- SL Covenant. Remove after DF launch?
+ EmpowerRuneWeaponBuff                 = Spell(47568),
+ IcyTalonsBuff                         = Spell(194879),
+ UnholyStrengthBuff                    = Spell(53365),
+ DeathStrikeBuff                       = Spell(101568),
+ -- Debuffs
+ BloodPlague                     = Spell(55078),
+ FrostFever                     = Spell(55095),
+ SoulReaperDebuff                      = Spell(343294),
+ VirulentPlague                  = Spell(191587),
+ -- Racials
+ AncestralCall                         = Spell(274738),
+ ArcanePulse                           = Spell(260364),
+ ArcaneTorrent                         = Spell(50613),
+ BagofTricks                           = Spell(312411),
+ Berserking                            = Spell(26297),
+ BloodFury                             = Spell(20572),
+ Fireblood                             = Spell(265221),
+ LightsJudgment                        = Spell(255647),
+ -- Interrupts
+ MindFreeze                            = Spell(47528),
+ -- Custom
+ Pool                                  = Spell(999910),
+-- Abilities
+  -- Talents
+  Apocalypse                            = Spell(275699),
+  ArmyoftheDamned                       = Spell(276837),
+  ArmyoftheDead                         = Spell(42650),
+  BurstingSores                         = Spell(207264),
+  ClawingShadows                        = Spell(207311),
+  CoilofDevastation                     = Spell(390270),
+  CommanderoftheDead                    = Spell(390259),
+  DarkTransformation                    = Spell(63560),
+  Defile                                = Spell(152280),
+  EbonFever                             = Spell(207269),
+  Epidemic                              = Spell(207317),
+  EternalAgony                          = Spell(390268),
+  FesteringStrike                       = Spell(85948),
+  Festermight                           = Spell(377590),
+  GhoulishFrenzy                        = Spell(377587),
+  ImprovedDeathCoil                     = Spell(377580),
+  InfectedClaws                         = Spell(207272),
+  Morbidity                             = Spell(377592),
+  Outbreak                              = Spell(77575),
+  Pestilence                            = Spell(277234),
+  Plaguebringer                         = Spell(390175),
+  RottenTouch                           = Spell(390275),
+  ScourgeStrike                         = Spell(55090),
+  SummonGargoyle                        = Spell(207349),
+--   SummonGargoyle                        = Spell(49206),
+  Superstrain                           = Spell(390283),
+  UnholyAssault                         = Spell(207289),
+  UnholyBlight                          = Spell(115989),
+  UnholyCommand                         = Spell(316941),
+  UnholyPact                            = Spell(319230),
+  VileContagion                         = Spell(390279),
+  -- Buffs
+  FestermightBuff                       = Spell(377591),
+  PlaguebringerBuff                     = Spell(390178),
+  RunicCorruptionBuff                   = Spell(51460),
+  SuddenDoomBuff                        = Spell(81340),
+  UnholyAssaultBuff                     = Spell(207289),
+  -- Debuffs
+  DeathRotDebuff                        = Spell(377540),
+  FesteringWound                 = Spell(194310),
+  UnholyBlightDebuff                    = Spell(115994),
+
+
+
+
+}
+
+local S = RubimRH.Spell[252]
+local G = RubimRH.Spell[1] -- General Skills
+
+
+
+
 -- Items
 if not Item.DeathKnight then Item.DeathKnight = {} end
+
 Item.DeathKnight.Unholy = {
-  BattlePotionofStrength           = Item(163224),
-  RampingAmplitudeGigavoltEngine   = Item(165580),
-  BygoneBeeAlmanac                 = Item(163936),
-  JesHowler                        = Item(159627),
-  GalecallersBeak                  = Item(161379),
-  GrongsPrimalRage                 = Item(165574)
+phialofserenity = Item(177278),
+tempest = Item(171416),
+HPIcon = Item(169451),
+tx1 = Item(118330),
+tx2 = Item(114616),
+healingpot = Item(187802),
+healingpoticon = Item(169451),
+HealthStone = Item(5512), --health stone
+drums = Item(193470),
+
 };
 local I = Item.DeathKnight.Unholy;
 
 
--- Rotation Var
-local ShouldReturn; -- Used to get the return string
-local poolingforgargoyle
-
-local function GargoyleDuration()
-    local gargoyleDuration = 0
-    for i = 1, 5 do
-        local active, totemName, startTime, duration, textureId = GetTotemInfo(i)
-        if active == true and textureId == 458967 and startTime ~= nil and duration ~= nil then
-            gargoyleDuration = startTime + duration - GetTime()
-        end
-    end
-    return gargoyleDuration
-end
-
-function Unit:GargoyleActive()
-    if GargoyleDuration() > 0 then
-        return true
-    else
-        return false
-    end
-end
-
--- Variables
-local VarPoolingForGargoyle = 0;
-
-local EnemyRanges = { "Melee", 5, 8, 10, 30 }
-local function UpdateRanges()
-    for _, i in ipairs(EnemyRanges) do
-        HL.GetEnemies(i);
-    end
-end
-
-local function num(val)
-    if val then
-        return 1
-    else
-        return 0
-    end
-end
-
-local function bool(val)
-    return val ~= 0
-end
-
-local OffensiveCDs = {
-    S.DarkTransformation,
-    S.UnholyFrenzy,
-    S.Apocalypse,
-    S.ArmyoftheDead,
-    S.DeathAndDecay,
     
 
-}
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+frame:SetScript("OnEvent", UpdateTemplarsVerdictSpellId)
 
-local function UpdateCDs()
-    if RubimRH.CDsON() then
-        for i, spell in pairs(OffensiveCDs) do
-            if not spell:IsEnabledCD() then
-                RubimRH.delSpellDisabledCD(spell:ID())
-            end
-        end
 
-    end
-    if not RubimRH.CDsON() then
-        for i, spell in pairs(OffensiveCDs) do
-            if spell:IsEnabledCD() then
-                RubimRH.addSpellDisabledCD(spell:ID())
-            end
-        end
-    end
+
+
+local function UseItems()
+
+local trinket1 = GetInventoryItemID("player", 13)
+local trinket2 = GetInventoryItemID("player", 14)
+local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+if trinket1ready then
+return I.tx1:Cast()
+end
+if trinket2ready then
+return I.tx2:Cast()
+end
 end
 
-local function DetermineEssenceRanks()
-    S.BloodOfTheEnemy = S.BloodOfTheEnemy2:IsAvailable() and S.BloodOfTheEnemy2 or S.BloodOfTheEnemy
-    S.BloodOfTheEnemy = S.BloodOfTheEnemy3:IsAvailable() and S.BloodOfTheEnemy3 or S.BloodOfTheEnemy
-    S.MemoryOfLucidDreams = S.MemoryOfLucidDreams2:IsAvailable() and S.MemoryOfLucidDreams2 or S.MemoryOfLucidDreams
-    S.MemoryOfLucidDreams = S.MemoryOfLucidDreams3:IsAvailable() and S.MemoryOfLucidDreams3 or S.MemoryOfLucidDreams
-    S.PurifyingBlast = S.PurifyingBlast2:IsAvailable() and S.PurifyingBlast2 or S.PurifyingBlast
-    S.PurifyingBlast = S.PurifyingBlast3:IsAvailable() and S.PurifyingBlast3 or S.PurifyingBlast
-    S.RippleInSpace = S.RippleInSpace2:IsAvailable() and S.RippleInSpace2 or S.RippleInSpace
-    S.RippleInSpace = S.RippleInSpace3:IsAvailable() and S.RippleInSpace3 or S.RippleInSpace
-    S.ConcentratedFlame = S.ConcentratedFlame2:IsAvailable() and S.ConcentratedFlame2 or S.ConcentratedFlame
-    S.ConcentratedFlame = S.ConcentratedFlame3:IsAvailable() and S.ConcentratedFlame3 or S.ConcentratedFlame
-    S.TheUnboundForce = S.TheUnboundForce2:IsAvailable() and S.TheUnboundForce2 or S.TheUnboundForce
-    S.TheUnboundForce = S.TheUnboundForce3:IsAvailable() and S.TheUnboundForce3 or S.TheUnboundForce
-    S.WorldveinResonance = S.WorldveinResonance2:IsAvailable() and S.WorldveinResonance2 or S.WorldveinResonance
-    S.WorldveinResonance = S.WorldveinResonance3:IsAvailable() and S.WorldveinResonance3 or S.WorldveinResonance
-    S.FocusedAzeriteBeam = S.FocusedAzeriteBeam2:IsAvailable() and S.FocusedAzeriteBeam2 or S.FocusedAzeriteBeam
-    S.FocusedAzeriteBeam = S.FocusedAzeriteBeam3:IsAvailable() and S.FocusedAzeriteBeam3 or S.FocusedAzeriteBeam
-    S.RecklessForceCounterBuff = S.RecklessForceCounterBuff2:IsAvailable() and S.RecklessForceCounterBuff2 or S.RecklessForceCounterBuff
-end
+
+    
+
+    local function kickprio()
+        -- list of m+ abilities that should be kicked
+        local KickSpells = {
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
+            'Healing Touch',    -- AA
+            'Suppress',
+            'Drifting Embers', 'Bewitch', --CoS
+            'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
+            'Surge',            -- HoV
+            'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
+            'Cinderbolt',       --RLP
+            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
+            'Plague Spit',      --SMBG
+            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
+            'Defiling Mist',    --TotJS
+            'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
+            'Illusionary Bolt', --AV
+            'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
+            'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
+            'Desacrating Blow', -- NO
+    
+        }
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #KickSpells do
+    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+    
+    local function stunprio()
+        -- list of m+ abilities that should be stunned
+        local stunspells = {
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
+            'Astral Whirlwind', -- AA
+            'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
+            'Hypnosis',         --CoS
+            'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
+            'Surge',            -- HoV
+            'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
+            'Cinderbolt',       --RLP
+            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
+            'Cry of Anguish',   --SMBG
+            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
+            'Leg Sweep',        --TotJS
+            'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
+            'Null Stomp',       --AV
+            'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
+            'Storm Bolt',
+            'Desacrating Blow', -- NO
+    
+        }
+    
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #stunspells do
+    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+    
+        local function combatmobs40()
+            local totalmobsincombat = 0
+        
+            for id = 1, 40 do
+                local unitID = "nameplate" .. id
+                local unitName = UnitName(unitID)
+                if (UnitCanAttack("player", unitID) and UnitHealthMax(unitID) > 5
+                 and UnitAffectingCombat(unitID) and IsItemInRange(835, unitID) 
+                 or (unitName and string.sub(unitName, -5) == "Dummy" and IsItemInRange(32321, unitID))) then
+                    totalmobsincombat = totalmobsincombat + 1
+                end
+            end
+        
+            return totalmobsincombat
+        end
+
+
 
 local function APL()
-    local Precombat, Aoe, ColdHeart, Cooldowns, Generic
-    UpdateRanges()
-    UpdateCDs()
-    if QueueSkill() ~= nil then
-        return QueueSkill()
-    end
-    Precombat = function()
-        -- flask
-        -- food
-        -- augmentation
-        -- snapshot_stats
-        -- potion
-        -- raise_dead
-        if S.RaiseDead:IsReady() and not Pet:IsActive() then
+    combatmobs40()
+    stunprio()
+    kickprio()
+
+        HL.GetEnemies(5);
+        HL.GetEnemies("Melee");
+        HL.GetEnemies(8);
+        HL.GetEnemies(10);
+        HL.GetEnemies(12);
+        HL.GetEnemies(15);
+        HL.GetEnemies(20);
+        HL.GetEnemies(25);
+        HL.GetEnemies(30);
+        HL.GetEnemies(35);
+        HL.GetEnemies(40);
+        Enemies5y = Cache.EnemiesCount[5]
+        Enemies8y = Cache.EnemiesCount[8]
+        Enemies10y = Cache.EnemiesCount[10]
+        Enemies12y = Cache.EnemiesCount[12]
+        Enemies15y = Cache.EnemiesCount[15]
+        Enemies20y = Cache.EnemiesCount[20]
+        Enemies25y = Cache.EnemiesCount[25]
+        Enemies30y = Cache.EnemiesCount[30]
+        Enemies35y = Cache.EnemiesCount[35]
+        Enemies40y = Cache.EnemiesCount[40]
+
+        local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
+
+     
+        tarSpeed, _, _, _ = GetUnitSpeed('target')
+        consecrationdrop = Target:IsInRange(8) and
+        (Player:MovingFor() <= Player:GCD() or ( tarSpeed == 0))
+
+    
+        -- Spell Queue
+        if Player:IsChanneling() or Player:IsCasting() then
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+        end
+
+
+
+--item ids for wotlk range checks with nameplate
+--<5 37727
+--<8 34368
+--<10 32321
+--<15 33069
+--<20 10645
+--<25 13289
+--<30 835
+--<35 18904
+--<40 4945 -- check
+
+        IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+        HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
+
+
+        validmobsinrange8y = combatmobs40() * .7
+        validmobsinrange15y = combatmobs40() * .7
+    
+    
+        if Enemies8y > validmobsinrange8y and combatmobs40() > 0 then
+            aoecds8y = true
+        else
+            aoecds8y = false
+        end
+    
+
+        
+        if Enemies15y > validmobsinrange15y and combatmobs40() > 0 then
+            aoecds15y = true
+        else
+            aoecds15y = false
+        end
+    
+-- print('total mobs in 8y range:', Enemies8y)
+-- print('70% mobs 40y in combat:',validmobsinrange8y)
+
+local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+castTime = elapsedTimeca / 1000
+local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+channelTime = elapsedTimech/1000
+
+
+
+        if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) 
+        and (GetItemCooldown(191380) == 0 or GetItemCooldown(191379) == 0 or GetItemCooldown(191378) == 0) 
+        and (GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1 or GetItemCount(191378) >= 1) 
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+        end
+
+
+
+        if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+        return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+        end
+
+        if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+        (
+        Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or
+        Player:Debuff(S.lust5)) then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+
+
+        if RubimRH.QueuedSpell():IsReadyQueue() then
+        return RubimRH.QueuedSpell():Cast()
+        end
+
+        if not RubimRH.queuedSpell[1]:CooldownUp() 
+        or Cache.EnemiesCount[20] == 0 
+        or not Player:AffectingCombat()
+        then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+        end
+
+
+        if IsUsableSpell('Raise Dead') and S.RaiseDead:CooldownRemains()==0
+        and (UnitExists("pet") ==false or UnitIsDeadOrGhost("pet")==true) then
             return S.RaiseDead:Cast()
         end
-        -- army_of_the_dead
-        --if S.ArmyoftheDead:IsReady() and HL.BMPullTime() <= select(2, GetRuneCooldown(1)) - 1 then
-            --return S.ArmyoftheDead:Cast()
-        --end
-        -- use_item,name=azsharas_font_of_power
-    end
-    
-	Aoe = function()
-        -- death_and_decay,if=cooldown.apocalypse.remains
-        if S.DeathAndDecay:IsReady('Melee') and (bool(S.Apocalypse:CooldownRemainsP())) then
-            return S.DeathAndDecay:Cast()
-        end
-        -- defile
-        if S.Defile:IsReady('Melee') and Cache.EnemiesCount['Melee'] >= 1 then
-            return S.Defile:Cast()
-        end
-        -- epidemic,if=death_and_decay.ticking&rune<2&!variable.pooling_for_gargoyle
-        if S.Epidemic:IsAvailable(30) and S.Epidemic:IsReady() and Player:BuffP(S.DeathAndDecayBuff) and Player:Rune() < 2 and not bool(VarPoolingForGargoyle) then
-            return S.Epidemic:Cast()
-        end
-        -- death_coil,if=death_and_decay.ticking&rune<2&!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and Player:BuffP(S.DeathAndDecayBuff) and Player:Rune() < 2 and not bool(VarPoolingForGargoyle) then
-            return S.DeathCoil:Cast()
-        end
-        -- scourge_strike,if=death_and_decay.ticking&cooldown.apocalypse.remains
-        if S.ScourgeStrike:IsReady('Melee') and (Player:BuffP(S.DeathAndDecayBuff) and bool(S.Apocalypse:CooldownRemainsP())) then
-            return S.ScourgeStrike:Cast()
-        end
-        -- clawing_shadows,if=death_and_decay.ticking&cooldown.apocalypse.remains
-        if S.ClawingShadows:IsReadyMorph(30) and (Player:BuffP(S.DeathAndDecayBuff) and bool(S.Apocalypse:CooldownRemainsP())) then
-            return S.ClawingShadows:Cast()
-        end
-        -- epidemic,if=!variable.pooling_for_gargoyle
-        if S.Epidemic:IsAvailable(30) and S.Epidemic:IsReady() and not bool(VarPoolingForGargoyle) then
-            return S.Epidemic:Cast()
-        end
-        -- festering_strike,target_if=debuff.festering_wound.stack<=1&cooldown.death_and_decay.remains
-        if S.FesteringStrike:IsReady('Melee') and Target:DebuffStackP(S.FesteringWoundDebuff) <= 1 and bool(S.DeathAndDecay:CooldownRemainsP()) then
-            return S.FesteringStrike:Cast()
-        end
-         -- festering_strike,if=talent.bursting_sores.enabled&spell_targets.bursting_sores>=2&debuff.festering_wound.stack<=1
-         if S.FesteringStrike:IsReady('Melee') and (S.BurstingSores:IsAvailable() and Cache.EnemiesCount[5] >= 2 and Target:DebuffStackP(S.FesteringWoundDebuff) <= 1) then
-            return S.FesteringStrike:Cast()
-        end
-        -- death_coil,if=buff.sudden_doom.react&rune.deficit>=4
-        if S.DeathCoil:IsReady(30) and (bool(Player:BuffStackP(S.SuddenDoomBuff)) and Player:Rune() <= 2) then
-            return S.DeathCoil:Cast()
-        end
-        -- death_coil,if=buff.sudden_doom.react&!variable.pooling_for_gargoyle|pet.gargoyle.active
-        if S.DeathCoil:IsReady(30) and (bool(Player:BuffStackP(S.SuddenDoomBuff)) and not bool(VarPoolingForGargoyle) or Player:GargoyleActive()) then
-            return S.DeathCoil:Cast()
-        end
-        -- death_coil,if=runic_power.deficit<14&(cooldown.apocalypse.remains>5|debuff.festering_wound.stack>4)&!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and (Player:RunicPowerDeficit() < 14 and (S.Apocalypse:CooldownRemainsP() > 5 or Target:DebuffStackP(S.FesteringWoundDebuff) > 4) and not bool(VarPoolingForGargoyle)) then
-            return S.DeathCoil:Cast()
-        end
-        -- scourge_strike,if=((debuff.festering_wound.up&cooldown.apocalypse.remains>5)|debuff.festering_wound.stack>4)&cooldown.army_of_the_dead.remains>5
-        if S.ScourgeStrike:IsReady('Melee') and (((Target:DebuffP(S.FesteringWoundDebuff) and S.Apocalypse:CooldownRemainsP() > 5) or Target:DebuffStackP(S.FesteringWoundDebuff) > 4) and (S.ArmyoftheDead:CooldownRemainsP() > 5 or not Player:HasHeroism()))  then
-            return S.ScourgeStrike:Cast()
-        end
-        -- clawing_shadows,if=((debuff.festering_wound.up&cooldown.apocalypse.remains>5)|debuff.festering_wound.stack>4)&cooldown.army_of_the_dead.remains>5
-        if S.ClawingShadows:IsReadyMorph(30) and (((Target:DebuffP(S.FesteringWoundDebuff) and S.Apocalypse:CooldownRemainsP() > 5) or Target:DebuffStackP(S.FesteringWoundDebuff) > 4) and (S.ArmyoftheDead:CooldownRemainsP() > 5 or not Player:HasHeroism())) then
-            return S.ClawingShadows:Cast()
-        end
-        -- death_coil,if=runic_power.deficit<20&!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and Player:RunicPowerDeficit() < 20 and not bool(VarPoolingForGargoyle) then
-            return S.DeathCoil:Cast()
-        end
-        -- festering_strike,if=((((debuff.festering_wound.stack<4&!buff.unholy_frenzy.up)|debuff.festering_wound.stack<3)&cooldown.apocalypse.remains<3)|debuff.festering_wound.stack<1)&cooldown.army_of_the_dead.remains>5
-        if S.FesteringStrike:IsReady('Melee') and (((((Target:DebuffStackP(S.FesteringWoundDebuff) < 4 and not Player:BuffP(S.UnholyFrenzyBuff)) or Target:DebuffStackP(S.FesteringWoundDebuff) < 3) and S.Apocalypse:CooldownRemainsP() < 3) or Target:DebuffStackP(S.FesteringWoundDebuff) < 1) and (S.ArmyoftheDead:CooldownRemainsP() > 5 or not Player:HasHeroism())) then
-            return S.FesteringStrike:Cast()
-        end
-        -- death_coil,if=!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and not bool(VarPoolingForGargoyle) then
-            return S.DeathCoil:Cast()
-        end
-        return 0, "Interface\\Addons\\Rubim-RH\\Media\\pool.tga"
-    end
-	
-    Cooldowns = function()
-        -- army_of_the_dead
-        if S.ArmyoftheDead:IsCastableP(30) and Player:HasHeroism() then
-            return S.ArmyoftheDead:Cast()
-        end
-        -- apocalypse,if=debuff.festering_wound.stack>=4
-        if S.Apocalypse:IsReady('Melee') and (Target:DebuffStackP(S.FesteringWoundDebuff) >= 4) then
-            return S.Apocalypse:Cast()
-        end
-        -- dark_transformation,if=!raid_event.adds.exists|raid_event.adds.in>15
-        if S.DarkTransformation:IsReady() and (not (Cache.EnemiesCount[30] > 1) or 10000000000 > 15) then
-            return S.DarkTransformation:Cast()
-        end
-        -- summon_gargoyle,if=runic_power.deficit<14
-        if S.SummonGargoyle:IsReady(30) and (Player:RunicPowerDeficit() < 14) then
-            return S.SummonGargoyle:Cast()
-        end
-        -- unholy_frenzy,if=debuff.festering_wound.stack<4&!(equipped.ramping_amplitude_gigavolt_engine|azerite.magus_of_the_dead.enabled)
-        if S.UnholyFrenzy:IsReady('Melee') and (Target:DebuffStackP(S.FesteringWoundDebuff) < 4 and not (I.RampingAmplitudeGigavoltEngine:IsEquipped() or S.MagusoftheDead:AzeriteEnabled())) then
-            return S.UnholyFrenzy:Cast()
-        end
-        -- unholy_frenzy,if=cooldown.apocalypse.remains<2&(equipped.ramping_amplitude_gigavolt_engine|azerite.magus_of_the_dead.enabled)
-        if S.UnholyFrenzy:IsReady('Melee') and (S.Apocalypse:CooldownRemainsP() < 2 and (I.RampingAmplitudeGigavoltEngine:IsEquipped() or S.MagusoftheDead:AzeriteEnabled())) then
-            return S.UnholyFrenzy:Cast()
-        end
-        -- unholy_frenzy,if=active_enemies>=2&((cooldown.death_and_decay.remains<=gcd&!talent.defile.enabled)|(cooldown.defile.remains<=gcd&talent.defile.enabled))
-        if S.UnholyFrenzy:IsReady('Melee') and (Cache.EnemiesCount[30] >= 2 and ((S.DeathAndDecay:CooldownRemainsP() <= Player:GCD() and not S.Defile:IsAvailable()) or (S.Defile:CooldownRemainsP() <= Player:GCD() and S.Defile:IsAvailable()))) then
-            return S.UnholyFrenzy:Cast()
-        end
-        -- soul_reaper,target_if=target.time_to_die<8&target.time_to_die>4
-        if S.SoulReaper:IsReady('Melee') and Target:TimeToDie() < 8 and Target:TimeToDie() > 4 then
-            return S.SoulReaper:Cast()
-        end
-        -- soul_reaper,if=(!raid_event.adds.exists|raid_event.adds.in>20)&rune<=(1-buff.unholy_frenzy.up)
-        if S.SoulReaper:IsReady('Melee') and ((not (Cache.EnemiesCount[30] > 1) or 10000000000 > 20) and Player:Rune() <= (1 - num(Player:BuffP(S.UnholyFrenzyBuff)))) then
-            return S.SoulReaper:Cast()
-        end
-        -- unholy_blight
-        if S.UnholyBlight:IsReady('Melee') and (true) then
-            return S.UnholyBlight:Cast()
-        end
-    end
-    Essences = function()
-        -- memory_of_lucid_dreams,if=rune.time_to_1>gcd&runic_power<40
-        if S.MemoryOfLucidDreams:IsReady('Melee') and (Player:RuneTimeToX(1) > Player:GCD() and Player:RunicPower() < 40) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- blood_of_the_enemy,if=(cooldown.death_and_decay.remains&spell_targets.death_and_decay>1)|(cooldown.defile.remains&spell_targets.defile>1)|(cooldown.apocalypse.remains&cooldown.death_and_decay.ready)
-        if S.BloodOfTheEnemy:IsReady('Melee') and ((bool(S.DeathAndDecay:CooldownRemainsP()) and Cache.EnemiesCount[8] > 1) or (bool(S.Defile:CooldownRemainsP()) and Cache.EnemiesCount[8] > 1) or (bool(S.Apocalypse:CooldownRemainsP()) and S.DeathAndDecay:IsReady())) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- guardian_of_azeroth,if=cooldown.apocalypse.ready
-        if S.GuardianOfAzeroth:IsReady() and (S.Apocalypse:IsReady()) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<11
-        if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounterBuff) < 11) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- focused_azerite_beam,if=!death_and_decay.ticking
-        if S.FocusedAzeriteBeam:IsReady(30) and (not Player:BuffP(S.DeathAndDecayBuff)) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- concentrated_flame,if=dot.concentrated_flame_burn.remains=0
-        if S.ConcentratedFlame:IsReady('Melee') then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- purifying_blast,if=!death_and_decay.ticking
-        if S.PurifyingBlast:IsReady() and (not Player:BuffP(S.DeathAndDecayBuff)) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- worldvein_resonance,if=!death_and_decay.ticking
-        if S.WorldveinResonance:IsReady() and (not Player:BuffP(S.DeathAndDecayBuff)) then
-            return S.UnleashHeartOfAzeroth:Cast()
-        end
-        -- ripple_in_space,if=!death_and_decay.ticking
-        if S.RippleInSpace:IsReady() and (not Player:BuffP(S.DeathAndDecayBuff)) then
-            return S.UnleashHeartOfAzeroth:Cast()
+
+        if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target) then 
+
+
+        if not IsCurrentSpell(6603) and Player:CanAttack(Target) and not Target:IsDeadOrGhost()
+        and Target:AffectingCombat() and Target:IsInRange(20) then
+        return S.autoattack:Cast()
         end
 
-    end
-    
-    Generic = function()
-        -- death_coil,if=buff.sudden_doom.react&!variable.pooling_for_gargoyle|pet.gargoyle.active
-        if S.DeathCoil:IsReady(30) and (Player:BuffP(S.SuddenDoomBuff) and not bool(VarPoolingForGargoyle) or Player:GargoyleActive()) then
-            return S.DeathCoil:Cast()
+        if RubimRH.CDsON() and Target:IsInRange(5)
+        and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
         end
-        -- death_coil,if=runic_power.deficit<14&(cooldown.apocalypse.remains>5|debuff.festering_wound.stack>4)&!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and (Player:RunicPowerDeficit() < 14 and (S.Apocalypse:CooldownRemainsP() > 5 or Target:DebuffStackP(S.FesteringWoundDebuff) > 4) and not bool(VarPoolingForGargoyle)) then
-            return S.DeathCoil:Cast()
-        end
-        -- death_and_decay,if=talent.pestilence.enabled&cooldown.apocalypse.remains
-        if S.DeathAndDecay:IsReady('Melee') and Cache.EnemiesCount[8] >= 1 and (S.Pestilence:IsAvailable() and S.Apocalypse:CooldownDown()) then
-            return S.DeathAndDecay:Cast()
-        end
-        -- defile,if=cooldown.apocalypse.remains
-        if S.Defile:IsReady('Melee') and S.Apocalypse:CooldownDown() and Cache.EnemiesCount[8] >= 1 then
-            return S.Defile:Cast()
-        end
-        -- scourge_strike,if=((debuff.festering_wound.up&cooldown.apocalypse.remains>5)|debuff.festering_wound.stack>4)&cooldown.army_of_the_dead.remains>5
-        if S.ScourgeStrike:IsReady(30) and (((Target:DebuffP(S.FesteringWoundDebuff) and S.Apocalypse:CooldownRemainsP() > 5) or Target:DebuffStackP(S.FesteringWoundDebuff) > 4) and (S.ArmyoftheDead:CooldownRemainsP() > 5 or not Player:HasHeroism())) then
-            return S.ScourgeStrike:Cast()
-        end
-        -- clawing_shadows,if=((debuff.festering_wound.up&cooldown.apocalypse.remains>5)|debuff.festering_wound.stack>4)&cooldown.army_of_the_dead.remains>5
-        if S.ClawingShadows:IsReadyMorph(30) and (((Target:DebuffP(S.FesteringWoundDebuff) and S.Apocalypse:CooldownRemainsP() > 5) or Target:DebuffStackP(S.FesteringWoundDebuff) > 4) and (S.ArmyoftheDead:CooldownRemainsP() > 5 or not Player:HasHeroism())) then
-            return S.ClawingShadows:Cast()
-        end
-        -- death_coil,if=runic_power.deficit<20&!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and (Player:RunicPowerDeficit() < 20 and not bool(VarPoolingForGargoyle)) then
-            return S.DeathCoil:Cast()
-        end
-        -- festering_strike,if=((((debuff.festering_wound.stack<4&!buff.unholy_frenzy.up)|debuff.festering_wound.stack<3)&cooldown.apocalypse.remains<3)|debuff.festering_wound.stack<1)&cooldown.army_of_the_dead.remains>5
-        if S.FesteringStrike:IsReady('Melee') and (((((Target:DebuffStackP(S.FesteringWoundDebuff) < 4 and not Player:BuffP(S.UnholyFrenzyBuff)) or Target:DebuffStackP(S.FesteringWoundDebuff) < 3) and (S.Apocalypse:CooldownRemainsP() < 3 or not Player:HasHeroism())) or Target:DebuffStackP(S.FesteringWoundDebuff) < 1) and (S.ArmyoftheDead:CooldownRemainsP() > 5 or not Player:HasHeroism())) then
-            return S.FesteringStrike:Cast()
-        end
-        -- death_coil,if=!variable.pooling_for_gargoyle
-        if S.DeathCoil:IsReady(30) and (not bool(VarPoolingForGargoyle)) then
-            return S.DeathCoil:Cast()
-        end
-    end
-    
-    if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000) * 2) or Player:IsChanneling() then
-        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
-    end 
-    -- call precombat
-    if not Player:AffectingCombat() and RubimRH.PrecombatON() then
-        if Precombat() ~= nil then
-            return Precombat()
-        end
-        return 0, 462338
-    end
-   
-   
-    -- Antimagic Shell
-	if S.AntiMagicShell:IsAvailable() and S.AntiMagicShell:CooldownRemainsP() < 0.1 and Player:HealthPercentage() <= RubimRH.db.profile[252].sk5 then
-        return S.AntiMagicShell:Cast()
-    end
-	
 
-    --Mov Speed
-    if Player:MovingFor() >= 1 and S.DeathsAdvance:IsReadyMorph() then
-        return S.DeathsAdvance:Cast()
-    end
 
-    -- custom
-    if Player:BuffP(S.DarkSuccor) and S.DeathStrike:IsReady("Melee") and Player:HealthPercentage() <= RubimRH.db.profile[252].sk1 then
-        return S.DeathStrike:Cast()
-    end
+        -- if S.HammerofWrath:IsReady() and UnitName('target') == 'Explosives' then
+        -- return S.HammerofWrath:Cast()
+        -- end
 
-    if Player:BuffP(S.DarkSuccor) and S.DeathStrike:IsReady("Melee") and Player:HealthPercentage() <= 95 and Player:BuffRemains(S.DarkSuccor) <= 2 then
-        return S.DeathStrike:Cast()
-    end
+        -- if S.Judgment:IsReady() and UnitName('target') == 'Explosives' then
+        -- return S.Judgment:Cast()
+        -- end
 
-    if S.DeathStrike:IsReady("Melee") and Player:HealthPercentage() <= RubimRH.db.profile[252].sk3 then
-        if S.DeathStrike:IsReady() then
-            return S.DeathStrike:Cast()
-        else
-            S.DeathStrike:Queue()
-            return 0, "Interface\\Addons\\Rubim-RH\\Media\\pool.tga"
-        end
-    end
+        -- if (IsUsableSpell("Templar Slash") or S.TemplarStrike:IsReady() or S.CrusaderStrike:IsReady()) and UnitName('target') == 'Explosives' then
+        -- return S.crusaderstrike:Cast()
+        -- end
 
-    if S.DeathPact:IsReady() and Player:HealthPercentage() <= RubimRH.db.profile[252].sk4 then
-        return S.DeathPact:Cast()
-    end
+                -- --Kick
+                if (castTime > 0.1 or channelTime > 0.1)
+                and select(8, UnitCastingInfo("target")) == false and
+                RubimRH.InterruptsON() and S.MindFreeze:IsReady(8) and Player:AffectingCombat() then
+                return S.MindFreeze:Cast()
+            end
 
-    -- auto_attack
-    -- mind_freeze
-    if S.MindFreeze:IsReady() and RubimRH.InterruptsON() and Target:IsInterruptible() and (true) then
-        return S.MindFreeze:Cast()
-    end
+                -- --Stun
 
-    if S.RaiseDead:IsReady() and not Pet:IsActive() then
-        return S.RaiseDead:Cast()
-    end
-    -- variable,name=pooling_for_gargoyle,value=cooldown.summon_gargoyle.remains<5&talent.summon_gargoyle.enabled
-    if (true) then
-        VarPoolingForGargoyle = num(S.SummonGargoyle:CooldownRemainsP() < 5 and S.SummonGargoyle:IsAvailable())
-    end
-    -- arcane_torrent,if=runic_power.deficit>65&(pet.gargoyle.active|!talent.summon_gargoyle.enabled)&rune.deficit>=5
-    if S.ArcaneTorrent:IsReady() and (Player:RunicPowerDeficit() > 65 and (Player:GargoyleActive() or not S.SummonGargoyle:IsAvailable()) and Player:Rune() <= 1) then
-        return S.ArcaneTorrent:Cast()
-    end
-    -- blood_fury,if=pet.gargoyle.active|!talent.summon_gargoyle.enabled
-    if S.BloodFury:IsReady() and RubimRH.CDsON() and (Player:GargoyleActive() or not S.SummonGargoyle:IsAvailable()) then
-        return S.BloodFury:Cast()
-    end
-    -- berserking,if=buff.unholy_frenzy.up|pet.gargoyle.active|!talent.summon_gargoyle.enabled
-    if S.Berserking:IsReady() and RubimRH.CDsON() and (Player:GargoyleActive() or not S.SummonGargoyle:IsAvailable()) then
-        return S.Berserking:Cast()
-    end
-    -- use_items,if=time>20|!equipped.ramping_amplitude_gigavolt_engine|!equipped.vision_of_demise
-    -- name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.stack<1
-    -- name=ashvanes_razor_coral,if=(cooldown.apocalypse.ready&debuff.festering_wound.stack>=4&debuff.razor_coral_debuff.stack>=1)|buff.unholy_frenzy.up
-    -- use_item,name=vision_of_demise,if=(cooldown.apocalypse.ready&debuff.festering_wound.stack>=4&essence.vision_of_perfection.enabled)|buff.unholy_frenzy.up|pet.gargoyle.active
-    -- use_item,name=ramping_amplitude_gigavolt_engine,if=cooldown.apocalypse.remains<2|talent.army_of_the_damned.enabled|raid_event.adds.in<5
-    -- use_item,name=bygone_bee_almanac,if=cooldown.summon_gargoyle.remains>60|!talent.summon_gargoyle.enabled&time>20|!equipped.ramping_amplitude_gigavolt_engine
-    -- use_item,name=jes_howler,if=pet.gargoyle.active|!talent.summon_gargoyle.enabled&time>20|!equipped.ramping_amplitude_gigavolt_engine
-    -- use_item,name=galecallers_beak,if=pet.gargoyle.active|!talent.summon_gargoyle.enabled&time>20|!equipped.ramping_amplitude_gigavolt_engine
-    -- use_item,name=grongs_primal_rage,if=rune<=3&(time>20|!equipped.ramping_amplitude_gigavolt_engine)
-    -- potion,if=cooldown.army_of_the_dead.ready|pet.gargoyle.active|buff.unholy_frenzy.up
-    -- outbreak,target_if=dot.virulent_plague.remains<=gcd
-    if S.Outbreak:IsReady(30) and (not Target:Debuff(S.VirulentPlagueDebuff) or Target:DebuffRemainsP(S.VirulentPlagueDebuff) < Player:GCD()) then
-        return S.Outbreak:Cast()
-    end
-    -- call_action_list,name=essences
-    if (true) then
-        if Essences() ~= nil and RubimRH.CDsON() then
-            return Essences()
-        end
-    end
-    -- call_action_list,name=cooldowns
-    if (true) then
-        if Cooldowns() ~= nil then
-            return Cooldowns()
-        end
-    end
-    -- run_action_list,name=aoe,if=active_enemies>=2
-    if (Cache.EnemiesCount['Melee'] >= 2)then
-        return Aoe();
-    end
-    -- call_action_list,name=generic
-    if (true) then
-        if Generic() ~= nil then
-            return Generic()
-        end
-    end
-   return 0, 135328
-end
+                -- if (castTime>0.1 or channelTime>0.1) and level>13 
+                -- and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
+                -- return S.HammerofJustice:Cast()
+                -- end
 
-RubimRH.Rotation.SetAPL(252, APL)
+                --     end
+
+
+                  
+                if HL.CombatTime() < 10 and Enemies12y>=1 then
+                    if S.UnholyBlight:IsReady() and not Target:Debuff(S.VirulentPlague) then
+                        return S.UnholyBlight:Cast()
+                    end
+            
+                    if S.Outbreak:IsReady() and not Target:Debuff(S.VirulentPlague) then
+                        return S.Outbreak:Cast()
+                    end
+            
+                    if S.FesteringStrike:IsReady() then
+                        return S.FesteringStrike:Cast()
+                    end
+            
+                    if S.AbominationLimb:IsReady() then
+                        return S.AbominationLimb:Cast()
+                    end
+            
+                    if S.Defile:IsReady() and aoecds8y then
+                        return S.Defile:Cast()
+                    end
+            
+                    if S.SummonGargoyle:IsReady() and Player:UsePotion() then
+                        return S.SummonGargoyle:Cast()
+                    end
+            
+                    if S.DarkTransformation:IsReady() then
+                        return S.DarkTransformation:Cast()
+                    end
+            
+                    if S.DeathCoil:IsReady() and Player:RunicPower() >= 40 then
+                        return S.DeathCoil:Cast()
+                    end
+            
+                    if S.UnholyAssault:IsReady() then
+                        return S.UnholyAssault:Cast()
+                    end
+            
+                    if S.FesteringStrike:IsReady() then
+                        return S.FesteringStrike:Cast()
+                    end
+            
+                    if S.EmpowerRuneWeapon:IsReady() then
+                        return S.EmpowerRuneWeapon:Cast()
+                    end
+            
+                    if S.Apocalypse:IsReady() then
+                        return S.Apocalypse:Cast()
+                    end
+                end
+
+
+                --AOE
+
+                if Enemies15y>=2 then
+                    
+
+                        -- Epidemic for AoE damage
+                        if S.Epidemic:IsReady() and Enemies10y >= 4 then
+                            return S.Epidemic:Cast()
+                        end
+                    
+                        -- Death and Decay for AoE damage
+                        if S.DeathAndDecay:IsReady() and aoecds8y then
+                            return S.DeathAndDecay:Cast()
+                        end
+                    
+                        -- Scourge Strike if standing in Death and Decay
+                        if Player:Buff(S.DeathAndDecayBuff) and S.ScourgeStrike:IsReady() then
+                            return S.ScourgeStrike:Cast()
+                        end
+                    
+                        -- Festering Strike if Festering Wound stacks are low
+                        if Target:DebuffStack(S.FesteringWound) < 1 and S.FesteringStrike:IsReady() then
+                            return S.FesteringStrike:Cast()
+                        end
+                    
+                        -- Maintain Virulent Plague
+                        if not Target:Debuff(S.VirulentPlague) and (S.Outbreak:IsReady() or S.UnholyBlight:IsReady()) then
+                            if S.UnholyBlight:IsReady() then
+                                return S.UnholyBlight:Cast()
+                            else
+                                return S.Outbreak:Cast()
+                            end
+                        end
+                    
+                        -- Disease rotation
+                        if S.Plaguebringer:IsReady() and Player:Buff(S.PlaguebringerBuff) then
+                            if S.DarkTransformation:IsReady() then
+                                return S.DarkTransformation:Cast()
+                            end
+                    
+                            if S.AbominationLimb:IsReady() then
+                                return S.AbominationLimb:Cast()
+                            end
+                    
+                            if S.UnholyAssault:IsReady() then
+                                return S.UnholyAssault:Cast()
+                            end
+                    
+                            if S.SoulReaper:IsReady() and Target:HealthPercentage() < 35 then
+                                return S.SoulReaper:Cast()
+                            end
+                    
+                            if S.ScourgeStrike:IsReady() and Target:DebuffStack(S.FesteringWound) >= 1 then
+                                return S.ScourgeStrike:Cast()
+                            end
+                        end
+                    
+                        -- Wound rotation
+                        if S.BurstingSores:IsReady() then
+                            if S.Apocalypse:IsReady() and Target:DebuffStack(S.FesteringWound) >= 4 then
+                                return S.Apocalypse:Cast()
+                            end
+                    
+                            if S.ScourgeStrike:IsReady() and Target:DebuffStack(S.FesteringWound) >= 1 then
+                                return S.ScourgeStrike:Cast()
+                            end
+                    
+                            if S.FesteringStrike:IsReady() and Target:DebuffStack(S.FesteringWound) < 4 then
+                                return S.FesteringStrike:Cast()
+                            end
+                        end
+                    
+                        -- Death Coil if Runic Power is high
+                        if Player:RunicPower() >= 80 and S.DeathCoil:IsReady() then
+                            return S.DeathCoil:Cast()
+                        end
+
+
+
+                end
+
+
+
+
+
+                
+                    --ST
+                if Enemies12y<2 then
+                                -- Maintain Virulent Plague
+                    if not Target:Debuff(S.VirulentPlague) and (S.Outbreak:IsReady() or S.UnholyBlight:IsReady()) then
+                        if S.UnholyBlight:IsReady() then
+                            return S.UnholyBlight:Cast()
+                        else
+                            return S.Outbreak:Cast()
+                        end
+                    end
+
+                    -- Dark Transformation
+                    if S.DarkTransformation:IsReady() then
+                        return S.DarkTransformation:Cast()
+                    end
+
+                    -- Abomination Limb
+                    if S.AbominationLimb:IsReady() then
+                        return S.AbominationLimb:Cast()
+                    end
+
+                    -- Unholy Assault
+                    if S.UnholyAssault:IsReady() then
+                        return S.UnholyAssault:Cast()
+                    end
+
+                    -- Apocalypse with 4 or more Festering Wound stacks
+                    if S.Apocalypse:IsReady() and Target:DebuffStack(S.FesteringWound) >= 4 then
+                        return S.Apocalypse:Cast()
+                    end
+
+                    -- Soul Reaper if target's health is below 35%
+                    if S.SoulReaper:IsReady() and Target:HealthPercentage() < 35 then
+                        return S.SoulReaper:Cast()
+                    end
+
+                    -- Defile if Mastery Buff is about to expire or charges are capped
+                    if S.Defile:IsReady() and 
+                    (
+                        -- Player:BuffRemains(S.MasteryBuff) <= 1.5 or --change to trinket
+                    S.Defile:Charges() == 2 and aoecds8y
+                    ) 
+                    then
+                        return S.Defile:Cast()
+                    end
+
+                    -- Scourge Strike if Festering Wound is present
+                    if S.ScourgeStrike:IsReady() and Target:DebuffStack(S.FesteringWound) >= 1 then
+                        return S.ScourgeStrike:Cast()
+                    end
+
+                    -- Festering Strike if Festering Wound stacks are low
+                    if S.FesteringStrike:IsReady() and Target:DebuffStack(S.FesteringWound) < 4 then
+                        return S.FesteringStrike:Cast()
+                    end
+
+                    -- Death Coil if Runic Power is high
+                    if Player:RunicPower() >= 80 and S.DeathCoil:IsReady() then
+                        return S.DeathCoil:Cast()
+                    end    
+
+
+                
+                end
+
+
+
+
+
+
+
+            end
+
+            -- Out of Combat
+            if not Player:AffectingCombat() then
+
+                if RubimRH.QueuedSpell():IsReadyQueue() then
+                return RubimRH.QueuedSpell():Cast()
+                end
+
+                if not RubimRH.queuedSpell[1]:CooldownUp() 
+                or Cache.EnemiesCount[20] == 0 
+                or not Player:AffectingCombat()
+                then
+                RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+                end
+
+
+
+
+
+            return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+            end
+
+    return 0, 135328
+end -- end APL
+
+RubimRH.Rotation.SetAPL(252, APL);
 
 local function PASSIVE()
-    if S.IceboundFortitude:IsReady() and Player:HealthPercentage() <= RubimRH.db.profile[252].sk2 then
-        return S.IceboundFortitude:Cast()
-    end
 
-    return RubimRH.Shared()
 end
-RubimRH.Rotation.SetPASSIVE(252, PASSIVE)
+
+RubimRH.Rotation.SetPASSIVE(252, PASSIVE);

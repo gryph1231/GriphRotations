@@ -38,31 +38,8 @@ lustAT                   = Spell(20549), -- war stomp
 local S = RubimRH.Spell[265]
 local G = RubimRH.Spell[1] -- General Skills
 
--- /use item:36894
--- /use item:36893
--- /use item:36892
--- /use item:36889
--- /use item:22105
--- /use item:22104
--- /use item:22103
--- /use item:19012
--- /use item:19013
--- /use item:9421
--- /use item:19011
--- /use item:19010
--- /use item:5510
--- /use item:19009
--- /use item:19008
--- /use item:5509
--- /use item:19007
--- /use item:19006
--- /use item:5511
--- /use item:19005
--- /use item:19004
--- /use item:5512
-
-
-
+S.AvengingWrath.TextureSpellID = { 55748 }
+S.Crusade.TextureSpellID = { 55748 }
 
 
 -- Items
@@ -76,7 +53,7 @@ tx1 = Item(118330),
 tx2 = Item(114616),
 healingpot = Item(187802),
 healingpoticon = Item(169451),
-HealthStone = Item(19005), --health stone
+healthstone = Item(5512), --health stone
 drums = Item(193470),
 
 };
@@ -238,7 +215,8 @@ local function APL()
     stunprio()
     kickprio()
 
-
+        ConsecrationTime()
+        ComputeTimeToHPG()
         HL.GetEnemies(5);
         HL.GetEnemies("Melee");
         HL.GetEnemies(8);
@@ -318,6 +296,7 @@ local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChanne
 local currentTimeMS = GetTime() * 1000
 local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
 channelTime = elapsedTimech/1000
+
 
 
 
