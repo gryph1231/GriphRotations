@@ -74,7 +74,12 @@ RubimRH.Spell[260] = {
     lust2 = Spell(57723),
     lust3 = Spell(80354),
     lust4 = Spell(95809),
+
     lust5 = Spell(264689),
+FantheHammer = Spell(381846),
+SwiftSlasher = Spell(381988),
+CounttheOdds = Spell(381982),
+
     KidneyShot = Spell(408),
     Deadshot = Spell(272935),
     Berserking = Spell(26297),
