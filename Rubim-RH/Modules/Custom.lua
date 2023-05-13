@@ -969,6 +969,41 @@ local frame = CreateFrame("Frame")
 
 
 
+--- Roll the Bones Tracking
+--- As buff is "hidden" from the client but we get apply/refresh events for it
+do
+    local RtBExpiryTime = GetTime()
+    function RubimRH.RtBRemains(BypassRecovery)
+      local Remains = RtBExpiryTime - GetTime() - HL.RecoveryOffset(BypassRecovery)
+      return Remains >= 0 and Remains or 0
+    end
+  
+    HL:RegisterForSelfCombatEvent(
+      function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+        if SpellID == 315508 then
+          RtBExpiryTime = GetTime() + 30
+        end
+      end,
+      "SPELL_AURA_APPLIED"
+    )
+    HL:RegisterForSelfCombatEvent(
+      function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+        if SpellID == 315508 then
+          RtBExpiryTime = GetTime() + math.min(40, 30 + RubimRH.RtBRemains(true))
+        end
+      end,
+      "SPELL_AURA_REFRESH"
+    )
+    HL:RegisterForSelfCombatEvent(
+      function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+        if SpellID == 315508 then
+          RtBExpiryTime = GetTime()
+        end
+      end,
+      "SPELL_AURA_REMOVED"
+    )
+  end
+  
 
 
 

@@ -211,7 +211,14 @@ local function mitigate()
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
                 'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
                 'Steel Barrage',
-                'Lightning Breath', 'Thunder Jaw', 'Blast of Light',}
+                'Lightning Breath', 'Thunder Jaw', 'Blast of Light','Molten Crash','Landslide','Piercing Shards','Shatter','Razor Shards',
+            
+                'Savage Charge','Gut Shot','Decaystrike', -- Brakenhide hollow
+                'Heated Swings','Fiery Focus', -- neltharus
+                'Searing Clap','Sand Breath', --uldaman: legacy of tyr
+
+            
+            }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
                 UnitCastingInfo(unitID)
@@ -246,6 +253,7 @@ local function kickprio()
         'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
         'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
         'Desacrating Blow', -- NO
+        'Stone Bolt','Stone Gaze', -- neltharions lair
 
     }
 
@@ -281,6 +289,8 @@ local function stunprio()
         'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
         'Storm Bolt',
         'Desacrating Blow', -- NO
+        'Stone Bolt', 'Avalanche','Stone Gaze','War Drums','Metamophosis',-- neltharions lair
+
 
     }
 
@@ -317,6 +327,8 @@ local function blindprio()
         'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
         'Storm Bolt',
         'Desacrating Blow', -- NO
+        'Stone Bolt','Avalanche','Stone Gaze','War Drums','Metamophosis',-- neltharions lair
+
 
     }
 
@@ -377,7 +389,7 @@ local function APL()
     Enemies35y = Cache.EnemiesCount[35]
     Enemies40y = Cache.EnemiesCount[40]
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-    highkey = 15
+    highkey = 10
 
     IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
     castchannelTime = math.random(250, 500) / 1000
@@ -414,7 +426,11 @@ local function APL()
         'Hyrja', 'God-King Skovald', 'Odyn', 'Hymdall',                             -- Halls of Valor
         'Sadana Bloodfury',                                                         -- Shadowmoon Burial Grounds
         'Liu Flameheart',                                                           -- Temple of the Jade Serpent
-        --
+        'Rokmora','Dargrul the Underking',--neltharions lair
+        'Hackclaw"s War-Band','Gutshot','Decatriarch Wratheye', -- Brakenhide hollow
+        'Forgemaster Gorek','Chargath, Bane of Scales', --neltharus
+        'Emberon','Chrono-Lord Deios', -- unlaman: legacy of tyr
+
     }
 
     HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
@@ -536,7 +552,8 @@ local function APL()
 
     -- kick off GCD
     if (castTime > castchannelTime or channelTime > castchannelTime)
-        and kickprio() and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and Target:IsInRange(8) then
+        -- and kickprio() 
+        and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and Target:IsInRange(8) then
         return S.Rebuke:Cast()
     end
 
@@ -552,13 +569,19 @@ local function APL()
     --Stun
 
     if (castTime > castchannelTime or channelTime > castchannelTime) and level> highkey
-        and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat() and stunprio() then
+    and select(8, UnitCastingInfo("target")) == false 
+        and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat()
+        --  and stunprio() 
+         then
         return S.HammerofJustice:Cast()
     end
 
     --Blind
     if (castTime > 0.1 or channelTime > 0.1) and S.HammerofJustice:CooldownRemains() > Player:GCD()
-        and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >= 1 and Player:AffectingCombat() and blindprio() then
+    and select(8, UnitCastingInfo("target")) == false 
+        and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >= 1 and Player:AffectingCombat()
+        --  and blindprio() 
+         then
         return S.BlindingLight:Cast()
     end
 

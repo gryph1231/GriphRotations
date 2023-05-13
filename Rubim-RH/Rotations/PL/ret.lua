@@ -365,6 +365,7 @@ local function freedom()
             'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
             'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
             'Desacrating Blow', -- NO
+            'Wind Bolt', 'Cyclone','Lightning Bolt','Cloudburst','Vapor Form',-- brakenhide hollow -- still have some to add
     
         }
     
@@ -686,7 +687,12 @@ channelTime = elapsedTimech/1000
         end
                 --Kick
                 if (castTime>castchannelTime or channelTime>castchannelTime) and 
-                RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat() and (kickprio() or Target:IsAPlayer() and select(8, UnitCastingInfo("target")) == false) then
+                RubimRH.InterruptsON() and S.Rebuke:IsReady(8) and Player:AffectingCombat()
+                 and 
+                --  (kickprio() or 
+                 Target:IsAPlayer() and select(8, UnitCastingInfo("target")) == false
+                --) 
+                 then
                 return S.Rebuke:Cast()
                 end
 
