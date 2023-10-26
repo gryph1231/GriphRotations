@@ -134,7 +134,7 @@ local function target_is_dummy()
     end
 
     if Target:Exists() then
-        if name == 'Dummy' then
+        if name == 'Dummy' or name == 'elist' then
             targetisdummy = true
         end
     else
@@ -356,6 +356,23 @@ local check = false
 
 	return check
 end
+
+local function UseItems()
+
+		local trinket1 = GetInventoryItemID("player", 13)
+		local trinket2 = GetInventoryItemID("player", 14)
+		local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+		local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+	
+		if trinket1ready and ((Player:MovingFor()<0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729 then
+			return I.tx1:Cast()
+		end
+		if trinket2ready and ((Player:MovingFor()<0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729 then
+			return I.tx2:Cast()
+		end
+	end
+	
+
 
 local function AOEBuilder()
 	--brutal_slash,target_if=min:target.time_to_die,if=cooldown.brutal_slash.full_recharge_time<4|target.time_to_die<5
@@ -668,20 +685,8 @@ local function Builder()
 end
 
 local function Cooldowns()
-	-- local trinket1 = GetInventoryItemID("player", 13)
-	-- local trinket2 = GetInventoryItemID("player", 14)
-	-- local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-	-- local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
-	
-	--trinket 1
-	-- if trinket1ready and Cache.EnemiesCount[8] >= 1 and Player:BuffP(S.Incarnation) then
-		-- return I.tx1:Cast()
-	-- end
-	
-	--trinket 2
-	-- if trinket2ready then
-		-- return I.tx2:Cast()
-	-- end
+
+
 
 	--incarnation
 	if S.Incarnation:IsReady(10) and RubimRH.CDsON() then
@@ -730,6 +735,14 @@ or AuraUtil.FindAuraByName("Food & Drink", "player") or (Player:Buff(S.Prowl) an
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end 
 
+if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target)
+and Player:AffectingCombat() and not AuraUtil.FindAuraByName("Prowl", "player") then
+local ShouldReturn = UseItems();
+if ShouldReturn then return ShouldReturn; end
+end
+
+
+
 -- if Player:AffectingCombat() and not Player:Buff(S.CatForm) and not Player:Buff(S.Dash) and not Player:Buff(S.Prowl) then 
 -- 	return S.CatForm:Cast()
 -- end
@@ -749,15 +762,10 @@ if true then
 	
 	bs_inc = Player:BuffP(S.Berserk) or Player:BuffP(S.Incarnation)
 	
-	trinket1 = GetInventoryItemID("player", 13)
-	
-	trinket2 = GetInventoryItemID("player", 14)
-	
+
 	isEnraged = AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target")
 	
-	trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-	
-	trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
 
 	channeling = select(1,UnitChannelInfo('target'))
 	
@@ -885,10 +893,10 @@ if S.CatForm:IsCastable() and Player:CanAttack(Target) and not Player:BuffP(S.Be
 	return S.CatForm:Cast()
 end
 
-if trinket2ready and Player:CanAttack(Target) and Target:IsInRange(10) and Player:BuffP(S.CatForm) and Player:AffectingCombat() and not IsStealthed()
-and ((TargetTTD() > 10 or (UnitClassification("target") == "worldboss" and TargetTTD() > 6)) or Cache.EnemiesCount[10] > 1) and name ~= "Spiteful Shade" then
-	return I.tx2:Cast()
-end
+-- if trinket2ready and Player:CanAttack(Target) and Target:IsInRange(10) and Player:BuffP(S.CatForm) and Player:AffectingCombat() and not IsStealthed()
+-- and ((TargetTTD() > 10 or (UnitClassification("target") == "worldboss" and TargetTTD() > 6)) or Cache.EnemiesCount[10] > 1) and name ~= "Spiteful Shade" then
+-- 	return I.tx2:Cast()
+-- end
 
 if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCombat() and not IsStealthed()) or Player:BuffP(S.Incarnation)) then
 	--tigers_fury,if=!talent.convoke_the_spirits.enabled&(!buff.tigers_fury.up|energy.deficit>65)
@@ -959,7 +967,7 @@ if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCo
 		return Builder()
 	end
 end
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
 RubimRH.Rotation.SetAPL(103, APL)
