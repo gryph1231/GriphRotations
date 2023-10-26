@@ -1007,12 +1007,112 @@ do
 
 
 
+-- --- Roll the Bones Tracking
+-- --- As buff is "hidden" from the client but we get apply/refresh events for it
+-- do
+--     local RtBExpiryTime = GetTime()
+--     function RubimRH.RtBRemains(BypassRecovery)
+--       local Remains = RtBExpiryTime - GetTime() - HL.RecoveryOffset(BypassRecovery)
+--       return Remains >= 0 and Remains or 0
+--     end
+  
+--     HL:RegisterForSelfCombatEvent(
+--       function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+--         if SpellID == 315508 then
+--           RtBExpiryTime = GetTime() + 30
+--         end
+--       end,
+--       "SPELL_AURA_APPLIED"
+--     )
+--     HL:RegisterForSelfCombatEvent(
+--       function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+--         if SpellID == 315508 then
+--           RtBExpiryTime = GetTime() + mathmin(40, 30 + RubimRH.RtBRemains(true))
+--         end
+--       end,
+--       "SPELL_AURA_REFRESH"
+--     )
+--     HL:RegisterForSelfCombatEvent(
+--       function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+--         if SpellID == 315508 then
+--           RtBExpiryTime = GetTime()
+--         end
+--       end,
+--       "SPELL_AURA_REMOVED"
+--     )
+--   end
+
+
+  
+-- -- --- Fan the Hammer Tracking
+-- -- do
+-- --     local OpportunityBuff = Spell(195627)
+-- --     local FanCP = 0
+-- --     local FanStart = GetTime()
+  
+-- --     function RubimRH.FanTheHammerCP()
+-- --       if (GetTime() - FanStart) < 0.5 and FanCP > 0 then
+-- --         if FanCP > Player:ComboPoints() then
+-- --           return FanCP
+-- --         else
+-- --           FanCP = 0
+-- --         end
+-- --       end
+  
+-- --       return 0
+-- --     end
+  
+-- --     -- Reset counter on energize
+-- --     HL:RegisterForSelfCombatEvent(
+-- --       function(_, _, _, _, _, _, _, _, _, _, _, SpellID, _, _, Amount, Over )
+-- --         if SpellID == 185763 then
+-- --           if (GetTime() - FanStart) > 0.5 then
+-- --             -- Subsequent Fan the Hammer procs are reduced by 1 CP
+-- --             FanCP = mathmin(RubimRH.CPMaxSpend(), Player:ComboPoints() + Amount + (mathmax(0, Amount - 1) * mathmin(2, Player:BuffStack(OpportunityBuff) - 1)))
+-- --             FanStart = GetTime()
+-- --           end
+-- --         end
+-- --       end,
+-- --       "SPELL_ENERGIZE"
+-- --     )
+-- --   end
+  
 
 
 
 
-
-
+-- -- -- Base Crit Tracker (mainly for Outlaw)
+-- -- do
+-- --     local BaseCritChance = Player:CritChancePct()
+-- --     local BaseCritChecksPending = 0
+-- --     local function UpdateBaseCrit()
+-- --       if not Player:AffectingCombat() then
+-- --         BaseCritChance = Player:CritChancePct()
+-- --         HL.Debug("Base Crit Set to: " .. BaseCritChance)
+-- --       end
+-- --       if BaseCritChecksPending == nil or BaseCritChecksPending < 0 then
+-- --         BaseCritChecksPending = 0
+-- --       else
+-- --         BaseCritChecksPending = BaseCritChecksPending - 1
+-- --       end
+-- --       if BaseCritChecksPending > 0 then
+-- --         C_Timer.After(3, UpdateBaseCrit)
+-- --       end
+-- --     end
+-- --     HL:RegisterForEvent(
+-- --       function ()
+-- --         if BaseCritChecksPending == 0 then
+-- --           C_Timer.After(3, UpdateBaseCrit)
+-- --           BaseCritChecksPending = 2
+-- --         end
+-- --       end,
+-- --       "PLAYER_EQUIPMENT_CHANGED"
+-- --     )
+  
+-- --     function RubimRH.BaseAttackCrit()
+-- --       return BaseCritChance
+-- --     end
+-- --   end
 
 
 

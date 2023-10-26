@@ -103,7 +103,7 @@ RubimRH.Spell[66] = {
     FinalVerdictBuff            = Spell(337228),
     -- Pool
 
-
+    Entangling = Spell(408556),
     -- Pool                                  = Spell(999910),
     Pool = Spell(397799),
 
@@ -216,6 +216,8 @@ local function mitigate()
                 'Savage Charge','Gut Shot','Decaystrike', -- Brakenhide hollow
                 'Heated Swings','Fiery Focus', -- neltharus
                 'Searing Clap','Sand Breath', --uldaman: legacy of tyr
+                'Chronoshear','Unwind','Radiant','Bright Reclamation','Crushing Onslaught','Titanic Blow','Sand Blast','Mortal Strikes','Temporal Breath',
+                'Oiled Blade','Razor Shards',
 
             
             }
@@ -389,7 +391,7 @@ local function APL()
     Enemies35y = Cache.EnemiesCount[35]
     Enemies40y = Cache.EnemiesCount[40]
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-    highkey = 10
+    highkey = 13
 
     IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
     castchannelTime = math.random(250, 500) / 1000
@@ -552,7 +554,9 @@ local function APL()
 
     -- kick off GCD
     if (castTime > castchannelTime or channelTime > castchannelTime)
+    -- and level> highkey
         -- and kickprio() 
+        and select(8, UnitCastingInfo("target")) == false 
         and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and Target:IsInRange(8) then
         return S.Rebuke:Cast()
     end
@@ -568,7 +572,8 @@ local function APL()
 
     --Stun
 
-    if (castTime > castchannelTime or channelTime > castchannelTime) and level> highkey
+    if (castTime > castchannelTime or channelTime > castchannelTime) 
+    -- and level> highkey
     and select(8, UnitCastingInfo("target")) == false 
         and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat()
         --  and stunprio() 
@@ -577,7 +582,8 @@ local function APL()
     end
 
     --Blind
-    if (castTime > 0.1 or channelTime > 0.1) and S.HammerofJustice:CooldownRemains() > Player:GCD()
+    if (castTime > 0.1 or channelTime > 0.1) and S.HammerofJustice:CooldownRemains() > Player:GCD() 
+    -- and level> highkey
     and select(8, UnitCastingInfo("target")) == false 
         and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >= 1 and Player:AffectingCombat()
         --  and blindprio() 
@@ -590,6 +596,9 @@ local function APL()
         return S.HammerofWrath:Cast()
     end
 
+    if S.HammerofJustice:IsReady() and UnitName('target') == 'Incorporeal Being' then
+        return S.HammerofJustice:Cast()
+    end
 
     if S.Judgment:IsReady() and UnitName('target') == 'Explosives' then
         return S.Judgment:Cast()
@@ -798,7 +807,9 @@ end
             end
         end
 
-
+        if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangling) then
+        return S.BlessingofFreedom:Cast()
+        end
 
         -- shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
 
