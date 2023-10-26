@@ -231,14 +231,14 @@ local function creatre_UIDropDownList(name, parent)
 
 	f.MenuBackdrop= _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, "BackdropTemplate")
 	f.MenuBackdrop:SetAllPoints()
-	-- f.MenuBackdrop:SetBackdrop({
-		-- bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-		-- edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		-- tile = true,
-		-- tileSize = 16,
-		-- edgeSize = 16,
-		-- insets = { left = 5, right = 4, top = 4, bottom = 4, },
-	-- })
+	f.MenuBackdrop:SetBackdrop({
+		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
+		tileSize = 16,
+		edgeSize = 16,
+		insets = { left = 5, right = 4, top = 4, bottom = 4, },
+	})
 	f.MenuBackdrop:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b)
 	f.MenuBackdrop:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
 

@@ -111,7 +111,7 @@ HL:RegisterForSelfCombatEvent(
       ListenedSpell.Units[DestGUID] = { PMultiplier = PMultiplier, Time = GetTime(), Applied = false }
     end
   end,
-  "SPELL_DAMAGE"
+  "SPELL_PERIODIC_DAMAGE"
 )
 -- PMultiplier OnApply/OnRefresh Listener
 HL:RegisterForSelfCombatEvent(
