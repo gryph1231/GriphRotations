@@ -7,6 +7,7 @@ local onEvent = _G.onEvent
 local CreateFrame = _G.CreateFrame
 RubimRH.Listener = {}
 local listeners = {}
+local HL = HeroLib
 
 local frame = CreateFrame('Frame', 'Rubim_Events')
 frame:SetScript('OnEvent', function(_, event, ...)
@@ -15,6 +16,45 @@ frame:SetScript('OnEvent', function(_, event, ...)
         listeners[event][k](...)
     end
 end)
+
+--- Roll the Bones Tracking
+--- As buff is "hidden" from the client but we get apply/refresh events for it
+do
+  local RtBExpiryTime = GetTime()
+  function RtBRemains(BypassRecovery)
+    local Remains = RtBExpiryTime - GetTime() - HL.RecoveryOffset(BypassRecovery)
+    return Remains >= 0 and Remains or 0
+  end
+
+  HL:RegisterForSelfCombatEvent(
+    function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+      if SpellID == 315508 then
+        RtBExpiryTime = GetTime() + 30
+      end
+    end,
+    "SPELL_AURA_APPLIED"
+  )
+  HL:RegisterForSelfCombatEvent(
+    function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+      if SpellID == 315508 then
+        RtBExpiryTime = GetTime() + math.min(40, 30 + RtBRemains(true))
+      end
+    end,
+    "SPELL_AURA_REFRESH"
+  )
+  HL:RegisterForSelfCombatEvent(
+    function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
+      if SpellID == 315508 then
+        RtBExpiryTime = GetTime()
+      end
+    end,
+    "SPELL_AURA_REMOVED"
+  )
+end
+
+
+
+
 
 function RubimRH.Listener.Add(_, name, event, callback)
     if not listeners[event] then
