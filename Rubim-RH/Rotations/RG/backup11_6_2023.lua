@@ -742,7 +742,7 @@ if not Player:AffectingCombat() and not Player:BuffP(S.VanishBuff) and (IsRestin
 			return S.AdrenalineRush:Cast()
 		end
 
-		if S.SliceandDice:IsCastable() and Player:ComboPoints()>=1 and Player:BuffRemainsP(S.SliceandDice) < 8 and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff) then
+		if S.SliceandDice:IsCastable() and Player:BuffRemainsP(S.SliceandDice) < 8 and Cache.EnemiesCount[30] >= 1 and not Player:BuffP(S.VanishBuff) then
 			return S.SliceandDice:Cast()
 		end
 	end
@@ -846,7 +846,7 @@ if (not Target:IsInRange(bfrange) or Cache.EnemiesCount[30] == 0) and (not Targe
 	end
 end
 
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end
 
 RubimRH.Rotation.SetAPL(260, APL);
