@@ -121,7 +121,6 @@ RubimRH.Spell[66] = {
     IcyBindings = Spell(377488),
 
     ArdentDefender         = Spell(31850),
-    ArdentDefenderBuff     = Spell(31850),
     AvengersShield         = Spell(31935),
     GuardianofAncientKings = Spell(86659),
 
@@ -493,7 +492,7 @@ local function APL()
 
 
     if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
-        and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
+        and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and Player:CanAttack(Target) and 
         not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
         return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
     end
@@ -646,26 +645,21 @@ end
 
 
     -- defensives for trash on M+ key <= level 13
-    if (not IsEncounterInProgress(Boss) or level <= highkey or Player:HealthPercentage()<50) then
-        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable()
+    if (not IsEncounterInProgress(Boss) or level <= highkey) then
+        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
             and Enemies20y >= 1
-            and (HPpercentloss > 20
-                and Player:HealthPercentage() < 45 or Player:HealthPercentage() < 30)
-            and (not Player:Buff(S.GuardianofAncientKings) or S.GuardianofAncientKings:CooldownRemains() > Player:GCD())
-            and (not Player:Buff(S.ArdentDefender) or S.ArdentDefender:CooldownRemains() > Player:GCD()) then
+            and Player:HealthPercentage() < 35
+            and not Player:Buff(S.GuardianofAncientKings) 
+            and not Player:Buff(S.ArdentDefender)  then
             return S.DivineShield:Cast()
         end
 
-        if S.LayonHands:IsReady() and Player:HealthPercentage() <= 25 and S.DivineShield:CooldownRemains() > Player:GCD() and not Player:Debuff(S.Forbearance)
-            and Enemies20y >= 1 then
-            return S.LayonHands:Cast()
-        end
 
         if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5
             and Enemies20y >= 1
             and (HPpercentloss > 12
                 and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
-            and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
+            and not Player:Buff(S.DivineShield) and not Player:Buff(S.ArdentDefender) then
             return S.GuardianofAncientKings:Cast()
         end
 
@@ -673,7 +667,7 @@ end
             and Enemies20y >= 1
             and (HPpercentloss > 12
                 and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
-            and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
+            and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefender) then
             return S.ArdentDefender:Cast()
         end
 
@@ -686,28 +680,25 @@ end
     -- defensives for bosses
     if (mitigate() and level > highkey) then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable()
-            and not Player:Buff(S.ArdentDefenderBuff) and S.ArdentDefender:CooldownRemains() > Player:GCD()
-            and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
+            and not Player:Buff(S.ArdentDefender) 
+            and not Player:Buff(S.GuardianofAncientKings)
             and not Target:Debuff(S.EyeofTyr)
         then
             return S.DivineShield:Cast()
         end
 
-        if S.LayonHands:IsReady() and Player:HealthPercentage() <= 25 
-        and not Player:Debuff(S.Forbearance) and S.DivineShield:CooldownRemains() > Player:GCD()  then
-            return S.LayonHands:Cast()
-        end
+
         if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
-            and not Player:Buff(S.DivineShield) and (not Player:Buff(S.ArdentDefenderBuff)) then
+            and not Player:Buff(S.DivineShield) and not Player:Buff(S.ArdentDefender) then
             return S.GuardianofAncientKings:Cast()
         end
         if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5 
-            and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefenderBuff) then
+            and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefender) then
             return S.ArdentDefender:Cast()
         end
 
         if S.EyeofTyr:IsReady()
-            and not Player:Buff(S.ArdentDefenderBuff) and S.ArdentDefender:CooldownRemains() > Player:GCD()
+            and not Player:Buff(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
             and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
             and (Enemies8y >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
             return S.EyeofTyr:Cast()

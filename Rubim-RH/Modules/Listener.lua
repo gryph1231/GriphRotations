@@ -21,15 +21,15 @@ end)
 --- As buff is "hidden" from the client but we get apply/refresh events for it
 do
   local RtBExpiryTime = GetTime()
-  function RtBRemains(BypassRecovery)
-    local Remains = RtBExpiryTime - GetTime() - HL.RecoveryOffset(BypassRecovery)
+  function RtBRemains()
+    local Remains = RtBExpiryTime - GetTime() - 1
     return Remains >= 0 and Remains or 0
   end
 
   HL:RegisterForSelfCombatEvent(
     function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
       if SpellID == 315508 then
-        RtBExpiryTime = GetTime() + 30
+        RtBExpiryTime = GetTime() + 31
       end
     end,
     "SPELL_AURA_APPLIED"
@@ -37,7 +37,7 @@ do
   HL:RegisterForSelfCombatEvent(
     function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
       if SpellID == 315508 then
-        RtBExpiryTime = GetTime() + math.min(40, 30 + RtBRemains(true))
+        RtBExpiryTime = GetTime() + math.min(40, 31 + RtBRemains(true))
       end
     end,
     "SPELL_AURA_REFRESH"

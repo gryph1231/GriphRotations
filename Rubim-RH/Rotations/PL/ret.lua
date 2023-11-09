@@ -34,7 +34,7 @@ Fireblood                             = Spell(265221),
 GiftoftheNaaru                        = Spell(59542),
 -- Abilities
 Consecration                          = Spell(26573),
-CrusaderStrike                        = Spell(35395),
+CrusaderStrike                         = Spell(35395),
 crusaderstrike = Spell(205191), -- eye for an eye
 DivineShield                          = Spell(642),
 DivineSteed                           = Spell(190784),
@@ -583,7 +583,7 @@ channelTime = elapsedTimech/1000
         end
 
         if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and
-        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+        not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) and Player:CanAttack(Target) then
         return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
         end
 

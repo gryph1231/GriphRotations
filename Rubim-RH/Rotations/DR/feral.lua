@@ -735,11 +735,11 @@ or AuraUtil.FindAuraByName("Food & Drink", "player") or (Player:Buff(S.Prowl) an
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end 
 
-if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target)
-and Player:AffectingCombat() and not AuraUtil.FindAuraByName("Prowl", "player") then
-local ShouldReturn = UseItems();
-if ShouldReturn then return ShouldReturn; end
-end
+-- if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target)
+-- and Player:AffectingCombat() and not AuraUtil.FindAuraByName("Prowl", "player") then
+-- local ShouldReturn = UseItems();
+-- if ShouldReturn then return ShouldReturn; end
+-- end
 
 
 
