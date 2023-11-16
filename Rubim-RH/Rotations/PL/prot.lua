@@ -633,7 +633,7 @@ local function APL()
     end
 
 --abnout to die need heals or immunity
-    if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and Enemies30y >= 1 and Player:HealthPercentage() < 20 then
+    if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and Enemies30y >= 1 and Player:HealthPercentage() < 15 then
     return S.DivineShield:Cast()
 end
 
@@ -765,15 +765,15 @@ end
             return S.WordofGlory:Cast()
         end
 
-        if S.BlessingofProtection:IsReadyP() and Player:HealthPercentage() <= 20
-            and not Player:DebuffP(S.Forbearance) and
-            S.DivineShield:CooldownRemains() > Player:GCD()
-            and not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
-            and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
-            and S.LayonHands:CooldownRemains() > Player:GCD() and
-            Cache.EnemiesCount[10] >= 1 then
-            return S.BlessingofProtection:Cast()
-        end
+        -- if S.BlessingofProtection:IsReadyP() and Player:HealthPercentage() <= 20
+        --     and not Player:DebuffP(S.Forbearance) and
+        --     S.DivineShield:CooldownRemains() > Player:GCD()
+        --     and not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
+        --     and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
+        --     and S.LayonHands:CooldownRemains() > Player:GCD() and
+        --     Cache.EnemiesCount[10] >= 1 then
+        --     return S.BlessingofProtection:Cast()
+        -- end
     
 
         if RubimRH.CDsON() and Cache.EnemiesCount[8] >= 1 then

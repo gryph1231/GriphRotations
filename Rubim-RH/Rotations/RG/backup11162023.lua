@@ -435,7 +435,7 @@ local function stealth()
         return S.Dispatch:Cast()
     end
 	--pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=1 and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
+    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=5 and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
         return S.PistolShot:Cast()
     end
 
@@ -479,7 +479,7 @@ local function builders()
     end
 	
 	--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
-    if S.Ambush:IsReady(8) and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.AudacityBuff) and Player:ComboPoints()<=5 then
+    if S.Ambush:IsReady(8) and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.AudacityBuff) then
         return S.Ambush:Cast()
     end
 	
@@ -509,7 +509,7 @@ local function builders()
     end
 	
     --sinister_strike
-    if S.SinisterStrike:IsReady(bfrange) and Player:ComboPoints()<=5 then
+    if S.SinisterStrike:IsReady(bfrange) then
         return S.SinisterStrike:Cast()
     end
 end

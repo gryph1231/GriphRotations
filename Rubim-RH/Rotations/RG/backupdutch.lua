@@ -218,7 +218,7 @@ local areaTTD = {}
 	if highest ~= 0 then
 		return highest
 	else
-		return 9999
+		return nil
 	end
 
 end
@@ -400,14 +400,10 @@ local function UseItems()
     local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
     local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
 
-    if trinket1ready 
-    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729
-     then
+    if trinket1ready and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729 then
         return I.tx1:Cast()
     end
-    if trinket2ready 
-    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729
-     then
+    if trinket2ready and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729 then
         return I.tx2:Cast()
     end
 	
@@ -416,7 +412,7 @@ end
 
 local function stealth()
 	--blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
-    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Cache.EnemiesCount[bfrange] >= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
+    if S.BladeFlurry:IsReady() and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Cache.EnemiesCount[bfrange] >= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
         return S.BladeFlurry:Cast()
     end
 
@@ -435,7 +431,7 @@ local function stealth()
         return S.Dispatch:Cast()
     end
 	--pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=1 and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
+    if S.PistolShot:IsReady(bte_range) and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
         return S.PistolShot:Cast()
     end
 
@@ -479,37 +475,37 @@ local function builders()
     end
 	
 	--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
-    if S.Ambush:IsReady(8) and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.AudacityBuff) and Player:ComboPoints()<=5 then
+    if S.Ambush:IsReady(8) and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.AudacityBuff) then
         return S.Ambush:Cast()
     end
 	
     --pistol_shot,if=talent.fan_the_hammer&talent.audacity&talent.hidden_opportunity&buff.opportunity.up&!buff.audacity.up
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and S.Audacity:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.Opportunity) and not Player:Buff(S.AudacityBuff) then
+    if S.PistolShot:IsReady(bte_range) and S.FantheHammer:IsAvailable() and S.Audacity:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.Opportunity) and not Player:Buff(S.AudacityBuff) then
         return S.PistolShot:Cast()
     end
 	
     --pistol_shot,if=buff.greenskins_wickers.up&(!talent.fan_the_hammer&buff.opportunity.up|buff.greenskins_wickers.remains<1.5)
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=5 and Player:Buff(S.GreenSkinsWickersBuff) and (not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) or Player:BuffRemains(S.GreenSkinsWickersBuff) < 1.5) then
+    if S.PistolShot:IsReady(bte_range) and Player:Buff(S.GreenSkinsWickersBuff) and (not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) or Player:BuffRemains(S.GreenSkinsWickersBuff) < 1.5) then
         return S.PistolShot:Cast()
     end
 	
     --pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&(buff.opportunity.stack>=buff.opportunity.max_stack|buff.opportunity.remains<2)
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:BuffStack(S.Opportunity) >= 6 or Player:BuffRemains(S.Opportunity) < 2) then
+    if S.PistolShot:IsReady(bte_range) and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:BuffStack(S.Opportunity) >= 6 or Player:BuffRemains(S.Opportunity) < 2) then
         return S.PistolShot:Cast()
     end
 	
 	--pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&combo_points.deficit>((1+talent.quick_draw)*talent.fan_the_hammer.rank)&(cooldown.vanish.remains>10&cooldown.shadow_dance.remains>5|!talent.crackshot|talent.fan_the_hammer.rank<=1)
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and Player:ComboPointsDeficit() > ((1 + num(S.QuickDraw:IsAvailable())) * fthrank) and (not RubimRH.CDsON() or (not S.Vanish:CooldownUp() and not S.ShadowDance:CooldownUp() or not S.Crackshot:IsAvailable() or fthrank <= 1)) then
+    if S.PistolShot:IsReady(bte_range) and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and Player:ComboPointsDeficit() > ((1 + num(S.QuickDraw:IsAvailable())) * fthrank) and (not RubimRH.CDsON() or (not S.Vanish:CooldownUp() and not S.ShadowDance:CooldownUp() or not S.Crackshot:IsAvailable() or fthrank <= 1)) then
         return S.PistolShot:Cast()
     end
 	
     --pistol_shot,if=!talent.fan_the_hammer&buff.opportunity.up&(energy.base_deficit>energy.regen*1.5|combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled|talent.audacity.enabled&!buff.audacity.up)
-    if S.PistolShot:IsReady(bte_range) and Player:ComboPoints()<=5 and not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:EnergyDeficit() > Player:EnergyRegen() * 1.5 or Player:ComboPoints() <= 1 + num(Player:Buff(S.Broadside)) or S.QuickDraw:IsAvailable() or S.Audacity:IsAvailable() and not Player:Buff(S.AudacityBuff)) then
+    if S.PistolShot:IsReady(bte_range) and not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:EnergyDeficit() > Player:EnergyRegen() * 1.5 or Player:ComboPoints() <= 1 + num(Player:Buff(S.Broadside)) or S.QuickDraw:IsAvailable() or S.Audacity:IsAvailable() and not Player:Buff(S.AudacityBuff)) then
         return S.PistolShot:Cast()
     end
 	
     --sinister_strike
-    if S.SinisterStrike:IsReady(bfrange) and Player:ComboPoints()<=5 then
+    if S.SinisterStrike:IsReady(bfrange) then
         return S.SinisterStrike:Cast()
     end
 end
@@ -521,7 +517,7 @@ local function cooldowns()
     end
 	
     --blade_flurry,if=(spell_targets>=2-talent.underhanded_upper_hand&!stealthed.rogue)&buff.blade_flurry.remains<gcd|talent.deft_maneuvers&spell_targets>=5&!variable.finish_condition
-    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((Cache.EnemiesCount[bfrange] >= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and Cache.EnemiesCount[bfrange] >= 5 and not finish_condition) then
+    if S.BladeFlurry:IsReady() and ((Cache.EnemiesCount[bfrange] >= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and Cache.EnemiesCount[bfrange] >= 5 and not finish_condition) then
         return S.BladeFlurry:Cast()
     end
 	
@@ -744,7 +740,7 @@ if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting
 		return S.Stealth:Cast()
 	end
 
-	if Cache.EnemiesCount[30] >= 1 and (not Target:IsInRange(5) or not Player:CanAttack(Target)) and (IsInInstance() or Player:CanAttack(Target) and Player:IsMoving()) then
+	if Cache.EnemiesCount[30] >= 1 and (not Target:IsInRange(20) or not Player:CanAttack(Target)) and (IsInInstance() or Player:CanAttack(Target) and Player:IsMoving()) then
 		if S.AdrenalineRush:IsCastable() and RubimRH.CDsON() and not finish_condition and S.UnderhandedUpperHand:IsAvailable() and not Player:Buff(S.AdrenalineRush) and stealthall and not Player:Buff(S.VanishBuff) and Player:BuffRemains(S.SliceandDice) < 8 then
 			return S.AdrenalineRush:Cast()
 		end

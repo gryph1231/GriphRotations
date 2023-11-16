@@ -242,7 +242,7 @@ local function ScaleFix()
             TargetColor:Show()
         end
         TargetColor:SetScale((0.71111112833023 * (1080 / resolution)) / (TargetColor:GetParent() and TargetColor:GetParent():GetEffectiveScale() or 1))
-    end    
+    end
 end
 
 local function UpdateCVAR()
