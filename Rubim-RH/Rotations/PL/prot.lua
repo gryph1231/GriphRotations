@@ -167,6 +167,35 @@ Item.Paladin.Protection = {
 local I = Item.Paladin.Protection;
 
 
+local function RangeCount(spellName)
+    local range_counter = 0
+
+    if spellName then
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then           
+                local nameplate_guid = UnitGUID(unitID) 
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end                    
+                end
+            end
+        end
+    end
+
+    return range_counter
+end
+
+local function TargetInRange(spellName)
+    if spellName and IsSpellInRange(spellName, "target") == 1 then
+        return true
+    else
+        return false    
+    end
+end
+
 local function UseItems()
 
     local trinket1 = GetInventoryItemID("player", 13)
@@ -346,11 +375,12 @@ local function blindprio()
 end
 local function combatmobs40()
     local totalRange40 = 0
+   
 
 
     for id = 1, 40 do
         local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and Cache.EnemiesCount[40]
+        if UnitCanAttack("player", unitID) and  RangeCount("Avenger's Shield")
             and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
             totalRange40 = totalRange40 + 1
         end
@@ -367,28 +397,19 @@ local function APL()
     blindprio()
     freedom()
     combatmobs40()
+    inRange8 = RangeCount("Rebuke")
+    inRange10 = RangeCount("Hammer of Justice")
+    inRange40 = RangeCount("Flash of Light")
+    inRange30 = RangeCount("Avenger's Shield")
+    targetRange8 = TargetInRange("Rebuke")
+    targetRange10 = TargetInRange("Hammer of Justice")
+    targetRange30 = TargetInRange("Avenger's Shield")
+    targetRange40 = TargetInRange("Flash of Light")
 
-    HL.GetEnemies(5);
-    HL.GetEnemies("Melee");
-    HL.GetEnemies(8);
-    HL.GetEnemies(10);
-    HL.GetEnemies(12);
-    HL.GetEnemies(15);
-    HL.GetEnemies(20);
-    HL.GetEnemies(25);
-    HL.GetEnemies(30);
-    HL.GetEnemies(35);
-    HL.GetEnemies(40);
-    Enemies5y = Cache.EnemiesCount[5]
-    Enemies8y = Cache.EnemiesCount[8]
-    Enemies10y = Cache.EnemiesCount[10]
-    Enemies12y = Cache.EnemiesCount[12]
-    Enemies15y = Cache.EnemiesCount[15]
-    Enemies20y = Cache.EnemiesCount[20]
-    Enemies25y = Cache.EnemiesCount[25]
-    Enemies30y = Cache.EnemiesCount[30]
-    Enemies35y = Cache.EnemiesCount[35]
-    Enemies40y = Cache.EnemiesCount[40]
+
+
+    -- print(targetRange8)
+
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
     highkey = 13
 
@@ -437,10 +458,10 @@ local function APL()
     HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
     validmobsinrange10y = combatmobs40() * .7
-    validmobsinrange20y = combatmobs40() * .7
+    validmobsinrange30y = combatmobs40() * .7
 
 
-    if Enemies10y > validmobsinrange10y and combatmobs40() > 0 then
+    if inRange10 > validmobsinrange10y and combatmobs40() > 0 then
         aoecds10y = true
     else
         aoecds10y = false
@@ -448,27 +469,24 @@ local function APL()
 
 
 
-    if Enemies20y > validmobsinrange20y and combatmobs40() > 0 then
-        aoecds20y = true
+    if inRange30 > validmobsinrange30y and combatmobs40() > 0 then
+        aoecds30y = true
     else
-        aoecds20y = false
+        aoecds30y = false
     end
 
     consecrationdrop = (
-        (Player:CanAttack(Target) and Target:IsInRange(5)
+        (Player:CanAttack(Target) and targetRange8
             and aoecds10y
-        ) or Cache.EnemiesCount[5] >= 3)
+        ) or inRange8>= 3)
     --         --battle rez
 
-    --  print(Queuestore.storedName)
 
 
-    -- local numberOfDead = partyOrRaidDead()
-    -- print(partyOrRaidDead())
 
     if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady()
         and Player:HolyPower() < 3 and S.Intercession:CooldownUp() and partyOrRaidDead() >= 1 then
-        if S.Judgment:IsReady() and Target:IsInRange(30) then
+        if S.Judgment:IsReady() and targetRange30 then
             return S.Judgment:Cast()
         end
 
@@ -533,7 +551,7 @@ local function APL()
 
 
 
-
+-- print(targetRange30)
 
     if RubimRH.QueuedSpell():IsReadyQueue() then
         return RubimRH.QueuedSpell():Cast()
@@ -541,13 +559,13 @@ local function APL()
 
 
 
-    if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or Cache.EnemiesCount[20] == 0) then
+    if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or inRange30 == 0) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
 
     --Freedom
-    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and Enemies15y >= 1 then
+    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and inRange10 >= 1 then
         return S.BlessingofFreedom:Cast()
     end
 
@@ -556,7 +574,7 @@ local function APL()
     -- and level> highkey
         -- and kickprio() 
         and select(8, UnitCastingInfo("target")) == false 
-        and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and Target:IsInRange(8) then
+        and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and targetRange8 then
         return S.Rebuke:Cast()
     end
 
@@ -564,7 +582,7 @@ local function APL()
     -- kick on GCD
     if (castTime > castchannelTime or channelTime > castchannelTime)
         and select(8, UnitCastingInfo("target")) == false and
-        RubimRH.InterruptsON() and S.AvengersShield:IsReady(30) and Player:AffectingCombat()
+        RubimRH.InterruptsON() and S.AvengersShield:IsReady() and targetRange30 and Player:AffectingCombat()
         and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
         return S.AvengersShield:Cast()
     end
@@ -574,7 +592,7 @@ local function APL()
     if (castTime > castchannelTime or channelTime > castchannelTime) 
     -- and level> highkey
     and select(8, UnitCastingInfo("target")) == false 
-        and RubimRH.InterruptsON() and S.HammerofJustice:IsReady(10) and Player:AffectingCombat()
+        and RubimRH.InterruptsON() and S.HammerofJustice:IsReady() and Player:AffectingCombat() and targetRange10
         --  and stunprio() 
          then
         return S.HammerofJustice:Cast()
@@ -584,7 +602,7 @@ local function APL()
     if (castTime > 0.1 or channelTime > 0.1) and S.HammerofJustice:CooldownRemains() > Player:GCD() 
     -- and level> highkey
     and select(8, UnitCastingInfo("target")) == false 
-        and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and Enemies8y >= 1 and Player:AffectingCombat()
+        and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
         --  and blindprio() 
          then
         return S.BlindingLight:Cast()
@@ -613,7 +631,7 @@ local function APL()
     -- end
 
     if not IsCurrentSpell(6603) and Player:CanAttack(Target)
-        and Target:AffectingCombat() and Player:AffectingCombat() and Target:IsInRange(20) then
+        and Target:AffectingCombat() and Player:AffectingCombat() and targetRange30 then
         return S.autoattack:Cast()
     end
 
@@ -626,19 +644,19 @@ local function APL()
 
     
     --health pot -- will need to update item ID of HPs as expansions progress
-    if Enemies20y >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and IsUsableItem(191380) == true and
+    if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and IsUsableItem(191380) == true and
         GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
         and (not Player:InArena() and not Player:InBattlegrounds()) then
         return I.HPIcon:Cast()
     end
 
 --abnout to die need heals or immunity
-    if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and Enemies30y >= 1 and Player:HealthPercentage() < 15 then
+    if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and inRange30 >= 1 and Player:HealthPercentage() < 15 then
     return S.DivineShield:Cast()
 end
 
 if S.LayonHands:IsReady() and Player:HealthPercentage() < 20 and S.DivineShield:CooldownRemains() > Player:GCD() and not Player:Debuff(S.Forbearance)
-    and Enemies30y >= 1 then
+    and inRange30 >= 1 then
     return S.LayonHands:Cast()
 end
 
@@ -647,7 +665,7 @@ end
     -- defensives for trash on M+ key <= level 13
     if (not IsEncounterInProgress(Boss) or level <= highkey) then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
-            and Enemies20y >= 1
+            and inRange30 >= 1
             and Player:HealthPercentage() < 35
             and not Player:Buff(S.GuardianofAncientKings) 
             and not Player:Buff(S.ArdentDefender)  then
@@ -656,7 +674,7 @@ end
 
 
         if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5
-            and Enemies20y >= 1
+            and inRange30 >= 1
             and (HPpercentloss > 12
                 and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
             and not Player:Buff(S.DivineShield) and not Player:Buff(S.ArdentDefender) then
@@ -664,7 +682,7 @@ end
         end
 
         if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5
-            and Enemies20y >= 1
+            and inRange30 >= 1
             and (HPpercentloss > 12
                 and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
             and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefender) then
@@ -672,7 +690,7 @@ end
         end
 
         if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
-            and (Enemies8y>= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
+            and (inRange8>= 1 or targetRange8) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
             return S.EyeofTyr:Cast()
         end
     end
@@ -700,7 +718,7 @@ end
         if S.EyeofTyr:IsReady()
             and not Player:Buff(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
             and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
-            and (Enemies8y >= 1 or Target:IsInRange(8)) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
+            and (inRange8 >= 1 or targetRange8) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
             return S.EyeofTyr:Cast()
         end
     end
@@ -713,7 +731,7 @@ end
         return S.WordofGlory:Cast()
     end
 
-    if S.ShieldoftheRighteous:IsReady() and (Target:IsInRange(8) or Enemies8y >= 1)
+    if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8 >= 1)
         and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
     then
         return S.ShieldoftheRighteous:Cast()
@@ -722,7 +740,7 @@ end
 
     -- no enemies/out of target range heal/HP == 5 or if about to die and shield up
     if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 55
-            and Cache.EnemiesCount[20] == 0 and Player:HolyPower() == 5
+            and inRange30 == 0 and Player:HolyPower() == 5
             or Player:HealthPercentage() < 45 and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 3
             and (WordofGlorycast or Player:HolyPower() >= 3))
     then
@@ -730,14 +748,14 @@ end
     end
 
     -------------DEFENSIVES_-------------
-    if Target:Exists() and Player:CanAttack(Target) and (Enemies40y>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
+    if Target:Exists() and Player:CanAttack(Target) and (inRange40>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
         -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
         if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and
             (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight) or Player:HealthPercentage() < 45) then
             return S.WordofGlory:Cast()
         end
 
-        if S.ShieldoftheRighteous:IsReady() and (Target:IsInRange(8) or Enemies8y>=1) 
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) 
             and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
                 and (Player:ActiveMitigationNeeded()
                     or Player:HealthPercentage() <= 80)) then
@@ -745,7 +763,7 @@ end
         end
 
 
-        if S.BastionofLight:IsReadyP() and Cache.EnemiesCount[8] >= 1 and RubimRH.CDsON() then
+        if S.BastionofLight:IsReadyP() and inRange8 >= 1 and RubimRH.CDsON() then
             return S.BastionofLight:Cast()
         end
 
@@ -760,7 +778,7 @@ end
         if S.WordofGlory:IsReadyP() and
             (
                 Player:HealthPercentage() < 45 and WordofGlorycast or
-                Player:HealthPercentage() < 70 and Player:HolyPower() == 5 and Cache.EnemiesCount[20] == 0) and
+                Player:HealthPercentage() < 70 and Player:HolyPower() == 5 and inRange30 == 0) and
             Player:Buff(S.ShieldoftheRighteousBuff) then
             return S.WordofGlory:Cast()
         end
@@ -771,13 +789,13 @@ end
         --     and not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
         --     and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
         --     and S.LayonHands:CooldownRemains() > Player:GCD() and
-        --     Cache.EnemiesCount[10] >= 1 then
+        --     inRange10 >= 1 then
         --     return S.BlessingofProtection:Cast()
         -- end
     
 
-        if RubimRH.CDsON() and Cache.EnemiesCount[8] >= 1 then
-            if RubimRH.CDsON() and Target:IsInRange(5)
+        if RubimRH.CDsON() and inRange8 >= 1 then
+            if RubimRH.CDsON() and targetRange8
             and (Player:Buff(S.AvengingWrath) or S.AvengingWrath:CooldownRemains()>20)
             and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
             local ShouldReturn = UseItems();
@@ -804,7 +822,7 @@ end
 
         -- shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
 
-        if S.ShieldoftheRighteous:IsReady() and (Target:IsInRange(8) or Enemies8y>=1) and
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and
             (
                 Target:Debuff(S.JudgmentDebuff) or
                 Player:HealthPercentage() < 90 and not Player:Buff(S.ShieldoftheRighteousBuff) and
@@ -816,7 +834,7 @@ end
 
         -- shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
 
-        if S.ShieldoftheRighteous:IsReady() and (Target:IsInRange(8) or Enemies8y>=1) and
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and
             (
                 Player:HolyPower() == 5 or Player:BuffP(S.HolyAvenger) or
                 Player:HolyPower() == 4 and S.SanctifiedWrath:IsAvailable() and Player:BuffP(S.AvengingWrathBuff)) then
@@ -831,12 +849,12 @@ end
 
         -- divine_toll
 
-        if S.DivineToll:IsReadyP() and (aoecds20y or Cache.EnemiesCount[20]>=4) and Target:IsInRange(30) and RubimRH.CDsON() then
+        if S.DivineToll:IsReadyP() and (aoecds30y or inRange30>=4) and targetRange30 and RubimRH.CDsON() then
             return S.DivineToll:Cast()
         end
 
 
-        if S.Judgment:IsReadyP() and Target:IsInRange(30) and
+        if S.Judgment:IsReadyP() and targetRange30 and
             (
                 Target:DebuffRemains(S.JudgmentDebuff) < Player:GCD() and S.Judgment:ChargesFractional() >= 1.9 or
                 not S.CrusadersJudgment:IsAvailable()) then
@@ -844,7 +862,7 @@ end
         end
 
         -- avengers_shield,if=debuff.vengeful_shock.down&conduit.vengeful_shock.enabled
-        if S.AvengersShield:IsReady() and Target:IsInRange(30) and (Target:Debuff(S.JudgmentDebuff) or Enemies20y >= 3)
+        if S.AvengersShield:IsReady() and targetRange30 and (Target:Debuff(S.JudgmentDebuff) or inRange30 >= 3)
             and (Player:Buff(S.ShieldoftheRighteousBuff) 
             or HL.CombatTime() < 10 or Player:HealthPercentage() > 90 
             or RubimRH.CDsON() and S.DivineToll:CooldownUp())
@@ -854,38 +872,38 @@ end
 
         -- divine_toll
 
-        if S.DivineToll:IsReadyP() and (aoecds20y or Cache.EnemiesCount[20]>=3) and Target:IsInRange(30) and RubimRH.CDsON() and
+        if S.DivineToll:IsReadyP() and (aoecds30y or inRange30>=3) and  RubimRH.CDsON() and
             (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 0) then
             return S.DivineToll:Cast()
         end
 
-        if S.AvengersShield:IsReadyP() and Cache.EnemiesCount[15] >= 3 and Target:IsInRange(30) then
+        if S.AvengersShield:IsReadyP() and inRange30 >= 3 and targetRange30 then
             return S.AvengersShield:Cast()
         end
 
 
         -- hammer_of_wrath
 
-        if S.HammerofWrath:IsReadyP() and Target:IsInRange(30) and
+        if S.HammerofWrath:IsReadyP() and targetRange30 and
             (Target:HealthPercentage() <= 20 or Player:BuffP(S.AvengingWrathBuff)) then
             return S.HammerofWrath:Cast()
         end
 
         -- avengers_shield
 
-        if S.AvengersShield:IsReadyP() and Target:IsInRange(30) then
+        if S.AvengersShield:IsReadyP() and targetRange30 then
             return S.AvengersShield:Cast()
         end
 
         -- judgment,target_if=min:debuff.judgment.remains
 
-        if S.Judgment:IsReadyP() and Target:IsInRange(30) and Target:DebuffRemains(S.JudgmentDebuff) < Player:GCD() then
+        if S.Judgment:IsReadyP() and targetRange30 and Target:DebuffRemains(S.JudgmentDebuff) < Player:GCD() then
             return S.Judgment:Cast()
         end
 
         -- vanquishers_hammer
 
-        if S.VanquishersHammer:IsReadyP() and Target:IsInRange(30) then
+        if S.VanquishersHammer:IsReadyP() and targetRange30 then
             return S.VanquishersHammer:Cast()
         end
 
@@ -898,12 +916,12 @@ end
   
         -- blessed_hammer,strikes=2.4,if=charges=3
 
-        if S.BlessedHammer:IsReadyP() and Cache.EnemiesCount[12] >= 1 and S.BlessedHammer:ChargesFractional() >= 2.9 then
+        if S.BlessedHammer:IsReadyP() and inRange10 >= 1 and S.BlessedHammer:ChargesFractional() >= 2.9 then
             return S.BlessedHammer:Cast()
         end
 
         -- hammer_of_the_righteous,if=charges=2
-        if S.HammeroftheRighteous:IsReadyP() and Cache.EnemiesCount[10] >= 1 and Target:IsInRange(8) and
+        if S.HammeroftheRighteous:IsReadyP() and inRange10 >= 1 and targetRange8 and
             S.HammeroftheRighteous:ChargesFractional() >= 2.9 then
             return S.HammeroftheRighteous:Cast()
         end
@@ -911,29 +929,29 @@ end
 
         -- blessed_hammer,strikes=2.4
 
-        if S.BlessedHammer:IsReadyP() and Cache.EnemiesCount[12] >= 1 then
+        if S.BlessedHammer:IsReadyP() and inRange10 >= 1 then
             return S.BlessedHammer:Cast()
         end
 
 
         -- hammer_of_the_righteous
-        if S.HammeroftheRighteous:IsReadyP() and Cache.EnemiesCount[10] >= 1 and Target:IsInRange(8) then
+        if S.HammeroftheRighteous:IsReadyP() and inRange10 >= 1 and targetRange8 then
             return S.HammeroftheRighteous:Cast()
         end
 
 
 
 
-        if S.Judgment:IsReadyP() and Target:IsInRange(30) then
+        if S.Judgment:IsReadyP() and targetRange30 then
             return S.Judgment:Cast()
         end
         -- consecration
-        if S.Consecration:IsReady() and (consecrationdrop or Target:IsInRange(5)) then
+        if S.Consecration:IsReady() and (consecrationdrop or IsSpellInRange("Shield of the Righteous")) then
             return S.Consecration:Cast()
         end
 
         -- out of range HP generator
-        if S.BlessedHammer:IsReady() and Enemies30y>= 1 and Player:HolyPower() < 5  then
+        if S.BlessedHammer:IsReady() and inRange30>= 1 and Player:HolyPower() < 5  then
             return S.BlessedHammer:Cast()
         end
     end
@@ -950,7 +968,7 @@ end
         end
 
         if S.BlessedHammer:IsCastable() and Player:IsMoving() and IsResting("player") == false 
-        and Cache.EnemiesCount[40] >= 1 and Cache.EnemiesCount[15] == 0 
+        and inRange40 >= 1 and inRange10 == 0 
         and (S.BlessedHammer:ChargesFractional() >= 2.9 and Player:HolyPower() < 5 or
                 S.BlessedHammer:ChargesFractional() >= 0.9 and Player:HolyPower() < 3)
         then

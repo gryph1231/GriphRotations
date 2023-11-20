@@ -444,6 +444,187 @@ local function UseItems()
 	return nil
 end
 
+local function stealth()
+	--blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
+    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange8>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
+        return S.BladeFlurry:Cast()
+    end
+
+	--cold_blood,if=variable.finish_condition
+    if S.ColdBlood:IsReady() and bfrange and not Player:Buff(S.ColdBlood) and finish_condition then
+        return S.ColdBlood:Cast()
+    end
+
+	--between_the_eyes,if=variable.finish_condition&talent.crackshot
+    if S.BetweentheEyes:IsReady() and bte_range and finish_condition and S.Crackshot:IsAvailable() then
+        return S.BetweentheEyes:Cast()
+    end
+
+    --dispatch,if=variable.finish_condition
+    if S.Dispatch:IsReady() and bfrange and finish_condition then
+        return S.Dispatch:Cast()
+    end
+	--pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
+    if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=1 and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
+        return S.PistolShot:Cast()
+    end
+
+	--ambush,if=talent.hidden_opportunity
+    if S.Ambush:IsReady() and Player:ComboPoints()<=5 and bfrange and S.HiddenOpportunity:IsAvailable()  then
+        return S.Ambush:Cast()
+    end
+end
+
+local function stealth_cds()
+	--vanish,if=talent.hidden_opportunity&!talent.crackshot&!buff.audacity.up&(variable.vanish_opportunity_condition|buff.opportunity.stack<buff.opportunity.max_stack)&variable.ambush_condition
+    if S.Vanish:IsCastable() and bfrange and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or not Player:IsTanking(Target)) and S.HiddenOpportunity:IsAvailable() and not S.Crackshot:IsAvailable() and not Player:Buff(S.AudacityBuff) and (vanish_opportunity_condition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition then
+        return S.Vanish:Cast()
+    end
+	
+	--vanish,if=(!talent.hidden_opportunity|talent.crackshot)&variable.finish_condition
+    if S.Vanish:IsCastable() and bfrange and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or not Player:IsTanking(Target)) and (not S.HiddenOpportunity:IsAvailable() or S.Crackshot:IsAvailable()) and finish_condition then
+        return S.Vanish:Cast()
+    end
+
+	--shadow_dance,if=talent.crackshot&variable.finish_condition
+    if S.ShadowDance:IsCastable() and bfrange and S.Crackshot:IsAvailable() and finish_condition then
+        return S.ShadowDance:Cast()
+    end
+
+	--shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition&buff.slice_and_dice.up&(variable.finish_condition|talent.hidden_opportunity)&(!talent.hidden_opportunity|!cooldown.vanish.ready)
+    if S.ShadowDance:IsCastable() and bfrange and not S.KeepitRolling:IsAvailable() and shadow_dance_condition and Player:Buff(S.SliceandDice) and (finish_condition or S.HiddenOpportunity:IsAvailable()) and (not S.HiddenOpportunity:IsAvailable() or not S.Vanish:CooldownUp()) then
+        return S.ShadowDance:Cast()
+    end
+
+    --shadow_dance,if=talent.keep_it_rolling&variable.shadow_dance_condition&(cooldown.keep_it_rolling.remains<=30|cooldown.keep_it_rolling.remains>120&(variable.finish_condition|talent.hidden_opportunity))
+    if S.ShadowDance:IsCastable() and bfrange and S.KeepitRolling:IsAvailable() and shadow_dance_condition and (S.KeepitRolling:CooldownRemains() <= 30 or S.KeepitRolling:CooldownRemains() > 120 and (finish_condition or S.HiddenOpportunity:IsAvailable())) then
+        return S.ShadowDance:Cast()
+    end
+end
+
+local function builders()
+	--echoing_reprimand
+    if S.EchoingReprimand:IsReady() and targetRange8  then
+        return S.EchoingReprimand:Cast()
+    end
+	
+	--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
+    if S.Ambush:IsReady() and targetRange8 and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.AudacityBuff) and Player:ComboPoints()<=5 then
+        return S.Ambush:Cast()
+    end
+	
+    --pistol_shot,if=talent.fan_the_hammer&talent.audacity&talent.hidden_opportunity&buff.opportunity.up&!buff.audacity.up
+    if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and S.Audacity:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.Opportunity) and not Player:Buff(S.AudacityBuff) then
+        return S.PistolShot:Cast()
+    end
+	
+    --pistol_shot,if=buff.greenskins_wickers.up&(!talent.fan_the_hammer&buff.opportunity.up|buff.greenskins_wickers.remains<1.5)
+    if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and Player:Buff(S.GreenSkinsWickersBuff) and (not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) or Player:BuffRemains(S.GreenSkinsWickersBuff) < 1.5) then
+        return S.PistolShot:Cast()
+    end
+	
+    --pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&(buff.opportunity.stack>=buff.opportunity.max_stack|buff.opportunity.remains<2)
+    if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:BuffStack(S.Opportunity) >= 6 or Player:BuffRemains(S.Opportunity) < 2) then
+        return S.PistolShot:Cast()
+    end
+	
+	--pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&combo_points.deficit>((1+talent.quick_draw)*talent.fan_the_hammer.rank)&(cooldown.vanish.remains>10&cooldown.shadow_dance.remains>5|!talent.crackshot|talent.fan_the_hammer.rank<=1)
+    if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and Player:ComboPointsDeficit() > ((1 + num(S.QuickDraw:IsAvailable())) * fthrank) and (not RubimRH.CDsON() or (not S.Vanish:CooldownUp() and not S.ShadowDance:CooldownUp() or not S.Crackshot:IsAvailable() or fthrank <= 1)) then
+        return S.PistolShot:Cast()
+    end
+	
+    --pistol_shot,if=!talent.fan_the_hammer&buff.opportunity.up&(energy.base_deficit>energy.regen*1.5|combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled|talent.audacity.enabled&!buff.audacity.up)
+    if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:EnergyDeficit() > Player:EnergyRegen() * 1.5 or Player:ComboPoints() <= 1 + num(Player:Buff(S.Broadside)) or S.QuickDraw:IsAvailable() or S.Audacity:IsAvailable() and not Player:Buff(S.AudacityBuff)) then
+        return S.PistolShot:Cast()
+    end
+	
+    --sinister_strike
+    if S.SinisterStrike:IsReady() and bfrange and Player:ComboPoints()<=5 then
+        return S.SinisterStrike:Cast()
+    end
+end
+
+local function cooldowns()
+    --adrenaline_rush,if=(!buff.adrenaline_rush.up|stealthed.all&talent.crackshot&talent.improved_adrenaline_rush)&(combo_points<=2|!talent.improved_adrenaline_rush)
+    if S.AdrenalineRush:IsCastable() and bfrange and RubimRH.CDsON() and (not Player:Buff(S.AdrenalineRush) or stealthall and S.Crackshot:IsAvailable() and S.ImprovedAdrenalineRush:IsAvailable()) and (Player:ComboPoints() <= 2 or not S.ImprovedAdrenalineRush:IsAvailable()) then
+        return S.AdrenalineRush:Cast()
+    end
+	
+    --blade_flurry,if=(spell_targets>=2-talent.underhanded_upper_hand&!stealthed.rogue)&buff.blade_flurry.remains<gcd|talent.deft_maneuvers&spell_targets>=5&!variable.finish_condition
+    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((inRange8>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange8>= 5 and not finish_condition) then
+        return S.BladeFlurry:Cast()
+    end
+	
+	--roll_the_bones,if=variable.rtb_reroll|rtb_buffs.max_remains<=set_bonus.tier31_4pc+(cooldown.shadow_dance.remains<=1|cooldown.vanish.remains<=1)*6
+	if S.RolltheBones:IsCastable() and (rtb_reroll or ((MaxRtB_BuffRemains() <= num(tierequipped() >= 4) * 3 + num(RubimRH.CDsON() and (S.ShadowDance:CooldownRemains() <= 1 or S.Vanish:CooldownRemains() <= 1)) * 5) and (not stealthall or tierequipped() >= 4 and RtB_Buffs() == 1 and MaxRtB_BuffRemains() < 2))) then
+		return S.RolltheBones:Cast()
+	end
+	
+    --keep_it_rolling,if=!variable.rtb_reroll&rtb_buffs>=3+set_bonus.tier31_4pc&(buff.shadow_dance.down|rtb_buffs>=6)
+    -- if S.KeepitRolling:IsReady() and not RtB_Reroll() and RtB_Buffs() >= 3 + num(tierequipped() >= 4) and (not Player:Buff(S.ShadowDanceBuff) or RtB_Buffs() >= 6) then
+        -- return S.KeepitRolling:Cast()
+    -- end
+
+    --ghostly_strike
+    if S.GhostlyStrike:IsReady() and bfrange and RubimRH.CDsON() then
+        return S.GhostlyStrike:Cast()
+    end
+	
+    --blade_rush,if=variable.blade_flurry_sync&(energy.base_time_to_max>4-spell_targets%3)&!stealthed.all
+    if S.BladeRush:IsReady() and targetRange8 and bladeflurrysync and (EnergyTimeToMaxRounded() > 4 - inRange8/ 3) and not stealthall then
+        return S.BladeRush:Cast()
+    end
+	
+    --call_action_list,name=stealth_cds,if=!stealthed.all
+    if stealth_cds() and RubimRH.CDsON() and not stealthall and (S.BetweentheEyes:CooldownUp() or not S.Crackshot:IsAvailable()) then
+		return stealth_cds()
+    end
+	
+    --thistle_tea,if=!buff.thistle_tea.up&(energy.base_deficit>=100|fight_remains<charges*6)
+    if S.ThistleTea:IsReady() and bfrange and not Player:Buff(S.ThistleTea) and Player:EnergyDeficit() >= 100 then
+        return S.ThistleTea:Cast()
+    end
+	
+    if UseItems() and RubimRH.CDsON() and bfrange then
+		return UseItems()
+    end
+	
+	return nil
+end
+
+local function finishers()
+	--between_the_eyes,if=!talent.crackshot&(buff.between_the_eyes.remains<4|talent.improved_between_the_eyes|talent.greenskins_wickers|set_bonus.tier30_4pc)&!buff.greenskins_wickers.up
+	if S.BetweentheEyes:IsReady() and targetRange30 and not S.Crackshot:IsAvailable() and (Player:BuffRemains(S.BetweentheEyes) < 4 or S.ImprovedBetweentheEyes:IsAvailable() or S.GreenSkinsWickers:IsAvailable() or tierequipped() >= 4) and not Player:Buff(S.GreenSkinsWickersBuff) then
+		return S.BetweentheEyes:Cast()
+	end
+
+	--between_the_eyes,if=talent.crackshot&(cooldown.vanish.remains>45&cooldown.shadow_dance.remains>15)
+	if S.BetweentheEyes:IsReady() and targetRange30 and S.Crackshot:IsAvailable() and ((not wasEnergized or AreaTTD() > 12) and S.Vanish:CooldownRemains() > 45 and S.ShadowDance:CooldownRemains() > 15) then
+		return S.BetweentheEyes:Cast()
+	end
+
+	--slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
+	if S.SliceandDice:IsCastable() and Player:BuffRemains(S.SliceandDice) < 5 and not Player:Buff(S.VanishBuff) then
+		return S.SliceandDice:Cast()
+	end
+
+	--killing_spree,if=debuff.ghostly_strike.up|!talent.ghostly_strike
+	if S.KillingSpree:IsReady() and targetRange8 and (Target:Debuff(S.GhostlyStrike) or not S.GhostlyStrike:IsAvailable()) then
+		return S.KillingSpree:Cast()
+	end
+	
+	--cold_blood
+	if S.ColdBlood:IsReady() and not Player:Buff(S.ColdBlood) then
+		return S.ColdBlood:Cast()
+	end
+   
+    -- dispatch
+	if S.Dispatch:IsReady() and targetRange8 and (S.ShadowDance:CooldownRemainsP() > Player:GCD() and S.Vanish:CooldownRemainsP() > Player:GCD() or not RubimRH.CDsON())then
+		return S.Dispatch:Cast()
+	end
+
+	return nil
+end
 
 	
 local function APL()
@@ -712,238 +893,25 @@ if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:Affecting
 		return S.autoattack:Cast()
 	end
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Cooldowns---------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
 	-- actions+=/call_action_list,name=cds
-	-- if cooldowns() then
-	-- 	return cooldowns()
-	-- end
-
-
- --adrenaline_rush,if=(!buff.adrenaline_rush.up|stealthed.all&talent.crackshot&talent.improved_adrenaline_rush)&(combo_points<=2|!talent.improved_adrenaline_rush)
- if S.AdrenalineRush:IsCastable() and bfrange and RubimRH.CDsON() and (not Player:Buff(S.AdrenalineRush) or stealthall and S.Crackshot:IsAvailable() and S.ImprovedAdrenalineRush:IsAvailable()) and (Player:ComboPoints() <= 2 or not S.ImprovedAdrenalineRush:IsAvailable()) then
-    return S.AdrenalineRush:Cast()
-end
-
---blade_flurry,if=(spell_targets>=2-talent.underhanded_upper_hand&!stealthed.rogue)&buff.blade_flurry.remains<gcd|talent.deft_maneuvers&spell_targets>=5&!variable.finish_condition
-if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((inRange8>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange8>= 5 and not finish_condition) then
-    return S.BladeFlurry:Cast()
-end
-
---roll_the_bones,if=variable.rtb_reroll|rtb_buffs.max_remains<=set_bonus.tier31_4pc+(cooldown.shadow_dance.remains<=1|cooldown.vanish.remains<=1)*6
-if S.RolltheBones:IsCastable() and (rtb_reroll or ((MaxRtB_BuffRemains() <= num(tierequipped() >= 4) * 3 + num(RubimRH.CDsON() and (S.ShadowDance:CooldownRemains() <= 1 or S.Vanish:CooldownRemains() <= 1)) * 5) and (not stealthall or tierequipped() >= 4 and RtB_Buffs() == 1 and MaxRtB_BuffRemains() < 2))) then
-    return S.RolltheBones:Cast()
-end
-
---keep_it_rolling,if=!variable.rtb_reroll&rtb_buffs>=3+set_bonus.tier31_4pc&(buff.shadow_dance.down|rtb_buffs>=6)
--- if S.KeepitRolling:IsReady() and not RtB_Reroll() and RtB_Buffs() >= 3 + num(tierequipped() >= 4) and (not Player:Buff(S.ShadowDanceBuff) or RtB_Buffs() >= 6) then
-    -- return S.KeepitRolling:Cast()
--- end
-
---ghostly_strike
-if S.GhostlyStrike:IsReady() and bfrange and RubimRH.CDsON() and Player:ComboPointsDeficit()>=1 then
-    return S.GhostlyStrike:Cast()
-end
-
---blade_rush,if=variable.blade_flurry_sync&(energy.base_time_to_max>4-spell_targets%3)&!stealthed.all
-if S.BladeRush:IsReady() and targetRange8 and bladeflurrysync and (EnergyTimeToMaxRounded() > 4 - inRange8/ 3) and not stealthall then
-    return S.BladeRush:Cast()
-end
-
---call_action_list,name=stealth_cds,if=!stealthed.all
-if 
--- stealth_cds() and 
-RubimRH.CDsON() and not stealthall and (S.BetweentheEyes:CooldownUp() or not S.Crackshot:IsAvailable()) then
-    -- return stealth_cds()
-
---vanish,if=talent.hidden_opportunity&!talent.crackshot&!buff.audacity.up&(variable.vanish_opportunity_condition|buff.opportunity.stack<buff.opportunity.max_stack)&variable.ambush_condition
-if S.Vanish:IsCastable() and bfrange and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or not Player:IsTanking(Target)) and S.HiddenOpportunity:IsAvailable() and not S.Crackshot:IsAvailable() and not Player:Buff(S.AudacityBuff) and (vanish_opportunity_condition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition then
-    return S.Vanish:Cast()
-end
-
---vanish,if=(!talent.hidden_opportunity|talent.crackshot)&variable.finish_condition
-if S.Vanish:IsCastable() and bfrange and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or not Player:IsTanking(Target)) and (not S.HiddenOpportunity:IsAvailable() or S.Crackshot:IsAvailable()) and finish_condition then
-    return S.Vanish:Cast()
-end
-
---shadow_dance,if=talent.crackshot&variable.finish_condition
-if S.ShadowDance:IsCastable() and bfrange and S.Crackshot:IsAvailable() and finish_condition then
-    return S.ShadowDance:Cast()
-end
-
---shadow_dance,if=!talent.keep_it_rolling&variable.shadow_dance_condition&buff.slice_and_dice.up&(variable.finish_condition|talent.hidden_opportunity)&(!talent.hidden_opportunity|!cooldown.vanish.ready)
-if S.ShadowDance:IsCastable() and bfrange and not S.KeepitRolling:IsAvailable() and shadow_dance_condition and Player:Buff(S.SliceandDice) and (finish_condition or S.HiddenOpportunity:IsAvailable()) and (not S.HiddenOpportunity:IsAvailable() or not S.Vanish:CooldownUp()) then
-    return S.ShadowDance:Cast()
-end
-
---shadow_dance,if=talent.keep_it_rolling&variable.shadow_dance_condition&(cooldown.keep_it_rolling.remains<=30|cooldown.keep_it_rolling.remains>120&(variable.finish_condition|talent.hidden_opportunity))
-if S.ShadowDance:IsCastable() and bfrange and S.KeepitRolling:IsAvailable() and shadow_dance_condition and (S.KeepitRolling:CooldownRemains() <= 30 or S.KeepitRolling:CooldownRemains() > 120 and (finish_condition or S.HiddenOpportunity:IsAvailable())) then
-    return S.ShadowDance:Cast()
-end
-
-
-
-
-end
-
---thistle_tea,if=!buff.thistle_tea.up&(energy.base_deficit>=100|fight_remains<charges*6)
-if S.ThistleTea:IsReady() and bfrange and not Player:Buff(S.ThistleTea) and Player:EnergyDeficit() >= 100 then
-    return S.ThistleTea:Cast()
-end
-
-if UseItems() and RubimRH.CDsON() and bfrange then
-    return UseItems()
-end
-
-
-
-
-
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Stealth-----------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+	if cooldowns() then
+		return cooldowns()
+	end
 
 	--actions+=/call_action_list,name=stealth,if=stealthed.all
-	-- if stealth() and stealthall then
-	-- 	return stealth()
-	-- end
-if stealthall then
-    
---blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
-if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange8>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
-    return S.BladeFlurry:Cast()
-end
-
---cold_blood,if=variable.finish_condition
-if S.ColdBlood:IsReady() and bfrange and not Player:Buff(S.ColdBlood) and finish_condition then
-    return S.ColdBlood:Cast()
-end
-
---between_the_eyes,if=variable.finish_condition&talent.crackshot
-if S.BetweentheEyes:IsReady() and bte_range and finish_condition and S.Crackshot:IsAvailable() then
-    return S.BetweentheEyes:Cast()
-end
-
---dispatch,if=variable.finish_condition
-if S.Dispatch:IsReady() and bfrange and finish_condition then
-    return S.Dispatch:Cast()
-end
---pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
-if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=1 and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
-    return S.PistolShot:Cast()
-end
-
---ambush,if=talent.hidden_opportunity
-if S.Ambush:IsReady() and Player:ComboPoints()<=5 and bfrange and S.HiddenOpportunity:IsAvailable()  then
-    return S.Ambush:Cast()
-end
-
-
-
-
-end
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Finishers---------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+	if stealth() and stealthall then
+		return stealth()
+	end
 
 	--actions+=/run_action_list,name=finish,if=variable.finish_condition
-	-- if finishers() and finish_condition then
-	-- 	return finishers()
-	-- end
-if finish_condition then
+	if finishers() and finish_condition then
+		return finishers()
+	end
 
---between_the_eyes,if=!talent.crackshot&(buff.between_the_eyes.remains<4|talent.improved_between_the_eyes|talent.greenskins_wickers|set_bonus.tier30_4pc)&!buff.greenskins_wickers.up
-if S.BetweentheEyes:IsReady() and targetRange30 and not S.Crackshot:IsAvailable() and (Player:BuffRemains(S.BetweentheEyes) < 4 or S.ImprovedBetweentheEyes:IsAvailable() or S.GreenSkinsWickers:IsAvailable() or tierequipped() >= 4) and not Player:Buff(S.GreenSkinsWickersBuff) then
-    return S.BetweentheEyes:Cast()
-end
-
---between_the_eyes,if=talent.crackshot&(cooldown.vanish.remains>45&cooldown.shadow_dance.remains>15)
-if S.BetweentheEyes:IsReady() and targetRange30 and S.Crackshot:IsAvailable() and ((not wasEnergized or AreaTTD() > 12) and S.Vanish:CooldownRemains() > 45 and S.ShadowDance:CooldownRemains() > 15) then
-    return S.BetweentheEyes:Cast()
-end
-
---slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
-if S.SliceandDice:IsCastable() and Player:BuffRemains(S.SliceandDice) < 5 and not Player:Buff(S.VanishBuff) then
-    return S.SliceandDice:Cast()
-end
-
---killing_spree,if=debuff.ghostly_strike.up|!talent.ghostly_strike
-if S.KillingSpree:IsReady() and targetRange8 and (Target:Debuff(S.GhostlyStrike) or not S.GhostlyStrike:IsAvailable()) then
-    return S.KillingSpree:Cast()
-end
-
---cold_blood
-if S.ColdBlood:IsReady() and targetRange8 and not Player:Buff(S.ColdBlood) then
-    return S.ColdBlood:Cast()
-end
-
--- dispatch
-if S.Dispatch:IsReady() and targetRange8 and (S.ShadowDance:CooldownRemainsP() > Player:GCD() and S.Vanish:CooldownRemainsP() > Player:GCD() or not RubimRH.CDsON()) then
-    return S.Dispatch:Cast()
-end
-
-
-
-    end
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Builders----------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
 	-- actions+=/call_action_list,name=build
-	-- if builders() then
-	-- 	return builders()
-	-- end
---echoing_reprimand
-if S.EchoingReprimand:IsReady() and targetRange8  then
-    return S.EchoingReprimand:Cast()
-end
-
---ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
-if S.Ambush:IsReady() and targetRange8 and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.AudacityBuff) and Player:ComboPoints()<=5 then
-    return S.Ambush:Cast()
-end
-
---pistol_shot,if=talent.fan_the_hammer&talent.audacity&talent.hidden_opportunity&buff.opportunity.up&!buff.audacity.up
-if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and S.Audacity:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Player:Buff(S.Opportunity) and not Player:Buff(S.AudacityBuff) then
-    return S.PistolShot:Cast()
-end
-
---pistol_shot,if=buff.greenskins_wickers.up&(!talent.fan_the_hammer&buff.opportunity.up|buff.greenskins_wickers.remains<1.5)
-if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and Player:Buff(S.GreenSkinsWickersBuff) and (not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) or Player:BuffRemains(S.GreenSkinsWickersBuff) < 1.5) then
-    return S.PistolShot:Cast()
-end
-
---pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&(buff.opportunity.stack>=buff.opportunity.max_stack|buff.opportunity.remains<2)
-if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:BuffStack(S.Opportunity) >= 6 or Player:BuffRemains(S.Opportunity) < 2) then
-    return S.PistolShot:Cast()
-end
-
---pistol_shot,if=talent.fan_the_hammer&buff.opportunity.up&combo_points.deficit>((1+talent.quick_draw)*talent.fan_the_hammer.rank)&(cooldown.vanish.remains>10&cooldown.shadow_dance.remains>5|!talent.crackshot|talent.fan_the_hammer.rank<=1)
-if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and Player:ComboPointsDeficit() > ((1 + num(S.QuickDraw:IsAvailable())) * fthrank) and (not RubimRH.CDsON() or (not S.Vanish:CooldownUp() and not S.ShadowDance:CooldownUp() or not S.Crackshot:IsAvailable() or fthrank <= 1)) then
-    return S.PistolShot:Cast()
-end
-
---pistol_shot,if=!talent.fan_the_hammer&buff.opportunity.up&(energy.base_deficit>energy.regen*1.5|combo_points.deficit<=1+buff.broadside.up|talent.quick_draw.enabled|talent.audacity.enabled&!buff.audacity.up)
-if S.PistolShot:IsReady() and bte_range and Player:ComboPoints()<=5 and not S.FantheHammer:IsAvailable() and Player:Buff(S.Opportunity) and (Player:EnergyDeficit() > Player:EnergyRegen() * 1.5 or Player:ComboPoints() <= 1 + num(Player:Buff(S.Broadside)) or S.QuickDraw:IsAvailable() or S.Audacity:IsAvailable() and not Player:Buff(S.AudacityBuff)) then
-    return S.PistolShot:Cast()
-end
-
---sinister_strike
-if S.SinisterStrike:IsReady() and bfrange and Player:ComboPoints()<=5 and not stealthall then
-    return S.SinisterStrike:Cast()
-end
-
-
-
-
+	if builders() then
+		return builders()
+	end
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Range------------------------------------------------------------------------------------------------------------------------------------------
