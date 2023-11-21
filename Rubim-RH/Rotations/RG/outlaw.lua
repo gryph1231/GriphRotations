@@ -689,14 +689,14 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
 
-    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and HPpercentloss > 0 and IsTanking then
+    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and HPpercentloss > 0 and IsTanking and inRange20>=1 then
         if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 then
             return I.HPIcon:Cast()
         end
-        if S.Evasion:IsCastable() and inRange10>=1 and Player:HealthPercentage()<35 then
+        if S.Evasion:IsCastable() and Player:HealthPercentage()<45 then
             return S.Evasion:Cast()
             end
-            if S.CloakofShadows:IsCastable() and inRange10>=1 and Player:HealthPercentage()<15 and HPpercentloss>30 then
+            if S.CloakofShadows:IsCastable() and Player:HealthPercentage()<25 and HPpercentloss>20 then
                 return S.CloakofShadows:Cast()
                 end  
     end
@@ -727,7 +727,7 @@ if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:Affecting
 end
 
 --blade_flurry,if=(spell_targets>=2-talent.underhanded_upper_hand&!stealthed.rogue)&buff.blade_flurry.remains<gcd|talent.deft_maneuvers&spell_targets>=5&!variable.finish_condition
-if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((inRange8>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange8>= 5 and not finish_condition) then
+if S.BladeFlurry:IsReady() and ((inRange8>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange8>= 5 and not finish_condition) then
     return S.BladeFlurry:Cast()
 end
 
@@ -815,7 +815,7 @@ end
 if stealthall then
     
 --blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
-if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange8>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
+if S.BladeFlurry:IsReady() and not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange8>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
     return S.BladeFlurry:Cast()
 end
 
@@ -885,7 +885,7 @@ if S.ColdBlood:IsReady() and targetRange8 and not Player:Buff(S.ColdBlood) then
 end
 
 -- dispatch
-if S.Dispatch:IsReady() and targetRange8 and (S.ShadowDance:CooldownRemainsP() > Player:GCD() and S.Vanish:CooldownRemainsP() > Player:GCD() or not RubimRH.CDsON()) then
+if S.Dispatch:IsReady() and targetRange8 and (S.ShadowDance:CooldownRemainsP() > Player:GCD() and S.Vanish:CooldownRemainsP() > Player:GCD() or not RubimRH.CDsON() or not IsInInstance()) then
     return S.Dispatch:Cast()
 end
 

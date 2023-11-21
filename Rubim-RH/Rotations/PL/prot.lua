@@ -233,7 +233,8 @@ end
 local function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 40 do
-            local spell = { 'Savage Peck', 'Barkbreaker', 'Shield of Light', 'Savage Blade', 'Dark Claw',
+            local spell = {
+                 'Skewer', 'Serrated Teeth',
                 'Jade Serpent Strike',
                 'Bloodletting Sweep', 'Stormslam', 'Deathspike', 'Infused Strike', 'Haunting Gaze',
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
@@ -440,7 +441,7 @@ local function APL()
 
     -- Define a list of dungeon boss encounter IDs
     local Boss = {
-        'Overgrown Ancient', 'Crawth',                                              -- Algeth'ar Academy
+        'Rezan', 'Yazma',                                              -- AD
         'Melidrussa Chillworn', 'Kokia Blazehoof', 'Kyrakka and Erkhart Stormvein', -- Ruby Life Pools
         'Leymor', 'Umbrelskul', 'Azureblade',                                       -- Azure Vault
         'The Raging Tempest', 'Teera and Maruuk', 'Balakar Khan',                   -- Nokhud Offensive
