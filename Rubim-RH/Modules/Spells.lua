@@ -964,37 +964,24 @@ RubimRH.Spell[73] = {
 
 RubimRH.Spell[260] = {
     --INTERRUPTS
+    --INTERRUPTS
     SummarilyDispatched    = Spell(381990),
     KeepitRolling          = Spell(381989),
     ShadowRunner           = Spell(378807),
     Audacity               = Spell(381845),
     AudacityBuff           = Spell(386270),
     SubterfugeBuff         = Spell(115192),
-    SubterfugeStealthBuff  = Spell(115191),
-    SubterfugeVanishBuff   = Spell(115193),
     Subterfuge             = Spell(108208),
     ThistleTea             = Spell(381623),
     HiddenOpportunity      = Spell(383281),
     autoattack             = Spell(274738), -- ancestral call
     ImprovedBetweentheEyes = Spell(235484),
-    Penance                = Spell(47540),
     ColdBlood              = Spell(382245),
     ShadowDance            = Spell(185313),
     ShadowDanceBuff        = Spell(185422),
-    ClosestTarget          = Spell(256948), -- spatial rift
-    HealingRain            = Spell(73920),
-    Wellspring             = Spell(197995),
-    Downpour               = Spell(207778),
-    FlashofLight           = Spell(19750),
-    HolyLight              = Spell(82326),
-    Vivify                 = Spell(116670),
-    EnvelopingMist         = Spell(124682),
-    EssenceFont            = Spell(191837),
-    SoothingMist           = Spell(209525),
-    SurgingMist            = Spell(227344),
     DeftManeuvers          = Spell(381878),
     AcrobaticStrikes       = Spell(196924),
-    Sepsis = Spell(385408),--check if this is buff or just talent/spell
+    Sepsis                 = Spell(385408), --check if this is buff or just talent/spell
     --Dungeons
     --Enrage
     LoadedDiceBuff         = Spell(256171),
@@ -1013,12 +1000,14 @@ RubimRH.Spell[260] = {
     lust2                  = Spell(57723),
     lust3                  = Spell(80354),
     lust4                  = Spell(95809),
-    ImprovedAdrenalineRush = Spell(395422),
     lust5                  = Spell(264689),
+	ImprovedAdrenalineRush = Spell(395422),
     FantheHammer           = Spell(381846),
     SwiftSlasher           = Spell(381988),
+    Shadowstep = Spell(36554),
     CounttheOdds           = Spell(381982),
     Dreadblades            = Spell(343142),
+    Detection              = Spell(56814),
     KidneyShot             = Spell(408),
     Deadshot               = Spell(272935),
     Berserking             = Spell(26297),
@@ -1042,8 +1031,6 @@ RubimRH.Spell[260] = {
     SinisterStrike         = Spell(193315),
     ImprovedAmbush         = Spell(381620),
     -- Stealth                = Spell(1784),
-    -- Stealth   = MultiSpell(115191,1784),
-    Stealth = Spell(115191),
     FindWeakness           = Spell(91023),
     FindWeaknessDebuff     = Spell(316220),
     Vanish                 = Spell(1856),
@@ -1068,6 +1055,7 @@ RubimRH.Spell[260] = {
     SliceandDice           = Spell(315496),
     Vigor                  = Spell(14983),
     Exhaustion             = Spell(57723),
+    PrecisionShot          = Spell(428377),
     Blind                  = Spell(2094),
     Blunderbuss            = Spell(202895),
     CurseoftheDreadblades  = Spell(202665),
@@ -1092,6 +1080,9 @@ RubimRH.Spell[260] = {
     TrueBearing            = Spell(193359),
     Evasion                = Spell(5277),
     WoundPoison            = Spell(8679),
+    Crackshot              = Spell(423703),
+    UnderhandedUpperHand   = Spell(424044),
+    SepsisBuff             = Spell(375939),
 
 }
 

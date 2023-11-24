@@ -235,7 +235,7 @@ local function mitigate()
         for id = 1, 40 do
             local spell = {
                  'Skewer', 'Serrated Teeth',
-                'Jade Serpent Strike',
+                'Crush',
                 'Bloodletting Sweep', 'Stormslam', 'Deathspike', 'Infused Strike', 'Haunting Gaze',
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
                 'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
@@ -441,9 +441,8 @@ local function APL()
 
     -- Define a list of dungeon boss encounter IDs
     local Boss = {
-        'Rezan', 'Yazma',                                              -- AD
-        'Melidrussa Chillworn', 'Kokia Blazehoof', 'Kyrakka and Erkhart Stormvein', -- Ruby Life Pools
-        'Leymor', 'Umbrelskul', 'Azureblade',                                       -- Azure Vault
+        'Rezan', 'Yazma',                                             --AD
+        'Soulbound Goliath', --WM
         'The Raging Tempest', 'Teera and Maruuk', 'Balakar Khan',                   -- Nokhud Offensive
         -- Court of Stars - nothing
         'Hyrja', 'God-King Skovald', 'Odyn', 'Hymdall',                             -- Halls of Valor

@@ -446,7 +446,7 @@ end
 
 local function stealth()
 	--blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
-    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange8>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
+    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange10>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
         return S.BladeFlurry:Cast()
     end
 
@@ -551,7 +551,7 @@ local function cooldowns()
     end
 	
     --blade_flurry,if=(spell_targets>=2-talent.underhanded_upper_hand&!stealthed.rogue)&buff.blade_flurry.remains<gcd|talent.deft_maneuvers&spell_targets>=5&!variable.finish_condition
-    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((inRange8>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange8>= 5 and not finish_condition) then
+    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((inRange10>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange10>= 5 and not finish_condition) then
         return S.BladeFlurry:Cast()
     end
 	
@@ -571,7 +571,7 @@ local function cooldowns()
     end
 	
     --blade_rush,if=variable.blade_flurry_sync&(energy.base_time_to_max>4-spell_targets%3)&!stealthed.all
-    if S.BladeRush:IsReady() and targetRange8 and bladeflurrysync and (EnergyTimeToMaxRounded() > 4 - inRange8/ 3) and not stealthall then
+    if S.BladeRush:IsReady() and targetRange8 and bladeflurrysync and (EnergyTimeToMaxRounded() > 4 - inRange10/ 3) and not stealthall then
         return S.BladeRush:Cast()
     end
 	
@@ -704,7 +704,7 @@ if true then
 		elseif not S.Crackshot:IsAvailable() and S.HiddenOpportunity:IsAvailable() then
 			--Hidden Opportunity builds without Crackshot should reroll for Skull and Crossbones or any 2 buffs excluding Grand Melee in single target
 			--variable,name=rtb_reroll,if=!talent.crackshot&talent.hidden_opportunity,value=!rtb_buffs.will_lose.skull_and_crossbones&(rtb_buffs.will_lose<2+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10)	
-			rtb_reroll = not will_lose_skull_and_crossbones and (rtb_buffs_will_lose < 2 + num(will_lose_grand_melee and inRange8< 2))
+			rtb_reroll = not will_lose_skull_and_crossbones and (rtb_buffs_will_lose < 2 + num(will_lose_grand_melee and inRange10< 2))
 		else
 			--Additional reroll rules if all active buffs will not be rolled away and we don't already have 5+ buffs
 			--variable,name=rtb_reroll,value=variable.rtb_reroll|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39
@@ -739,7 +739,7 @@ if true then
 	--finish_condition,value=effective_combo_points>=cp_max_spend-1-(stealthed.all&talent.crackshot)
 	finish_condition = Player:ComboPoints() >= CPMaxSpend() - 1 - num(stealthall and S.Crackshot:IsAvailable())
 	
-	bladeflurrysync = inRange8< 2 or Player:BuffRemains(S.BladeFlurry) > Player:GCD()
+	bladeflurrysync = inRange10< 2 or Player:BuffRemains(S.BladeFlurry) > Player:GCD()
 	
 	--variable,name=vanish_opportunity_condition,value=!talent.shadow_dance&talent.fan_the_hammer.rank+talent.quick_draw+talent.audacity<talent.count_the_odds+talent.keep_it_rolling
 	vanish_opportunity_condition = not S.ShadowDance:IsAvailable() and fthrank + num(S.QuickDraw:IsAvailable()) + num(S.Audacity:IsAvailable()) < num(S.CounttheOdds:IsAvailable()) + num(S.KeepitRolling:IsAvailable())	
@@ -874,7 +874,7 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
         if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 then
             return I.HPIcon:Cast()
         end
-        if S.Evasion:IsCastable() and inRange10>=1 and Player:HealthPercentage()<35 then
+        if S.Evasion:IsCastable() and inRange10>=1 and Player:HealthPercentage()<45 then
             return S.Evasion:Cast()
             end
             if S.CloakofShadows:IsCastable() and inRange10>=1 and Player:HealthPercentage()<15 and HPpercentloss>30 then
@@ -917,9 +917,9 @@ end
 --Out of Range------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if (not bte_range or inRange30 == 0) and (not Target:Debuff(S.Blind) or not Target:Exists()) and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:Buff(S.VanishBuff) and Player:AffectingCombat() then
-	-- if S.BetweentheEyes:IsReady(bte_range) and EnergyTimeToMaxRounded() <= Player:GCD() and Player:ComboPoints() >= CPMaxSpend() then
-		-- return S.BetweentheEyes:Cast()
-	-- end
+	if S.BetweentheEyes:IsReady(bte_range) and EnergyTimeToMaxRounded() <= Player:GCD() and Player:ComboPoints() >= CPMaxSpend() then
+		return S.BetweentheEyes:Cast()
+	end
 
 	if S.PistolShot:IsReady() and bte_range and Player:AffectingCombat() and Player:EnergyDeficitPredicted() < 25 and (Player:ComboPointsDeficit() >= 1 or EnergyTimeToMaxRounded() <= Player:GCD()) then
 		return S.PistolShot:Cast()
