@@ -487,7 +487,7 @@ local function stealth()
     end
 
     --dispatch,if=variable.finish_condition
-    if S.Dispatch:IsReady() and bfrange and finish_condition then
+    if S.Dispatch:IsReady() and bfrange and finish_condition and not stealthall then
         return S.Dispatch:Cast()
     end
 	--pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
@@ -645,7 +645,7 @@ local function finishers()
 	end
    
     -- dispatch
-	if S.Dispatch:IsReady() and targetRange8 then
+	if S.Dispatch:IsReady() and targetRange8 and not stealthall then
 		return S.Dispatch:Cast()
 	end
 
@@ -688,28 +688,29 @@ targetRange30 = TargetInRange("Between the Eyes")
 -- --------------------------------------------------------------------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") 
+or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end
 
 if true then
 	tolerance = select(4, GetNetStats())/1000 + 0.15
 
-	stealthall = AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff) or Player:BuffRemains(S.SubterfugeBuff) > tolerance + Player:GCDRemains() or Player:BuffRemains(S.ShadowDanceBuff) > tolerance + Player:GCDRemains()
+	stealthall = (AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff) or Player:BuffRemains(S.SubterfugeBuff) > tolerance + Player:GCDRemains() or Player:BuffRemains(S.ShadowDanceBuff) > tolerance + Player:GCDRemains())
 
-	local will_lose_broadside = Player:Buff(S.Broadside) and (math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.Broadside) < RtBRemains())
+	local will_lose_broadside = (Player:Buff(S.Broadside) and (math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.Broadside) < RtBRemains()))
 	
-	local will_lose_buried_treasure = Player:Buff(S.BuriedTreasure) and (math.abs(Player:BuffRemains(S.BuriedTreasure) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.BuriedTreasure) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.BuriedTreasure) < RtBRemains())
+	local will_lose_buried_treasure = (Player:Buff(S.BuriedTreasure) and (math.abs(Player:BuffRemains(S.BuriedTreasure) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.BuriedTreasure) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.BuriedTreasure) < RtBRemains()))
 	
-	local will_lose_grand_melee = Player:Buff(S.GrandMelee) and (math.abs(Player:BuffRemains(S.GrandMelee) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.GrandMelee) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.GrandMelee) < RtBRemains())
+	local will_lose_grand_melee = (Player:Buff(S.GrandMelee) and (math.abs(Player:BuffRemains(S.GrandMelee) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.GrandMelee) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.GrandMelee) < RtBRemains()))
 	
-	local will_lose_ruthless_precision = Player:Buff(S.RuthlessPrecision) and (math.abs(Player:BuffRemains(S.RuthlessPrecision) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.RuthlessPrecision) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.RuthlessPrecision) < RtBRemains())
+	local will_lose_ruthless_precision = (Player:Buff(S.RuthlessPrecision) and (math.abs(Player:BuffRemains(S.RuthlessPrecision) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.RuthlessPrecision) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.RuthlessPrecision) < RtBRemains()))
 	
-	local will_lose_skull_and_crossbones = Player:Buff(S.SkullandCrossbones) and (math.abs(Player:BuffRemains(S.SkullandCrossbones) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.SkullandCrossbones) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.SkullandCrossbones) < RtBRemains())
+	local will_lose_skull_and_crossbones = (Player:Buff(S.SkullandCrossbones) and (math.abs(Player:BuffRemains(S.SkullandCrossbones) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.SkullandCrossbones) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.SkullandCrossbones) < RtBRemains()))
 	
-	local will_lose_true_bearing = Player:Buff(S.TrueBearing) and (math.abs(Player:BuffRemains(S.TrueBearing) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.TrueBearing) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.TrueBearing) < RtBRemains())
+	local will_lose_true_bearing = (Player:Buff(S.TrueBearing) and (math.abs(Player:BuffRemains(S.TrueBearing) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.TrueBearing) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.TrueBearing) < RtBRemains()))
 
-	local rtb_buffs_will_lose = Cache.APLVar.RtB_Buffs.Shorter + Cache.APLVar.RtB_Buffs.Normal
+	local rtb_buffs_will_lose = (Cache.APLVar.RtB_Buffs.Shorter + Cache.APLVar.RtB_Buffs.Normal)
 
 	-- if Player:Buff(S.Broadside) then print('will lose broadside: ', will_lose_broadside) end
 	-- if Player:Buff(S.BuriedTreasure) then print('will lose buried treasure: ', will_lose_buried_treasure) end
@@ -744,42 +745,41 @@ if true then
     bfrange = (targetRange10 and S.AcrobaticStrikes:IsAvailable() or targetRange8)
 
 
-	fthrank = S.FantheHammer:IsAvailable() and 2 or 0
-	IsTanking = (Player:IsTankingAoE() and inRange10>1 or Player:IsTanking(Target))
+	fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 
-	stealthbasic = AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff)
+	stealthbasic = (AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff))
 
-	local ercp = (Player:Buff(S.EchoingReprimandCP2) and Player:ComboPoints() == 2) or (Player:Buff(S.EchoingReprimandCP3) and Player:ComboPoints() == 3) or (Player:Buff(S.EchoingReprimandCP4) and Player:ComboPoints() == 4) or (Player:Buff(S.EchoingReprimandCP5) and Player:ComboPoints() == 5)
+	local ercp = ((Player:Buff(S.EchoingReprimandCP2) and Player:ComboPoints() == 2) or (Player:Buff(S.EchoingReprimandCP3) and Player:ComboPoints() == 3) or (Player:Buff(S.EchoingReprimandCP4) and Player:ComboPoints() == 4) or (Player:Buff(S.EchoingReprimandCP5) and Player:ComboPoints() == 5))
 	
-	effective_combo_points = ercp == true and 7 or Player:ComboPoints()
+	effective_combo_points = ercp == (true and 7 or Player:ComboPoints())
 	
-	elite = UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "elite" or UnitClassification("target") == "rare" or target_is_dummy() or Target:IsAPlayer()
+	elite = (UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "elite" or UnitClassification("target") == "rare" or target_is_dummy() or Target:IsAPlayer())
 	
 	--ambush_condition,value=(talent.hidden_opportunity|combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up)&energy>=50
-	ambushcondition = (S.HiddenOpportunity:IsAvailable() or Player:ComboPointsDeficit() >= 2 + num(S.ImprovedAmbush:IsAvailable()) + num(Player:Buff(S.Broadside))) and Player:Energy() >= 50
+	ambushcondition = ((S.HiddenOpportunity:IsAvailable() or Player:ComboPointsDeficit() >= 2 + num(S.ImprovedAmbush:IsAvailable()) + num(Player:Buff(S.Broadside))) and Player:Energy() >= 50)
 	
 	vanishcondition = (S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp())
 	
 	--shadow_dance_condition,value=buff.between_the_eyes.up&(!talent.hidden_opportunity|!buff.audacity.up&(talent.fan_the_hammer.rank<2|!buff.opportunity.up))&!talent.crackshot
-	shadow_dance_condition = Player:Buff(S.BetweentheEyes) and (not S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.AudacityBuff) and (fthrank < 2 or not Player:Buff(S.Opportunity))) and not S.Crackshot:IsAvailable()
+	shadow_dance_condition = (Player:Buff(S.BetweentheEyes) and (not S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.AudacityBuff) and (fthrank < 2 or not Player:Buff(S.Opportunity))) and not S.Crackshot:IsAvailable())
 	--finish_condition,value=effective_combo_points>=cp_max_spend-1-(stealthed.all&talent.crackshot)
-	finish_condition = Player:ComboPoints() >= CPMaxSpend() - 1 - num(stealthall and S.Crackshot:IsAvailable())
+	finish_condition = (Player:ComboPoints() >= CPMaxSpend() - 1 - num(stealthall and S.Crackshot:IsAvailable()))
 	
-	bladeflurrysync = inRange10< 2 or Player:BuffRemains(S.BladeFlurry) > Player:GCD()
+	bladeflurrysync = (inRange10< 2 or Player:BuffRemains(S.BladeFlurry) > Player:GCD())
 	
 	--variable,name=vanish_opportunity_condition,value=!talent.shadow_dance&talent.fan_the_hammer.rank+talent.quick_draw+talent.audacity<talent.count_the_odds+talent.keep_it_rolling
-	vanish_opportunity_condition = not S.ShadowDance:IsAvailable() and fthrank + num(S.QuickDraw:IsAvailable()) + num(S.Audacity:IsAvailable()) < num(S.CounttheOdds:IsAvailable()) + num(S.KeepitRolling:IsAvailable())	
+	vanish_opportunity_condition = (not S.ShadowDance:IsAvailable() and fthrank + num(S.QuickDraw:IsAvailable()) + num(S.Audacity:IsAvailable()) < num(S.CounttheOdds:IsAvailable()) + num(S.KeepitRolling:IsAvailable()))	
 	
 	
 	level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 	
 	inInstance, instanceType = IsInInstance()
 
-	local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+	local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
-	local elapsedTimeca = (startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0
+	local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
    
-	local elapsedTimech = (startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0
+	local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
 	
 	channelTime = elapsedTimech / 1000
 
@@ -791,7 +791,7 @@ if true then
 
 	HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 	
-	--SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
+	SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
 end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
@@ -881,9 +881,9 @@ end
 if RubimRH.QueuedSpell():IsReadyQueue() and S.ShadowDance:ID() ~= RubimRH.queuedSpell[1]:ID() then
 	return RubimRH.QueuedSpell():Cast()
 end
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Interrupts/Tranqs/Dispels-----------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --Interrupts/Tranqs/Dispels-----------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
 if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) then
 	--Kick
 	if S.Kick:IsReady() and targetRange8 and (castTime > castchannelTime or channelTime > castchannelTime) and Player:AffectingCombat() and select(8, UnitCastingInfo("target")) == false then
@@ -900,16 +900,16 @@ if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") a
 		return S.Shiv:Cast()
 	end
 end
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Defensives--------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --Defensives--------------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
  
     if S.Feint:IsReady() and not Player:Buff(S.Feint) and inRange30>=1 and mitigate() then
         return S.Feint:Cast()
     end
 
-    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and HPpercentloss > 0 and IsTanking then
+    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and HPpercentloss > 0  then
         if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 then
             return I.HPIcon:Cast()
         end
@@ -952,9 +952,9 @@ if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:Affecting
 		return builders()
 	end
 end
---------------------------------------------------------------------------------------------------------------------------------------------------------
---Out of Range------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --Out of Range------------------------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
 if (not bte_range or inRange30 == 0) and (not Target:Debuff(S.Blind) or not Target:Exists()) and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:Buff(S.VanishBuff) and Player:AffectingCombat() then
 	if S.BetweentheEyes:IsReady(bte_range) and EnergyTimeToMaxRounded() <= Player:GCD() and Player:ComboPoints() >= CPMaxSpend() then
 		return S.BetweentheEyes:Cast()

@@ -414,7 +414,6 @@ local function APL()
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
     highkey = 13
 
-	IsTanking = (Player:IsTankingAoE() and inRange10>1 or Player:IsTanking(Target))
     castchannelTime = math.random(250, 500) / 1000
 
     local startTimeMS = select(4, UnitCastingInfo('target')) or 0

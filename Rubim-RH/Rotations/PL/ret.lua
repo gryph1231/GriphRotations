@@ -833,7 +833,6 @@ local function APL()
 
 
 
-        IsTanking = (Player:IsTankingAoE() and inRange10>1 or Player:IsTanking(Target))
         HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
     
