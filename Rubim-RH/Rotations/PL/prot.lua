@@ -236,6 +236,7 @@ local function mitigate()
             local spell = {
                  'Skewer', 'Serrated Teeth',
                 'Crush',
+                'Crushing Grip',
                 'Bloodletting Sweep', 'Stormslam', 'Deathspike', 'Infused Strike', 'Haunting Gaze',
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
                 'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
@@ -442,6 +443,7 @@ local function APL()
     local Boss = {
         'Rezan', 'Yazma',                                             --AD
         'Soulbound Goliath', --WM
+        'Oakheart',
         'The Raging Tempest', 'Teera and Maruuk', 'Balakar Khan',                   -- Nokhud Offensive
         -- Court of Stars - nothing
         'Hyrja', 'God-King Skovald', 'Odyn', 'Hymdall',                             -- Halls of Valor

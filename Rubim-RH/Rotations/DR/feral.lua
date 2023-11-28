@@ -125,6 +125,39 @@ local function bool(val)
     return val ~= 0
 end
 
+
+
+
+
+local function RangeCount(spellName)
+    local range_counter = 0
+
+    if spellName then
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then           
+                local nameplate_guid = UnitGUID(unitID) 
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end                    
+                end
+            end
+        end
+    end
+
+    return range_counter
+end
+
+local function TargetInRange(spellName)
+    if spellName and IsSpellInRange(spellName, "target") == 1 then
+        return true
+    else
+        return false    
+    end
+end
+
 local function target_is_dummy()
     local x = UnitName("target")
     local targetisdummy = false
@@ -147,6 +180,7 @@ end
 local function RipRefreshableAOE(pandemic)
 local RipRefreshable10 = 0
 local MissingRip10 = 0
+inRange11 = RangeCount("Rake")
 
     for id = 1, 40 do
 		local unitID = "nameplate" .. id
@@ -159,12 +193,12 @@ local MissingRip10 = 0
 		end
 
 		if timerRip and pandemic then 
-			if UnitCanAttack("player", unitID) and IsItemInRange(32321, unitID) and UnitName(unitID) ~= "Incorporeal Being" and timerRip <= pandemic then
+			if UnitCanAttack("player", unitID) and inRange11>=1 and UnitName(unitID) ~= "Incorporeal Being" and timerRip <= pandemic then
 				RipRefreshable10 = RipRefreshable10 + 1
 			end
 		end
 		
-		if UnitCanAttack("player", unitID) and IsItemInRange(32321, unitID) and UnitName(unitID) ~= "Incorporeal Being" and not AuraUtil.FindAuraByName("Rip",unitID,"PLAYER|HARMFUL") then
+		if UnitCanAttack("player", unitID) and inRange11>=1 and UnitName(unitID) ~= "Incorporeal Being" and not AuraUtil.FindAuraByName("Rip",unitID,"PLAYER|HARMFUL") then
 			MissingRip10 = MissingRip10 + 1
 		end
 	end
@@ -175,6 +209,8 @@ end
 local function ThrashRefreshableAOE(pandemic)
 local ThrashRefreshable10 = 0
 local MissingThrash10 = 0
+inRange11 = RangeCount("Rake")
+
 
     for id = 1, 40 do
 		local unitID = "nameplate" .. id
@@ -187,12 +223,12 @@ local MissingThrash10 = 0
 		end
 
 		if timerThrash and pandemic then 
-			if UnitCanAttack("player", unitID) and IsItemInRange(32321, unitID) and UnitName(unitID) ~= "Incorporeal Being" and timerThrash <= pandemic then
+			if UnitCanAttack("player", unitID) and inRange11>=1 and UnitName(unitID) ~= "Incorporeal Being" and timerThrash <= pandemic then
 				ThrashRefreshable10 = ThrashRefreshable10 + 1
 			end
 		end
 		
-		if UnitCanAttack("player", unitID) and IsItemInRange(32321, unitID) and UnitName(unitID) ~= "Incorporeal Being" and not AuraUtil.FindAuraByName("Thrash",unitID,"PLAYER|HARMFUL") then
+		if UnitCanAttack("player", unitID) and inRange11>=1 and UnitName(unitID) ~= "Incorporeal Being" and not AuraUtil.FindAuraByName("Thrash",unitID,"PLAYER|HARMFUL") then
 			MissingThrash10 = MissingThrash10 + 1
 		end
 	end
@@ -376,52 +412,52 @@ local function UseItems()
 
 local function AOEBuilder()
 	--brutal_slash,target_if=min:target.time_to_die,if=cooldown.brutal_slash.full_recharge_time<4|target.time_to_die<5
-	if S.BrutalSlash:IsReady() and Cache.EnemiesCount[10] >= 1 and S.BrutalSlash:FullRechargeTimeP() < 4 then
+	if S.BrutalSlash:IsReady() and inRange11 >= 1 and S.BrutalSlash:FullRechargeTimeP() < 4 then
 		return S.BrutalSlash:Cast()
 	end
 	
 	--thrash_cat,target_if=refreshable,if=buff.clearcasting.react|(spell_targets.thrash_cat>10|(spell_targets.thrash_cat>5&!talent.double_clawed_rake.enabled))&!talent.thrashing_claws
-	if S.Thrash:IsReadyMorph() and Cache.EnemiesCount[10] >= 1 and (ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and (Player:BuffP(S.Clearcasting) or Cache.EnemiesCount[10] > 10 or (Cache.EnemiesCount[10] > 5 and not S.DoubleClawedRake:IsAvailable())) and not S.ThrashingClaws:IsAvailable()) then
+	if S.Thrash:IsReadyMorph() and inRange11 >= 1 and (ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and (Player:BuffP(S.Clearcasting) or inRange11 > 10 or (inRange11 > 5 and not S.DoubleClawedRake:IsAvailable())) and not S.ThrashingClaws:IsAvailable()) then
 		return S.Thrash:Cast()
 	end
 	
 	--rake,target_if=buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier|refreshable
-	if S.Rake:IsReady(8) and (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) or Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) then
+	if S.Rake:IsReady() and targetRange8 and (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) or Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) then
 		return S.Rake:Cast()
 	end
 
 	--thrash_cat,target_if=refreshable
-	if S.Thrash:IsReadyMorph() and Cache.EnemiesCount[10] >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 then
+	if S.Thrash:IsReadyMorph() and inRange11 >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 then
 		return S.Thrash:Cast()
 	end
 
 	--brutal_slash
-	if S.BrutalSlash:IsReady() and Cache.EnemiesCount[10] >= 1 then
+	if S.BrutalSlash:IsReady() and inRange11 >= 1 then
 		return S.BrutalSlash:Cast()
 	end
 
 	--moonfire_cat,target_if=refreshable,if=spell_targets.swipe_cat<5
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) and Cache.EnemiesCount[10] < 5 then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) and inRange11 < 5 then
 		return S.Moonfire:Cast()
 	end
 	
 	--swipe_cat
-	if S.SwipeCat:IsReadyMorph() and Cache.EnemiesCount[10] >= 1 then
+	if S.SwipeCat:IsReadyMorph() and inRange11 >= 1 then
 		return S.SwipeCat:Cast()
 	end
 
 	--moonfire_cat,target_if=refreshable
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) then
 		return S.Moonfire:Cast()
 	end
 
 	--shred,target_if=max:target.time_to_die,if=action.shred.damage>action.thrash_cat.damage&!buff.sudden_ambush.up
-	if S.Shred:IsReady(8) and Cache.EnemiesCount[10] < 5 and not Player:BuffP(S.SuddenAmbushBuff) then
+	if S.Shred:IsReady() and targetRange8 and inRange11 < 5 and not Player:BuffP(S.SuddenAmbushBuff) then
 		return S.Shred:Cast()
 	end
 
 	--thrash_cat
-	if S.Thrash:IsReadyMorph() and Cache.EnemiesCount[10] >= 1 then
+	if S.Thrash:IsReadyMorph() and inRange11 >= 1 then
 		return S.Thrash:Cast()
 	end
 
@@ -431,111 +467,111 @@ end
 local function Finish()
 	--*changed
 	--primal_wrath,if=((dot.primal_wrath.refreshable&!talent.circle_of_life_and_death.enabled)|dot.primal_wrath.remains<6|talent.tear_open_wounds.enabled)&spell_targets.primal_wrath>1&talent.primal_wrath.enabled
-	if S.PrimalWrath:IsReady() and RubimRH.AoEON() and ((RipRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 2.9 or 3.6)) >= 1) or S.TearOpenWounds:IsAvailable()) and Cache.EnemiesCount[12] > 1 and S.PrimalWrathTalent:IsAvailable() then
+	if S.PrimalWrath:IsReady() and RubimRH.AoEON() and ((RipRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 2.9 or 3.6)) >= 1) or S.TearOpenWounds:IsAvailable()) and inRange11 > 1 and S.PrimalWrathTalent:IsAvailable() then
 		return S.PrimalWrath:Cast()
 	end
 
 	--rip,target_if=refreshable
-	if S.Rip:IsReady(8) and Target:DebuffRefreshableP(S.RipDebuff, S.CircleofLifeandDeath:IsAvailable() and 5.8 or 7.2) then
+	if S.Rip:IsReady() and targetRange8 and Target:DebuffRefreshableP(S.RipDebuff, S.CircleofLifeandDeath:IsAvailable() and 5.8 or 7.2) then
 		return S.Rip:Cast()
 	end
 	
 	--pool_resource,for_next=1,if=!action.tigers_fury.ready&buff.apex_predators_craving.down
     --ferocious_bite,max_energy=1,target_if=max:target.time_to_die,if=buff.apex_predators_craving.down&(!buff.bs_inc.up|(buff.bs_inc.up&!talent.soul_of_the_forest.enabled))
-	if S.FerociousBite:IsReady(8) and (not Player:BuffP(S.ApexPredatorBuff) and (not bs_inc or (bs_inc and not S.SoulOfTheForest:IsAvailable()))) then
+	if S.FerociousBite:IsReady() and targetRange8 and (not Player:BuffP(S.ApexPredatorBuff) and (not bs_inc or (bs_inc and not S.SoulOfTheForest:IsAvailable()))) then
 		if not Player:BuffP(S.ApexPredatorBuff) then
-			if not S.TigersFury:IsReady(8) and Player:Energy() < 50 then
+			if not S.TigersFury:IsReady() and targetRange8 and Player:Energy() < 50 then
 				return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga" 
-			elseif S.TigersFury:IsReady(8) or Player:Energy() >= 50 then
+			elseif S.TigersFury:IsReady() and targetRange8 or Player:Energy() >= 50 then
 				return S.FerociousBite:Cast()
 			end
 		end
 	end
 	
     --ferocious_bite,target_if=max:target.time_to_die,if=(buff.bs_inc.up&talent.soul_of_the_forest.enabled)|buff.apex_predators_craving.up
-	if S.FerociousBite:IsReady(8) and ((bs_inc and S.SoulOfTheForest:IsAvailable()) or Player:BuffP(S.ApexPredatorBuff)) then
+	if S.FerociousBite:IsReady() and targetRange8 and ((bs_inc and S.SoulOfTheForest:IsAvailable()) or Player:BuffP(S.ApexPredatorBuff)) then
 		return S.FerociousBite:Cast()
 	end
 end
 
 local function Bloodtalons()
 	--brutal_slash,target_if=min:target.time_to_die,if=(cooldown.brutal_slash.full_recharge_time<4|target.time_to_die<5)&(buff.bt_brutal_slash.down&(buff.bs_inc.up|variable.need_bt))
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and (S.BrutalSlash:FullRechargeTimeP() < 4 or TargetTTD() < 5) and (not BrutalSlashBT() and (bs_inc or need_bloodtalons)) then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 >= 1 and (S.BrutalSlash:FullRechargeTimeP() < 4 or TargetTTD() < 5) and (not BrutalSlashBT() and (bs_inc or need_bloodtalons)) then
 		return S.BrutalSlash:Cast()
 	end	
 	
 	--prowl,if=action.rake.ready&gcd.remains=0&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.shadowmeld.up&buff.bt_rake.down&!buff.prowl.up&!buff.apex_predators_craving.up
-	if S.ProwlIncarn:IsReadyMorph(8) and Player:BuffP(S.Incarnation) and not prowl_used_in_incarn and (S.Rake:IsReady(8) and Player:GCDRemains() < 0.7 and not Player:BuffP(S.SuddenAmbushBuff) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or Target:PMultiplier(S.Rake) < 1.4) and not RakeBT() and not IsStealthed() and not Player:BuffP(S.ApexPredatorBuff)) then
+	if S.ProwlIncarn:IsReadyMorph(8) and Player:BuffP(S.Incarnation) and not prowl_used_in_incarn and (S.Rake:IsReady() and targetRange8 and Player:GCDRemains() < 0.7 and not Player:BuffP(S.SuddenAmbushBuff) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or Target:PMultiplier(S.Rake) < 1.4) and not RakeBT() and not IsStealthed() and not Player:BuffP(S.ApexPredatorBuff)) then
 		return S.Prowl:Cast()
 	end
 
 	--rake,target_if=max:druid.rake.ticks_gained_on_refresh,if=(refreshable|buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier)&buff.bt_rake.down
-	if S.Rake:IsReady(8) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake)) and not RakeBT() then
+	if S.Rake:IsReady() and targetRange8 and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake)) and not RakeBT() then
 		return S.Rake:Cast()
 	end	
 	
 	--rake,target_if=buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&buff.bt_rake.down
-	if S.Rake:IsReady(8) and Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and not RakeBT() then
+	if S.Rake:IsReady() and targetRange8 and Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and not RakeBT() then
 		return S.Rake:Cast()
 	end
 
 	--shred,if=buff.bt_shred.down&buff.clearcasting.react&spell_targets.swipe_cat=1
-	if S.Shred:IsReady(8) and not ShredBT() and Player:BuffP(S.Clearcasting) and Cache.EnemiesCount[10] == 1 then
+	if S.Shred:IsReady() and targetRange8 and not ShredBT() and Player:BuffP(S.Clearcasting) and inRange11 == 1 then
 		return S.Shred:Cast()
 	end
 	
 	--thrash_cat,target_if=refreshable,if=buff.bt_thrash.down&buff.clearcasting.react&spell_targets.swipe_cat=1&!talent.thrashing_claws.enabled
-	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not ThrashBT() and Player:BuffP(S.Clearcasting) and Cache.EnemiesCount[10] == 1 and not S.ThrashingClaws:IsAvailable() then
+	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not ThrashBT() and Player:BuffP(S.Clearcasting) and inRange11 == 1 and not S.ThrashingClaws:IsAvailable() then
 		return S.Thrash:Cast()
 	end
 
 	--brutal_slash,if=buff.bt_brutal_slash.down
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and not BrutalSlashBT() then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 >= 1 and not BrutalSlashBT() then
 		return S.BrutalSlash:Cast()
 	end
 
 	--moonfire_cat,if=refreshable&buff.bt_moonfire.down&spell_targets.swipe_cat=1
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) and not MoonfireBT() and Cache.EnemiesCount[10] == 1 then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) and not MoonfireBT() and inRange11 == 1 then
 		return S.Moonfire:Cast()
 	end
 
 	--thrash_cat,target_if=refreshable,if=buff.bt_thrash.down&!talent.thrashing_claws.enabled
-	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not ThrashBT() and not S.ThrashingClaws:IsAvailable() then
+	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not ThrashBT() and not S.ThrashingClaws:IsAvailable() then
 		return S.Thrash:Cast()
 	end
 
 	--shred,if=buff.bt_shred.down&spell_targets.swipe_cat=1&!talent.wild_slashes.enabled
-	if S.Shred:IsReady(8) and not ShredBT() and Cache.EnemiesCount[10] == 1 and not S.WildSlashes:IsAvailable() then
+	if S.Shred:IsReady() and targetRange8 and not ShredBT() and inRange11 == 1 and not S.WildSlashes:IsAvailable() then
 		return S.Shred:Cast()
 	end
 
 	--swipe_cat,if=buff.bt_swipe.down&talent.wild_slashes.enabled
-	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and not SwipeBT() and S.WildSlashes:IsAvailable() then
+	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and not SwipeBT() and S.WildSlashes:IsAvailable() then
 		return S.SwipeCat:Cast()
 	end
 
 	--moonfire_cat,target_if=max:ticks_gained_on_refresh,if=buff.bt_moonfire.down&spell_targets.swipe_cat<5
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and not MoonfireBT() and Cache.EnemiesCount[10] < 5 then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and not MoonfireBT() and inRange11 < 5 then
 		return S.Moonfire:Cast()
 	end
 
 	--swipe_cat,if=buff.bt_swipe.down
-	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and not SwipeBT() then
+	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and not SwipeBT() then
 		return S.SwipeCat:Cast()
 	end
 
 	--moonfire_cat,target_if=max:ticks_gained_on_refresh,if=buff.bt_moonfire.down
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and not MoonfireBT() then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and not MoonfireBT() then
 		return S.Moonfire:Cast()
 	end
 
 	--shred,target_if=max:target.time_to_die,if=action.shred.damage>action.thrash_cat.damage&buff.bt_shred.down&!buff.sudden_ambush.up
-	if S.Shred:IsReady(8) and Cache.EnemiesCount[10] < 5 and not ShredBT() and not Player:BuffP(S.SuddenAmbushBuff) then
+	if S.Shred:IsReady() and targetRange8 and inRange11 < 5 and not ShredBT() and not Player:BuffP(S.SuddenAmbushBuff) then
 		return S.Shred:Cast()
 	end
 
 	--thrash_cat,if=buff.bt_thrash.down
-	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and not ThrashBT() then
+	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and not ThrashBT() then
 		return S.Thrash:Cast()
 	end
 
@@ -544,7 +580,7 @@ end
 
 local function Berserk()
 	--ferocious_bite,target_if=max:target.time_to_die,if=combo_points=5&dot.rip.remains>8&variable.zerk_biteweave&spell_targets.swipe_cat>1
-	-- if S.FerociousBite:IsReady(8) and Player:ComboPoints() == 5 and Target:DebuffRemainsP(S.RipDebuff) > 8 and Cache.EnemiesCount[10] > 1 then
+	-- if S.FerociousBite:IsReady() and targetRange8 and Player:ComboPoints() == 5 and Target:DebuffRemainsP(S.RipDebuff) > 8 and inRange11 > 1 then
 		-- return S.FerociousBite:Cast()
 	-- end
 	
@@ -554,52 +590,52 @@ local function Berserk()
 	end
 	
 	--call_action_list,name=bloodtalons,if=spell_targets.swipe_cat>1
-	if Bloodtalons() and Cache.EnemiesCount[10] > 1 then
+	if Bloodtalons() and inRange11 > 1 then
 		return Bloodtalons()
 	end
 	
 	--prowl,if=!(buff.bt_rake.up&active_bt_triggers=2)&(action.rake.ready&gcd.remains=0&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)&!buff.shadowmeld.up&cooldown.feral_frenzy.remains<44&!buff.apex_predators_craving.up)
-	if S.ProwlIncarn:IsReadyMorph(8) and not (RakeBT() and BloodTalonTriggers() == 2) and (S.Rake:IsReady(8) and Player:GCDRemains() < 0.7 and not Player:BuffP(S.SuddenAmbushBuff) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or Target:PMultiplier(S.Rake) < 1.4) and S.FeralFrenzy:CooldownRemainsP() < 44 and not Player:BuffP(S.ApexPredatorBuff)) then
+	if S.ProwlIncarn:IsReadyMorph(8) and not (RakeBT() and BloodTalonTriggers() == 2) and (S.Rake:IsReady() and targetRange8 and Player:GCDRemains() < 0.7 and not Player:BuffP(S.SuddenAmbushBuff) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or Target:PMultiplier(S.Rake) < 1.4) and S.FeralFrenzy:CooldownRemainsP() < 44 and not Player:BuffP(S.ApexPredatorBuff)) then
 		return S.Prowl:Cast()
 	end	
 	
 	--rake,if=!(buff.bt_rake.up&active_bt_triggers=2)&(refreshable|(buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&!dot.rake.refreshable))
-	if S.Rake:IsReady(8) and not (RakeBT() and BloodTalonTriggers() == 2) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and not Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5))) then
+	if S.Rake:IsReady() and targetRange8 and not (RakeBT() and BloodTalonTriggers() == 2) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and not Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5))) then
 		return S.Rake:Cast()
 	end
 
 	--shred,if=active_bt_triggers=2&buff.bt_shred.down
-	if S.Shred:IsReady(8) and BloodTalonTriggers() == 2 and not ShredBT() then
+	if S.Shred:IsReady() and targetRange8 and BloodTalonTriggers() == 2 and not ShredBT() then
 		return S.Shred:Cast()
 	end
 
 	--brutal_slash,if=active_bt_triggers=2&buff.bt_brutal_slash.down
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and BloodTalonTriggers() == 2 and not BrutalSlashBT() then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 >= 1 and BloodTalonTriggers() == 2 and not BrutalSlashBT() then
 		return S.BrutalSlash:Cast()
 	end
 
 	--moonfire_cat,if=active_bt_triggers=2&buff.bt_moonfire.down
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and BloodTalonTriggers() == 2 and not MoonfireBT() then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and BloodTalonTriggers() == 2 and not MoonfireBT() then
 		return S.Moonfire:Cast()
 	end
 	
 	--thrash_cat,if=active_bt_triggers=2&buff.bt_thrash.down&!talent.thrashing_claws&variable.need_bt&(refreshable|talent.brutal_slash.enabled)
-	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and BloodTalonTriggers() == 2 and not ThrashBT() and not S.ThrashingClaws:IsAvailable() and need_bloodtalons and (ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 or S.BrutalSlash:IsAvailable()) then
+	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and BloodTalonTriggers() == 2 and not ThrashBT() and not S.ThrashingClaws:IsAvailable() and need_bloodtalons and (ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 or S.BrutalSlash:IsAvailable()) then
 		return S.Thrash:Cast()
 	end
 	
 	--moonfire_cat,if=refreshable
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) then
 		return S.Moonfire:Cast()
 	end
 
 	--brutal_slash,if=cooldown.brutal_slash.charges>1
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and S.BrutalSlash:ChargesP() > 1 then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 >= 1 and S.BrutalSlash:ChargesP() > 1 then
 		return S.BrutalSlash:Cast()
 	end
 
 	--shred
-	if S.Shred:IsReady(8) then
+	if S.Shred:IsReady() and targetRange8 then
 		return S.Shred:Cast()
 	end
 
@@ -608,22 +644,22 @@ end
 
 local function Clearcasting()
 	--thrash_cat,if=refreshable&!talent.thrashing_claws.enabled
-	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not S.ThrashingClaws:IsAvailable() then
+	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not S.ThrashingClaws:IsAvailable() then
 		return S.Thrash:Cast()
 	end
 
 	--swipe_cat,if=spell_targets.swipe_cat>1
-	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] > 1 then
+	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and inRange11 > 1 then
 		return S.SwipeCat:Cast()
 	end
 
 	--brutal_slash,if=spell_targets.brutal_slash>2
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] > 2 then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 > 2 then
 		return S.BrutalSlash:Cast()
 	end
 
 	--shred
-	if S.Shred:IsReady(8) then
+	if S.Shred:IsReady() and targetRange8 then
 		return S.Shred:Cast()
 	end
 	
@@ -637,17 +673,17 @@ local function Builder()
 	end
 
 	--brutal_slash,if=cooldown.brutal_slash.full_recharge_time<4
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and S.BrutalSlash:FullRechargeTimeP() < 4 then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 >= 1 and S.BrutalSlash:FullRechargeTimeP() < 4 then
 		return S.BrutalSlash:Cast()
 	end
 	
 	--pool_resource,if=!action.rake.ready&(dot.rake.refreshable|(buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&dot.rake.remains>6))&!buff.clearcasting.react
-	if not S.Rake:IsReady(8) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and (Target:DebuffRemainsP(S.RakeDebuff) > (S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)))) and not Player:BuffP(S.Clearcasting) then
+	if not S.Rake:IsReady() and targetRange8 and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and (Target:DebuffRemainsP(S.RakeDebuff) > (S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)))) and not Player:BuffP(S.Clearcasting) then
 		return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 	end
 
 	--rake,if=refreshable|(buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier&dot.rake.remains>6)
-	if S.Rake:IsReady(8) and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and (Target:DebuffRemainsP(S.RakeDebuff) > (S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)))) then
+	if S.Rake:IsReady() and targetRange8 and (Target:DebuffRefreshableP(S.RakeDebuff, S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5) or (Player:BuffP(S.SuddenAmbushBuff) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) and (Target:DebuffRemainsP(S.RakeDebuff) > (S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)))) then
 		return S.Rake:Cast()
 	end
 
@@ -657,27 +693,27 @@ local function Builder()
 	end
 
 	--moonfire_cat,target_if=refreshable
-	if IsUsableSpell("Moonfire") and Target:IsInRange(20) and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) then
+	if IsUsableSpell("Moonfire") and targetRange20 and S.LunarInspiration:IsAvailable() and Target:DebuffRefreshableP(S.MoonfireCat, S.CircleofLifeandDeath:IsAvailable() and 3.8 or 4.8) then
 		return S.Moonfire:Cast()
 	end
 
 	--thrash_cat,target_if=refreshable&!talent.thrashing_claws.enabled
-	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not S.ThrashingClaws:IsAvailable() then
+	if S.Thrash:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and ThrashRefreshableAOE((S.CircleofLifeandDeath:IsAvailable() and 3.6 or 4.5)) >= 1 and not S.ThrashingClaws:IsAvailable() then
 		return S.Thrash:Cast()
 	end
 
 	--brutal_slash
-	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 then
+	if S.BrutalSlash:IsReady() and RubimRH.AoEON() and inRange11 >= 1 then
 		return S.BrutalSlash:Cast()
 	end
 
 	--swipe_cat,if=spell_targets.swipe_cat>1|talent.wild_slashes.enabled
-	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and Cache.EnemiesCount[10] >= 1 and (Cache.EnemiesCount[10] > 1 or S.WildSlashes:IsAvailable()) then
+	if S.SwipeCat:IsReadyMorph() and RubimRH.AoEON() and inRange11 >= 1 and (inRange11 > 1 or S.WildSlashes:IsAvailable()) then
 		return S.SwipeCat:Cast()
 	end
 
 	--shred
-	if S.Shred:IsReady(8) then
+	if S.Shred:IsReady() and targetRange8 then
 		return S.Shred:Cast()
 	end
 
@@ -689,27 +725,27 @@ local function Cooldowns()
 
 
 	--incarnation
-	if S.Incarnation:IsReady(10) and RubimRH.CDsON() then
+	if S.Incarnation:IsReady() and targetRange11 and RubimRH.CDsON() then
 		return S.Incarnation:Cast()
 	end
 
 	--berserk,if=(!variable.lastZerk)|(fight_remains<23)|(variable.lastZerk&!variable.lastConvoke)
-	if S.Berserk:IsReady(10) and RubimRH.CDsON() and ((not last_convoke or TargetTTD() < 23 or (last_berserk and not last_convoke)) or not S.Convoke:IsAvailable()) then
+	if S.Berserk:IsReady() and targetRange11 and RubimRH.CDsON() and ((not last_convoke or TargetTTD() < 23 or (last_berserk and not last_convoke)) or not S.Convoke:IsAvailable()) then
 		return S.Berserk:Cast()
 	end
 
 	--berserk,if=(variable.lastConvoke&cooldown.convoke_the_spirits.remains<10)
-	if S.Berserk:IsReady(10) and RubimRH.CDsON() and ((last_convoke and S.Convoke:CooldownRemainsP() < 10) or not S.Convoke:IsAvailable()) then
+	if S.Berserk:IsReady() and targetRange11 and RubimRH.CDsON() and ((last_convoke and S.Convoke:CooldownRemainsP() < 10) or not S.Convoke:IsAvailable()) then
 		return S.Berserk:Cast()
 	end
 
 	--berserking,if=!variable.align_3minutes|buff.bs_inc.up
-	if S.Berserking:IsReady(10) and RubimRH.CDsON() and (Player:BuffRemainsP(S.Incarnation) >= 12 or Player:BuffRemainsP(S.Berserk) >= 12) then
+	if S.Berserking:IsReady() and targetRange11 and RubimRH.CDsON() and (Player:BuffRemainsP(S.Incarnation) >= 12 or Player:BuffRemainsP(S.Berserk) >= 12) then
 		return S.Berserking:Cast()
 	end
 
 	--convoke_the_spirits,if=fight_remains<5|(dot.rip.remains>5&buff.tigers_fury.up&(combo_points<2|(buff.bs_inc.up&combo_points=2))&(!variable.lastConvoke|!variable.lastZerk|buff.bs_inc.up))
-	if S.Convoke:IsReady(10) and RubimRH.CDsON() and (TargetTTD() < 5 or (Target:DebuffRemainsP(S.RipDebuff) > 5 and Player:BuffP(S.TigersFury) and (Player:ComboPoints() < 2 or (bs_inc and Player:ComboPoints() == 2)) and (not last_convoke or not last_berserk or bs_inc))) then
+	if S.Convoke:IsReady() and targetRange11 and RubimRH.CDsON() and (TargetTTD() < 5 or (Target:DebuffRemainsP(S.RipDebuff) > 5 and Player:BuffP(S.TigersFury) and (Player:ComboPoints() < 2 or (bs_inc and Player:ComboPoints() == 2)) and (not last_convoke or not last_berserk or bs_inc))) then
 		return S.Convoke:Cast()
 	end
 	
@@ -717,13 +753,15 @@ local function Cooldowns()
 end
 
 local function APL()
-HL.GetEnemies(5);
-HL.GetEnemies(8);
-HL.GetEnemies(10);
-HL.GetEnemies(12);
-HL.GetEnemies(20);
-HL.GetEnemies(25);
-HL.GetEnemies(30);
+	inRange8 = RangeCount("Feral Frenzy")
+	inRange11 = RangeCount("Rake")
+	inRange16 = RangeCount("Skull Bash")
+	targetRange8 = TargetInRange("Feral Frenzy")
+	targetRange11 = TargetInRange("Rake")
+	targetRange16 = TargetInRange("Skull Bash")
+
+	-- print(inRange11)
+
 --print('Player: ', Player:PMultiplier(S.Rake), ' Target: ', Target:PMultiplier(S.Rake), ' BTTriggers: ', BloodTalonTriggers())
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
@@ -752,7 +790,7 @@ if true then
 
 	last_berserk = TargetTTD() < 180
 
-	evaluate_cycle_adaptive_swarm = (((not Target:DebuffP(S.AdaptiveSwarmDebuff) or Target:DebuffRemainsP(S.AdaptiveSwarmDebuff) < 2) and (Target:DebuffStackP(S.AdaptiveSwarmDebuff) < 3 or Player:BuffStackP(S.AdaptiveSwarmHeal) <= 1) and (not S.AdaptiveSwarm:InFlight())) and TargetTTD() > 5 or Cache.EnemiesCount[10] > 2 and not Target:DebuffP(S.AdaptiveSwarmDebuff) and Player:Energy() < 35 and TargetTTD() > 5)
+	evaluate_cycle_adaptive_swarm = (((not Target:DebuffP(S.AdaptiveSwarmDebuff) or Target:DebuffRemainsP(S.AdaptiveSwarmDebuff) < 2) and (Target:DebuffStackP(S.AdaptiveSwarmDebuff) < 3 or Player:BuffStackP(S.AdaptiveSwarmHeal) <= 1) and (not S.AdaptiveSwarm:InFlight())) and TargetTTD() > 5 or inRange11 > 2 and not Target:DebuffP(S.AdaptiveSwarmDebuff) and Player:Energy() < 35 and TargetTTD() > 5)
 
 	elite = UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "elite" or UnitClassification("target") == "rare" or target_is_dummy() or Target:IsAPlayer()
 	
@@ -818,7 +856,7 @@ if S.CatForm:IsCastable() and Player:PrevGCD(1, S.IncapacitatingRoar) and S.Inca
 end
 
 if S.Rake:ID() == RubimRH.queuedSpell[1]:ID() then
-	if not S.Rake:CooldownUp() or not Target:IsInRange(10) or not Player:CanAttack(Target) or not Player:BuffP(S.Prowl) then
+	if not S.Rake:CooldownUp() or not targetRange11 or not Player:CanAttack(Target) or not Player:BuffP(S.Prowl) then
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 end
@@ -875,7 +913,7 @@ end
 ----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if S.Regrowth:IsCastable() and Player:BuffP(S.PredatorySwiftness) and not (need_bloodtalons and BloodTalonTriggers() == 2)
-and ((Player:HealthPercentage() <= 85 and Cache.EnemiesCount[25] == 0) or (Player:HealthPercentage() < 40 and Player:EnergyTimeToMaxPredicted() > Player:GCD())) then
+and ((Player:HealthPercentage() <= 85 and inRange16 == 0) or (Player:HealthPercentage() < 40 and Player:EnergyTimeToMaxPredicted() > Player:GCD())) then
 	return S.Regrowth:Cast()
 end
 
@@ -893,28 +931,28 @@ if S.CatForm:IsCastable() and Player:CanAttack(Target) and not Player:BuffP(S.Be
 	return S.CatForm:Cast()
 end
 
--- if trinket2ready and Player:CanAttack(Target) and Target:IsInRange(10) and Player:BuffP(S.CatForm) and Player:AffectingCombat() and not IsStealthed()
--- and ((TargetTTD() > 10 or (UnitClassification("target") == "worldboss" and TargetTTD() > 6)) or Cache.EnemiesCount[10] > 1) and name ~= "Spiteful Shade" then
+-- if trinket2ready and Player:CanAttack(Target) and targetRange11 and Player:BuffP(S.CatForm) and Player:AffectingCombat() and not IsStealthed()
+-- and ((TargetTTD() > 10 or (UnitClassification("target") == "worldboss" and TargetTTD() > 6)) or inRange11 > 1) and name ~= "Spiteful Shade" then
 -- 	return I.tx2:Cast()
 -- end
 
 if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCombat() and not IsStealthed()) or Player:BuffP(S.Incarnation)) then
 	--tigers_fury,if=!talent.convoke_the_spirits.enabled&(!buff.tigers_fury.up|energy.deficit>65)
-	if S.TigersFury:IsReady(10) and not S.Convoke:IsAvailable() and (not Player:BuffP(S.TigersFury) or Player:EnergyDeficit() > 65) then
+	if S.TigersFury:IsReady() and targetRange11 and not S.Convoke:IsAvailable() and (not Player:BuffP(S.TigersFury) or Player:EnergyDeficit() > 65) then
 		return S.TigersFury:Cast()
 	end
 
 	--tigers_fury,if=talent.convoke_the_spirits.enabled&(!variable.lastConvoke|(variable.lastConvoke&!buff.tigers_fury.up))
-	if S.TigersFury:IsReady(10) and S.Convoke:IsAvailable() and (not last_convoke or (last_convoke and not Player:BuffP(S.TigersFury))) then
+	if S.TigersFury:IsReady() and targetRange11 and S.Convoke:IsAvailable() and (not last_convoke or (last_convoke and not Player:BuffP(S.TigersFury))) then
 		return S.TigersFury:Cast()
 	end
 
 	--rake,target_if=1.4*persistent_multiplier>dot.rake.pmultiplier,if=buff.prowl.up|buff.shadowmeld.up
-	if S.Rake:IsReady(8) and Player:BuffP(S.ProwlIncarn) and (Target:AffectingCombat() or target_is_dummy()) and 1.4 * Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) then
+	if S.Rake:IsReady() and targetRange8 and Player:BuffP(S.ProwlIncarn) and (Target:AffectingCombat() or target_is_dummy()) and 1.4 * Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) then
 		return S.Rake:Cast()
 	end
 
-	if not IsCurrentSpell(6603) and not IsStealthed() and Target:IsInRange(8) and Player:CanAttack(Target) then
+	if not IsCurrentSpell(6603) and not IsStealthed() and targetRange8 and Player:CanAttack(Target) then
 		return S.autoattack:Cast()
 	end
 	
@@ -927,12 +965,12 @@ if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCo
 	end
 	
 	--feral_frenzy,target_if=max:target.time_to_die,if=combo_points<2|combo_points<3&buff.bs_inc.up
-	if S.FeralFrenzy:IsReady(8) and name ~= "Spiteful Shade" and elite and TargetTTD() > 6 and (Player:ComboPoints() < 2 or Player:ComboPoints() < 3 and bs_inc) then
+	if S.FeralFrenzy:IsReady() and targetRange8 and name ~= "Spiteful Shade" and elite and TargetTTD() > 6 and (Player:ComboPoints() < 2 or Player:ComboPoints() < 3 and bs_inc) then
 		return S.FeralFrenzy:Cast()
 	end
 
 	--ferocious_bite,target_if=max:target.time_to_die,if=buff.apex_predators_craving.up&(spell_targets.swipe_cat=1|!talent.primal_wrath.enabled|!buff.sabertooth.up)&!(variable.need_bt&active_bt_triggers=2)
-	if S.FerociousBite:IsReady(8) and Player:BuffP(S.ApexPredatorBuff) and (Cache.EnemiesCount[10] == 1 or not S.PrimalWrathTalent:IsAvailable() or not Player:BuffP(S.Sabertooth)) and not (need_bloodtalons and BloodTalonTriggers() == 2) then
+	if S.FerociousBite:IsReady() and targetRange8 and Player:BuffP(S.ApexPredatorBuff) and (inRange11 == 1 or not S.PrimalWrathTalent:IsAvailable() or not Player:BuffP(S.Sabertooth)) and not (need_bloodtalons and BloodTalonTriggers() == 2) then
 		return S.FerociousBite:Cast()
 	end
 
@@ -940,18 +978,18 @@ if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCo
 		return Berserk()
 	end
 
-	-- if Finish() and Player:ComboPoints() >= 4 and Cache.EnemiesCount[10] > 1 then
+	-- if Finish() and Player:ComboPoints() >= 4 and inRange11 > 1 then
 		-- return Finish()
 	-- end
 
 	--tier set
 	--wait,sec=combo_points=5,if=combo_points=4&buff.predator_revealed.react&energy.deficit>40
-	if Player:ComboPoints() == 4 and Player:BuffP(S.PredatorRevealed) and Player:EnergyDeficit() > 40 and Cache.EnemiesCount[10] == 1 then 
+	if Player:ComboPoints() == 4 and Player:BuffP(S.PredatorRevealed) and Player:EnergyDeficit() > 40 and inRange11 == 1 then 
 		return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 	end
 
 	--call_action_list,name=finisher,if=combo_points>=4&!(combo_points=4&buff.bloodtalons.stack<=1&active_bt_triggers=2&spell_targets.swipe_cat=1)
-	if Finish() and Player:ComboPoints() >= 4 and not (Player:ComboPoints() == 4 and Player:BuffStackP(S.BloodtalonsBuff) <= 1 and BloodTalonTriggers() == 2 and Cache.EnemiesCount[10] == 1) then
+	if Finish() and Player:ComboPoints() >= 4 and not (Player:ComboPoints() == 4 and Player:BuffStackP(S.BloodtalonsBuff) <= 1 and BloodTalonTriggers() == 2 and inRange11 == 1) then
 		return Finish()
 	end
 
@@ -959,7 +997,7 @@ if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCo
 		return Bloodtalons()
 	end
 
-	if AOEBuilder() and RubimRH.AoEON() and Cache.EnemiesCount[10] > 1 and S.PrimalWrathTalent:IsAvailable() then
+	if AOEBuilder() and RubimRH.AoEON() and inRange11 > 1 and S.PrimalWrathTalent:IsAvailable() then
 		return AOEBuilder()
 	end
 
