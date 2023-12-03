@@ -18,6 +18,8 @@ local Item = HL.Item
 
 -- Spells
 RubimRH.Spell[66] = {
+   -- 42422
+   
     BlessingofFreedom           = Spell(1044),
     BlindingLight               = Spell(115750),
     SenseUndead                 = Spell(5502),

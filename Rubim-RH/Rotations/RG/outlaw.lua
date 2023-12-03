@@ -90,6 +90,8 @@ RubimRH.Spell[260] = {
     SinisterStrike         = Spell(193315),
     ImprovedAmbush         = Spell(381620),
     -- Stealth                = Spell(1784),
+    -- Stealth                = Spell(115191),
+
     Stealth                = MultiSpell(115191, 1784),
     FindWeakness           = Spell(91023),
     FindWeaknessDebuff     = Spell(316220),
@@ -310,9 +312,10 @@ end
 local function kickprio()
     -- list of m+ abilities that should be kicked
     local KickSpells = {
-        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
-        'Healing Touch',    -- AA
-        'Suppress','Drifting Embers', 'Bewitch', --CoS
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech',   -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
         'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
         'Surge',            -- HoV
         'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
@@ -472,7 +475,7 @@ end
 
 local function stealth()
 	--blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
-    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange10>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
+    if S.BladeFlurry:IsReady() and not Player:Buff(S.Stealth) and (S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and inRange10>= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD()) then
         return S.BladeFlurry:Cast()
     end
 
@@ -491,7 +494,8 @@ local function stealth()
         return S.Dispatch:Cast()
     end
 	--pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
-    if S.PistolShot:IsReady() and targetRange30 and Player:ComboPoints()<=1 and S.Crackshot:IsAvailable() and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
+    if S.PistolShot:IsReady() and targetRange30 and Player:ComboPoints()<=1 and S.Crackshot:IsAvailable() 
+    and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
         return S.PistolShot:Cast()
     end
 
@@ -529,6 +533,12 @@ local function stealth_cds()
 end
 
 local function builders()
+
+--     :bf: Blade Flurry with :acro: Deft Maneuvers talented is the highest priority builder at 5+ targets.
+-- At 3-4 targets, you can use it as a builder if you are missing combo points equal to the amount Blade Flurry would give you.
+-- if S.BladeFlurry:IsReady() and S.DeftManeuvers:IsAvailable() and (inRange10>=5 or inRange10>=3 and Player:ComboPointsDeficit()>=3 + num(Player:Buff(S.Broadside))) then
+--     return S.BladeFlurry:Cast()
+-- end
 	--echoing_reprimand
     if S.EchoingReprimand:IsReady() and targetRange8  then
         return S.EchoingReprimand:Cast()
@@ -565,7 +575,7 @@ local function builders()
     end
 	
     --sinister_strike
-    if S.SinisterStrike:IsReady() and targetRange8 and Player:ComboPoints()<=5  and not stealthall then
+    if S.SinisterStrike:IsReady() and targetRange8 and Player:ComboPoints()<=5 and not stealthall then
         return S.SinisterStrike:Cast()
     end
 end
@@ -577,12 +587,12 @@ local function cooldowns()
     end
 	
     --blade_flurry,if=(spell_targets>=2-talent.underhanded_upper_hand&!stealthed.rogue)&buff.blade_flurry.remains<gcd|talent.deft_maneuvers&spell_targets>=5&!variable.finish_condition
-    if S.BladeFlurry:IsReady() and  not Player:Buff(S.Stealth) and ((inRange10>= 2 - num(S.UnderhandedUpperHand:IsAvailable()) and not AuraUtil.FindAuraByName("Stealth", "player")) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange10>= 5 and not finish_condition) then
+    if S.BladeFlurry:IsReady() and not Player:Buff(S.Stealth) and ((inRange10>= 2 - num(S.UnderhandedUpperHand:IsAvailable() and not AuraUtil.FindAuraByName("Stealth", "player"))) and Player:BuffRemains(S.BladeFlurry) < Player:GCD() or S.DeftManeuvers:IsAvailable() and inRange10>= 5 and not finish_condition) then
         return S.BladeFlurry:Cast()
     end
 	
 	--roll_the_bones,if=variable.rtb_reroll|rtb_buffs.max_remains<=set_bonus.tier31_4pc+(cooldown.shadow_dance.remains<=1|cooldown.vanish.remains<=1)*6
-	if S.RolltheBones:IsCastable() and (rtb_reroll or ((MaxRtB_BuffRemains() <= num(tierequipped() >= 4) * 3 + num(RubimRH.CDsON() and (S.ShadowDance:CooldownRemains() <= 1 or S.Vanish:CooldownRemains() <= 1)) * 5) and (not stealthall or tierequipped() >= 4 and RtB_Buffs() == 1 and MaxRtB_BuffRemains() < 2))) then
+	if S.RolltheBones:IsCastable() and (basic_rtb_reroll or rtb_reroll or (MaxRtB_BuffRemains() <= num(tierequipped() >= 4)  + num(RubimRH.CDsON() and (S.ShadowDance:CooldownRemains() <= 1 or S.Vanish:CooldownRemains() <= 1)) * 6)) then
 		return S.RolltheBones:Cast()
 	end
 	
@@ -674,7 +684,7 @@ targetRange20 = TargetInRange("Blind")
 targetRange25 = TargetInRange("Shadowstep")
 targetRange30 = TargetInRange("Between the Eyes")
 
-
+-- print(MaxRtB_BuffRemains())
 -- -- print('Broadside: ',math.abs(Player:BuffRemains(RtB_BuffsList[1]) - RtBRemains()))
 -- -- print('BuriedTreasure: ',math.abs(Player:BuffRemains(RtB_BuffsList[2]) - RtBRemains()))
 -- -- print('GrandMelee: ',math.abs(Player:BuffRemains(RtB_BuffsList[3]) - RtBRemains()))
@@ -686,6 +696,7 @@ targetRange30 = TargetInRange("Between the Eyes")
 -- -- print("RtB Longer Buffs: " .. Cache.APLVar.RtB_Buffs.Longer)
 -- -- print("RtB Normal Buffs: " .. Cache.APLVar.RtB_Buffs.Normal)
 -- -- print("RtB Shorter Buffs: " .. Cache.APLVar.RtB_Buffs.Shorter)
+
 -- --------------------------------------------------------------------------------------------------------------------------------------------
 -- --Functions/Variables-----------------------------------------------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------------------------------------------------------------------
@@ -726,7 +737,7 @@ if true then
 		if S.Crackshot:IsAvailable() and S.HiddenOpportunity:IsAvailable() and tierequipped() < 4 then
 			--Crackshot builds without T31 should reroll for True Bearing (or Broadside without Hidden Opportunity) if we won't lose over 1 buff
 			--variable,name=rtb_reroll,if=talent.crackshot&talent.hidden_opportunity&!set_bonus.tier31_4pc,value=(!rtb_buffs.will_lose.true_bearing&talent.hidden_opportunity|!rtb_buffs.will_lose.broadside&!talent.hidden_opportunity)&rtb_buffs.will_lose<=1
-			rtb_reroll = (not will_lose_true_bearing and S.HiddenOpportunity:IsAvailable() or not will_lose_broadside and not S.HiddenOpportunity:IsAvailable()) and rtb_buffs_will_lose <= 1
+			rtb_reroll = ((not will_lose_true_bearing and S.HiddenOpportunity:IsAvailable() or not will_lose_broadside and not S.HiddenOpportunity:IsAvailable()) and rtb_buffs_will_lose <= 1)
 		elseif S.Crackshot:IsAvailable() and tierequipped() >= 4 then
 			--Crackshot builds with T31 should reroll if we won't lose over 1 buff (2 with Loaded Dice), and if Broadside is not active for builds without Hidden Opportunity
 			--variable,name=rtb_reroll,if=talent.crackshot&set_bonus.tier31_4pc,value=(rtb_buffs.will_lose<=1+buff.loaded_dice.up)&(talent.hidden_opportunity|!buff.broadside.up)
@@ -744,8 +755,23 @@ if true then
 		rtb_reroll = false
 	end
 
+fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 
-	fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
+--     (With 4 set tier) Use :rtb: Roll the Bones:
+-- If you have 0 buffs.
+-- Reroll if you have 1 buff.
+-- Reroll if you have 2 buffs and :loaded_dice: Loaded Dice is active.
+-- If you don't have to reroll, you should still not let your buffs fully expire. Roll again when they have like 2 seconds remaining, so that the 4pc always activates.
+-- If you are about to go into a stealth window, then roll early if your highest duration buff has under ~7 seconds remaining.
+
+    basic_rtb_reroll =
+    (tierequipped()==4 and (RtB_Buffs()<=1 or RtB_Buffs()==2 and Player:Buff(S.LoadedDiceBuff) or MaxRtB_BuffRemains()<3 or MaxRtB_BuffRemains()<7 and RubimRH.CDsON() and (S.Vanish:CooldownUp() or S.ShadowDance:CooldownUp()))
+-- (Without 4 set tier) Use :rtb: Roll the Bones:
+-- If you have 0 buffs.
+-- Reroll if you have 1 buff and it is not :truebearing: True Bearing.
+-- however :kir_rc: builds without HO reroll for :broadsides: Broadside instead of :truebearing: True Bearing.
+ or (tierequipped()<4 and (RtB_Buffs()==0 or RtB_Buffs()==1 and not Player:Buff(S.TrueBearing))))
+
 
 	stealthbasic = (AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff))
 
@@ -793,6 +819,8 @@ if true then
 	
 	SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
 end
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -800,12 +828,14 @@ if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting
 	-- if S.BladeFlurry:IsReady() and S.UnderhandedUpperHand:IsAvailable() and not Player:Buff(S.BladeFlurry) and ((S.AdrenalineRush:IsReady() and inRange30 >= 1) or Player:Buff(S.AdrenalineRush)) and (IsResting("player") == false or Player:CanAttack(Target)) and not AuraUtil.FindAuraByName("Stealth", "player") then
 		-- return S.BladeFlurry:Cast()
 	-- end
-	
-	if IsUsableSpell('Stealth') and not targetRange8 and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") and (IsResting("player") == false or Player:CanAttack(Target)) then
+
+	if S.Stealth:IsUsableP() and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") and (IsResting("player") == false or Player:CanAttack(Target)) then
 		return S.Stealth:Cast()
 	end
 
-	if inRange30 >= 1 and (not targetRange8 or not Player:CanAttack(Target)) and (IsInInstance() or Player:CanAttack(Target) and Player:IsMoving()) then
+
+
+	if inRange30 >= 1 and (not targetRange8 or not Player:CanAttack(Target)) and Player:IsMoving() and (IsInInstance() or Player:CanAttack(Target)) then
 		if S.AdrenalineRush:IsCastable() and RubimRH.CDsON() and not finish_condition and S.UnderhandedUpperHand:IsAvailable() and not Player:Buff(S.AdrenalineRush) and stealthall and not Player:Buff(S.VanishBuff) and Player:BuffRemains(S.SliceandDice) < 8 then
 			return S.AdrenalineRush:Cast()
 		end
@@ -842,6 +872,7 @@ if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting
 		end
 	end
 end
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue-------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -878,7 +909,7 @@ if (inRange30==0 or not Player:AffectingCombat()) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-if RubimRH.QueuedSpell():IsReadyQueue() and S.ShadowDance:ID() ~= RubimRH.queuedSpell[1]:ID() then
+if RubimRH.QueuedSpell():IsReadyQueue() then
 	return RubimRH.QueuedSpell():Cast()
 end
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -952,6 +983,7 @@ if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:Affecting
 		return builders()
 	end
 end
+
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- --Out of Range------------------------------------------------------------------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------

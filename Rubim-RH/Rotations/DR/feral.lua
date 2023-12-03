@@ -897,11 +897,11 @@ end
 ---------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if RubimRH.InterruptsON() and not IsStealthed() then 
-	if S.Hibernate:IsReady(20) and notInterruptible == false and cast_time > 0 and name == "Incorporeal Being" then
+	if S.Hibernate:IsReady() and targetRange16 and notInterruptible == false and cast_time > 0 and name == "Incorporeal Being" then
 		return S.Hibernate:Cast()
 	end
 	
-	if S.SkullBash:IsReady(5) and notInterruptible == false and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
+	if S.SkullBash:IsReady() and targetRange11 and notInterruptible == false and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
 		return S.SkullBash:Cast()
 	end
 
@@ -956,7 +956,7 @@ if Player:CanAttack(Target) and Player:BuffP(S.CatForm) and ((Player:AffectingCo
 		return S.autoattack:Cast()
 	end
 	
-    if S.AdaptiveSwarm:IsReady(20) and evaluate_cycle_adaptive_swarm and not (need_bloodtalons and BloodTalonTriggers() == 2) then
+    if S.AdaptiveSwarm:IsReady() and targetRange16 and evaluate_cycle_adaptive_swarm and not (need_bloodtalons and BloodTalonTriggers() == 2) then
 		return S.AdaptiveSwarm:Cast()    
 	end
 	
