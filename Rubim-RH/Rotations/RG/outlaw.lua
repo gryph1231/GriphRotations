@@ -145,6 +145,7 @@ RubimRH.Spell[260] = {
     Crackshot              = Spell(423703),
     UnderhandedUpperHand   = Spell(424044),
     SepsisBuff             = Spell(375939),
+    shadetarget = Spell(350209),
 }
 
 local S = RubimRH.Spell[260]
@@ -308,45 +309,93 @@ local function TargetTTD()
     end
 end
 
+local function stunprio()
+    -- list of m+ abilities that should be kicked
+    local stunspells = {
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+        'Unnerving Screech','Curse of Isolation',--DHT
+        'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
+        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+
+    }
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #stunspells do
+    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
 
 local function kickprio()
     -- list of m+ abilities that should be kicked
     local KickSpells = {
         'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
-        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech',   -- AD
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech','Noxious Stench',   -- AD
         'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
         'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-        'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
-        'Surge',            -- HoV
-        'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
-        'Cinderbolt',       --RLP
-        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
-        'Plague Spit',      --SMBG
-        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
-        'Defiling Mist',    --TotJS
-        'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
-        'Illusionary Bolt', --AV
-        'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
-        'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
-        'Desacrating Blow', -- NO
-        'Stone Bolt','Stone Gaze', -- neltharions lair
+        'Unnerving Screech','Curse of Isolation',--DHT
+        'Choking Vines','Enraged Growth','Healing Waters','Toxic Bloom','Revitalize','Pyroblast','Arcane Blast','Frostbolt',--Everbloom
+        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
+        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
 
     }
-end
+    local currentspellchannel = select(1,UnitChannelInfo('target'))
+    local currentspellcast = select(1, UnitCastingInfo('target'))
+    
+    for i = 1, #KickSpells do
+    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
+    return true
+    end
+    end
+    
+    return false
+    end
+
+    local function blindprio()
+        -- list of m+ abilities that should be kicked
+        local blindspells = {
+            'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+            "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+            'Unnerving Screech','Curse of Isolation',--DHT
+            'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+    
+        }
+        local currentspellchannel = select(1,UnitChannelInfo('target'))
+        local currentspellcast = select(1, UnitCastingInfo('target'))
+        
+        for i = 1, #blindspells do
+        if currentspellcast == blindspells[i] or currentspellchannel == blindspells[i] then
+        return true
+        end
+        end
+        
+        return false
+        end
 
 local function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
 
-                'Decay Spray', 'Gushing Ooze',                                                     --BH
-                'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', --halls of infusion
-                'Shatter',                                                                         --neltharions lair
-                'Magma Eruption', 'Might of the Forge', 'Volatile Mutation', 'Candescent Tempest', -- neltharus
-                'Shocking Quake', 'Crushing Stomp', 'Thunderous Clap', 'Wing Buffet',              -- Uldaman
-                'Tantrum', 'Festering Harvest',                                                    --underrot
-                'Cyclone Shield', 'Skyfall Nova',                                                  --VP
-                'Shattering Bellow',                                                               -- freehold
+                'Soul Burst', 'Shadow Bolt Volley',          --BRH 
+                'Soulrend', --AD
+                'Chronoburst','Infinite Fury', 'Cataclysmic Obliteration', --DotI                                                                       --neltharions lair
+                'Swell',  -- TotT
+                'Maddening Roar', 'Earthshaking Roar','Apocalyptic Nightmare',              -- DHT
+                'Colossal Blow',                                                   --EB
+                'Wildfire', --WM
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -401,6 +450,28 @@ local function EnergyTimeToMaxRounded()
     return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
 end
 
+
+local function UseItems()
+    local trinket1 = GetInventoryItemID("player", 13)
+    local trinket2 = GetInventoryItemID("player", 14)
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+    if trinket1ready 
+    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729
+     then
+        return I.tx1:Cast()
+    end
+    if trinket2ready 
+    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729
+     then
+        return I.tx2:Cast()
+    end
+	
+	return nil
+end
+
+
 local RtB_BuffsList = {
     S.Broadside,
     S.BuriedTreasure,
@@ -453,25 +524,6 @@ local function MaxRtB_BuffRemains()
     return Cache.APLVar.MaxRtB_BuffRemains;
 end
 
-local function UseItems()
-    local trinket1 = GetInventoryItemID("player", 13)
-    local trinket2 = GetInventoryItemID("player", 14)
-    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
-
-    if trinket1ready 
-    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729
-     then
-        return I.tx1:Cast()
-    end
-    if trinket2ready 
-    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729
-     then
-        return I.tx2:Cast()
-    end
-	
-	return nil
-end
 
 local function stealth()
 	--blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
@@ -507,12 +559,12 @@ end
 
 local function stealth_cds()
 	--vanish,if=talent.hidden_opportunity&!talent.crackshot&!buff.audacity.up&(variable.vanish_opportunity_condition|buff.opportunity.stack<buff.opportunity.max_stack)&variable.ambush_condition
-    if S.Vanish:IsCastable() and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or not Player:IsTanking(Target)) and S.HiddenOpportunity:IsAvailable() and not S.Crackshot:IsAvailable() and not Player:Buff(S.AudacityBuff) and (vanish_opportunity_condition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition then
+    if S.Vanish:IsCastable() and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or Player:CanAttack(Target)) and S.HiddenOpportunity:IsAvailable() and not S.Crackshot:IsAvailable() and not Player:Buff(S.AudacityBuff) and (vanish_opportunity_condition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition then
         return S.Vanish:Cast()
     end
 	
 	--vanish,if=(!talent.hidden_opportunity|talent.crackshot)&variable.finish_condition
-    if S.Vanish:IsCastable() and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or not Player:IsTanking(Target)) and (not S.HiddenOpportunity:IsAvailable() or S.Crackshot:IsAvailable()) and finish_condition then
+    if S.Vanish:IsCastable() and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or Player:CanAttack(Target)) and (not S.HiddenOpportunity:IsAvailable() or S.Crackshot:IsAvailable()) and finish_condition then
         return S.Vanish:Cast()
     end
 
@@ -536,9 +588,9 @@ local function builders()
 
 --     :bf: Blade Flurry with :acro: Deft Maneuvers talented is the highest priority builder at 5+ targets.
 -- At 3-4 targets, you can use it as a builder if you are missing combo points equal to the amount Blade Flurry would give you.
--- if S.BladeFlurry:IsReady() and S.DeftManeuvers:IsAvailable() and (inRange10>=5 or inRange10>=3 and Player:ComboPointsDeficit()>=3 + num(Player:Buff(S.Broadside))) then
---     return S.BladeFlurry:Cast()
--- end
+if S.BladeFlurry:IsReady() and S.DeftManeuvers:IsAvailable() and (inRange10>=5 or inRange10>=3 and Player:ComboPointsDeficit()>=3 + num(Player:Buff(S.Broadside))) then
+    return S.BladeFlurry:Cast()
+end
 	--echoing_reprimand
     if S.EchoingReprimand:IsReady() and targetRange8  then
         return S.EchoingReprimand:Cast()
@@ -657,7 +709,7 @@ local function finishers()
 	end
    
     -- dispatch
-	if S.Dispatch:IsReady() and targetRange8 and (S.ShadowDance:CooldownRemainsP() > Player:GCD() and S.Vanish:CooldownRemainsP() > Player:GCD() or not RubimRH.CDsON()) then
+	if S.Dispatch:IsReady() and targetRange8 and (S.ShadowDance:CooldownRemainsP() > Player:GCD() and S.Vanish:CooldownRemainsP() > Player:GCD() or not RubimRH.CDsON() or Player:IsTanking(Target)) then
 		return S.Dispatch:Cast()
 	end
 
@@ -666,6 +718,7 @@ end
 
 	
 local function APL()
+    -- kickprio()
 TargetTTD()
 AreaTTD()
 target_is_dummy()
@@ -704,7 +757,7 @@ if Player:IsCasting() or Player:IsChanneling() then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") 
 or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
 if true then
@@ -915,19 +968,29 @@ end
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------
 -- --Interrupts/Tranqs/Dispels-----------------------------------------------------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------
-if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) then
+if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and Player:AffectingCombat()  then
 	--Kick
-	if S.Kick:IsReady() and targetRange8 and (castTime > castchannelTime or channelTime > castchannelTime) and Player:AffectingCombat() and select(8, UnitCastingInfo("target")) == false then
+	if S.Kick:IsReady() 
+     and kickprio() 
+    and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
 		return S.Kick:Cast()
 	end
 
+	-- --blind
+	if S.Blind:IsReady() and blindprio()
+    and targetRange20 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
+		return S.Blind:Cast()
+	end
+
+
 	-- --Stun
-	-- if S.KidneyShot:IsReady(8) and (castTime>castchannelTime or channelTime>castchannelTime) and RubimRH.InterruptsON() and Player:AffectingCombat() and stunprio() then
-		-- return S.KidneyShot:Cast()
-	-- end
+	if S.KidneyShot:IsReady() and stunprio() 
+    and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5)  and not isEnraged then
+		return S.KidneyShot:Cast()
+	end
 
 	--Shiv
-	if S.Shiv:IsReady() and targetRange8 and isEnraged and Player:AffectingCombat() and TargetTTD() > 4 then
+	if S.Shiv:IsReady() and targetRange8 and isEnraged and Player:AffectingCombat() and TargetTTD() > 6 and UnitName("target")~= "Soul Thorns" then
 		return S.Shiv:Cast()
 	end
 end
@@ -936,7 +999,7 @@ end
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
  
-    if S.Feint:IsReady() and not Player:Buff(S.Feint) and inRange30>=1 and mitigate() then
+    if S.Feint:IsReady() and not Player:Buff(S.Feint) and inRange30>=1 and (mitigate() or AuraUtil.FindAuraByName("Chronofade", "player", "HARMFUL")) then
         return S.Feint:Cast()
     end
 
@@ -944,7 +1007,7 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
         if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 then
             return I.HPIcon:Cast()
         end
-        if S.Evasion:IsCastable() and inRange10>=1 and Player:HealthPercentage()<45 then
+        if S.Evasion:IsCastable() and (Player:Debuff(S.shadetarget) and Player:HealthPercentage()<75 or inRange10>=1 and Player:HealthPercentage()<45) then
             return S.Evasion:Cast()
             end
             if S.CloakofShadows:IsCastable() and Player:HealthPercentage()<15 and HPpercentloss>25 then

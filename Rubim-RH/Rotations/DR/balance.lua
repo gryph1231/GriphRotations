@@ -57,6 +57,11 @@ WildGrowth = Spell(48438),
 RemoveCorruption = Spell(2782),
 Dash = Spell(1850),
 StampedingRoar = Spell(106898),
+Starweaver = Spell(393940),
+AetherialKindling = Spell(327541),
+OrbitBreaker = Spell(383197),
+SolsticeBuff = Spell(343648),
+CABuff = Spell(383410),
     MoonkinForm                           = Spell(24858),
     Wrath                                 = Spell(190984),
     FuryofElune                           = Spell(202770),
@@ -95,7 +100,6 @@ StampedingRoar = Spell(106898),
 	LivelySpiritBuff                      = Spell(279646),
 	StreakingStars                        = Spell(272871),
 	ShootingStars                         = Spell(202342),
-    NaturesBalance                        = Spell(202430),
 	Barkskin                              = Spell(22812),
 	Soothe                                = Spell(2908),
 	Innervate                             = Spell(29166),
@@ -162,14 +166,6 @@ local I = Item.Druid.Balance;
 local ShouldReturn; -- Used to get the return string
 
 -- Variables
-
-local EnemyRanges = { 40 }
-local function UpdateRanges()
-    for _, i in ipairs(EnemyRanges) do
-        HL.GetEnemies(i);
-    end
-end
-
 local function num(val)
     if val then
         return 1
@@ -183,20 +179,36 @@ local function bool(val)
 end
 
 
-local function GetEnemiesCount(range)
-  -- Unit Update - Update differently depending on if splash data is being used
-  if RubimRH.AoEON() then
-    if RubimRH.db.profile[102].useSplashData == "Enabled" then
-      HL.GetEnemies(range, nil, true, Target)
-      return Cache.EnemiesCount[range]
-    else
-      UpdateRanges()
-      return active_enemies()
+local function RangeCount(spellName)
+    local range_counter = 0
+
+    if spellName then
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then           
+                local nameplate_guid = UnitGUID(unitID) 
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end                    
+                end
+            end
+        end
     end
-  else
-    return 1
-  end
+
+    return range_counter
 end
+
+local function TargetInRange(spellName)
+    if spellName and IsSpellInRange(spellName, "target") == 1 then
+        return true
+    else
+        return false    
+    end
+end
+
+
 
 local function FutureAstralPower()
     local AstralPower = Player:AstralPower()
@@ -276,31 +288,17 @@ local function HasDispellableEnrage()
     end
 end
 
-local function GetEnemiesCount(range)
-    if range == nil then range = 10 end
-	 -- Unit Update - Update differently depending on if splash data is being used
-	if RubimRH.AoEON() then       
-	        if RubimRH.db.profile[62].useSplashData == "Enabled" then	
-                HL.GetEnemies(range, nil, true, Target)
-                return Cache.EnemiesCount[range]
-            else
-                return active_enemies()
-            end
-    else
-        return 1
-    end
-end
 
 
 
 
 
 local function EvaluateCycleSunfire(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.SunfireDebuff)) and (AP_Check(S.Sunfire) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) * EnemiesCount >= math.ceil (math.floor (2 / EnemiesCount) * 1.5) + 2 * EnemiesCount and (EnemiesCount > 1 + num(S.TwinMoons:IsAvailable()) or TargetUnit:DebuffP(S.MoonfireDebuff)) and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.Sunfire)) and (Player:BuffRemainsP(CaInc()) > TargetUnit:DebuffRemainsP(S.SunfireDebuff) or not Player:BuffP(CaInc())))
+  return (TargetUnit:DebuffRefreshableCP(S.SunfireDebuff)) and (AP_Check(S.Sunfire) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) * inRange45 >= math.ceil (math.floor (2 / inRange45) * 1.5) + 2 * EnemiesCount and (EnemiesCount > 1 + num(S.TwinMoons:IsAvailable()) or TargetUnit:DebuffP(S.MoonfireDebuff)) and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.Sunfire)) and (Player:BuffRemainsP(CaInc()) > TargetUnit:DebuffRemainsP(S.SunfireDebuff) or not Player:BuffP(CaInc())))
 end
 
 local function EvaluateCycleMoonfire(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.MoonfireDebuff)) and (AP_Check(S.Moonfire) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) * EnemiesCount >= 6 and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.Moonfire)) and (Player:BuffRemainsP(CaInc()) > TargetUnit:DebuffRemainsP(S.MoonfireDebuff) or not Player:BuffP(CaInc())))
+  return (TargetUnit:DebuffRefreshableCP(S.MoonfireDebuff)) and (AP_Check(S.Moonfire) and math.floor (TargetUnit:TimeToDie() / (2 * Player:SpellHaste())) * inRange45 >= 6 and (not bool(VarAzSs) or not Player:BuffP(CaInc()) or not Player:PrevGCDP(1, S.Moonfire)) and (Player:BuffRemainsP(CaInc()) > TargetUnit:DebuffRemainsP(S.MoonfireDebuff) or not Player:BuffP(CaInc())))
 end
 
 local function EvaluateCycleStellarFlare(TargetUnit)
@@ -310,17 +308,20 @@ end
 local dotrequirements
 
 local function APL()
+    inRange45 = RangeCount("Starfire")
+    inRange10 = RangeCount("Shred")
 
-	HL.GetEnemies("Melee");
-	HL.GetEnemies(5, true);
-    HL.GetEnemies(8, true);
-    HL.GetEnemies(10, true);
-	HL.GetEnemies(15, true);
-	HL.GetEnemies(20, true);
-	HL.GetEnemies(25, true);
-	HL.GetEnemies(30, true);
-	HL.GetEnemies(35, true);
-	HL.GetEnemies(40, true);
+    targetRange45 = TargetInRange("Starfire")
+    targetRange10 = TargetInRange("Shred")
+
+
+    if Player:IsCasting() or Player:IsChanneling() then
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+    elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") 
+    or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+    end
+
 
     LeftCtrl = IsLeftControlKeyDown();
     LeftShift = IsLeftShiftKeyDown();
@@ -374,19 +375,19 @@ local function APL()
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 	
-		if S.Cyclone:ID() ==  RubimRH.queuedSpell[1]:ID() and Target:IsInRange(45) then
+		if S.Cyclone:ID() ==  RubimRH.queuedSpell[1]:ID() and targetRange45 then
 		return S.cyclone:Cast()
 	end
 	
-			if S.Cyclone:ID() ==  RubimRH.queuedSpell[1]:ID() and not Target:IsInRange(45) then
+			if S.Cyclone:ID() ==  RubimRH.queuedSpell[1]:ID() and not targetRange45 then
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 	
-			if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() and Target:IsInRange(45) then
+			if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() and targetRange45 then
 		return S.typhoon:Cast()
 	end
 	
-			if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() and not Target:IsInRange(45) then
+			if S.Typhoon:ID() ==  RubimRH.queuedSpell[1]:ID() and not targetRange45 then
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 	
@@ -426,19 +427,19 @@ if S.FrenziedRegeneration:IsReady()  and Player:HealthPercentage()<80 then
 return S.FrenziedRegeneration:Cast()
 end
 
-if S.IncapacitatingRoar:IsReady()  and Cache.EnemiesCount[10]>=1 and Player:HealthPercentage()<20 then
+if S.IncapacitatingRoar:IsReady()  and inRange10>=1 and Player:HealthPercentage()<20 then
 return S.incapacitatingroar:Cast()
 end
 
-  if S.Ironfur:IsReadyP() and Cache.EnemiesCount[10]>=1 then
+  if S.Ironfur:IsReadyP() and inRange10>=1 then
         return S.Ironfur:Cast()
     end
 	
-if (not Target:Debuff(S.ThrashDebuff) or Target:DebuffRemainsP(S.ThrashDebuff)<13 and Target:Debuff(S.ThrashDebuff)) and Cache.EnemiesCount[12]>=1  then
+if (not Target:Debuff(S.ThrashDebuff) or Target:DebuffRemainsP(S.ThrashDebuff)<13 and Target:Debuff(S.ThrashDebuff)) and inRange10>=1  then
 		return S.Thrash:Cast()
 	end
 	
-  if S.Mangle:IsReadyP() and Target:IsInRange(10) then
+  if S.Mangle:IsReadyP() and targetRange10 then
         return S.Mangle:Cast()
     end
  
@@ -447,14 +448,16 @@ end
 
 
 
-  if S.Berserking:IsCastableP() and Target:IsInRange(40) and Player:BuffP(S.CelestialAlignmentBuff) then
+  if S.Berserking:IsCastableP() and targetRange45 and Player:BuffP(S.CelestialAlignmentBuff) then
         return S.Berserking:Cast()
     end
 
 
 
 	
-	
+	if not Player:Buff(S.MoonkinForm) then
+        return S.MoonkinForm:Cast()
+    end
 	
 if Player:BuffP(S.MoonkinForm) then	
 
@@ -465,61 +468,115 @@ if HL.CombatTime()<3 and Player:AstralPower()<90 and (not Player:BuffP(S.Eclipse
 
 
 -- Apply and maintain  Moonfire, Sunfire Icon Sunfire on all targets if they will live longer than 8-seconds.
-	    if S.Sunfire:IsCastableP(40) and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 12  and active_enemies()>=2 then
+	    if S.Sunfire:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 12  and inRange45>=2 then
         return S.Sunfire:Cast()
     end
 	
 
 
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+	if S.Starfire:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
         return S.Starfire:Cast()
     end
 	
-    if S.Wrath:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
+    if S.Wrath:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
         return S.Wrath:Cast()
     end
 
-    if S.Wrath:IsCastableP(40) and S.Wrath:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
+    if S.Wrath:IsCastableP() and targetRange45  and S.Wrath:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
         return S.Wrath:Cast()
     end
 
-   if S.Starfire:IsCastableP(40) and S.Starfire:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+   if S.Starfire:IsCastableP() and targetRange45  and S.Starfire:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
         return S.Starfire:Cast()
     end
 	
 end
 
 
-if active_enemies() >=2 then
+
+  
+
+-- print(Player:SpellHaste())
+    -- variable,name=is_aoe,value=spell_targets.starfall>(1+(!talent.aetherial_kindling&!talent.starweaver))&talent.starfall
+    VarIsAoe = (inRange45 > (1 + num(not S.AetherialKindling:IsAvailable() and not S.Starweaver:IsAvailable())) and S.Starfall:IsAvailable())
+    VarPassiveAsp = 6 / Player:SpellHaste() + 
+    num(S.NaturesBalance:IsAvailable()) + 
+    num(S.OrbitBreaker:IsAvailable()) * num(Target:Debuff(S.MoonfireDebuff)) * num(Player:BuffStack(S.OrbitBreaker) > (27 - 2 * num(Player:Buff(S.SolsticeBuff)))) * 40
+    CAIncBuffUp = Player:Buff(S.CABuff) or Player:Buff(S.IncarnationBuff)
+    CAIncBuffRemains = 0
+    if CAIncBuffUp then
+      CAIncBuffRemains = S.Incarnation:IsAvailable() and Player:BuffRemains(S.IncarnationBuff) or Player:BuffRemains(S.CABuff)
+    end
+  
+-- print( S.FullMoon:ExecuteTime())
+
+
+if inRange45 >=2 then
 	
-if S.CelestialAlignment:IsReadyP() and RubimRH.CDsON() and Player:AstralPower()>=45 and Target:IsInRange(40) and (not Player:BuffP(S.EclipseLunar) or not Player:BuffP(S.EclipseSolar)) then
+    -- DOT targets with  Moonfire and  Sunfire with 100% uptime. This is very important due to our mastery. This is the first global priority.
+    -- Apply and maintain  Moonfire, Sunfire Icon Sunfire on all targets if they will live longer than 8-seconds.
+    if S.Sunfire:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 8  then
+        return S.Sunfire:Cast()
+    end
+	
+
+    if S.Moonfire:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.MoonfireDebuff) < 6.6 and Target:TimeToDie()> 8 and Player:BuffP(S.EclipseSolar) then
+        return S.Moonfire:Cast()
+    end
+    -- Get into Eclipse ASAP or Press your Cooldowns. If you are going to use cooldowns on AOE you just activate after you get everything DOTted. The Eclipse priority on AOE is Lunar for 3 targets and more and Solar for 2.
+    
+    if S.Wrath:IsCastableP() and targetRange45 and inRange45>=2  and S.Wrath:Count()>=1 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
+        return S.Wrath:Cast()
+    end
+
+   if S.Starfire:IsCastableP() and targetRange45 and inRange45<=2 and S.Starfire:Count()>=1 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+        return S.Starfire:Cast()
+    end
+
+    --  Starfall until you are 0 Astral Power.  Starsurge is still the spender on 2 targets if you do not have  Aetherial Kindling or  Starweaver.
+        if S.Starsurge:IsReadyP() and inRange45<=2 and (not S.AetherialKindling:IsAvailable() and not S.Starweaver:IsAvailable()) then
+            return S.Starsurge:Cast()
+        end
+        -- Maintain Starfall to consume Astral Power.
+    if S.Starfall:IsReadyP() and Player:AstralPower()>0 then
+        return S.Starfall:Cast()
+    end
+    -- Do not let yourself cap to 3  Wild Mushroom. They do a ton of AOD damage. If you have  Waning Twilight you might want to make sure your  Wild Mushroom DOT is up as long as possible.
+    -- Use  Fury of Elune as often as possible. It is very good AP generation.
+    
+    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and targetRange45 then
+        return S.FuryofElune:Cast()
+    end
+
+    -- Try to use  Full Moon inside of Incarn or Pulsar procs if possible. If it is not possible make sure you do not cap Moons. Cycle Half / New Moon outside of your cooldowns.
+
+        if S.FullMoon:IsCastable() and (Player:AstralPowerDeficit() > VarPassiveAsp + S.FullMoon:EnergizeAmount() and (Player:BuffRemains(S.EclipseLunar) > S.FullMoon:ExecuteTime() or Player:BuffRemains(S.EclipseSolar) > S.FullMoon:ExecuteTime()) and (CAIncBuffUp or S.HalfMoon:ChargesFractional() > 2.5 and PAPValue <= 520 and CaInc:CooldownRemains() > 10 or FightRemains < 10)) then
+            return S.FullMoon:Cast()
+          end     
+    --  Stellar Flare targets that will live longer than 8 seconds assuming the trash pack also takes longer than 30 seconds and you will not overcap on AP.
+    -- Spam  Starfire on 3+ targets,  Wrath on 2 targets. You also  Wrath on 3 targets whenever you are in your  Incarnation: Chosen of Elune.
+
+
+if S.CelestialAlignment:IsReadyP() and RubimRH.CDsON() and Player:AstralPower()>=45 and targetRange45 and (not Player:BuffP(S.EclipseLunar) or not Player:BuffP(S.EclipseSolar)) then
 return S.CelestialAlignment:Cast()
 end
 	
 	
 -- Maintain Starfall to consume Astral Power.
-    if S.Starfall:IsReadyP() and Cache.EnemiesCount[45]>=2 and Player:BuffRemainsP(S.StarfallBuff)<Player:GCD()*1.5 then
+    if S.Starfall:IsReadyP() and inRange45>=2 and Player:BuffRemainsP(S.StarfallBuff)<Player:GCD()*1.5 then
         return S.Starfall:Cast()
     end
 	
 
 	
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.WarriorofEluneBuff) then
+	if S.Starfire:IsCastableP() and targetRange45  and Player:BuffP(S.WarriorofEluneBuff) then
         return S.Starfire:Cast()
     end
 	
 
--- Apply and maintain  Moonfire, Sunfire Icon Sunfire on all targets if they will live longer than 8-seconds.
-	    if S.Sunfire:IsCastableP(40) and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 14  then
-        return S.Sunfire:Cast()
-    end
-	
 
-    if S.Moonfire:IsCastableP(40) and Target:DebuffRemainsP(S.MoonfireDebuff) < 6.6 and Target:TimeToDie()> 14 and Player:BuffP(S.EclipseSolar) then
-        return S.Moonfire:Cast()
-    end
 	
-    if S.StellarFlare:IsCastableP(40) and Target:DebuffRemainsP(S.StellarFlareDebuff)<5.5 and Target:TimeToDie()> 14 then
+    if S.StellarFlare:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.StellarFlareDebuff)<5.5 and Target:TimeToDie()> 14 then
         return S.StellarFlare:Cast()
     end
 
@@ -546,23 +603,15 @@ end
 -- Keep Fury of Elune (if talented) on cooldown.
 
 
-    if S.WarriorofElune:IsReadyP() and RubimRH.CDsON() and Target:IsInRange(40) then
+    if S.WarriorofElune:IsReadyP() and RubimRH.CDsON() and targetRange45 then
         return S.WarriorofElune:Cast()
     end
 
 
-    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and Target:IsInRange(40) then
+    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and targetRange45 then
         return S.FuryofElune:Cast()
     end
 
-
-    if S.Wrath:IsCastableP(40) and S.Wrath:Count()>=1 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
-        return S.Wrath:Cast()
-    end
-
-   if S.Starfire:IsCastableP(40) and S.Starfire:Count()>=1 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
-        return S.Starfire:Cast()
-    end
 
 -- Cast Starsurge when available. Try to keep enough Astral Power for Starfall when its low duration.
   -- if S.Starsurge:IsReadyP(40) and ((Player:BuffP(S.EclipseLunar) or Player:BuffP(S.EclipseSolar)) and (Player:BuffP(S.Starfall) and Player:AstralPower()>=75 or Player:AstralPower()>=90))  then
@@ -570,16 +619,16 @@ end
     -- end
 	
 
-	-- if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and active_enemies()>4 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+	-- if S.Starfire:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseSolar) and active_enemies()>4 and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
         -- return S.Starfire:Cast()
     -- end 
 	
 -- Cast the Eclipse appropriate filler to try to fill up your Astral Power for the next Eclipse.	
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+	if S.Starfire:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
         return S.Starfire:Cast()
     end
 	
-    if S.Wrath:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
+    if S.Wrath:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
         return S.Wrath:Cast()
     end
 
@@ -593,7 +642,7 @@ end
 
 
         if (true) then
-		    variableaoe = RubimRH.AoEON() and (active_enemies()>1 and (not S.Starlord:IsAvailable() or S.StellarDrift:IsAvailable()) or active_enemies()>2)
+		    variableaoe = RubimRH.AoEON() and (inRange45>1 and (not S.Starlord:IsAvailable() or S.StellarDrift:IsAvailable()) or inRange45>2)
 			end
 
 -- variable,name=dot_requirements,value=
@@ -611,7 +660,7 @@ end
 
 -- moonfire,target_if=refreshable&target.time_to_die>12,if=ap_check&variable.dot_requirements
 
-    if S.Moonfire:IsCastableP(40) and Target:DebuffRemainsP(S.MoonfireDebuff) < 6.6 and Target:TimeToDie()> 12 and dotrequirements then
+    if S.Moonfire:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.MoonfireDebuff) < 6.6 and Target:TimeToDie()> 12 and dotrequirements then
         return S.Moonfire:Cast()
     end
 	
@@ -619,20 +668,20 @@ end
 
 -- sunfire,target_if=refreshable&target.time_to_die>12,if=ap_check&variable.dot_requirements
 
-	    if S.Sunfire:IsCastableP(40) and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 12 and dotrequirements then
+	    if S.Sunfire:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.SunfireDebuff) < 5.4 and Target:TimeToDie()> 12 and dotrequirements then
         return S.Sunfire:Cast()
     end
 
 
 -- stellar_flare,target_if=refreshable&target.time_to_die>16,if=ap_check&variable.dot_requirements
-    if S.StellarFlare:IsCastableP(40) and Target:DebuffRemainsP(S.StellarFlareDebuff)<5.5 and Target:TimeToDie()> 12 and dotrequirements then
+    if S.StellarFlare:IsCastableP() and targetRange45  and Target:DebuffRemainsP(S.StellarFlareDebuff)<5.5 and Target:TimeToDie()> 12 and dotrequirements then
         return S.StellarFlare:Cast()
     end
 
 
 
 -- force_of_nature,if=ap_check
-    if S.ForceofNature:IsCastableP(40) then
+    if S.ForceofNature:IsCastableP() and targetRange45  then
         return S.ForceofNature:Cast()
     end
 
@@ -643,7 +692,7 @@ end
 -- &(buff.primordial_arcanic_pulsar.value<240|!runeforge.primordial_arcanic_pulsar.equipped))|buff.primordial_arcanic_pulsar.value>=270|cooldown.ca_inc.ready
 -- &(astral_power>90|variable.is_aoe)
 
-    -- if S.KindredSpirits:IsCastableP(40) and
+    -- if S.KindredSpirits:IsCastableP() and targetRange45  and
 	-- (((Player:BuffRemainsP(S.EclipseSolar)>10 or Player:BuffRemainsP(S.EclipseLunar)>10)
 	-- and S.CelestialAlignment:CooldownRemainsP()>30 and RubimRH.CDsON()
 	-- and ( Player:CanAttack(Target))) or S.CelestialAlignment:CooldownRemainsP()==0
@@ -657,13 +706,13 @@ end
 -- celestial_alignment,if=(astral_power>90
 -- &(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|variable.is_aoe|
 
-if S.CelestialAlignment:IsReadyP() and (RubimRH.CDsON() and Player:AstralPower()>=90 and Target:IsInRange(40) or variableaoe and RubimRH.CDsON()) then
+if S.CelestialAlignment:IsReadyP() and (RubimRH.CDsON() and Player:AstralPower()>=90 and targetRange45 or variableaoe and RubimRH.CDsON()) then
 return S.CelestialAlignment:Cast()
 end	
 
 
 -- incarnation,if=(astral_power>90&(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|variable.is_aoe|buff.bloodlust.up&buff.bloodlust.remains<30+((9*runeforge.primordial_arcanic_pulsar.equipped)+(conduit.precise_alignment.time_value)))&!buff.ca_inc.up&(!covenant.night_fae|cooldown.convoke_the_spirits.up|interpolated_fight_remains<cooldown.convoke_the_spirits.remains+6|interpolated_fight_remains%%180<30+(conduit.precise_alignment.time_value))
-if S.Incarnation:IsReadyP() and (RubimRH.CDsON() and Player:AstralPower()>=90 and Target:IsInRange(40) or variableaoe and RubimRH.CDsON()) then
+if S.Incarnation:IsReadyP() and (RubimRH.CDsON() and Player:AstralPower()>=90 and targetRange45 or variableaoe and RubimRH.CDsON()) then
 return S.Incarnation:Cast()
 end	
 
@@ -685,10 +734,10 @@ end
 -- &(buff.starlord.up|astral_power>90)&buff.starlord.stack<3
 -- &(buff.eclipse_solar.up|buff.eclipse_lunar.up)&buff.primordial_arcanic_pulsar.value<270
 -- &(cooldown.ca_inc.remains>10|!variable.convoke_desync&covenant.night_fae)
-  if S.Starsurge:IsReadyP(40) and (S.Starlord:IsAvailable() and  Player:AstralPower()>90 and Player:BuffStackP(S.StarlordBuff)<3) then
+  if S.Starsurge:IsReadyP() and targetRange45 and (S.Starlord:IsAvailable() and  Player:AstralPower()>90 and Player:BuffStackP(S.StarlordBuff)<3) then
         return S.Starsurge:Cast()
     end
-  if S.Starsurge:IsReadyP(40) and (S.Starlord:IsAvailable() and Player:BuffP(S.StarlordBuff) and Player:BuffStackP(S.StarlordBuff)<3) then
+  if S.Starsurge:IsReadyP()  and targetRange45 and (S.Starlord:IsAvailable() and Player:BuffP(S.StarlordBuff) and Player:BuffStackP(S.StarlordBuff)<3) then
         return S.Starsurge:Cast()
     end
 
@@ -737,11 +786,11 @@ end
 	
 
 -- Cast two unempowered fillers (Wrath Icon Wrath or Starfire Icon Starfire) to enter the appropriate Eclipse Icon Eclipse state.
-    if S.Wrath:IsCastableP(40) and S.Wrath:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
+    if S.Wrath:IsCastableP() and targetRange45  and S.Wrath:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
         return S.Wrath:Cast()
     end
 
-   if S.Starfire:IsCastableP(40) and S.Starfire:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+   if S.Starfire:IsCastableP() and targetRange45  and S.Starfire:Count()>=1  and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
         return S.Starfire:Cast()
     end
 	
@@ -750,22 +799,22 @@ end
 
 
 -- Cast any remaining short Cooldowns such as Fury of Elune Icon Fury of Elune, Warrior of Elune Icon Warrior of Elune, or Force of Nature Icon Force of Nature.
-   if S.WarriorofElune:IsReadyP() and RubimRH.CDsON() and Target:IsInRange(40) then
+   if S.WarriorofElune:IsReadyP() and RubimRH.CDsON() and targetRange45 then
         return S.WarriorofElune:Cast()
     end
 
 
-    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and Target:IsInRange(40) then
+    if S.FuryofElune:IsCastableP() and RubimRH.CDsON() and targetRange45 then
         return S.FuryofElune:Cast()
     end
 
 
 -- Cast the  Eclipse appropriate filler to try to fill up your Astral Power for the next Eclipse Icon Eclipse.
-   if S.Wrath:IsCastableP(40) and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
+   if S.Wrath:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseSolar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable()) then
         return S.Wrath:Cast()
     end
 	
-	if S.Starfire:IsCastableP(40) and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
+	if S.Starfire:IsCastableP() and targetRange45  and Player:BuffP(S.EclipseLunar) and (not Player:IsMoving() or Player:BuffP(S.StarfallBuff) and S.StellarDrift:IsAvailable() or Player:BuffP(S.WarriorofEluneBuff)) then
         return S.Starfire:Cast()
     end
 	
@@ -775,14 +824,14 @@ end
 
 
 -- Apply and maintain Moonfire Icon Moonfire, Sunfire Icon Sunfire, and Stellar Flare Icon Stellar Flare (if talented) on the target(s).
-    if S.Sunfire:IsCastableP(40) and Target:DebuffRemains(S.MoonfireDebuff)>Target:DebuffRemains(S.SunfireDebuff) and not Player:PrevGCD(1, S.Sunfire) then
+    if S.Sunfire:IsCastableP() and targetRange45  and Target:DebuffRemains(S.MoonfireDebuff)>Target:DebuffRemains(S.SunfireDebuff) and not Player:PrevGCD(1, S.Sunfire) then
         return S.Sunfire:Cast()
     end
 	
-	    if S.Moonfire:IsCastableP(40) then
+	    if S.Moonfire:IsCastableP() and targetRange45  then
         return S.Moonfire:Cast()
     end
-	    if S.Sunfire:IsCastableP(40) then
+	    if S.Sunfire:IsCastableP() and targetRange45  then
         return S.Sunfire:Cast()
     end
 
@@ -808,15 +857,15 @@ if not Player:AffectingCombat() then
         -- return 0, 136213
     -- end
 
-	if not RubimRH.queuedSpell[1]:CooldownUp() or not Target:IsInRange(10) or not Player:AffectingCombat() then
+	if not RubimRH.queuedSpell[1]:CooldownUp() or not targetRange10 or not Player:AffectingCombat() then
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 	
-	return 0, 625999
-end 
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+    end 
 
 
-	return 0, 625999
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end 
 
 RubimRH.Rotation.SetAPL(102, APL);

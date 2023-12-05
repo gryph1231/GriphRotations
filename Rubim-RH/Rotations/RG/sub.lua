@@ -47,7 +47,9 @@ RubimRH.Spell[261] = {
 	ShurikenTornado = Spell(277925),
 	SecretTechnique = Spell(280719),
 	Eviscerate = Spell(196819),
-	PerforatedVeins = Spell(394254),
+	PerforatedVeins         = Spell(382518),
+	PerforatedVeinsBuff     = Spell(394254),
+
 	Nightstalker = Spell(14062),
 	DarkShadow = Spell(245687),
 	ShadowDanceBuff = Spell(185422),
@@ -64,7 +66,6 @@ RubimRH.Spell[261] = {
     SealFate = Spell(14190),
     DanseMacabre = Spell(382528),
 	DanseMacabreBuff = Spell(393969),
-	TheRotton = Spell(382015),
 	FindWeakness = Spell(316220),
     DeeperStratagem = Spell(193531),
     Stealth = Spell(1784),
@@ -96,8 +97,14 @@ RubimRH.Spell[261] = {
     Sprint = Spell(2983),
 	Evasion = Spell(5277),
 	Flagellation = Spell(384631),
+	FlagellationPersist = Spell(394758),
+	TheRotten               = Spell(382015),
+	TheRottenBuff           = Spell(394203),
 	SubterfugeBuff = Spell(115192),
 	Healthstonez = Spell(260364), --arcane pulse
+	Sepsis = Spell(385408),
+	InvigoratingShadowdust = Spell(382523),
+	Shadowcraft = Spell(426594),
 }
 
 local S = RubimRH.Spell[261] 
@@ -123,18 +130,34 @@ local function num(val)
     end
 end
 
-local function CPMaxSpend()
-	if S.DeeperStratagem:IsAvailable() and S.SecretStratagem:IsAvailable() then	
-		return 7
-    elseif S.DeeperStratagem:IsAvailable() and not S.SecretStratagem:IsAvailable() or not S.DeeperStratagem:IsAvailable() and S.SecretStratagem:IsAvailable() then
-		return 6
-    else
-		return 5
+
+local function RangeCount(spellName)
+    local range_counter = 0
+
+    if spellName then
+        for i = 1, 40 do
+            local unitID = "nameplate" .. i
+            if UnitExists(unitID) then           
+                local nameplate_guid = UnitGUID(unitID) 
+                local npc_id = select(6, strsplit("-", nameplate_guid))
+                if npc_id ~= '120651' and npc_id ~= '161895' then
+                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+                        range_counter = range_counter + 1
+                    end                    
+                end
+            end
+        end
     end
+
+    return range_counter
 end
 
-local function EnergyTimeToMaxRounded()
-    return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
+local function TargetInRange(spellName)
+    if spellName and IsSpellInRange(spellName, "target") == 1 then
+        return true
+    else
+        return false    
+    end
 end
 
 local function target_is_dummy()
@@ -146,7 +169,7 @@ local function target_is_dummy()
     end
 
     if Target:Exists() then
-        if name == 'Dummy' then
+        if name == 'Dummy' or name == 'elist' then
             targetisdummy = true
         end
     else
@@ -156,50 +179,88 @@ local function target_is_dummy()
     return targetisdummy
 end
 
-local function TargetTTD()
-	local currHealth = {}
-	local currHealthMax = {}
-	local allGUID = {}
-	local areaTTD = {}
-	local areaTTD_Predicted = {}
-	local areaDPS = {}
-	local count = 1
-	local highest = 0
+local function AreaTTD()
+local currHealth = {}
+local currHealthMax = {}
+local areaTTD = {}
 
     for id = 1, 40 do
         local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) 
+        if UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) 
         and ((UnitHealth(unitID) / UnitHealthMax(unitID)) * 100) < 100 then
-            if UnitGUID('Target') then
-                currTarget = UnitGUID('Target')
-            end
-			
-            table.insert(allGUID, UnitGUID(unitID))
             table.insert(currHealth, UnitHealth(unitID))
             table.insert(currHealthMax, UnitHealthMax(unitID))
-			
-			if #allGUID >= 1 and UnitGUID('Target') then 
-				while(UnitGUID('Target') ~= allGUID[count]) do
-					count = count + 1
-					break
-				end
-			end
-			
             if #currHealthMax >= 1 then
                 for id = 1, #currHealthMax do
-				dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) / HL.CombatTime("nameplate" .. #currHealthMax)
-					if #currHealthMax ~= count then
-						areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
-						--areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / (dps + playerDPS)
-					else
-						areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / dps
-					end
+                    dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) / HL.CombatTime("nameplate" .. #currHealthMax)
+                    areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
                 end
             end
         end
     end
+    
+    local count = 1
+    local highest = 0
 
-	if target_is_dummy() then
+    for count = 1, #currHealthMax do
+        if areaTTD[count] > highest then 
+            highest = areaTTD[count]
+        end
+        count = count + 1
+    end
+    
+	if highest ~= 0 then
+		return highest
+	else
+		return 9999
+	end
+
+end
+
+local function TargetTTD()
+    local currHealth = {}
+    local currHealthMax = {}
+    local allGUID = {}
+    local areaTTD = {}
+    local areaTTD_Predicted = {}
+    local areaDPS = {}
+    local count = 1
+    local highest = 0
+
+    for id = 1, 40 do
+        local unitID = "nameplate" .. id
+        if UnitCanAttack("player", unitID)
+            and ((UnitHealth(unitID) / UnitHealthMax(unitID)) * 100) < 100 then
+            if UnitGUID('Target') then
+                currTarget = UnitGUID('Target')
+            end
+
+            table.insert(allGUID, UnitGUID(unitID))
+            table.insert(currHealth, UnitHealth(unitID))
+            table.insert(currHealthMax, UnitHealthMax(unitID))
+
+            if #allGUID >= 1 and UnitGUID('Target') then
+                while (UnitGUID('Target') ~= allGUID[count]) do
+                    count = count + 1
+                    break
+                end
+            end
+
+            if #currHealthMax >= 1 then
+                for id = 1, #currHealthMax do
+                    dps = (currHealthMax[#currHealth] - currHealth[#currHealth]) /
+                        HL.CombatTime("nameplate" .. #currHealthMax)
+                    if #currHealthMax ~= count then
+                        areaTTD[#currHealthMax] = currHealth[#currHealth] / dps
+                        --areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / (dps + playerDPS)
+                    else
+                        areaTTD_Predicted[#currHealthMax] = currHealth[#currHealth] / dps
+                    end
+                end
+            end
+        end
+    end
+    if target_is_dummy() then
         return 8675309
     elseif #currHealthMax >= 1 and areaTTD_Predicted[count] then
         return areaTTD_Predicted[count]
@@ -209,20 +270,30 @@ local function TargetTTD()
 end
 
 
-local function UseItems()
-    local trinket1 = GetInventoryItemID("player", 13)
-    local trinket2 = GetInventoryItemID("player", 14)
-    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+local function kickprio()
+    -- list of m+ abilities that should be kicked
+    local KickSpells = {
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech',   -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+        'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
+        'Surge',            -- HoV
+        'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
+        'Cinderbolt',       --RLP
+        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
+        'Plague Spit',      --SMBG
+        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
+        'Defiling Mist',    --TotJS
+        'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
+        'Illusionary Bolt', --AV
+        'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
+        'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
+        'Desacrating Blow', -- NO
+        'Stone Bolt','Stone Gaze', -- neltharions lair
 
-    if trinket1ready then
-        return I.tx1:Cast()
-    end
-    if trinket2ready then
-        return I.tx2:Cast()
-    end
+    }
 end
-
 
 local function mitigate()
     if Player:AffectingCombat() then
@@ -253,64 +324,134 @@ local function mitigate()
     return false
 end
 
-local function Build()
-	if S.ShurikenStorm:IsCastable() and Cache.EnemiesCount[12] >= 2 + num(S.Gloomblade:IsAvailable() and Player:BuffRemainsP(S.LingeringShadowBuff) >= 4 or Player:BuffP(S.PerforatedVeins)) then
-		return S.ShurikenStorm:Cast()
-	end
+local function CPMaxSpend()
+    if S.DeeperStratagem:IsAvailable()  then
+        return 7
+    elseif S.DeeperStratagem:IsAvailable() and not S.SecretStratagem:IsAvailable() or not S.DeeperStratagem:IsAvailable() and S.SecretStratagem:IsAvailable() then
+        return 6
+    else
+        return 5
+    end
+end
 
-	if S.Gloomblade:IsReady(8) then
-		return S.Gloomblade:Cast()
-	end
+local function EnergyTimeToMaxRounded()
+    return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
+end
+
+local function tierequipped()
+    local items = {
+        "Lucid Shadewalker's Clawgrips",
+        "Lucid Shadewalker's Chausses",
+        "Lucid Shadewalker's Cuirass",
+        "Lucid Shadewalker's Bladed Spaulders",
+        "Lucid Shadewalker's Deathmask",
+    }
+
+    local count = 0
+
+    for _, itemName in ipairs(items) do
+        if IsEquippedItem(itemName) then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
+local function EnergyTimeToMaxRounded()
+    return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
+end
+
+
+local function UseItems()
+    local trinket1 = GetInventoryItemID("player", 13)
+    local trinket2 = GetInventoryItemID("player", 14)
+    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+
+    if trinket1ready 
+    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729
+     then
+        return I.tx1:Cast()
+    end
+    if trinket2ready 
+    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729
+     then
+        return I.tx2:Cast()
+    end
 	
 	return nil
 end
 
-local function CDS()
-local trinket1 = GetInventoryItemID("player", 13)
-local trinket2 = GetInventoryItemID("player", 14)
-local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
 
-	if S.ShadowDance:IsReady(8) and Player:GCDRemains() < 0.5 and not Player:BuffP(S.ShadowDanceBuff) and Player:BuffP(S.ShurikenTornado) then
+
+
+
+local function Build()
+	if S.ShurikenStorm:IsCastable() and inRange10 >= 2 + num(S.Gloomblade:IsAvailable() and Player:BuffRemainsP(S.LingeringShadowBuff) >= 6 or Player:BuffP(S.PerforatedVeinsBuff)) then
+		return S.ShurikenStorm:Cast()
+	end
+
+	if S.Gloomblade:IsReady() and targetRange8 then
+		return S.Gloomblade:Cast()
+	end
+	if S.Backstab:IsReady() and targetRange8 then
+		return S.Backstab:Cast()
+	end
+
+end
+
+local function CDS()
+
+	if S.ColdBlood:IsReady() and S.ColdBlood:IsAvailable() and targetRange10 and not S.SecretTechnique:IsAvailable() and Player:ComboPoints()>=5 then
+		return S.ColdBlood:Cast() 
+	end
+
+	if S.Sepsis:IsReady() and snd_condition and S.Sepsis:IsAvailable() and targetRange10 and TargetTTD() >16 and (Player:Buff(S.PerforatedVeinsBuff) or not S.PerforatedVeins:IsAvailable()) then
+		return S.Sepsis:Cast() 
+	end
+	-- symbols_of_death,if=variable.snd_condition&(!buff.the_rotten.up|!set_bonus.tier30_2pc)&buff.symbols_of_death.remains<=3
+	-- &(!talent.flagellation|cooldown.flagellation.remains>10|buff.shadow_dance.remains>=2&talent.invigorating_shadowdust|cooldown.flagellation.up&combo_points>=5&!talent.invigorating_shadowdust)
+	if S.SymbolsofDeath:IsReady() and snd_condition and targetRange8 and Player:GCDRemains() < 0.5 and not Player:Buff(S.TheRottenBuff) and Player:BuffRemains(S.SymbolsofDeath)<=3 and (not S.Flagellation:IsAvailable() or S.Flagellation:CooldownRemainsP()>10 
+	or Player:BuffRemains(S.ShadowDanceBuff)>=2 and S.InvigoratingShadowdust:IsAvailable() or S.Flagellation:CooldownUp() and Player:ComboPoints()>=5 and not S.InvigoratingShadowdust:IsAvailable()) then
+		return S.SymbolsofDeath:Cast()
+	end
+
+	-- shadow_blades,if=variable.snd_condition&(combo_points<=1|set_bonus.tier31_4pc)&(buff.flagellation_buff.up|buff.flagellation_persist.up|!talent.flagellation)
+	if S.ShadowBlades:IsReady() and snd_condition and targetRange8 and Player:GCDRemains() < 0.5 and not Player:BuffP(S.ShadowDanceBuff) and (Player:ComboPoints()<=1 or tierequipped()==4) and (Player:Buff(S.Flagellation) or Player:Buff(S.FlagellationPersist) or not S.Flagellation:IsAvailable()) then
+		return S.ShadowBlades:Cast()
+	end
+
+	-- echoing_reprimand,if=variable.snd_condition&combo_points.deficit>=3
+	if S.EchoingReprimand:IsReady() and targetRange8 and snd_condition and Player:ComboPointsDeficit()>=3 then
+		return S.EchoingReprimand:Cast()
+	end
+
+	-- shuriken_tornado,if=variable.snd_condition&buff.symbols_of_death.up&combo_points<=2&!buff.premeditation.up&(!talent.flagellation|cooldown.flagellation.remains>20)&spell_targets.shuriken_storm>=3
+	if S.ShurikenTornado:IsReady() and targetRange8 and snd_condition and Player:BuffP(S.SymbolsofDeath) and Player:ComboPoints() <= 2 and not Player:BuffP(S.PremeditationBuff) and(not S.Flagellation:IsAvailable() or S.Flagellation:CooldownRemainsP()>20) and inRange10>=3 then
+		return S.ShurikenTornado:Cast()
+	end
+	-- shuriken_tornado,if=variable.snd_condition&!buff.shadow_dance.up&!buff.flagellation_buff.up&!buff.flagellation_persist.up&!buff.shadow_blades.up&spell_targets.shuriken_storm<=2&!raid_event.adds.up
+	if S.ShurikenTornado:IsReady() and targetRange8 and snd_condition and not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(S.Flagellation) and not Player:Buff(S.FlagellationPersist) and not Player:Buff(S.ShadowBlades) and inRange10<=2 then
+		return S.ShurikenTornado:Cast()
+	end
+	-- shadow_dance,if=!buff.shadow_dance.up&fight_remains<=8+talent.subterfuge.enabled
+
+	if S.ShadowDance:IsReady() and targetRange8 and Player:GCDRemains() < 0.5 and not Player:BuffP(S.ShadowDanceBuff) then
 		return S.ShadowDance:Cast()
 	end
 
-	if S.SymbolsofDeath:IsReady(8) and Player:GCDRemains() < 0.5 and Player:BuffP(S.ShurikenTornado) then
-		return S.SymbolsofDeath:Cast()
-	end
-
-	if S.Vanish:IsReady(8) and Cache.EnemiesCount[12] < 7 and Player:Energy() >= 40 and Player:GCDRemains() < 0.5 and Player:BuffStack(S.DanseMacabreBuff) > 3 and Player:ComboPoints() <= 2 and (S.SecretTechnique:CooldownRemainsP() >= 30 or not S.SecretTechnique:IsAvailable()) then
-		return S.Vanish:Cast()
-	end
 	
-	if S.SymbolsofDeath:IsReady(8) and rotten_condition and snd_condition and (not S.Flagellation:IsAvailable() and (Player:ComboPoints() <= 1 or not S.TheRotton:IsAvailable()) or S.Flagellation:CooldownRemainsP() > 10 or (S.Flagellation:IsAvailable() and S.Flagellation:CooldownUp()) and Player:ComboPoints() >= 5) then
-		return S.SymbolsofDeath:Cast()
-	end
-	
-	if S.ShadowBlades:IsReady(8) and snd_condition and Player:ComboPointsDeficit() >= 2 then
-		return S.ShadowBlades:Cast()
-	end
-	
-	if S.ShurikenTornado:IsReady(8) and snd_condition and Player:BuffP(S.SymbolsofDeath) and Player:ComboPoints() <= 2 and (not Player:BuffP(S.PremeditationBuff) or Cache.EnemiesCount[12] > 4) then
-		return S.ShurikenTornado:Cast()
-	end
-
-	if S.ShurikenTornado:IsReady(8) and S.ShadowDance:CooldownUp() and not stealthed_all and Cache.EnemiesCount[12] >= 3 and not S.Flagellation:IsAvailable() then
-		return S.ShurikenTornado:Cast()
-	end
-	
-	if S.ThistleTea:IsCastable() and (S.SymbolsofDeath:CooldownRemainsP() >= 3 and not Player:BuffP(S.ThistleTea) and (Player:EnergyDeficit() >= 100 and (Player:ComboPointsDeficit() >= 2 or Cache.EnemiesCount[12] >= 3) or S.ThistleTea:ChargesFractional() >= 2.75 and Player:BuffP(S.ShadowDanceBuff)) or Player:BuffRemainsP(S.ShadowDanceBuff) >= 4 and not Player:BuffP(S.ThistleTea) and Cache.EnemiesCount[12] >= 3) then
+	if S.ThistleTea:IsCastable() and (S.SymbolsofDeath:CooldownRemainsP() >= 3 and not Player:BuffP(S.ThistleTea) and (Player:EnergyDeficit() >= 100 and (Player:ComboPointsDeficit() >= 2 or inRange10 >= 3) or S.ThistleTea:ChargesFractional() >= 2.75 and Player:BuffP(S.ShadowDanceBuff)) or Player:BuffRemainsP(S.ShadowDanceBuff) >= 4 and not Player:BuffP(S.ThistleTea) and inRange10 >= 3) then
 		return S.ThistleTea:Cast()
 	end
 	
 
 
-	
-	return nil
 end
 
 local function Finish()
-	if S.SliceandDice:IsCastable() and not premed_snd_condition and Cache.EnemiesCount[12] < 6 and not Player:BuffP(S.ShadowDanceBuff) and Player:BuffRemainsP(S.SliceandDice) < 12.6 then
+	if S.SliceandDice:IsCastable() and not premed_snd_condition and inRange10 < 6 and not Player:BuffP(S.ShadowDanceBuff) and Player:BuffRemainsP(S.SliceandDice) < 12.6 then
 		return S.SliceandDice:Cast()
 	end
 	
@@ -318,59 +459,66 @@ local function Finish()
 		return S.SliceandDice:Cast()
 	end
 	
-	if S.Rupture:IsReady(8) and not skip_rupture and TargetTTD() and TargetTTD() - Target:DebuffRemainsP(S.Rupture) > 6 and Target:DebuffRemainsP(S.Rupture) < 8.4 then
+	if S.Rupture:IsReady() and targetRange8 and not skip_rupture and TargetTTD() and TargetTTD() - Target:DebuffRemainsP(S.Rupture) > 6 and Target:DebuffRemainsP(S.Rupture) < 8.4 then
 		return S.Rupture:Cast()
 	end
 	
-	if S.Rupture:IsReady(8) and not skip_rupture and Player:BuffP(S.FinalityRupture) and S.ShadowDance:CooldownRemainsP() < 12 and S.ShadowDance:ChargesFractional() <= 1 and Cache.EnemiesCount[12] == 1 and (S.DarkBrew:IsAvailable() or S.DanseMacabre:IsAvailable()) then
+	if S.Rupture:IsReady() and targetRange8 and not skip_rupture and Player:BuffP(S.FinalityRupture) and S.ShadowDance:CooldownRemainsP() < 12 and S.ShadowDance:ChargesFractional() <= 1 and inRange10 == 1 and (S.DarkBrew:IsAvailable() or S.DanseMacabre:IsAvailable()) then
 		return S.Rupture:Cast()
 	end
 	
-	if S.ColdBlood:IsReady(5) and not Player:BuffP(S.ColdBlood) and secret_condition and S.SecretTechnique:CooldownUp() then
+	if S.ColdBlood:IsReady() and targetRange8 and not Player:BuffP(S.ColdBlood) and secret_condition and S.SecretTechnique:CooldownUp() then
 		return S.ColdBlood:Cast()
 	end
 	
-	if S.SecretTechnique:IsReady(8) and secret_condition and (not S.ColdBlood:IsAvailable() or Player:BuffP(S.ColdBlood) or S.ColdBlood:CooldownRemainsP() > Player:BuffRemainsP(S.ShadowDanceBuff) - 2) then
+	if S.SecretTechnique:IsReady() and targetRange8 and secret_condition and (not S.ColdBlood:IsAvailable() or Player:BuffP(S.ColdBlood) or S.ColdBlood:CooldownRemainsP() > Player:BuffRemainsP(S.ShadowDanceBuff) - 2) then
 		return S.SecretTechnique:Cast()
 	end
 
-	if S.Rupture:IsReady(8) and not skip_rupture and Target:DebuffRemainsP(S.Rupture) < S.SymbolsofDeath:CooldownRemainsP() + 10 and S.SymbolsofDeath:CooldownRemainsP() <= 5 and TargetTTD() and TargetTTD() - Target:DebuffRemainsP(S.Rupture) > S.SymbolsofDeath:CooldownRemainsP() + 5 then
+	if S.Rupture:IsReady() and targetRange8 and not skip_rupture and Target:DebuffRemainsP(S.Rupture) < S.SymbolsofDeath:CooldownRemainsP() + 10 and S.SymbolsofDeath:CooldownRemainsP() <= 5 and TargetTTD() and TargetTTD() - Target:DebuffRemainsP(S.Rupture) > S.SymbolsofDeath:CooldownRemainsP() + 5 then
 		return S.Rupture:Cast()
 	end
 	
-	if S.BlackPowder:IsCastable() and Cache.EnemiesCount[12] >= 3 or not bp_used_for_danse and Player:BuffP(S.ShadowDanceBuff) and Cache.EnemiesCount[12] == 2 and S.DanseMacabre:IsAvailable() then
+	if S.BlackPowder:IsCastable() and inRange10 >= 3 or not bp_used_for_danse and Player:BuffP(S.ShadowDanceBuff) and inRange10 == 2 and S.DanseMacabre:IsAvailable() then
 		return S.BlackPowder:Cast()
 	end
 	
-	if S.Eviscerate:IsReady(8) then
+	if S.Eviscerate:IsReady() and targetRange8 then
 		return S.Eviscerate:Cast()
 	end
-	
-	return nil
+	if UseItems() and RubimRH.CDsON() and targetRange8 and not Player:Buff(S.Stealth) and not Player:Buff(S.VanishBuff) then
+		return UseItems()
+    end
+
 end
 
 local function Stealth_CDS()
-	if S.Vanish:IsReady(8) and (not S.DanseMacabre:IsAvailable() or Cache.EnemiesCount[12] >= 3) and not shd_threshold and Player:ComboPointsDeficit() > 1 then
+	-- vanish,if=(combo_points.deficit>1|buff.shadow_blades.up&talent.invigorating_shadowdust)&!variable.shd_threshold&(cooldown.flagellation.remains>=60|!talent.flagellation|fight_remains<=(30*cooldown.vanish.charges))
+	-- &(cooldown.symbols_of_death.remains>3|!set_bonus.tier30_2pc)&(cooldown.secret_technique.remains>=10|!talent.secret_technique|cooldown.vanish.charges>=2&talent.invigorating_shadowdust&(buff.the_rotten.up|!talent.the_rotten)&!raid_event.adds.up)
+
+
+
+	if S.Vanish:IsReady() and targetRange8 and (Player:ComboPointsDeficit() > 1 or Player:Buff(S.ShadowBlades) and S.InvigoratingShadowdust:IsAvailable()) and not shd_threshold and (S.Flagellation:CooldownRemainsP()>=60 or not S.Flagellation:IsAvailable())
+ and (S.SymbolsofDeath:CooldownRemainsP()>3 or  tierequipped()==4) and (S.SecretTechnique:CooldownRemainsP()>=10 or not S.SecretTechnique:IsAvailable() or S.Vanish:Charges()>=2 and S.InvigoratingShadowdust:IsAvailable() and (Player:Buff(S.TheRottenBuff) or not S.TheRotten:IsAvailable()) ) then
 		return S.Vanish:Cast()
 	end
 	
-	if S.ShadowDance:IsReady(8) and Player:GCDRemains() < 0.5 and (shd_combo_points and (Player:BuffRemainsP(S.SymbolsofDeath) >= (2.2 - num(S.Flagellation:IsAvailable())) or shd_threshold) or S.ShadowDance:MaxCharges() == 2 and S.SecretTechnique:CooldownRemainsP() <= 9 and (Cache.EnemiesCount[12] <= 3 or S.DanseMacabre:IsAvailable()) or Target:DebuffP(S.Flagellation) or Cache.EnemiesCount[12] >= 4 and S.SymbolsofDeath:CooldownRemainsP() > 10) and rotten_threshold then
+	if S.ShadowDance:IsReady() and targetRange8 and Player:GCDRemains() < 0.5 and (shd_combo_points and (Player:BuffRemainsP(S.SymbolsofDeath) >= (2.2 - num(S.Flagellation:IsAvailable())) or shd_threshold) or S.ShadowDance:MaxCharges() == 2 and S.SecretTechnique:CooldownRemainsP() <= 9 and (inRange10 <= 3 or S.DanseMacabre:IsAvailable()) or Target:DebuffP(S.Flagellation) or inRange10 >= 4 and S.SymbolsofDeath:CooldownRemainsP() > 10) and rotten_threshold then
 		return S.ShadowDance:Cast()
 	end
 
-	return nil
 end
 
 local function Stealthed()
-	if S.Shadowstrike:IsReady(8) and Player:BuffP(S.VanishBuff) and Cache.EnemiesCount[12] < 7 then
+	if S.Shadowstrike:IsReady() and targetRange8 and Player:BuffP(S.VanishBuff) and inRange10 < 7 then
 		return S.Shadowstrike:Cast()
 	end
 
-	if S.ShurikenStorm:IsCastable() and gloomblade_condition and Player:BuffP(S.SilentStorm) and not Target:DebuffP(S.FindWeakness) and S.ImprovedShurikenStorm:IsAvailable() or Player:ComboPoints() <= 1 and not shuriken_storm_used_for_danse and Cache.EnemiesCount[12] == 2 and S.DanseMacabre:IsAvailable() then
+	if S.ShurikenStorm:IsCastable() and gloomblade_condition and Player:BuffP(S.SilentStorm) and not Target:DebuffP(S.FindWeakness) and S.ImprovedShurikenStorm:IsAvailable() or Player:ComboPoints() <= 1 and not shuriken_storm_used_for_danse and inRange10 == 2 and S.DanseMacabre:IsAvailable() then
 		return S.ShurikenStorm:Cast()
 	end
 
-	if S.Gloomblade:IsReady(8) and gloomblade_condition and (not gloomblade_used_for_danse or Cache.EnemiesCount[12] ~= 2) then
+	if S.Gloomblade:IsReady() and targetRange8 and gloomblade_condition and (not gloomblade_used_for_danse or inRange10 ~= 2) then
 		return S.Gloomblade:Cast()
 	end
 	
@@ -382,7 +530,7 @@ local function Stealthed()
 		return Finish()
 	end
 	
-	if Finish() and Cache.EnemiesCount[12] >= 4 - num(S.SealFate:IsAvailable()) and Player:ComboPoints() >= 4 then
+	if Finish() and inRange10 >= 4 - num(S.SealFate:IsAvailable()) and Player:ComboPoints() >= 4 then
 		return Finish()
 	end
 	
@@ -390,161 +538,106 @@ local function Stealthed()
 		return Finish()
 	end
 	
-	if S.ShurikenStorm:IsCastable() and Cache.EnemiesCount[12] >= 3 + num(Player:BuffP(S.TheRotton)) and (not Player:BuffP(S.PremeditationBuff) or Cache.EnemiesCount[12] >= 7) then
+	if S.ShurikenStorm:IsCastable() and inRange10 >= 3 + num(Player:BuffP(S.TheRottenBuff)) and (not Player:BuffP(S.PremeditationBuff) or inRange10 >= 7) then
 		return S.ShurikenStorm:Cast()
 	end
 
-	if S.Shadowstrike:IsReady(8) then
+	if S.Shadowstrike:IsReady() and targetRange8 then
 		return S.Shadowstrike:Cast()
 	end
-	
-	return nil
-end
 
-local function Stun()
-	local channeling = select(1,UnitChannelInfo('target'))
-	local casting = select(1, UnitCastingInfo('target'))
-
-    --Abilities that should be stunned
-    local stun_spells = {
-	'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
-	'Astral Whirlwind', --AA
-	'Sound Alarm', 'Eye Storm',
-	'Hypnosis',         --CoS
-	'Holy Radiance',  'Etch', --HoV
-	'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Ice Shield',
-	'Cinderbolt',       --RLP
-	'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
-	'Cry of Anguish',   --SMBG
-	'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
-	'Leg Sweep',        --TotJS
-	'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
-	'Null Stomp',       --AV
-	'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
-	'Storm Bolt',
-	'Desacrating Blow', --NO
-    }
-
-	for i = 1, #stun_spells do
-		if casting == stun_spells[i] or channeling == stun_spells[i] then
-			return true
-		elseif casting and Target:IsAPlayer() then
-			return true
-		end
-	end
-
-	return false
-end
-
-local function Blind()
-	local channeling = select(1,UnitChannelInfo('target'))
-	local casting = select(1, UnitCastingInfo('target'))
-
-    --Abilities that should be blinded
-    local blind_spells = {
-	'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
-	'Astral Whirlwind', --AA
-	'Sound Alarm', 'Eye Storm',
-	'Hypnosis',         --CoS
-	'Holy Radiance', 'Etch',          --HoV
-	'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield',
-	'Cinderbolt',       --RLP
-	'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
-	'Cry of Anguish',   --SMBG
-	'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
-	'Leg Sweep',        --TotJS
-	'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
-	'Null Stomp',       --AV
-	'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
-	'Storm Bolt',
-	'Desacrating Blow', --NO
-    } 
-    
-    for i = 1, #blind_spells do
-		if casting == blind_spells[i] or channeling == blind_spells[i] then
-			return true
-		elseif casting and Target:IsAPlayer() then
-			return true
-		end
-    end
-    
-	return false
-end
-
-local function Kick()
-	local channeling = select(1,UnitChannelInfo('target'))
-	local casting = select(1, UnitCastingInfo('target'))
-	
-    --Abilities that should be kicked
-    local kick_spells = {
-	'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
-	'Healing Touch',    --AA
-	'Suppress',
-	'Drifting Embers', 'Bewitch', --CoS
-	'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
-	'Surge',            --HoV
-	'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
-	'Cinderbolt',       --RLP
-	'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
-	'Plague Spit',      --SMBG
-	'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
-	'Defiling Mist',    --TotJS
-	'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
-	'Illusionary Bolt', --AV
-	'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
-	'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
-	'Desacrating Blow', --NO
-    }
-
-	for i = 1, #kick_spells do
-		if casting == kick_spells[i] or channeling == kick_spells[i] then
-			return true
-		elseif casting and Target:IsAPlayer() then
-			return true
-		end
-	end
-
-	return false
 end
 
 
 
 local function APL()
-    -- kickprio()
+	inRange8 = RangeCount("Eviscerate")
+	inRange10 = RangeCount("Pick Pocket")
+	inRange20 = RangeCount("Blind")
+	inRange25 = RangeCount("Shadowstep")
+	inRange30 = RangeCount("Shuriken Toss")
+	targetRange8 = TargetInRange("Eviscerate")
+	targetRange10 = TargetInRange("Pick Pocket")
+	targetRange20 = TargetInRange("Blind")
+	targetRange25 = TargetInRange("Shadowstep")
+	targetRange30 = TargetInRange("Shuriken Toss")
+	
+	-- print(inRange30)
+	-- kickprio()
     -- stunprio()
     -- blindprio()
-    TargetTTD()
     mitigate()
 target_is_dummy()
 TargetTTD()
-HL.GetEnemies(5);
-HL.GetEnemies(8);
-HL.GetEnemies(10);
-HL.GetEnemies(12);
-HL.GetEnemies(20);
-HL.GetEnemies(25);
-HL.GetEnemies(30);
-HL.GetEnemies(40);
 
 
 
-IsTanking = (Player:IsTankingAoE(8) or Player:IsTanking(Target))
+--------------------------------------------------------------------------------------------------------------------------------------------
+--variables----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if true then
+	level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
+	
+	inInstance, instanceType = IsInInstance()
 
-local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-highkey = 10
+	local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
-castchannelTime = math.random(275, 500) / 1000
-local startTimeMS = select(4, UnitCastingInfo('target')) or 0
-local currentTimeMS = GetTime() * 1000
-local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
-castTime = elapsedTimeca / 1000
-local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
-local currentTimeMS = GetTime() * 1000
-local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
-channelTime = elapsedTimech / 1000
+	local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+   
+	local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
+	
+	channelTime = elapsedTimech / 1000
 
-HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
--- /console cursorsizepreferred 0
+	castTime = elapsedTimeca / 1000
+
+    castchannelTime = math.random(275, 500) / 1000
+
+	isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
+
+	HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
+	rotten_condition = not Player:BuffP(S.PremeditationBuff) and inRange10 == 1 or not S.TheRotten:IsAvailable() or inRange10 > 1
+	
+	snd_condition = Player:BuffP(S.SliceandDice) or inRange10 >= CPMaxSpend()
+	
+	stealthed_all = Player:BuffP(S.VanishBuff) or Player:BuffP(S.ShadowDanceBuff) or Player:BuffP(S.SubterfugeBuff)
+	
+	secret_condition = (RubimRH.CDsON() or Player:BuffP(S.ShadowDanceBuff)) and (Player:BuffP(S.ShadowDanceBuff) and (Player:BuffStack(S.DanseMacabreBuff) >= 3 or not S.DanseMacabre:IsAvailable()) and (not Player:BuffP(S.PremeditationBuff) or inRange10 ~= 2))
+
+	premed_snd_condition = S.Premeditation:IsAvailable() and inRange10 < 5
+	
+	skip_rupture = TargetTTD() and TargetTTD() < 12 or not elite or UnitName('target') == 'Spiteful Shade' or (Player:BuffP(S.ThistleTea) and inRange10 == 1 or Player:BuffP(S.ShadowDanceBuff) and (inRange10 == 1 or (Target:DebuffP(S.Rupture) and inRange10 >= 2) or rupture_used_for_danse or (Player:BuffRemainsP(S.ShadowDanceBuff) < Player:GCD() + 2 and S.SecretTechnique:CooldownUp()) or Player:BuffRemainsP(S.ShadowDanceBuff) <= Player:GCD() * 1.15))
+
+	bp_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.BlackPowder:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
+
+	gloomblade_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.Gloomblade:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
+	
+	rupture_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.Rupture:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
+	
+	shuriken_storm_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.ShurikenStorm:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
+	--shd_threshold = S.ShadowDance:ChargesFractional() >= 0.75 + num(S.ShadowDance:MaxCharges() == 2) <- Not taking talent, so left out
+	shd_threshold = S.ShadowDance:ChargesFractional() and S.ShadowDance:ChargesFractional() >= 0.75 + num(S.ShadowDance:MaxCharges() == 2)
+	
+	rotten_threshold = not Player:BuffP(S.TheRottenBuff) or inRange10 > 1
+
+	--Use stealth cooldowns on any combo point on 3 or 4 targets
+	if inRange10 == (4 - num(S.SealFate:IsAvailable())) then
+		shd_combo_points = true
+	--Use stealth cooldowns with high combo points when playing shuriken tornado or with high target counts
+	elseif inRange10 > (4 - 2 * num(S.ShurikenTornado:IsAvailable())) then
+		shd_combo_points = Player:ComboPointsDeficit() <= 1
+	else
+	--CP thresholds for entering Shadow Dance Default to start dance with 0 or 1 combo point
+		shd_combo_points = Player:ComboPoints() <= 1
+	end
+	
+	gloomblade_condition = Player:BuffStack(S.DanseMacabreBuff) < 5 and (Player:ComboPointsDeficit() == 2 or Player:ComboPointsDeficit() == 3) and (Player:BuffP(S.PremeditationBuff) or Player:ComboPoints() < 7) and (inRange10 <= 8 or S.LingeringShadow:IsAvailable())
+	
+	-- variable,name=stealth_threshold,value=20+talent.vigor.rank*25+talent.thistle_tea*20+talent.shadowcraft*20
+	stealth_threshold = 20 + num(S.Vigor:IsAvailable()) * 25 + num(S.ThistleTea:IsAvailable()) * 20 + num(S.Shadowcraft:IsAvailable()) * 20 
+	
+	tolerance = select(4, GetNetStats())/1000 + 0.3
+end
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
@@ -557,22 +650,6 @@ end
 HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
 
-
-local trinket1 = GetInventoryItemID("player", 13)
-local trinket2 = GetInventoryItemID("player", 14)
-local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
-
-
-local healthstone_usabale,_ = IsUsableSpell(6262);
-
-local start, duration, enabled = GetSpellCooldown(6262);
-local healthstone_cooldown = duration - (GetTime() - start)
-
-if healthstone_cooldown < 0 then 
-	healthstone_cooldown = 0
-end
-
 if UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "elite"
 or UnitClassification("target") == "rare" or target_is_dummy() or Target:IsAPlayer() then
 	elite = true
@@ -580,278 +657,142 @@ else
 	elite = false
 end
 
--- local start_time_cast_ms = select(4, UnitCastingInfo('target')) or 0
--- local end_time_cast_ms = select(5, UnitCastingInfo('target')) or 0
--- local current_time_ms = GetTime() * 1000
--- local elapsed_time_cast_ca = (start_time_cast_ms > 0) and (current_time_ms - start_time_cast_ms) or 0
--- local cast_time = elapsed_time_cast_ca / 1000
--- local cast_time_remaining = ((end_time_cast_ms - start_time_cast_ms) / 1000) - cast_time > 0 and ((end_time_cast_ms - start_time_cast_ms) / 1000) - cast_time or 9999
--- local start_time_channel_ms = select(4, UnitChannelInfo('target')) or 0
--- local end_time_channel_ms = select(5, UnitChannelInfo('target')) or 0
--- local elapsed_time_channel_ch = (start_time_channel_ms > 0) and (current_time_ms - start_time_channel_ms) or 0
--- local channel_time = elapsed_time_channel_ch / 1000
--- local channel_time_remaining = ((end_time_channel_ms - start_time_channel_ms) / 1000) - channel_time > 0 and ((end_time_channel_ms - start_time_channel_ms) / 1000) - channel_time or 9999
 
-if true then
-	rotten_condition = not Player:BuffP(S.PremeditationBuff) and Cache.EnemiesCount[12] == 1 or not S.TheRotton:IsAvailable() or Cache.EnemiesCount[12] > 1
-	
-	snd_condition = Player:BuffP(S.SliceandDice) or Cache.EnemiesCount[12] >= CPMaxSpend()
-	
-	stealthed_all = Player:BuffP(S.VanishBuff) or Player:BuffP(S.ShadowDanceBuff) or Player:BuffP(S.SubterfugeBuff)
-	
-	secret_condition = (RubimRH.CDsON() or Player:BuffP(S.ShadowDanceBuff)) and (Player:BuffP(S.ShadowDanceBuff) and (Player:BuffStack(S.DanseMacabreBuff) >= 3 or not S.DanseMacabre:IsAvailable()) and (not Player:BuffP(S.PremeditationBuff) or Cache.EnemiesCount[12] ~= 2))
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+--Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting("player") == false or Player:CanAttack(Target)) then
+	-- if S.BladeFlurry:IsReady() and S.UnderhandedUpperHand:IsAvailable() and not Player:Buff(S.BladeFlurry) and ((S.AdrenalineRush:IsReady() and inRange30 >= 1) or Player:Buff(S.AdrenalineRush)) and (IsResting("player") == false or Player:CanAttack(Target)) and not AuraUtil.FindAuraByName("Stealth", "player") then
+		-- return S.BladeFlurry:Cast()
+	-- end
 
-	premed_snd_condition = S.Premeditation:IsAvailable() and Cache.EnemiesCount[12] < 5
-	
-	skip_rupture = TargetTTD() and TargetTTD() < 12 or not elite or UnitName('target') == 'Spiteful Shade' or (Player:BuffP(S.ThistleTea) and Cache.EnemiesCount[12] == 1 or Player:BuffP(S.ShadowDanceBuff) and (Cache.EnemiesCount[12] == 1 or (Target:DebuffP(S.Rupture) and Cache.EnemiesCount[12] >= 2) or rupture_used_for_danse or (Player:BuffRemainsP(S.ShadowDanceBuff) < Player:GCD() + 2 and S.SecretTechnique:CooldownUp()) or Player:BuffRemainsP(S.ShadowDanceBuff) <= Player:GCD() * 1.15))
+	if S.Stealth:IsUsableP() and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") and (IsResting("player") == false or Player:CanAttack(Target)) then
+		return S.Stealth:Cast()
+	end
 
-	bp_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.BlackPowder:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
 
-	gloomblade_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.Gloomblade:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
-	
-	rupture_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.Rupture:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
-	
-	shuriken_storm_used_for_danse = Player:BuffP(S.ShadowDanceBuff) and S.ShurikenStorm:TimeSinceLastCast() < S.ShadowDance:TimeSinceLastCast()
-	--shd_threshold = S.ShadowDance:ChargesFractional() >= 0.75 + num(S.ShadowDance:MaxCharges() == 2) <- Not taking talent, so left out
-	shd_threshold = S.ShadowDance:ChargesFractional() and S.ShadowDance:ChargesFractional() >= 0.75 + num(S.ShadowDance:MaxCharges() == 2)
-	
-	rotten_threshold = not Player:BuffP(S.TheRotton) or Cache.EnemiesCount[12] > 1
 
-	--Use stealth cooldowns on any combo point on 3 or 4 targets
-	if Cache.EnemiesCount[12] == (4 - num(S.SealFate:IsAvailable())) then
-		shd_combo_points = true
-	--Use stealth cooldowns with high combo points when playing shuriken tornado or with high target counts
-	elseif Cache.EnemiesCount[12] > (4 - 2 * num(S.ShurikenTornado:IsAvailable())) then
-		shd_combo_points = Player:ComboPointsDeficit() <= 1
-	else
-	--CP thresholds for entering Shadow Dance Default to start dance with 0 or 1 combo point
-		shd_combo_points = Player:ComboPoints() <= 1
+	if inRange30 >= 1 and (not targetRange8 or not Player:CanAttack(Target)) and Player:IsMoving() and (IsInInstance() or Player:CanAttack(Target)) then
+	
+
+		if S.SliceandDice:IsCastable() and finish_condition and Player:BuffRemains(S.SliceandDice) < 8 then
+			return S.SliceandDice:Cast()
+		end
+	
+
+	end
+
+	if S.CrimsonVial:IsCastable() and inRange20 == 0 and Player:HealthPercentage() < 75 and Player:EnergyDeficit() == 0 then
+		return S.CrimsonVial:Cast()
 	end
 	
-	gloomblade_condition = Player:BuffStack(S.DanseMacabreBuff) < 5 and (Player:ComboPointsDeficit() == 2 or Player:ComboPointsDeficit() == 3) and (Player:BuffP(S.PremeditationBuff) or Player:ComboPoints() < 7) and (Cache.EnemiesCount[12] <= 8 or S.LingeringShadow:IsAvailable())
+	if not Player:IsMoving() then 
+		if S.InstantPoison:IsCastable() and not Player:Buff(S.WoundPoison) and Player:BuffRemains(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) then
+			return S.InstantPoison:Cast()
+		end
 
-	stealth_threshold = 25 + num(S.Vigor:IsAvailable()) * 20 + num(S.MasterofShadows:IsAvailable()) * 20 + num(S.ShadowFocus:IsAvailable()) * 25 + num(S.Alacrity:IsAvailable()) * 20 + 25 * (num(Cache.EnemiesCount[12] >= 4))
-	
-	tolerance = select(4, GetNetStats())/1000 + 0.3
-end
---------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------Out of Combat---------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
-if not Player:AffectingCombat() and not Player:BuffP(S.VanishBuff) then
-    if S.Stealth:IsCastable() and not Player:BuffP(S.ShadowDanceBuff) and not Player:Buff(S.Stealth) and (IsResting("player") == false or Player:CanAttack(Target)) then
-        return S.Stealth:Cast()
-    end
+		if S.CripplingPoison:IsCastable() and not S.NumbingPoison:IsAvailable() and not S.AtrophicPoison:IsAvailable() and not Player:Buff(S.NumbingPoison) and not Player:Buff(S.AtrophicPoison) and Player:BuffRemains(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) then
+			return S.CripplingPoison:Cast()
+		end
 
-    if S.CrimsonVial:IsCastable() and Cache.EnemiesCount[25] == 0 and Player:HealthPercentage() < 100 and Player:EnergyDeficit() == 0 then
-        return S.CrimsonVial:Cast()
-    end
-
-    if S.InstantPoison:IsCastable() and not Player:Buff(S.WoundPoison) and Player:BuffRemainsP(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) and not Player:IsMoving() then
-        return S.InstantPoison:Cast()
-    end
-
-    if S.CripplingPoison:IsCastable() and ((not S.NumbingPoison:IsAvailable() and not S.AtrophicPoison:IsAvailable()) or Player:BuffP(S.CripplingPoison)) and not Player:BuffP(S.NumbingPoison) and not Player:BuffP(S.AtrophicPoison) and Player:BuffRemainsP(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) and not Player:IsMoving() then
-        return S.CripplingPoison:Cast()
-    end
-	
-	if not Player:BuffP(S.CripplingPoison) then
-		if S.AtrophicPoison:IsCastable() and Player:BuffRemainsP(S.AtrophicPoison) < 300 and not Player:IsCasting(S.AtrophicPoison) and not Player:IsMoving() then
+		if S.AtrophicPoison:IsCastable() and Player:BuffRemains(S.AtrophicPoison) < 300 and not Player:IsCasting(S.AtrophicPoison) then
 			return S.AtrophicPoison:Cast()
 		end
-		
-		if S.NumbingPoison:IsCastable() and Player:BuffRemainsP(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) and not Player:IsMoving() then
+
+		if S.NumbingPoison:IsCastable() and Player:BuffRemains(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) then
 			return S.NumbingPoison:Cast()
 		end
 	end
-
-    if IsResting("player") == false 
-	and ((Player:ComboPoints() == 1 and (Player:BuffRemainsP(S.SliceandDice) < 9 or not Player:BuffP(S.SliceandDice)))
-	or (Player:ComboPoints() == 2 and (Player:BuffRemainsP(S.SliceandDice) < 14 or not Player:BuffP(S.SliceandDice)))
-	or (Player:ComboPoints() == 3 and (Player:BuffRemainsP(S.SliceandDice) < 18 or not Player:BuffP(S.SliceandDice)))
-	or (Player:ComboPoints() == 4 and (Player:BuffRemainsP(S.SliceandDice) < 23 or not Player:BuffP(S.SliceandDice)))
-	or (Player:ComboPoints() == 5 and (Player:BuffRemainsP(S.SliceandDice) < 27 or not Player:BuffP(S.SliceandDice)))
-	or (Player:ComboPoints() == 6 and (Player:BuffRemainsP(S.SliceandDice) < 32 or not Player:BuffP(S.SliceandDice)))
-	or (Player:ComboPoints() == 7 and (Player:BuffRemainsP(S.SliceandDice) < 36 or not Player:BuffP(S.SliceandDice)))) then
-		if S.SliceandDice:IsCastable() and Cache.EnemiesCount[40] >= 1 and Cache.EnemiesCount[12] == 0 then
-            return S.SliceandDice:Cast()
-        end
-    end
 end
 
-if AuraUtil.FindAuraByName("Stealth", "player") and not Player:BuffP(S.VanishBuff) then
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
-end
---------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------Spell Queue-----------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
--- if not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or Player:BuffP(S.VanishBuff) then
---     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
--- end
-if not RubimRH.queuedSpell[1]:CooldownUp() or not RubimRH.queuedSpell[1]:IsAvailable() and S.lustAT:ID() ~= RubimRH.queuedSpell[1]:ID() then
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+--Spell Queue-------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+if (not RubimRH.queuedSpell[1]:CooldownUp() or not RubimRH.queuedSpell[1]:IsAvailable()) and S.lustAT:ID() ~= RubimRH.queuedSpell[1]:ID() then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-
-if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and (Player:Debuff(S.lust1) or Player:Debuff(S.lust2) or Player:Debuff(S.lust3) or Player:Debuff(S.lust4) or Player:Debuff(S.lust5)) then
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and (Player:DebuffP(S.lust1) or Player:DebuffP(S.lust2) or Player:DebuffP(S.lust3) or Player:DebuffP(S.lust4) or Player:DebuffP(S.lust5)) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and IsUsableItem(193470) and GetItemCooldown(193470) == 0 then
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:DebuffP(S.lust1) and not Player:DebuffP(S.lust2) and not Player:DebuffP(S.lust3) and not Player:DebuffP(S.lust4) and not Player:DebuffP(S.lust5) and IsUsableItem(193470) and GetItemCooldown(193470) == 0 then
 	return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
 end
 
-
-if S.ShurikenToss:ID() == RubimRH.queuedSpell[1]:ID() and (not Target:IsInRange(30) or Player:PrevGCD(1, S.ShurikenToss)) then
-    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+if S.Feint:ID() == RubimRH.queuedSpell[1]:ID() and Player:Buff(S.Feint) then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
--- if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:Debuff(S.CheapShot) or Target:Debuff(S.KidneyShot)
---  or Target:Debuff(S.Blind) or Target:Debuff(S.Gouge) or Player:ComboPoints() == 0 or Player:Energy() < 15) then
---     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
--- end
-
-if S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:Debuff(S.CheapShot) or Target:Debuff(S.KidneyShot) or Target:Debuff(S.Blind)) then
-    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+if S.Feint:ID() == RubimRH.queuedSpell[1]:ID() and Player:Buff(S.Feint) then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
 
-if RubimRH.QueuedSpell():IsReadyQueue()
---  and S.ShadowDance:ID() ~= RubimRH.queuedSpell[1]:ID() 
- then
+if S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffP(S.CheapShot) or Target:DebuffP(S.KidneyShot) or Target:DebuffP(S.Blind) or Target:DebuffP(S.Gouge)) then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+
+if S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffP(S.CheapShot) or Target:DebuffP(S.KidneyShot) or Target:DebuffP(S.Blind)) then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+
+if (inRange30==0 or not Player:AffectingCombat()) then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+
+if RubimRH.QueuedSpell():IsReadyQueue() then
 	return RubimRH.QueuedSpell():Cast()
 end
-
---------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
--- if RubimRH.InterruptsON() and Player:AffectingCombat() or Player:BuffP(S.VanishBuff) then
--- 	--if ((cast_time > 0 and cast_time_remaining > tolerance) or (channel_time > 0 and channel_time_remaining > tolerance)) and ((cast_time > 0 and cast_time_remaining > TargetTTD()) or (channel_time > 0 and channel_time_remaining > TargetTTD())) then
--- 	if (cast_time > 0 and cast_time_remaining > tolerance) or (channel_time > 0 and channel_time_remaining > tolerance) then	
--- 		if S.Kick:IsReady(8) and Kick() and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
--- 			return S.Kick:Cast()
--- 		end
-
--- 		if not Player:BuffP(S.ShadowDanceBuff) or ((cast_time_remaining < Player:BuffRemainsP(S.ShadowDanceBuff) or channel_time_remaining < Player:BuffRemainsP(S.ShadowDanceBuff)) and ((not S.SecretTechnique:CooldownUp() or not S.SecretTechnique:IsAvailable()) or (Player:BuffRemainsP(S.ShadowDanceBuff) > Player:GCD() + 2 and (cast_time_remaining < Player:GCD() + tolerance or channel_time_remaining < Player:GCD() + tolerance)))) then
--- 			if S.KidneyShot:IsReady(8) and Stun() and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
--- 				return S.KidneyShot:Cast()
--- 			end
-
--- 			if S.Blind:IsReady(15) and Blind() and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
--- 				return S.Blind:Cast()
--- 			end
-
--- 			if Stun() and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
--- 				if S.CheapShot:IsReady(8) and (Player:BuffP(S.ShadowDanceBuff) or Player:BuffP(S.VanishBuff)) then
--- 					return S.CheapShot:Cast()
--- 				elseif S.Vanish:IsReady(8) and not Player:BuffP(S.ShadowDanceBuff) and not Player:BuffP(S.VanishBuff) and Player:Energy() >= 40 and Player:GCDRemains() < 0.5 then
--- 					return S.Vanish:Cast()
--- 				end
--- 			end
--- 		end
--- 	end
-	
--- 	if not Player:BuffP(S.ShadowDanceBuff) or not S.SecretTechnique:CooldownUp() or not S.SecretTechnique:IsAvailable() then
--- 		if S.Shiv:IsReady(8) and select(4, UnitAura("target", 1)) == "" then
--- 			return S.Shiv:Cast()
--- 		end
--- 	end
-	
--- 	-- if S.Kick:IsReady(8) and select(8, UnitCastingInfo("target")) == false and Target:CastPercentage() > math.random(27, 90) and RubimRH.InterruptsON() and Player:AffectingCombat() then
--- 		-- return S.Kick:Cast()
--- 	-- end
--- end
-
-
-if not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) then
-	if (castTime > castchannelTime or channelTime > castchannelTime) and
-		RubimRH.InterruptsON() and S.Kick:IsReady(8) and Player:AffectingCombat() and select(8, UnitCastingInfo("target")) == false
-	-- and kickprio()
-	then
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --Interrupts/Tranqs/Dispels-----------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) then
+	--Kick
+	if S.Kick:IsReady() and targetRange8 and (castTime > castchannelTime or channelTime > castchannelTime) and Player:AffectingCombat() and select(8, UnitCastingInfo("target")) == false then
 		return S.Kick:Cast()
 	end
 
-
-	--Stun
-
-	-- if (castTime>castchannelTime or channelTime>castchannelTime)
-	-- and RubimRH.InterruptsON() and S.KidneyShot:IsReady(8) and Player:AffectingCombat() and stunprio() then
-	-- return S.KidneyShot:Cast()
+	-- --Stun
+	-- if S.KidneyShot:IsReady() and targetRange8 and (castTime>castchannelTime or channelTime>castchannelTime) and RubimRH.InterruptsON() and Player:AffectingCombat() and stunprio() then
+		-- return S.KidneyShot:Cast()
 	-- end
 
-
-	--Blind
-
-	-- if (castTime>castchannelTime or channelTime>castchannelTime)
-	-- and RubimRH.InterruptsON() and S.Blind:IsReady(15) and Player:AffectingCombat() and blindprio() then
-	-- return S.Blind:Cast()
-	-- end
-
-
-	local isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
-
-
-	if (isEnraged and RubimRH.InterruptsON() and S.Shiv:IsCastable(8) and Player:AffectingCombat() and TargetTTD() > 4) then
+	--Shiv
+	if S.Shiv:IsReady() and targetRange8 and isEnraged and Player:AffectingCombat() and TargetTTD() > 4 then
 		return S.Shiv:Cast()
 	end
 end
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+-- --Defensives--------------------------------------------------------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------------------------------------------------------------------------------
+if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
+ 
+    if S.Feint:IsReady() and not Player:Buff(S.Feint) and inRange30>=1 and mitigate() then
+        return S.Feint:Cast()
+    end
 
---------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------Cooldowns-------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
--- if Player:HealthPercentage() <= 45 and Player:AffectingCombat() and healthstone_usabale and healthstone_cooldown == 0 and GetItemCount(5512) >= 1 then
--- 	return S.Healthstonez:Cast()
--- end
-
-        --        --healing pots
-        if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 and HPpercentloss > 0 then
+    if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") and HPpercentloss > 0  then
+        if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 then
             return I.HPIcon:Cast()
         end
+        if S.Evasion:IsCastable() and inRange10>=1 and Player:HealthPercentage()<45 then
+            return S.Evasion:Cast()
+            end
+            if S.CloakofShadows:IsCastable() and Player:HealthPercentage()<15 and HPpercentloss>25 then
+                return S.CloakofShadows:Cast()
+                end 
+    end
 
+end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Rotation--------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
 	if not IsCurrentSpell(6603) and not Player:Buff(S.VanishBuff)
-		and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and Target:IsInRange(20) then
+		and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange20 then
 		return S.autoattack:Cast()
 	end
-
-
-
-	--        --healing pots
-	if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 and HPpercentloss > 0 then
-		return I.HPIcon:Cast()
-	end
-
-
-
-
-	--auto feint
-	if S.Feint:IsCastable() and mitigate() and Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
-		return S.Feint:Cast()
-	end
-
-
-	if S.CrimsonVial:IsCastable() and (Player:HealthPercentage() <= 30 or HPpercentloss > 10 and Player:HealthPercentage() < 40)
-		and Player:AffectingCombat() then
-		return S.CrimsonVial:Cast()
-	end
-
-	if S.Evasion:IsCastable() and (Cache.EnemiesCount[10] >= 1 or Target:IsInRange(10))
-		and IsTanking
-		and (Player:HealthPercentage() < 55
-			or HPpercentloss > 10 and Player:HealthPercentage() < 65)
-	then
-		return S.Evasion:Cast()
-	end
-
-
-	if RubimRH.CDsON() and Target:IsInRange(5) and not Target:IsDeadOrGhost() and Player:CanAttack(Target)
-		and Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player") then
-		local ShouldReturn = UseItems();
-		if ShouldReturn then return ShouldReturn; end
-	end
-
 
 
 
@@ -861,7 +802,7 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
 		return CDS()
 	end
 	
-    if S.SliceandDice:IsCastable() and Cache.EnemiesCount[12] < CPMaxSpend() and Player:BuffRemainsP(S.SliceandDice) < Player:GCD() and Player:ComboPoints() >= 4 then
+    if S.SliceandDice:IsCastable() and inRange10 < CPMaxSpend() and Player:BuffRemainsP(S.SliceandDice) < Player:GCD() and Player:ComboPoints() >= 4 then
         return S.SliceandDice:Cast()
     end
 	
@@ -877,11 +818,11 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
 		return Finish()
 	end
 
-	if Finish() and Player:ComboPointsDeficit() <= 1 + num(Player:BuffP(S.TheRotton)) then
+	if Finish() and Player:ComboPointsDeficit() <= 1 + num(Player:BuffP(S.TheRottenBuff)) then
 		return Finish()
 	end
 
-	if Cache.EnemiesCount[12] >= (4 - num(S.SealFate:IsAvailable())) and Player:ComboPoints() >= 4 then
+	if Finish() and inRange10 >= 4 and Player:ComboPoints() >= 4 then
 		return Finish()
 	end
 

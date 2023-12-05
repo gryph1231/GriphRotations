@@ -140,17 +140,22 @@ end
 function Spell:IsUsableP(Offset)
   local CostTable = self:CostTable()
   local Usable = true
-  if #CostTable > 0 then
-    local i = 1
-    while ( Usable == true ) and ( i <= #CostTable ) do
-        local CostInfo = CostTable[i]
-        local Type = CostInfo.type
-        if ( Player.PredictedResourceMap[Type]() < ( ( (self.CustomCost and self.CustomCost[Type]) and self.CustomCost[Type]() or CostInfo.minCost ) + ( Offset and Offset or 0 ) ) ) then Usable = false end
-        i = i + 1
-    end
+
+  if CostTable and #CostTable > 0 then
+      local i = 1
+      while (Usable == true) and (i <= #CostTable) do
+          local CostInfo = CostTable[i]
+          local Type = CostInfo.type
+          if (Player.PredictedResourceMap[Type]() < (((self.CustomCost and self.CustomCost[Type]) and self.CustomCost[Type]() or CostInfo.minCost) + (Offset or 0))) then
+              Usable = false
+          end
+          i = i + 1
+      end
   end
+
   return Usable
 end
+
 
 -- Only checks IsUsableP against the primary resource for pooling
 function Spell:IsUsablePPool(Offset)
