@@ -87,7 +87,7 @@ RubimRH.Spell[66] = {
     DevotionAura                = Spell(465),
     RetributionAura             = Spell(183435),
     -- Buffs
-
+    BlessingofSpellWarding = Spell(204018),
     Intercession                = Spell(391054),
     intercession                = Spell(105809),
     trinket                     = Spell(59547), -- gift of narru
@@ -395,12 +395,8 @@ local function combatmobs40()
 end
 
 local function APL()
-    mitigate()
-    kickprio()
-    stunprio()
-    blindprio()
-    freedom()
-    combatmobs40()
+  
+
     inRange8 = RangeCount("Rebuke")
     inRange10 = RangeCount("Hammer of Justice")
     inRange40 = RangeCount("Flash of Light")
@@ -698,6 +694,10 @@ end
         end
     end
 
+    if S.BlessingofSpellWarding:IsReady() and Player:HealthPercentage()<30 and select(1, UnitCastingInfo('target')) == 'Nightmare Breath' then
+        return S.BlessingofSpellWarding:Cast()
+    end
+
     -- defensives for bosses
     if (mitigate() and level > highkey) then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable()
@@ -707,6 +707,7 @@ end
         then
             return S.DivineShield:Cast()
         end
+
 
 
         if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 

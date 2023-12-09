@@ -437,6 +437,7 @@ CleanseToxins = Spell(213644),
     tempestofthelightbringer = Spell(383396),
 
     DivineSteedBuff          = Spell(221883),
+    BlessingofSpellWarding = Spell(204018),
     BlessingofProtection     = Spell(1022),
     Forbearance              = Spell(25771),
     -- Racials
