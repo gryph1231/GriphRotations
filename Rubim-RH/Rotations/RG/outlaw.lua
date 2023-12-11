@@ -319,7 +319,7 @@ local function stunprio()
         "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
         'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
         'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-        'Unnerving Screech','Curse of Isolation','Tormenting Eye',--DHT
+        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
         'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
         'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
@@ -344,7 +344,7 @@ local function kickprio()
         "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech','Noxious Stench',   -- AD
         'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
         'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-        'Unnerving Screech','Curse of Isolation','Tormenting Eye',--DHT
+        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
         'Choking Vines','Enraged Growth','Healing Waters','Toxic Bloom','Revitalize','Pyroblast','Arcane Blast','Frostbolt',--Everbloom
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
         'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
@@ -369,7 +369,7 @@ local function kickprio()
             "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
             'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
             'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-            'Unnerving Screech','Curse of Isolation','Tormenting Eye',--DHT
+            'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
             'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
             'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
             'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
@@ -541,14 +541,16 @@ local function stealth()
     end
 
 	--between_the_eyes,if=variable.finish_condition&talent.crackshot
-    if S.BetweentheEyes:IsReady() and (Player:BuffRemains(S.ShadowDanceBuff) > Player:GCDRemains()+tolerance or Player:BuffRemains(S.SubterfugeBuff) > Player:GCDRemains()+tolerance  or Player:Buff(S.VanishBuff))  and targetRange30 and finish_condition and S.Crackshot:IsAvailable() then
+    if S.BetweentheEyes:IsReady() and (Player:BuffRemains(S.ShadowDanceBuff) > Player:GCDRemains() or Player:BuffRemains(S.SubterfugeBuff) > Player:GCDRemains() or Player:Buff(S.VanishBuff))  and targetRange30 and finish_condition and S.Crackshot:IsAvailable() then
         return S.BetweentheEyes:Cast()
     end
 
     --dispatch,if=variable.finish_condition
-    if S.Dispatch:IsReady() and targetRange8 and finish_condition and not stealthall then
-        return S.Dispatch:Cast()
-    end
+	if S.Dispatch:IsReady() and targetRange8 and finish_condition 
+    and (S.ShadowDance:CooldownRemains()>Player:GCD() 
+    and S.Vanish:CooldownRemains()>Player:GCD() or not RubimRH.CDsON() or S.BetweentheEyes:CooldownRemains()>Player:GCD()) then
+		return S.Dispatch:Cast()    
+	end
 	--pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
     if S.PistolShot:IsReady() and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange30 and S.Crackshot:IsAvailable() 
     and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
@@ -713,7 +715,7 @@ local function finishers()
 	end
 
 	--between_the_eyes,if=talent.crackshot&(cooldown.vanish.remains>45&cooldown.shadow_dance.remains>15)
-	if S.BetweentheEyes:IsReady() and targetRange30 and S.Crackshot:IsAvailable() and ((Player:BuffRemains(S.ShadowDanceBuff) > Player:GCDRemains()+tolerance  or Player:BuffRemains(S.SubterfugeBuff) > Player:GCDRemains() +tolerance  or Player:Buff(S.VanishBuff))  or S.Vanish:CooldownRemains() > 45 and S.ShadowDance:CooldownRemains() > 15) then
+	if S.BetweentheEyes:IsReady() and targetRange30 and S.Crackshot:IsAvailable() and ((Player:BuffRemains(S.ShadowDanceBuff) > Player:GCDRemains() or Player:BuffRemains(S.SubterfugeBuff) > Player:GCDRemains() or Player:Buff(S.VanishBuff))  or S.Vanish:CooldownRemains() > 45 and S.ShadowDance:CooldownRemains() > 15) then
 		return S.BetweentheEyes:Cast()
 	end
 
@@ -733,11 +735,10 @@ local function finishers()
 	end
    
     -- dispatch
-	if S.Dispatch:IsReady() and targetRange8 and not Player:Buff(S.VanishBuff) 
-    and (Player:Buff(S.ShadowDanceBuff) and Player:BuffRemains(S.ShadowDanceBuff)<Player:GCDRemains() - tolerance 
-    or Player:Buff(S.SubterfugeBuff) and Player:BuffRemains(S.SubterfugeBuff) < Player:GCDRemains() - tolerance or 
-    not Player:Buff(S.SubterfugeBuff) and not Player:Buff(S.ShadowDanceBuff) or not RubimRH.CDsON() or Player:IsTanking(Target)) then
-		return S.Dispatch:Cast()
+	if S.Dispatch:IsReady() and targetRange8 and finish_condition 
+    and (S.ShadowDance:CooldownRemains()>Player:GCD() 
+    and S.Vanish:CooldownRemains()>Player:GCD() or not RubimRH.CDsON() or S.BetweentheEyes:CooldownRemains()>Player:GCD()) then
+		return S.Dispatch:Cast()    
 	end
 
 	return nil
@@ -911,7 +912,8 @@ if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting
         return S.BladeFlurry:Cast()
     end
 
-	if S.Stealth:IsUsableP() and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") and (IsResting("player") == false or Player:CanAttack(Target)) then
+	if S.Stealth:IsUsableP() and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") 
+    and (IsResting("player") == false or Player:CanAttack(Target)) then
 		return S.Stealth:Cast()
 	end
 
@@ -1037,7 +1039,7 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
         if I.HPpotID:IsReady() and Player:HealthPercentage() <= 35 then
             return I.HPIcon:Cast()
         end
-        if S.Evasion:IsCastable() and  (Player:Debuff(S.shadetarget) and Player:HealthPercentage()<75 or inRange10>=1 and Player:HealthPercentage()<45) then
+        if S.Evasion:IsCastable() and (Player:Debuff(S.shadetarget) and Player:HealthPercentage()<75 or inRange10>=1 and Player:HealthPercentage()<45) then
             return S.Evasion:Cast()
             end
             if S.CloakofShadows:IsCastable() and Player:HealthPercentage()<15 and HPpercentloss>25 then

@@ -42,7 +42,7 @@ Rotations\WL\affli.lua
 Rotations\WR\arms.lua
 Rotations\WR\fury.lua
 Rotations\WR\prot.lua
-
+Rotations\WL\demo.lua
 Rotations\HR\bm.lua
 Rotations\HR\mm.lua
 Rotations\HR\survival.lua

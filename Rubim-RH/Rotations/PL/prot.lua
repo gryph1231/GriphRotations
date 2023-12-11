@@ -239,6 +239,7 @@ local function mitigate()
                  'Skewer', 'Serrated Teeth',
                 'Crush',
                 'Crushing Grip',
+                'Stormflurry Totem',
                 'Bloodletting Sweep', 'Stormslam', 'Deathspike', 'Infused Strike', 'Haunting Gaze',
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
                 'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
@@ -271,23 +272,14 @@ end
 local function kickprio()
     -- list of m+ abilities that should be kicked
     local KickSpells = {
-        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
-        'Healing Touch',    -- AA
-        'Suppress','Drifting Embers', 'Bewitch', --CoS
-        'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
-        'Surge',            -- HoV
-        'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
-        'Cinderbolt',       --RLP
-        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
-        'Plague Spit',      --SMBG
-        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
-        'Defiling Mist',    --TotJS
-        'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
-        'Illusionary Bolt', --AV
-        'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
-        'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
-        'Desacrating Blow', -- NO
-        'Stone Bolt','Stone Gaze', -- neltharions lair
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech','Noxious Stench',   -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Mind Flay','Aquablast', --TotT
+        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
+        'Choking Vines','Enraged Growth','Healing Waters','Toxic Bloom','Revitalize','Pyroblast','Arcane Blast','Frostbolt',--Everbloom
+        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
+        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
 
     }
 
@@ -306,25 +298,14 @@ end
 local function stunprio()
     -- list of m+ abilities that should be stunned
     local stunspells = {
-        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
-        'Astral Whirlwind', -- AA
-        'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
-        'Hypnosis',         --CoS
-        'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
-        'Surge',            -- HoV
-        'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
-        'Cinderbolt',       --RLP
-        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
-        'Cry of Anguish',   --SMBG
-        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
-        'Leg Sweep',        --TotJS
-        'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
-        'Null Stomp',       --AV
-        'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
-        'Storm Bolt',
-        'Desacrating Blow', -- NO
-        'Stone Bolt', 'Avalanche','Stone Gaze','War Drums','Metamophosis',-- neltharions lair
-
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Mind Flay','Aquablast', --TotT
+        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
+        'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
+        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
 
     }
 
@@ -344,25 +325,14 @@ end
 local function blindprio()
     -- list of m+ abilities that should be stunned
     local blindspells = {
-        'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
-        'Astral Whirlwind', -- AA
-        'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
-        'Hypnosis',         --CoS
-        'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
-        'Surge',            -- HoV
-        'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
-        'Cinderbolt',       --RLP
-        'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
-        'Cry of Anguish',   --SMBG
-        'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
-        'Leg Sweep',        --TotJS
-        'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
-        'Null Stomp',       --AV
-        'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
-        'Storm Bolt',
-        'Desacrating Blow', -- NO
-        'Stone Bolt','Avalanche','Stone Gaze','War Drums','Metamophosis',-- neltharions lair
-
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Mind Flay','Aquablast','Blood Metamorphosis', --TotT
+        'Unnerving Screech','Curse of Isolation','Tormenting Eye',--DHT
+        'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Epoch Bolt','Displace Chronosequence',
+        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
 
     }
 
@@ -407,6 +377,13 @@ local function APL()
     targetRange40 = TargetInRange("Flash of Light")
 
 
+    -- name, rank, icon, castTime, minRange, maxRange,spellid,iconid
+    -- = GetSpellInfo(spellId or spellName or spellLink)
+-- print(GetSpellInfo("Judgment"))
+
+ if true then
+    inInstance, instanceType = IsInInstance()
+ end
 
     -- print(targetRange8)
 
@@ -444,6 +421,7 @@ local function APL()
         'Oakheart',
         'The Raging Tempest', 'Teera and Maruuk', 'Balakar Khan',                   -- Nokhud Offensive
         -- Court of Stars - nothing
+        "Mindbender Ghur'sha",--TotT
         'Hyrja', 'God-King Skovald', 'Odyn', 'Hymdall',                             -- Halls of Valor
         'Sadana Bloodfury',                                                         -- Shadowmoon Burial Grounds
         'Liu Flameheart',                                                           -- Temple of the Jade Serpent
@@ -569,9 +547,9 @@ local function APL()
     end
 
     -- kick off GCD
-    if (castTime > castchannelTime or channelTime > castchannelTime)
+    if (castTime > castchannelTime +0.5 or channelTime > castchannelTime +0.5)
     -- and level> highkey
-        -- and kickprio() 
+        and kickprio() and not isEnraged
         and select(8, UnitCastingInfo("target")) == false 
         and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and targetRange8 then
         return S.Rebuke:Cast()
@@ -579,8 +557,10 @@ local function APL()
 
 
     -- kick on GCD
-    if (castTime > castchannelTime or channelTime > castchannelTime)
-        and select(8, UnitCastingInfo("target")) == false and
+	if S.AvengersShield:IsReady() 
+     and kickprio() 
+    and targetRange8 and (castTime > castchannelTime or channelTime > castchannelTime)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged 
+        and
         RubimRH.InterruptsON() and S.AvengersShield:IsReady() and targetRange30 and Player:AffectingCombat()
         and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
         return S.AvengersShield:Cast()
@@ -590,9 +570,9 @@ local function APL()
 
     if (castTime > castchannelTime or channelTime > castchannelTime) 
     -- and level> highkey
-    and select(8, UnitCastingInfo("target")) == false 
+    and select(8, UnitCastingInfo("target")) == false and not isEnraged
         and RubimRH.InterruptsON() and S.HammerofJustice:IsReady() and Player:AffectingCombat() and targetRange10
-        --  and stunprio() 
+         and stunprio() 
          then
         return S.HammerofJustice:Cast()
     end
@@ -602,7 +582,7 @@ local function APL()
     -- and level> highkey
     and select(8, UnitCastingInfo("target")) == false 
         and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
-        --  and blindprio() 
+         and blindprio() 
          then
         return S.BlindingLight:Cast()
     end
@@ -650,7 +630,7 @@ local function APL()
     end
 
 --abnout to die need heals or immunity
-    if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and inRange30 >= 1 and Player:HealthPercentage() < 15 then
+    if S.DivineShield:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() and not Player:Debuff(S.Forbearance) and inRange30 >= 1 and Player:HealthPercentage() < 15 then
     return S.DivineShield:Cast()
 end
 
@@ -662,7 +642,7 @@ end
 
 
     -- defensives for trash on M+ key <= level 13
-    if (not IsEncounterInProgress(Boss) or level <= highkey) then
+    if (not IsEncounterInProgress(Boss) or level <= highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
             and inRange30 >= 1
             and Player:HealthPercentage() < 35
@@ -699,7 +679,7 @@ end
     end
 
     -- defensives for bosses
-    if (mitigate() and level > highkey) then
+    if (mitigate() and level > highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable()
             and not Player:Buff(S.ArdentDefender) 
             and not Player:Buff(S.GuardianofAncientKings)
@@ -853,7 +833,7 @@ end
 
         -- divine_toll
 
-        if S.DivineToll:IsReadyP() and (aoecds30y or inRange30>=4) and targetRange30 and RubimRH.CDsON() then
+        if S.DivineToll:IsReadyP()  and (not IsInInstance() or inRange30>=3) and targetRange30 and RubimRH.CDsON() then
             return S.DivineToll:Cast()
         end
 
@@ -876,7 +856,7 @@ end
 
         -- divine_toll
 
-        if S.DivineToll:IsReadyP() and (aoecds30y or inRange30>=3) and  RubimRH.CDsON() and
+        if S.DivineToll:IsReadyP() and (not IsInInstance() or inRange30>=3) and  RubimRH.CDsON() and
             (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 0) then
             return S.DivineToll:Cast()
         end
@@ -950,7 +930,7 @@ end
             return S.Judgment:Cast()
         end
         -- consecration
-        if S.Consecration:IsReady() and (consecrationdrop or IsSpellInRange("Shield of the Righteous")) then
+        if S.Consecration:IsReady() and (consecrationdrop or targetRange8) then
             return S.Consecration:Cast()
         end
 
@@ -958,6 +938,10 @@ end
         if S.BlessedHammer:IsReady() and inRange30>= 1 and Player:HolyPower() < 5  then
             return S.BlessedHammer:Cast()
         end
+
+
+
+
     end
 
     -- call precombat
@@ -990,8 +974,8 @@ end
 
 RubimRH.Rotation.SetAPL(66, APL)
 
-local function PASSIVE()
+-- local function PASSIVE()
 
-end
+-- end
 
-RubimRH.Rotation.SetPASSIVE(66, PASSIVE)
+-- RubimRH.Rotation.SetPASSIVE(66, PASSIVE)
