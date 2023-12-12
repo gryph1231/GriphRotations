@@ -213,30 +213,30 @@ local function UseItems()
     end
     end
 
-local function freedom()
-    if Player:AffectingCombat() then
-        for id = 1, 40 do
-            local spell = { 'Crystalline Rupture','Arcane Lockdown', }
-            local unitID = "nameplate" .. id
-            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-                UnitCastingInfo(unitID)
-            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+-- local function freedom()
+--     if Player:AffectingCombat() then
+--         for id = 1, 40 do
+--             local spell = { 'Crystalline Rupture','Arcane Lockdown', }
+--             local unitID = "nameplate" .. id
+--             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+--                 UnitCastingInfo(unitID)
+--             local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
 
-            for idx = 1, #spell do
-                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
+--             for idx = 1, #spell do
+--                 if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+--                     return true
+--                 end
+--             end
+--         end
+--     end
+--     return false
+-- end
 
 local function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-                 'Skewer', 'Serrated Teeth',
+                'Skewer', 'Serrated Teeth',
                 'Crush',
                 'Crushing Grip',
                 'Stormflurry Totem',
@@ -244,11 +244,6 @@ local function mitigate()
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
                 'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
                 'Steel Barrage',
-                'Lightning Breath', 'Thunder Jaw', 'Blast of Light','Molten Crash','Landslide','Piercing Shards','Shatter','Razor Shards',
-            
-                'Savage Charge','Gut Shot','Decaystrike', -- Brakenhide hollow
-                'Heated Swings','Fiery Focus', -- neltharus
-                'Searing Clap','Sand Breath', --uldaman: legacy of tyr
                 'Chronoshear','Unwind','Radiant','Bright Reclamation','Crushing Onslaught','Titanic Blow','Sand Blast','Mortal Strikes','Temporal Breath',
                 'Oiled Blade','Razor Shards',
 
@@ -366,7 +361,6 @@ end
 
 local function APL()
   
-
     inRange8 = RangeCount("Rebuke")
     inRange10 = RangeCount("Hammer of Justice")
     inRange40 = RangeCount("Flash of Light")
@@ -375,7 +369,6 @@ local function APL()
     targetRange10 = TargetInRange("Hammer of Justice")
     targetRange30 = TargetInRange("Avenger's Shield")
     targetRange40 = TargetInRange("Flash of Light")
-
 
     -- name, rank, icon, castTime, minRange, maxRange,spellid,iconid
     -- = GetSpellInfo(spellId or spellName or spellLink)
@@ -421,7 +414,7 @@ local function APL()
         'Oakheart',
         'The Raging Tempest', 'Teera and Maruuk', 'Balakar Khan',                   -- Nokhud Offensive
         -- Court of Stars - nothing
-        "Mindbender Ghur'sha",--TotT
+        "Erunak Stonespeaker",--TotT
         'Hyrja', 'God-King Skovald', 'Odyn', 'Hymdall',                             -- Halls of Valor
         'Sadana Bloodfury',                                                         -- Shadowmoon Burial Grounds
         'Liu Flameheart',                                                           -- Temple of the Jade Serpent
@@ -541,10 +534,10 @@ local function APL()
     end
 
 
-    --Freedom
-    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and inRange10 >= 1 then
-        return S.BlessingofFreedom:Cast()
-    end
+    -- --Freedom
+    -- if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and inRange10 >= 1 then
+    --     return S.BlessingofFreedom:Cast()
+    -- end
 
     -- kick off GCD
     if (castTime > castchannelTime +0.5 or channelTime > castchannelTime +0.5)
@@ -818,9 +811,9 @@ end
 
         -- shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
 
-        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and Player:HealthPercentage()>=80 and 
             (
-                Player:HolyPower() == 5 or Player:BuffP(S.HolyAvenger) or
+                Player:HolyPower() == 5  or
                 Player:HolyPower() == 4 and S.SanctifiedWrath:IsAvailable() and Player:BuffP(S.AvengingWrathBuff)) then
             return S.ShieldoftheRighteous:Cast()
         end
@@ -833,7 +826,8 @@ end
 
         -- divine_toll
 
-        if S.DivineToll:IsReadyP()  and (not IsInInstance() or inRange30>=3) and targetRange30 and RubimRH.CDsON() then
+        if S.DivineToll:IsReadyP() and (not IsInInstance() or inRange30>=5 and IsInInstance()) and targetRange30 and  RubimRH.CDsON() and
+        (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 0) then
             return S.DivineToll:Cast()
         end
 
