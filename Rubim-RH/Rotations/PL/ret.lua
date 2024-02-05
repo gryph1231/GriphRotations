@@ -116,7 +116,7 @@ BlessingofFreedom = Spell(1044),
 BlindingLight = Spell(115750),
 SenseUndead = Spell(5502),
 
-
+Entangling = Spell(408556),
 
 
 lust1                    = Spell(57724),
@@ -373,30 +373,21 @@ local function freedom()
     end
     
 
-    local function kickprio()
-        -- list of m+ abilities that should be kicked
-        local KickSpells = {
-            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb',
-            'Healing Touch',    -- AA
-            'Suppress',
-            'Drifting Embers', 'Bewitch', --CoS
-            'Thunderous Bolt', 'Holy Radiance', 'Cleansing Flames', 'Unruly Yell', 'Rune of Healing', 'Etch',
-            'Surge',            -- HoV
-            'Roaring Blaze', 'Lightning Bolt', 'Flashfire',
-            'Cinderbolt',       --RLP
-            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Void Bolt', 'Death Blast', 'Necrotic Burst',
-            'Plague Spit',      --SMBG
-            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap',
-            'Defiling Mist',    --TotJS
-            'Erratic Growth', 'Mystic Vapors', 'Heavy Tome', 'Waking Bane', 'Icy Bindings',
-            'Illusionary Bolt', --AV
-            'Disruptive Shout', 'Tempest', 'Stormbolt', 'Death Bolt Volley', 'Dominate', 'Storm Shock',
-            'Bloodcurdling Shout', 'Storm Bolt', 'Thunderstrike',
-            'Desacrating Blow', -- NO
-            'Wind Bolt', 'Cyclone','Lightning Bolt','Cloudburst','Vapor Form',-- brakenhide hollow -- still have some to add
-    
-        }
-    
+  
+
+local function kickprio()
+    -- list of m+ abilities that should be kicked
+    local KickSpells = {
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech','Noxious Stench',   -- AD
+        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+        'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
+        'Choking Vines','Enraged Growth','Healing Waters','Toxic Bloom','Revitalize','Pyroblast','Arcane Blast','Frostbolt',--Everbloom
+        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
+        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+
+    }
     local currentspellchannel = select(1,UnitChannelInfo('target'))
     local currentspellcast = select(1, UnitCastingInfo('target'))
     
@@ -408,77 +399,63 @@ local function freedom()
     
     return false
     end
-    
+
     local function stunprio()
-        -- list of m+ abilities that should be stunned
         local stunspells = {
-            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
-            'Astral Whirlwind', -- AA
-            'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
-            'Hypnosis',         --CoS
-            'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
-            'Surge',            -- HoV
-            'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
-            'Cinderbolt',       --RLP
-            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
-            'Cry of Anguish',   --SMBG
-            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
-            'Leg Sweep',        --TotJS
-            'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
-            'Null Stomp',       --AV
-            'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
-            'Storm Bolt',
-            'Desacrating Blow', -- NO
-    
-        }
-    
-    local currentspellchannel = select(1,UnitChannelInfo('target'))
-    local currentspellcast = select(1, UnitCastingInfo('target'))
-    
-    for i = 1, #stunspells do
-    if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
-    return true
-    end
-    end
-    
-    return false
-    end
-    
-    
-    local function blindprio()
-        -- list of m+ abilities that should be stunned
-        local blindspells = {
-            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb', 'Healing Touch',
-            'Astral Whirlwind', -- AA
-            'Drifting Embers', 'Quelling Strike', 'Sound Alarm', 'Eye Storm',
-            'Hypnosis',         --CoS
-            'Thunderous Bolt', 'Holy Radiance', 'Rune of Healing', 'Etch',
-            'Surge',            -- HoV
-            'Lightning Bolt', 'Flashfire', 'Tectonic Slam', 'Cold Claws', 'Ice Shield', 'Flame Dance',
-            'Cinderbolt',       --RLP
-            'Shadow Mend', 'Shadow Bolts', 'Domination', 'Rending Voidlash', 'Death Blast', 'Plague Spit',
-            'Cry of Anguish',   --SMBG
-            'Tidal Burst', 'Haunting Gaze', 'Haunting Scream', 'Cat Nap', 'Defiling Mist',
-            'Leg Sweep',        --TotJS
-            'Mystic Vapors', 'Shriek', 'Piercing Shards', 'Waking Bane', 'Icy Bindings', 'Illusionary Bolt',
-            'Null Stomp',       --AV
-            'Rally the Clan', 'Tempest', 'Stormbolt', 'Grasp of the Dead', 'Dominate', 'Storm Shock', 'Bloodcurdling Shout',
-            'Storm Bolt',
-            'Desacrating Blow', -- NO
-    
+            'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+            "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+            'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
+            'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', --Fall
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--Rise
         }
         
         local currentspellchannel = select(1,UnitChannelInfo('target'))
         local currentspellcast = select(1, UnitCastingInfo('target'))
         
-        for i = 1, #blindspells do
-        if currentspellcast == blindspells[i] or currentspellchannel == blindspells[i] then
-        return true
-        end
+        for i = 1, #stunspells do
+            if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+                if UnitName("target") ~= "Sister Briar" and UnitName("target") ~= "Lady Naz'jar" and UnitName("target") ~= "Sister Malady" and UnitName("target") ~= "Sister Solena" then
+                    return true
+                end
+            end
         end
         
         return false
+    end
+    
+    local function blindprio()
+        local blindspells = {
+            'Scar Soul','Spirited Defense','Spellbind','Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+            "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
+            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+            'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
+            'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', -- Fall
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--Rise
+        }
+            
+        local currentspellchannel = select(1,UnitChannelInfo('target'))
+        local currentspellcast = select(1, UnitCastingInfo('target'))
+            
+        for i = 1, #blindspells do
+            if currentspellcast == blindspells[i] or currentspellchannel == blindspells[i] then
+                if UnitName("target") ~= "Sister Briar" and UnitName("target") ~= "Lady Naz'jar" and UnitName("target") ~= "Sister Malady" and UnitName("target") ~= "Sister Solena" then
+                    return true
+                end
+            end
         end
+      
+        return false
+    end
+
+
+
+
+
         local function combatmobs40()
             local totalRange40 = 0
            
@@ -849,6 +826,10 @@ channelTime = elapsedTimech/1000
 
 
 
+isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
+
+
+
         if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and (IsUsableItem(191379) or IsUsableItem(191378)  or IsUsableItem(191380)) 
         and (GetItemCooldown(191380) == 0 or GetItemCooldown(191379) == 0 or GetItemCooldown(191378) == 0) 
         and (GetItemCount(191380) >= 1 or GetItemCount(191379) >= 1 or GetItemCount(191378) >= 1) 
@@ -972,30 +953,34 @@ channelTime = elapsedTimech/1000
         if (IsUsableSpell("Templar Slash") or S.TemplarStrike:IsReady() or S.CrusaderStrike:IsReady()) and UnitName('target') == 'Explosives' then
         return S.crusaderstrike:Cast()
         end
-                --Kick
-                if (castTime>castchannelTime or channelTime>castchannelTime) and 
-                RubimRH.InterruptsON() and S.Rebuke:IsReady() and Player:AffectingCombat() and targetRange8
-                 and 
-                --  (kickprio() or 
-                 Target:IsAPlayer() and select(8, UnitCastingInfo("target")) == false
-                --) 
-                 then
+
+        if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangling) then
+            return S.BlessingofFreedom:Cast()
+            end
+
+        if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
+            --Kick
+            if S.Rebuke:IsReady() 
+             and kickprio() 
+            and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
                 return S.Rebuke:Cast()
-                end
-
-                --Stun
-
-                if (castTime>castchannelTime or channelTime>castchannelTime) and level>13 
-                and RubimRH.InterruptsON() and S.HammerofJustice:IsReady() and targetRange10 and Player:AffectingCombat() and (stunprio() or Target:IsAPlayer() and select(8, UnitCastingInfo("target")) == false) then
-                return S.HammerofJustice:Cast()
-                end
-
-                --Blind
-                if (castTime>castchannelTime or channelTime>castchannelTime) and S.HammerofJustice:CooldownRemains()>Player:GCD() and level>13 
-                and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and inRange8 >=1 and Player:AffectingCombat() and blindprio() then
+            end
+        
+            -- --blind
+            if S.BlindingLight:IsReady() and blindprio()
+            and targetRange20 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
                 return S.BlindingLight:Cast()
-                end
-
+            end
+        
+        
+            -- --Stun
+            if S.HammerofJustice:IsReady() and stunprio() 
+            and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
+                return S.HammerofJustice:Cast()
+            end
+        
+  
+        end
                 --Freedom
                 if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and inRange20 >= 1 then
                     return S.BlessingofFreedom:Cast()

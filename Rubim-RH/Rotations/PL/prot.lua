@@ -293,7 +293,7 @@ end
 local function stunprio()
     -- list of m+ abilities that should be stunned
     local stunspells = {
-        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Death Lens','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
         "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
         'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
         'Healing Wave','Wrath','Hex','Mind Flay','Aquablast', --TotT
