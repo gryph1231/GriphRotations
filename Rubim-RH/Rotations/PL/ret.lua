@@ -374,31 +374,33 @@ local function freedom()
     
 
   
-
-local function kickprio()
-    -- list of m+ abilities that should be kicked
-    local KickSpells = {
-        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
-        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech','Noxious Stench',   -- AD
-        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
-        'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
-        'Choking Vines','Enraged Growth','Healing Waters','Toxic Bloom','Revitalize','Pyroblast','Arcane Blast','Frostbolt',--Everbloom
-        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
-        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
-
-    }
-    local currentspellchannel = select(1,UnitChannelInfo('target'))
-    local currentspellcast = select(1, UnitCastingInfo('target'))
+    local function stunprio()
+        local stunspells = {
+            'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', ' Death Lens', -- Waycrest M
+            "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
+            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', 'Knife Dance', 'Arrow Barrage', '"Drink" Ancient Potion', --BRH
+            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', 'Poisioned Spear', --TotT
+            'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
+            'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', 'Temposlice', 'Temporal Detonation', 'Enervate', 'Stonebolt', --Fall
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley', 'Rending Cleave', 'Corroding Volley', 'Double Strike', 'Triple Strike', 'Soggy Bonk', 'Slobbering Bite', 'Fish Bolt Volley', 'Bubbly Barrage', 'Staticky Punch', 'Electro-Juiced Gigablast', 'Bombing Run',--Rise
+        }
+        
+        local currentspellchannel = select(1,UnitChannelInfo('target'))
+        local currentspellcast = select(1, UnitCastingInfo('target'))
+        
+        for i = 1, #stunspells do
+            if currentspellcast == stunspells[i] or currentspellchannel == stunspells[i] then
+                if UnitName("target") ~= "Sister Briar" and UnitName("target") ~= "Lady Naz'jar" and UnitName("target") ~= "Sister Malady" and UnitName("target") ~= "Sister Solena" then
+                    return true
+                end
+            end
+        end
+        
+        return false
+    end
     
-    for i = 1, #KickSpells do
-    if currentspellcast == KickSpells[i] or currentspellchannel == KickSpells[i] then
-    return true
-    end
-    end
-    
-    return false
-    end
+
 
     local function stunprio()
         local stunspells = {
@@ -428,15 +430,15 @@ local function kickprio()
     
     local function blindprio()
         local blindspells = {
-            'Scar Soul','Spirited Defense','Spellbind','Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
+            'Scar Soul','Spirited Defense','Spellbind','Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', 'Death Lens', -- Waycrest M
             "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
-            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
-            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
+            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy','Knife Dance', 'Arrow Barrage', '"Drink" Ancient Potion', --BRH
+            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast','Poisioned Spear', --TotT
             'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
             'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
-            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', -- Fall
-            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--Rise
-        }
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', 'Temposlice', 'Temporal Detonation', 'Enervate', 'Stonebolt',-- Fall
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley','Rending Cleave', 'Corroding Volley', 'Double Strike', 'Triple Strike', 'Soggy Bonk', 'Slobbering Bite', 'Fish Bolt Volley', 'Bubbly Barrage', 'Staticky Punch', 'Electro-Juiced Gigablast', 'Bombing Run',--Rise
+        } 
             
         local currentspellchannel = select(1,UnitChannelInfo('target'))
         local currentspellcast = select(1, UnitCastingInfo('target'))
