@@ -675,9 +675,8 @@ local function cooldowns()
     end
 	
 	--roll_the_bones,if=variable.rtb_reroll|rtb_buffs.max_remains<=set_bonus.tier31_4pc+(cooldown.shadow_dance.remains<=1|cooldown.vanish.remains<=1)*6
-	if S.RolltheBones:IsCastable() and (not stealthall or not S.Crackshot:IsAvailable() or RtB_Buffs()==0) and (basic_rtb_reroll or rtb_reroll 
-    or (MaxRtB_BuffRemains() <= num(tierequipped() >= 4)  + num(RubimRH.CDsON() 
-    and (S.ShadowDance:CooldownRemains() <= 1 or S.Vanish:CooldownRemains() <= 1)) * 6)) then
+	if S.RolltheBones:IsCastable() and not stealthall and ((basic_rtb_reroll or rtb_reroll)
+    or (MaxRtB_BuffRemains() <= num(tierequipped() >= 4)  + (num(RubimRH.CDsON())*(num(S.ShadowDance:CooldownRemains() <= 1) or num(S.Vanish:CooldownRemains() <= 1)))*6)) then
 		return S.RolltheBones:Cast()
 	end
 	
@@ -768,18 +767,19 @@ targetRange20 = TargetInRange("Blind")
 targetRange25 = TargetInRange("Shadowstep")
 targetRange30 = TargetInRange("Between the Eyes")
 
--- print(MaxRtB_BuffRemains())
--- -- print('Broadside: ',math.abs(Player:BuffRemains(RtB_BuffsList[1]) - RtBRemains()))
--- -- print('BuriedTreasure: ',math.abs(Player:BuffRemains(RtB_BuffsList[2]) - RtBRemains()))
--- -- print('GrandMelee: ',math.abs(Player:BuffRemains(RtB_BuffsList[3]) - RtBRemains()))
--- -- print('RuthlessPrecision: ',math.abs(Player:BuffRemains(RtB_BuffsList[4]) - RtBRemains()))
--- -- print('SkullandCrossbones: ',math.abs(Player:BuffRemains(RtB_BuffsList[5]) - RtBRemains()))
--- -- print('TrueBearing: ',math.abs(Player:BuffRemains(RtB_BuffsList[6]) - RtBRemains()))
--- -- print('----------------------------')
--- -- --print("RtB Total Buffs: " .. Cache.APLVar.RtB_Buffs.Total)
--- -- print("RtB Longer Buffs: " .. Cache.APLVar.RtB_Buffs.Longer)
--- -- print("RtB Normal Buffs: " .. Cache.APLVar.RtB_Buffs.Normal)
--- -- print("RtB Shorter Buffs: " .. Cache.APLVar.RtB_Buffs.Shorter)
+if S.Vanish:IsCastable() and not basic_rtb_reroll and Player:Buff(S.SliceandDice) and S.BetweentheEyes:CooldownUp() and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or Player:CanAttack(Target)) 
+and S.HiddenOpportunity:IsAvailable() and not S.Crackshot:IsAvailable() and not Player:Buff(S.AudacityBuff) and Player:GCDRemains()<0.25
+and (vanish_opportunity_condition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition then
+    return S.Vanish:Cast()
+end
+
+--vanish,if=(!talent.hidden_opportunity|talent.crackshot)&variable.finish_condition
+if S.Vanish:IsCastable() and not basic_rtb_reroll and Player:Buff(S.SliceandDice) and S.BetweentheEyes:CooldownUp() and Player:GCDRemains()<0.25+tolerance and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or Player:CanAttack(Target)) 
+and (not S.HiddenOpportunity:IsAvailable() or S.Crackshot:IsAvailable()) and finish_condition then
+    return S.Vanish:Cast()
+end
+
+
 
 -- --------------------------------------------------------------------------------------------------------------------------------------------
 -- --Functions/Variables-----------------------------------------------------------------------------------------------------------------------
@@ -904,7 +904,6 @@ fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 	
 	SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
 end
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
