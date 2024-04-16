@@ -850,12 +850,12 @@ fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 -- If you are about to go into a stealth window, then roll early if your highest duration buff has under ~7 seconds remaining.
 
     basic_rtb_reroll =
-    (tierequipped()>=4 and (RtB_Buffs()<=1 or RtB_Buffs()==2 and Player:Buff(S.LoadedDiceBuff) or MaxRtB_BuffRemains()<3 or MaxRtB_BuffRemains()<7 and RubimRH.CDsON() and (S.Vanish:CooldownUp() or S.ShadowDance:CooldownUp()))
+    S.RolltheBones:CooldownUp() and ((tierequipped()>=4 and (RtB_Buffs()<=1 or RtB_Buffs()==2 and Player:Buff(S.LoadedDiceBuff) or MaxRtB_BuffRemains()<3 or MaxRtB_BuffRemains()<7 and RubimRH.CDsON() and (S.Vanish:CooldownUp() or S.ShadowDance:CooldownUp()))
 -- (Without 4 set tier) Use :rtb: Roll the Bones:
 -- If you have 0 buffs.
 -- Reroll if you have 1 buff and it is not :truebearing: True Bearing.
 -- however :kir_rc: builds without HO reroll for :broadsides: Broadside instead of :truebearing: True Bearing.
- or (tierequipped()<4 and (RtB_Buffs()==0 or RtB_Buffs()==1 and not Player:Buff(S.TrueBearing))))
+ or (tierequipped()<4 and (RtB_Buffs()==0 or RtB_Buffs()==1 and not Player:Buff(S.TrueBearing)))))
 
 
 	stealthbasic = (AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff))
