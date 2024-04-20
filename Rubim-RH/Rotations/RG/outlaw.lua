@@ -783,8 +783,11 @@ end
 
 if true then
 	tolerance = select(4, GetNetStats())/1000 + 0.18
-
-	stealthall = (AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff) or Player:Buff(S.SubterfugeBuff)  or Player:Buff(S.ShadowDanceBuff) )
+    if (AuraUtil.FindAuraByName("Stealth", "player") or AuraUtil.FindAuraByName("Vanish", "player") or AuraUtil.FindAuraByName("Subterfuge", "player") or AuraUtil.FindAuraByName("Shadow Dance", "player")  or AuraUtil.FindAuraByName("Shadowmeld", "player")) then
+        stealthall = true
+    else
+        stealthall = false
+    end
 
 	local will_lose_broadside = (Player:Buff(S.Broadside) and (math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.Broadside) < RtBRemains()))
 	
@@ -847,8 +850,6 @@ fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
  or (tierequipped()<4 and (RtB_Buffs()==0 or RtB_Buffs()==1 and not Player:Buff(S.TrueBearing)))))
 
 
-	stealthbasic = (AuraUtil.FindAuraByName("Stealth", "player") or Player:Buff(S.VanishBuff))
-
 	local ercp = ((Player:Buff(S.EchoingReprimandCP2) and Player:ComboPoints() == 2) or (Player:Buff(S.EchoingReprimandCP3) and Player:ComboPoints() == 3) or (Player:Buff(S.EchoingReprimandCP4) and Player:ComboPoints() == 4) or (Player:Buff(S.EchoingReprimandCP5) and Player:ComboPoints() == 5))
 	
 	effective_combo_points = ercp == (true and 7 or Player:ComboPoints())
@@ -893,6 +894,8 @@ fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 	
 	SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
 end
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
