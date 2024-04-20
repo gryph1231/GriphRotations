@@ -767,17 +767,6 @@ targetRange20 = TargetInRange("Blind")
 targetRange25 = TargetInRange("Shadowstep")
 targetRange30 = TargetInRange("Between the Eyes")
 
-if S.Vanish:IsCastable() and not basic_rtb_reroll and Player:Buff(S.SliceandDice) and S.BetweentheEyes:CooldownUp() and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or Player:CanAttack(Target)) 
-and S.HiddenOpportunity:IsAvailable() and not S.Crackshot:IsAvailable() and not Player:Buff(S.AudacityBuff) and Player:GCDRemains()<0.25
-and (vanish_opportunity_condition or Player:BuffStack(S.Opportunity) < 6) and ambushcondition then
-    return S.Vanish:Cast()
-end
-
---vanish,if=(!talent.hidden_opportunity|talent.crackshot)&variable.finish_condition
-if S.Vanish:IsCastable() and not basic_rtb_reroll and Player:Buff(S.SliceandDice) and S.BetweentheEyes:CooldownUp() and Player:GCDRemains()<0.25+tolerance and targetRange8 and (IsInInstance() or target_is_dummy() or Target:IsAPlayer() or Player:CanAttack(Target)) 
-and (not S.HiddenOpportunity:IsAvailable() or S.Crackshot:IsAvailable()) and finish_condition then
-    return S.Vanish:Cast()
-end
 
 
 
@@ -907,7 +896,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting("player") == false or Player:CanAttack(Target)) then
+if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting("player") == false or Player:CanAttack(Target) or Player:StoppedFor()<5) then
     if S.BladeFlurry:IsReady() and Player:IsMoving() and targetRange8 and Player:ComboPointsDeficit()>=3 and inRange10>=3 and not finish_condition then
         return S.BladeFlurry:Cast()
     end
@@ -943,19 +932,19 @@ if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting
 	end
 	
 	if not Player:IsMoving() then 
-		if S.InstantPoison:IsCastable() and not Player:Buff(S.WoundPoison) and Player:BuffRemains(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) then
+		if S.InstantPoison:IsCastable() and S.InstantPoison:TimeSinceLastCast()>2 and not Player:Buff(S.WoundPoison) and Player:BuffRemains(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) then
 			return S.InstantPoison:Cast()
 		end
 
-		if S.CripplingPoison:IsCastable() and not S.NumbingPoison:IsAvailable() and not S.AtrophicPoison:IsAvailable() and not Player:Buff(S.NumbingPoison) and not Player:Buff(S.AtrophicPoison) and Player:BuffRemains(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) then
+		if S.CripplingPoison:IsCastable() and S.CripplingPoison:TimeSinceLastCast()>2 and not S.NumbingPoison:IsAvailable() and not S.AtrophicPoison:IsAvailable() and not Player:Buff(S.NumbingPoison) and not Player:Buff(S.AtrophicPoison) and Player:BuffRemains(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) then
 			return S.CripplingPoison:Cast()
 		end
 
-		if S.AtrophicPoison:IsCastable() and Player:BuffRemains(S.AtrophicPoison) < 300 and not Player:IsCasting(S.AtrophicPoison) then
+		if S.AtrophicPoison:IsCastable()and S.AtrophicPoison:TimeSinceLastCast()>2 and Player:BuffRemains(S.AtrophicPoison) < 300 and not Player:IsCasting(S.AtrophicPoison) then
 			return S.AtrophicPoison:Cast()
 		end
 
-		if S.NumbingPoison:IsCastable() and Player:BuffRemains(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) then
+		if S.NumbingPoison:IsCastable() and S.NumbingPoison:TimeSinceLastCast()>2 and Player:BuffRemains(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) then
 			return S.NumbingPoison:Cast()
 		end
 	end
@@ -1008,14 +997,14 @@ if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") a
 	end
 
 	-- --blind
-	if S.Blind:IsReady() and blindprio()
+	if S.Blind:IsReady() and blindprio() and level>20
     and targetRange20 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
 		return S.Blind:Cast()
 	end
 
 
 	-- --Stun
-	if S.KidneyShot:IsReady() and stunprio() 
+	if S.KidneyShot:IsReady() and stunprio() and level>20
     and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5)  and not isEnraged then
 		return S.KidneyShot:Cast()
 	end
@@ -1032,7 +1021,7 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
  
 
 
-    if S.Feint:IsReady() and not Player:Debuff(S.Legacyofwaycrest) and not Player:Buff(S.Feint) and level>=20 and RubimRH.InterruptsON() and inRange30>=1 and (mitigate()  or
+    if S.Feint:IsReady() and not Player:Debuff(S.Legacyofwaycrest) and not Player:Buff(S.Feint) and level>20 and RubimRH.InterruptsON() and inRange30>=1 and (mitigate()  or
     AuraUtil.FindAuraByName("Dread Inferno", "player", "HARMFUL") or Player:Debuff(S.chronofaded) ) then
         return S.Feint:Cast()
     end

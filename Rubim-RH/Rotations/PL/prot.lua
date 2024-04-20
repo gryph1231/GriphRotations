@@ -623,7 +623,7 @@ local function APL()
     end
 
 --abnout to die need heals or immunity
-    if S.DivineShield:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() and not Player:Debuff(S.Forbearance) and inRange30 >= 1 and Player:HealthPercentage() < 15 then
+    if S.DivineShield:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() and not Player:Debuff(S.Forbearance) and inRange30 >= 1 and Player:HealthPercentage() < 20 then
     return S.DivineShield:Cast()
 end
 
