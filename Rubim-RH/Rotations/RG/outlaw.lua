@@ -742,7 +742,7 @@ local function finishers()
 	end
    
     -- dispatch
-	if S.Dispatch:IsReady() and targetRange8 and finish_condition 
+	if S.Dispatch:IsReady() and targetRange8 and finish_condition
     and (S.ShadowDance:CooldownRemains()>Player:GCD() 
     and S.Vanish:CooldownRemains()>Player:GCD() or not RubimRH.CDsON() or S.BetweentheEyes:CooldownRemains()>Player:GCD()) then
 		return S.Dispatch:Cast()    
@@ -790,15 +790,15 @@ if true then
     end
 
 	local will_lose_broadside = (Player:Buff(S.Broadside) and (math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.Broadside) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.Broadside) < RtBRemains()))
-	
+
 	local will_lose_buried_treasure = (Player:Buff(S.BuriedTreasure) and (math.abs(Player:BuffRemains(S.BuriedTreasure) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.BuriedTreasure) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.BuriedTreasure) < RtBRemains()))
-	
+
 	local will_lose_grand_melee = (Player:Buff(S.GrandMelee) and (math.abs(Player:BuffRemains(S.GrandMelee) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.GrandMelee) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.GrandMelee) < RtBRemains()))
-	
+
 	local will_lose_ruthless_precision = (Player:Buff(S.RuthlessPrecision) and (math.abs(Player:BuffRemains(S.RuthlessPrecision) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.RuthlessPrecision) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.RuthlessPrecision) < RtBRemains()))
-	
+
 	local will_lose_skull_and_crossbones = (Player:Buff(S.SkullandCrossbones) and (math.abs(Player:BuffRemains(S.SkullandCrossbones) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.SkullandCrossbones) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.SkullandCrossbones) < RtBRemains()))
-	
+
 	local will_lose_true_bearing = (Player:Buff(S.TrueBearing) and (math.abs(Player:BuffRemains(S.TrueBearing) - RtBRemains()) < 0.1 or math.abs(Player:BuffRemains(S.TrueBearing) - RtBRemains()) >= 0.1 and Player:BuffRemains(S.TrueBearing) < RtBRemains()))
 
 	local rtb_buffs_will_lose = (Cache.APLVar.RtB_Buffs.Shorter + Cache.APLVar.RtB_Buffs.Normal)
@@ -809,79 +809,85 @@ if true then
 	-- if Player:Buff(S.RuthlessPrecision) then print('will lose ruthless precision: ', will_lose_ruthless_precision) end
 	-- if Player:Buff(S.SkullandCrossbones) then print('will lose skull and crossbones: ', will_lose_skull_and_crossbones) end
 	-- if Player:Buff(S.TrueBearing) then print('will lose true bearing: ', will_lose_true_bearing) end
-	--print(rtb_buffs_will_lose)
+	-- print(rtb_buffs_will_lose)
 	if not stealthall or (not Player:AffectingCombat() and not Player:Buff(S.VanishBuff)) or inRange30 == 0 then
 		if S.Crackshot:IsAvailable() and S.HiddenOpportunity:IsAvailable() and tierequipped() < 4 then
+
 			--Crackshot builds without T31 should reroll for True Bearing (or Broadside without Hidden Opportunity) if we won't lose over 1 buff
 			--variable,name=rtb_reroll,if=talent.crackshot&talent.hidden_opportunity&!set_bonus.tier31_4pc,value=(!rtb_buffs.will_lose.true_bearing&talent.hidden_opportunity|!rtb_buffs.will_lose.broadside&!talent.hidden_opportunity)&rtb_buffs.will_lose<=1
+
 			rtb_reroll = ((not will_lose_true_bearing and S.HiddenOpportunity:IsAvailable() or not will_lose_broadside and not S.HiddenOpportunity:IsAvailable()) and rtb_buffs_will_lose <= 1)
 		elseif S.Crackshot:IsAvailable() and tierequipped() >= 4 then
+
 			--Crackshot builds with T31 should reroll if we won't lose over 1 buff (2 with Loaded Dice), and if Broadside is not active for builds without Hidden Opportunity
 			--variable,name=rtb_reroll,if=talent.crackshot&set_bonus.tier31_4pc,value=(rtb_buffs.will_lose<=1+buff.loaded_dice.up)&(talent.hidden_opportunity|!buff.broadside.up)
+
 			rtb_reroll = (rtb_buffs_will_lose <= 1 + num(Player:Buff(S.LoadedDiceBuff))) and (S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.Broadside))
 		elseif not S.Crackshot:IsAvailable() and S.HiddenOpportunity:IsAvailable() then
+
 			--Hidden Opportunity builds without Crackshot should reroll for Skull and Crossbones or any 2 buffs excluding Grand Melee in single target
 			--variable,name=rtb_reroll,if=!talent.crackshot&talent.hidden_opportunity,value=!rtb_buffs.will_lose.skull_and_crossbones&(rtb_buffs.will_lose<2+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10)	
+
 			rtb_reroll = not will_lose_skull_and_crossbones and (rtb_buffs_will_lose < 2 + num(will_lose_grand_melee and inRange10< 2))
 		else
+
 			--Additional reroll rules if all active buffs will not be rolled away and we don't already have 5+ buffs
 			--variable,name=rtb_reroll,value=variable.rtb_reroll|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39
+
 			rtb_reroll = Cache.APLVar.RtB_Buffs.Normal == 0 and Cache.APLVar.RtB_Buffs.Longer >= 1 and RtB_Buffs() < 5 and MaxRtB_BuffRemains() <= 39
+
 		end
+
 	else
+
 		rtb_reroll = false
+
 	end
 
 fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 
---     (With 4 set tier) Use :rtb: Roll the Bones:
+-- (With 4 set tier) Use :rtb: Roll the Bones:
 -- If you have 0 buffs.
 -- Reroll if you have 1 buff.
 -- Reroll if you have 2 buffs and :loaded_dice: Loaded Dice is active.
 -- If you don't have to reroll, you should still not let your buffs fully expire. Roll again when they have like 2 seconds remaining, so that the 4pc always activates.
 -- If you are about to go into a stealth window, then roll early if your highest duration buff has under ~7 seconds remaining.
 
-    basic_rtb_reroll =
-    S.RolltheBones:CooldownUp() and ((tierequipped()>=4 and (RtB_Buffs()<=1 or RtB_Buffs()==2 and Player:Buff(S.LoadedDiceBuff) or MaxRtB_BuffRemains()<3 or MaxRtB_BuffRemains()<7 and RubimRH.CDsON() and (S.Vanish:CooldownUp() or S.ShadowDance:CooldownUp()))
--- (Without 4 set tier) Use :rtb: Roll the Bones:
--- If you have 0 buffs.
--- Reroll if you have 1 buff and it is not :truebearing: True Bearing.
--- however :kir_rc: builds without HO reroll for :broadsides: Broadside instead of :truebearing: True Bearing.
+basic_rtb_reroll = S.RolltheBones:CooldownUp() and ((tierequipped()>=4 and (RtB_Buffs()<=1 or RtB_Buffs()==2 and Player:Buff(S.LoadedDiceBuff) or MaxRtB_BuffRemains()<3 or MaxRtB_BuffRemains()<7 and RubimRH.CDsON() and (S.Vanish:CooldownUp() or S.ShadowDance:CooldownUp()))
  or (tierequipped()<4 and (RtB_Buffs()==0 or RtB_Buffs()==1 and not Player:Buff(S.TrueBearing)))))
 
-
 	local ercp = ((Player:Buff(S.EchoingReprimandCP2) and Player:ComboPoints() == 2) or (Player:Buff(S.EchoingReprimandCP3) and Player:ComboPoints() == 3) or (Player:Buff(S.EchoingReprimandCP4) and Player:ComboPoints() == 4) or (Player:Buff(S.EchoingReprimandCP5) and Player:ComboPoints() == 5))
-	
+
 	effective_combo_points = ercp == (true and 7 or Player:ComboPoints())
-	
+
 	elite = (UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "elite" or UnitClassification("target") == "rare" or target_is_dummy() or Target:IsAPlayer())
-	
+
 	--ambush_condition,value=(talent.hidden_opportunity|combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up)&energy>=50
 	ambushcondition = ((S.HiddenOpportunity:IsAvailable() or Player:ComboPointsDeficit() >= 2 + num(S.ImprovedAmbush:IsAvailable()) + num(Player:Buff(S.Broadside))) and Player:Energy() >= 50)
-	
+
 	vanishcondition = (S.HiddenOpportunity:IsAvailable() or not S.ShadowDance:IsAvailable() or not S.ShadowDance:CooldownUp())
-	
+
 	--shadow_dance_condition,value=buff.between_the_eyes.up&(!talent.hidden_opportunity|!buff.audacity.up&(talent.fan_the_hammer.rank<2|!buff.opportunity.up))&!talent.crackshot
 	shadow_dance_condition = (Player:Buff(S.BetweentheEyes) and (not S.HiddenOpportunity:IsAvailable() or not Player:Buff(S.AudacityBuff) and (fthrank < 2 or not Player:Buff(S.Opportunity))) and not S.Crackshot:IsAvailable())
+
 	--finish_condition,value=effective_combo_points>=cp_max_spend-1-(stealthed.all&talent.crackshot)
 	finish_condition = (Player:ComboPoints() >= CPMaxSpend() - 1 - num(stealthall and S.Crackshot:IsAvailable()))
-	
+
 	bladeflurrysync = (inRange10< 2 or Player:BuffRemains(S.BladeFlurry) > Player:GCD())
-	
+
 	--variable,name=vanish_opportunity_condition,value=!talent.shadow_dance&talent.fan_the_hammer.rank+talent.quick_draw+talent.audacity<talent.count_the_odds+talent.keep_it_rolling
 	vanish_opportunity_condition = (not S.ShadowDance:IsAvailable() and fthrank + num(S.QuickDraw:IsAvailable()) + num(S.Audacity:IsAvailable()) < num(S.CounttheOdds:IsAvailable()) + num(S.KeepitRolling:IsAvailable()))	
-	
-	
+
 	level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-	
+
 	inInstance, instanceType = IsInInstance()
 
 	local startTimeMS = (select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0)
 
 	local elapsedTimeca = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
-   
+
 	local elapsedTimech = ((startTimeMS > 0) and (GetTime() * 1000 - startTimeMS) or 0)
-	
+
 	channelTime = elapsedTimech / 1000
 
 	castTime = elapsedTimeca / 1000
@@ -891,7 +897,7 @@ fthrank = (S.FantheHammer:IsAvailable() and 2 or 0)
 	isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
 
 	HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
-	
+
 	SnDAS = select(16, AuraUtil.FindAuraByName("Slice and Dice", "player"))
 end
 
