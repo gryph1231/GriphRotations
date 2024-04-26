@@ -227,7 +227,7 @@ local function combatmobs40()
 
     for id = 1, 40 do
         local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and  RangeCount("Avenger's Shield")
+        if UnitCanAttack("player", unitID) and RangeCount("Avenger's Shield")
             and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
             totalRange40 = totalRange40 + 1
         end
@@ -238,7 +238,8 @@ local function combatmobs40()
 end
 
 local function APL()
-  
+
+
     inRange8 = RangeCount("Rebuke")
     inRange10 = RangeCount("Hammer of Justice")
     inRange40 = RangeCount("Flash of Light")
@@ -248,9 +249,7 @@ local function APL()
     targetRange30 = TargetInRange("Avenger's Shield")
     targetRange40 = TargetInRange("Flash of Light")
 
-    -- name, rank, icon, castTime, minRange, maxRange,spellid,iconid
-    -- = GetSpellInfo(spellId or spellName or spellLink)
--- print(GetSpellInfo("Judgment"))
+
 
  if true then
     inInstance, instanceType = IsInInstance()
