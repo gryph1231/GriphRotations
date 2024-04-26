@@ -188,14 +188,27 @@ local I = Item.Paladin.Protection;
 --     return false
 -- end
 
-local function mitigate()
+local function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-                'Skewer', 'Serrated Teeth',
-                'Crush',
-                'Crushing Grip',
-                'Stormflurry Totem',
+                "Agitation","Storm Slash","Peck","Severing Slash", -- Academy
+                "Piercing Shards","Heavy Tome","Condensed Frost","Ice Cutter","Spellfrost Breath","Ice Cutter","Tear Flesh",--AV
+                "Pierce","Arcing Strike","Surge","Lightning Cudgel","Death Bolt","Sundering Slash","Mortal Strike","Deadly Thunder", --NO
+                "Crushing Smash","Icebolt","Cold Claws","Steel Barrage","Flame Dance","Fire Maw","Thunder Jaw","Thunder Bolt","Shock Blast", --RLP
+                "Crushing Smash","Burst of Decay","Maul","Bash","Feral Claw","Decay Surge","Decay Claws", --Brackenhide Hollow
+                "Rising Squall","Pyretic Burst","Oceanic Breath","Ice Shard","Water Bolt", --HoI
+                "Blazing Slash","Brutal Strike","Imbued Magma","Reverberating Slam", --neltharus
+                "Chomp","Stone Spike","Diseased Bite","Cleave","Ancient Power","Jagged Bite","Stone Bolt","Fissuring Slam","Venomous Fangs","Bulwark Slam","Time Blade", --uldaman
+
+                'Searing Blows', 'Stormslam',-- RLP boss
+                'Savage Peck', 'Barkbreaker', --Academy boss
+                'Dragon Strike', -- Azure vault boss
+                'Brutalize','Rending Strike', -- NO boss
+                'Decaystrike', -- BHH boss
+                'Fiery Focus','Heated Swings',--neltharus boss
+                'Wild Cleave', --uldaman boss
+
                 'Bloodletting Sweep', 'Stormslam', 'Deathspike', 'Infused Strike', 'Haunting Gaze',
                 'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
                 'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
@@ -258,7 +271,7 @@ local function APL()
     -- print(targetRange8)
 
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-    highkey = 13
+    highkey = 4
 
     castchannelTime = math.random(250, 500) / 1000
 
@@ -286,19 +299,15 @@ local function APL()
 
     -- Define a list of dungeon boss encounter IDs
     local Boss = {
-        'Rezan', 'Yazma',                                             --AD
-        'Soulbound Goliath', --WM
-        'Oakheart',
-        'The Raging Tempest', 'Teera and Maruuk', 'Balakar Khan',                   -- Nokhud Offensive
-        -- Court of Stars - nothing
-        "Erunak Stonespeaker",--TotT
-        'Hyrja', 'God-King Skovald', 'Odyn', 'Hymdall',                             -- Halls of Valor
-        'Sadana Bloodfury',                                                         -- Shadowmoon Burial Grounds
-        'Liu Flameheart',                                                           -- Temple of the Jade Serpent
-        'Rokmora','Dargrul the Underking',--neltharions lair
+        'The Raging Tempest', 'Teera', 'Balakar Khan','Teera and Maruuk','Maruuk',                   -- Nokhud Offensive
         'Hackclaw"s War-Band','Gutshot','Decatriarch Wratheye', -- Brakenhide hollow
-        'Forgemaster Gorek','Chargath, Bane of Scales', --neltharus
-        'Emberon','Chrono-Lord Deios', -- unlaman: legacy of tyr
+        'Emberon','Chrono-Lord Deios', -- udlaman: legacy of tyr
+        'Crawth', 'Overgrown Ancient', --Academy
+        'Umbrelskul', -- Azure vault
+        'Kokia Blazehoof','Erkhart Stormvein', --RLP
+        'Decatriarch Wratheye',--BHH
+        'Chargath, Bane of Scales', 'Forgemaster Gorek', --neltharus
+        
 
     }
 
@@ -511,7 +520,7 @@ end
 
 
 
-    -- defensives for trash on M+ key <= level 13
+    -- defensives for trash on M+ key <= level 5
     if (not IsEncounterInProgress(Boss) or level <= highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
             and inRange30 >= 1
@@ -549,7 +558,7 @@ end
     end
 
     -- defensives for bosses
-    if (mitigate() and level > highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
+    if (mitigatedng() and level > highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable()
             and not Player:Buff(S.ArdentDefender) 
             and not Player:Buff(S.GuardianofAncientKings)
