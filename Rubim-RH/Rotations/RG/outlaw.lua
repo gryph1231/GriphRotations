@@ -174,6 +174,8 @@ local function num(val)
 end
 
 
+
+
 local function CPMaxSpend()
     if S.DeeperStratagem:IsAvailable() and S.DeviousStratagem:IsAvailable() then
         return 7
@@ -630,7 +632,7 @@ if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting
         return S.Ambush:Cast()
     end
 
-	if S.Stealth:IsUsableP() and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") 
+	if S.Stealth:IsUsableP() and S.Stealth:CooldownUp() and not AuraUtil.FindAuraByName("Stealth", "player") and not stealthall
     and (IsResting("player") == false or Player:CanAttack(Target)) then
 		return S.Stealth:Cast()
 	end
@@ -722,14 +724,14 @@ if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") a
 	end
 
 	-- --blind
-	if S.Blind:IsReady() and blindprio() and level>20
+	if S.Blind:IsReady() and blindprio() 
     and targetRange20 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
 		return S.Blind:Cast()
 	end
 
 
 	-- --Stun
-	if S.KidneyShot:IsReady() and stunprio() and level>20
+	if S.KidneyShot:IsReady() and stunprio() 
     and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5)  and not isEnraged then
 		return S.KidneyShot:Cast()
 	end
@@ -746,7 +748,7 @@ if Player:AffectingCombat() and not AuraUtil.FindAuraByName("Stealth", "player")
  
 
 
-    if S.Feint:IsReady() and not Player:Debuff(S.Legacyofwaycrest) and not Player:Buff(S.Feint) and level>20 and RubimRH.InterruptsON() and inRange30>=1 and (mitigate()  or
+    if S.Feint:IsReady() and not Player:Debuff(S.Legacyofwaycrest) and not Player:Buff(S.Feint) and level>5 and inRange30>=1 and (mitigate()  or
     AuraUtil.FindAuraByName("Dread Inferno", "player", "HARMFUL") or Player:Debuff(S.chronofaded) ) then
         return S.Feint:Cast()
     end

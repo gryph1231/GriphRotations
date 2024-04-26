@@ -106,39 +106,39 @@ function StdUi:HookHoverBorder(object)
 	object:HookScript('OnLeave', self.ResetHighlightBorder);
 end
 
-function StdUi:ApplyBackdrop(frame, type, border, insets)
-	local config = frame.config or self.config;
-	local backdrop = {
-		bgFile   = config.backdrop.texture,
-		edgeFile = config.backdrop.texture,
-		edgeSize = 1,
-	};
-	if insets then
-		backdrop.insets = insets;
-	end
-	frame:SetBackdrop(backdrop);
+-- function StdUi:ApplyBackdrop(frame, type, border, insets)
+-- 	local config = frame.config or self.config;
+-- 	local backdrop = {
+-- 		bgFile   = config.backdrop.texture,
+-- 		edgeFile = config.backdrop.texture,
+-- 		edgeSize = 1,
+-- 	};
+-- 	if insets then
+-- 		backdrop.insets = insets;
+-- 	end
+-- 	frame:SetBackdrop(backdrop);
 
-	type = type or 'button';
-	border = border or 'border';
+-- 	type = type or 'button';
+-- 	border = border or 'border';
 
-	if config.backdrop[type] then
-		frame:SetBackdropColor(
-			config.backdrop[type].r,
-			config.backdrop[type].g,
-			config.backdrop[type].b,
-			config.backdrop[type].a
-		);
-	end
+-- 	if config.backdrop[type] then
+-- 		frame:SetBackdropColor(
+-- 			config.backdrop[type].r,
+-- 			config.backdrop[type].g,
+-- 			config.backdrop[type].b,
+-- 			config.backdrop[type].a
+-- 		);
+-- 	end
 
-	if config.backdrop[border] then
-		frame:SetBackdropBorderColor(
-			config.backdrop[border].r,
-			config.backdrop[border].g,
-			config.backdrop[border].b,
-			config.backdrop[border].a
-		);
-	end
-end
+-- 	if config.backdrop[border] then
+-- 		frame:SetBackdropBorderColor(
+-- 			config.backdrop[border].r,
+-- 			config.backdrop[border].g,
+-- 			config.backdrop[border].b,
+-- 			config.backdrop[border].a
+-- 		);
+-- 	end
+-- end
 
 function StdUi:ClearBackdrop(frame)
 	frame:SetBackdrop(nil);

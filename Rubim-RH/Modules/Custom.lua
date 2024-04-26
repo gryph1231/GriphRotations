@@ -1761,14 +1761,18 @@ end
 function kickprio()
     -- list of m+ abilities that should be kicked
     local KickSpells = {
-        'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
-        "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Noxious Stench','Dino Might','Terrifying Screech','Noxious Stench',   -- AD
-        'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
-        'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-        'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
-        'Choking Vines','Enraged Growth','Healing Waters','Toxic Bloom','Revitalize','Pyroblast','Arcane Blast','Frostbolt',--Everbloom
+
+     
+        'Hideous Cackle','Decay Surge','Withering Burst','Earthbolt','Infuse Corruption','Decaying Roots','Burst of Decay','Screech','Decay Surge', --BRH
+        'Molten Core','Burning Roar','Mending Clay','Melt','Mote of Combustion','Lava Bolt','Molten Army', -- Neltharus
+        'Expulse','Demoralizing Shout','Elemental Focus','Dazzle','Pyretic Burst','Cauterize','Refreshing Tide','Boiling Rage','Tidal Divergence','Water Bolt','Aqueous Barrier', -- HoI
+        'Spiked Carapace','Stone Spike','Chain Lightning','Stone Bolt','Earthen Ward','Curse of Stone','Sonic Burst','Hasten', -- Uldaman
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
         'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+        'Call of the Flock','Mana Void','Monotonous Lecture', 'Arcane Missiles','Astral Bomb',  -- AA
+        'Icebolt','Ice Shield','Cold Claws','Cinderbolt','Lightning Bolt','Crackling Detonation','Thunder Bolt','Flashfire','Shock Blast',       --RLP
+        'Mystic Vapors','Erratic Growth','Waking Bane','Condensed Frost','Icy Bindings', --AV
+        'Disruptive Shout','Disruptive Shout','Stormbolt','Surge','Tempest','Summon Squall','Stormbolt','Thunderstrike','Death Bolt Volley','Death Bolt','Rotting Wind','Swift Wind','Bloodcurdling Shout','Deadly Thunder','Bloodcurdling Shout', -- NO
 
     }
     local currentspellchannel = select(1,UnitChannelInfo('target'))
@@ -1785,14 +1789,16 @@ function kickprio()
 
     function stunprio()
         local stunspells = {
-            'Scar Soul', 'Spirited Defense', 'Spellbind', 'Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
-            "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
-            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
-            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-            'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
-            'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
-            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', --Fall
-            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--Rise
+            'Crushing Smash','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH
+            'Spiked Carapace','Chain Lightning','Earthen Ward','Curse of Stone','Sonic Burst','Hasten','Throw Rock','Cleave','Hail of Stone','Time Blade',--Uldaman
+            'Seismic Slam','Expulse','Demoralizing Shout','Spear Flurry','Elemental Focus','Dazzle','Ice Shard','Refreshing Tide','Thunderstrike','Boiling Rage','Tidal Divergence', --HoI
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb','Astral Whirlwind',   -- AA
+            'Tectonic Slam','Ice Shield','Cold Claws','Burning Ambition','Flame Dance','Thunderclap',       --RLP
+            'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
+            'Pierce','Swift Stab','Rain of Arrows','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
+            'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
         }
         
         local currentspellchannel = select(1,UnitChannelInfo('target'))
@@ -1811,14 +1817,16 @@ function kickprio()
     
     function blindprio()
         local blindspells = {
-            'Scar Soul','Spirited Defense','Spellbind','Soul Bolt','Soul Volley','Drain Essence','Infected Thorn','Ruinous Bolt','Bramble Bolt', -- Waycrest M
-            "Bwonsamdi's Mantle", 'Mending Word','Fiery Enchant','Wildfire','Unstable Hex','Dino Might','Terrifying Screech', 'Bulwark of Juju',  -- AD
-            'Soul Blast','Spirit Blast','Arcane Blitz','Fel Frenzy', --BRH
-            'Healing Wave','Wrath','Hex','Water Bolt','Frostbolt','Mind Flay','Aquablast', --TotT
-            'Unnerving Screech','Curse of Isolation','Tormenting Eye','Blood Metamorphosis',--DHT
-            'Choking Vines','Enraged Growth','Healing Waters',--Everbloom
-            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence', -- Fall
-            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--Rise
+            'Crushing Smash','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH
+            'Spiked Carapace','Chain Lightning','Earthen Ward','Curse of Stone','Sonic Burst','Hasten','Throw Rock','Cleave','Hail of Stone','Time Blade',--Uldaman
+            'Seismic Slam','Expulse','Demoralizing Shout','Spear Flurry','Elemental Focus','Dazzle','Ice Shard','Refreshing Tide','Thunderstrike','Boiling Rage','Tidal Divergence', --HoI
+            'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
+            'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+            'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb','Astral Whirlwind',   -- AA
+            'Tectonic Slam','Ice Shield','Cold Claws','Burning Ambition','Flame Dance','Thunderclap',       --RLP
+            'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
+            'Pierce','Swift Stab','Rain of Arrows','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
+            'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
         }
             
         local currentspellchannel = select(1,UnitChannelInfo('target'))
@@ -1839,14 +1847,13 @@ function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-
-                'Soul Burst', 'Shadow Bolt Volley',          --BRH 
-                'Soulrend', --AD
-                'Infinite Fury', 'Stonecracker Barrage',--DotI                                                                       --neltharions lair
-                'Swell', 'Festering Shockwave', -- TotT
-                'Maddening Roar', 'Earthshaking Roar','Apocalyptic Nightmare',  'Shattered Earth',            -- DHT
-                'Colossal Blow', 'Cinderbolt Storm',                                                  --EB
-                -- 'Wildfire', --WM
+                'Decay Spray', 'Gushing Ooze',                                                     --BH
+                'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', --halls of infusion
+                'Magma Eruption', 'Might of the Forge', 'Volatile Mutation', 'Candescent Tempest', -- neltharus
+                'Shocking Quake', 'Crushing Stomp', 'Thunderous Clap', 'Wing Buffet',              -- Uldaman
+                'Infinite Fury', 'Stonecracker Barrage',--DotI                                                                      
+                'Volatile Mutation','Might of the Forge', -- Neltharus
+                'Inferno', --RLP
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
