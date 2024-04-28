@@ -74,7 +74,7 @@ JudgmentDebuff                        = Spell(197277),
 -- Pool
 Pool                                  = Spell(999910),
 
-
+FrostShock = Spell(385963),
 TemplarsVerdict                       = Spell(85256),
 -- Talents
 AshestoDust                           = Spell(383300),
@@ -337,7 +337,7 @@ local function freedom()
             if true then
                 -- variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
                 if S.TotLB:IsAvailable() then
-                    DSrange = RangeCount11()
+                    DSrange = inRange20
                 else
                     DSrange = inRange8
                 end
@@ -761,10 +761,11 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         
   
         end
-                --Freedom
-                if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and inRange20 >= 1 then
-                    return S.BlessingofFreedom:Cast()
-                end
+
+    -- --Freedom
+    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings) or Player:Debuff(S.FrostShock)) and inRange10 >= 1 then
+        return S.BlessingofFreedom:Cast()
+    end
 
 
         -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then

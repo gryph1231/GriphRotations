@@ -109,7 +109,7 @@ RubimRH.Spell[66] = {
     -- Pool                                  = Spell(999910),
     Pool = Spell(397799),
 
-
+    deepchill = Spell(391634),
     HSicon = Spell(255647),--lights judgment
     lust1    = Spell(57724),
     lust2    = Spell(57723),
@@ -119,7 +119,7 @@ RubimRH.Spell[66] = {
     lustAT   = Spell(20549), -- war stomp
 
     EyeofTyr = Spell(387174),
-
+    FrostShock = Spell(385963),
     IcyBindings = Spell(377488),
 
     ArdentDefender         = Spell(31850),
@@ -169,52 +169,38 @@ Item.Paladin.Protection = {
 local I = Item.Paladin.Protection;
 
 
--- local function freedom()
---     if Player:AffectingCombat() then
---         for id = 1, 40 do
---             local spell = { 'Crystalline Rupture','Arcane Lockdown', }
---             local unitID = "nameplate" .. id
---             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
---                 UnitCastingInfo(unitID)
---             local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+local function freedom()
+    if Player:AffectingCombat() then
+        for id = 1, 40 do
+            local spell = { 'Crystalline Rupture','Arcane Lockdown', }
+            local unitID = "nameplate" .. id
+            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+                UnitCastingInfo(unitID)
+            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
 
---             for idx = 1, #spell do
---                 if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
---                     return true
---                 end
---             end
---         end
---     end
---     return false
--- end
+            for idx = 1, #spell do
+                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
 
 local function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-                "Agitation","Storm Slash","Peck","Severing Slash", -- Academy
-                "Piercing Shards","Heavy Tome","Condensed Frost","Ice Cutter","Spellfrost Breath","Ice Cutter","Tear Flesh",--AV
-                "Pierce","Arcing Strike","Surge","Lightning Cudgel","Death Bolt","Sundering Slash","Mortal Strike","Deadly Thunder", --NO
-                "Crushing Smash","Icebolt","Cold Claws","Steel Barrage","Flame Dance","Fire Maw","Thunder Jaw","Thunder Bolt","Shock Blast", --RLP
-                "Crushing Smash","Burst of Decay","Maul","Bash","Feral Claw","Decay Surge","Decay Claws", --Brackenhide Hollow
-                "Rising Squall","Pyretic Burst","Oceanic Breath","Ice Shard","Water Bolt", --HoI
-                "Blazing Slash","Brutal Strike","Imbued Magma","Reverberating Slam", --neltharus
-                "Chomp","Stone Spike","Diseased Bite","Cleave","Ancient Power","Jagged Bite","Stone Bolt","Fissuring Slam","Venomous Fangs","Bulwark Slam","Time Blade", --uldaman
 
                 'Searing Blows', 'Stormslam',-- RLP boss
                 'Savage Peck', 'Barkbreaker', --Academy boss
-                'Dragon Strike', -- Azure vault boss
-                'Brutalize','Rending Strike', -- NO boss
+                'Erupting Fissure','Dragon Strike', -- Azure vault boss
+                'Brutalize','Rending Strike','Conductive Strike', -- NO boss
                 'Decaystrike', -- BHH boss
                 'Fiery Focus','Heated Swings',--neltharus boss
                 'Wild Cleave', --uldaman boss
-
-                'Bloodletting Sweep', 'Stormslam', 'Deathspike', 'Infused Strike', 'Haunting Gaze',
-                'Arcane Cleave', 'Dragon Strike', 'Frigid Shard', 'Searing Blows',
-                'Lightning Strike', 'Brutalize', 'Savage Strike', 'Void Slash', 'Severing Slash', 'Ice Cutter',
-                'Steel Barrage',
-                'Chronoshear','Unwind','Radiant','Bright Reclamation','Crushing Onslaught','Titanic Blow','Sand Blast','Mortal Strikes','Temporal Breath',
-                'Oiled Blade','Razor Shards',
+                'Squall Buffet', --HoI
 
             
             }
@@ -233,22 +219,6 @@ local function mitigatedng()
     return false
 end
 
-local function combatmobs40()
-    local totalRange40 = 0
-   
-
-
-    for id = 1, 40 do
-        local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and RangeCount("Avenger's Shield")
-            and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
-            totalRange40 = totalRange40 + 1
-        end
-    end
-
-
-    return totalRange40
-end
 
 local function APL()
 
@@ -271,7 +241,13 @@ local function APL()
     -- print(targetRange8)
 
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-    highkey = 4
+    local highkey = 4
+
+    if GetInstanceInfo() == 'Dawn of the Infinite' then
+        dawn = true
+    else
+        dawn = false
+    end
 
     castchannelTime = math.random(250, 500) / 1000
 
@@ -299,14 +275,15 @@ local function APL()
 
     -- Define a list of dungeon boss encounter IDs
     local Boss = {
-        'The Raging Tempest', 'Teera', 'Balakar Khan','Teera and Maruuk','Maruuk',                   -- Nokhud Offensive
+        'The Raging Tempest', 'Teera', 'Balakar Khan','Maruuk',                   -- Nokhud Offensive
         'Hackclaw"s War-Band','Gutshot','Decatriarch Wratheye', -- Brakenhide hollow
         'Emberon','Chrono-Lord Deios', -- udlaman: legacy of tyr
         'Crawth', 'Overgrown Ancient', --Academy
-        'Umbrelskul', -- Azure vault
+        'Leymor','Umbrelskul', -- Azure vault
         'Kokia Blazehoof','Erkhart Stormvein', --RLP
         'Decatriarch Wratheye',--BHH
         'Chargath, Bane of Scales', 'Forgemaster Gorek', --neltharus
+        'Primal Tsunami', -- HoI
         
 
     }
@@ -323,6 +300,10 @@ local function APL()
         aoecds10y = false
     end
 
+local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
+local useDS = not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
+local useGoAK = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Ardent Defender", "player")
+local useEoT = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
 
 
     if inRange30 > validmobsinrange30y and combatmobs40() > 0 then
@@ -336,8 +317,10 @@ local function APL()
             and aoecds10y
         ) or inRange8>= 3)
     --         --battle rez
-
-
+--     local currentspellchannel = select(1,UnitChannelInfo('target'))
+--     local currentspellcast = select(1, UnitCastingInfo('target'))
+-- print(currentspellcast)
+-- print(currentspellchannel)
 
 
     if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady()
@@ -421,9 +404,9 @@ local function APL()
 
 
     -- --Freedom
-    -- if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings)) and inRange10 >= 1 then
-    --     return S.BlessingofFreedom:Cast()
-    -- end
+    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings) or Player:Debuff(S.FrostShock) or Player:Debuff(S.deepchill))  then
+        return S.BlessingofFreedom:Cast()
+    end
 
     -- kick off GCD
     if (castTime > castchannelTime +0.5 or channelTime > castchannelTime +0.5)
@@ -447,20 +430,22 @@ local function APL()
 
     --Stun
 
-    if (castTime > castchannelTime or channelTime > castchannelTime) 
-    -- and level> highkey
-    and select(8, UnitCastingInfo("target")) == false and not isEnraged
+    if 
+    (castTime > castchannelTime or channelTime > castchannelTime) 
         and RubimRH.InterruptsON() and S.HammerofJustice:IsReady() and Player:AffectingCombat() and targetRange10
-         and stunprio() 
+         and 
+    stunprio() 
          then
         return S.HammerofJustice:Cast()
     end
 
     --Blind
-    if (castTime > 0.1 or channelTime > 0.1) and S.HammerofJustice:CooldownRemains() > Player:GCD() 
-    -- and level> highkey
-    and select(8, UnitCastingInfo("target")) == false 
-        and RubimRH.InterruptsON() and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
+    if 
+    -- (castTime > 0.1 or channelTime > 0.1) 
+    -- and select(8, UnitCastingInfo("target")) == false 
+
+    --     and 
+        RubimRH.InterruptsON() and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
          and blindprio() 
          then
         return S.BlindingLight:Cast()
@@ -509,7 +494,7 @@ local function APL()
     end
 
 --abnout to die need heals or immunity
-    if S.DivineShield:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() and not Player:Debuff(S.Forbearance) and inRange30 >= 1 and Player:HealthPercentage() < 20 then
+    if S.DivineShield:IsReady() and inRange30 >= 1 and Player:HealthPercentage() < 15 then
     return S.DivineShield:Cast()
 end
 
@@ -520,22 +505,21 @@ end
 
 
 
-    -- defensives for trash on M+ key <= level 5
-    if (not IsEncounterInProgress(Boss) or level <= highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
+    -- defensives for trash on M+ key <= level 3
+    if (not IsEncounterInProgress(Boss) or level <= highkey or dawn == true) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
         if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
             and inRange30 >= 1
             and Player:HealthPercentage() < 35
-            and not Player:Buff(S.GuardianofAncientKings) 
-            and not Player:Buff(S.ArdentDefender)  then
+            and useDS then
             return S.DivineShield:Cast()
         end
 
 
-        if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5
-            and inRange30 >= 1
+        if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
+            and inRange30 >= 1 
             and (HPpercentloss > 12
                 and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
-            and not Player:Buff(S.DivineShield) and not Player:Buff(S.ArdentDefender) then
+                and useGoAK then
             return S.GuardianofAncientKings:Cast()
         end
 
@@ -543,12 +527,12 @@ end
             and inRange30 >= 1
             and (HPpercentloss > 12
                 and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
-            and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefender) then
+                and  useAD then
             return S.ArdentDefender:Cast()
         end
 
         if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
-            and (inRange8>= 1 or targetRange8) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
+            and (inRange8>= 1 or targetRange8) and useEoT then
             return S.EyeofTyr:Cast()
         end
     end
@@ -559,38 +543,48 @@ end
 
     -- defensives for bosses
     if (mitigatedng() and level > highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
-        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable()
-            and not Player:Buff(S.ArdentDefender) 
-            and not Player:Buff(S.GuardianofAncientKings)
-            and not Target:Debuff(S.EyeofTyr)
-        then
-            return S.DivineShield:Cast()
-        end
+        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
+        and inRange30 >= 1
+        and Player:HealthPercentage() < 35
+        and useDS  then
+        return S.DivineShield:Cast()
+    end
 
 
+    if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
+        and inRange30 >= 1 
+        and (HPpercentloss > 12
+            and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
+        and useGoAK then
+        return S.GuardianofAncientKings:Cast()
+    end
 
-        if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
-            and not Player:Buff(S.DivineShield) and not Player:Buff(S.ArdentDefender) then
-            return S.GuardianofAncientKings:Cast()
-        end
-        if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5 
-            and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) and not Player:Buff(S.ArdentDefender) then
-            return S.ArdentDefender:Cast()
-        end
+    if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5
+        and inRange30 >= 1
+        and (HPpercentloss > 12
+            and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
+            and useAD then
+        return S.ArdentDefender:Cast()
+    end
 
-        if S.EyeofTyr:IsReady()
-            and not Player:Buff(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
-            and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
-            and (inRange8 >= 1 or targetRange8) and not Player:Buff(S.DivineShield) and not Player:Buff(S.GuardianofAncientKings) then
-            return S.EyeofTyr:Cast()
-        end
+    if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
+        and (inRange8>= 1 or targetRange8) and useEoT then
+        return S.EyeofTyr:Cast()
+    end
     end
 
     -- heals/active mitigation
-
     -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
     if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 65
-        and (WordofGlorycast or Player:BuffRemains(S.ShieldoftheRighteousBuff) >= Player:GCD() * 3) then
+        and (WordofGlorycast or Player:BuffRemains(S.ShieldoftheRighteousBuff) >= Player:GCD() * 3 ) then
+        return S.WordofGlory:Cast()
+    end
+
+
+    --  if about to die and shield up
+    if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 45 and Player:Buff(S.ShieldoftheRighteousBuff)
+            and (WordofGlorycast or Player:HolyPower() >= 3))
+    then
         return S.WordofGlory:Cast()
     end
 

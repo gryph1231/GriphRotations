@@ -1772,7 +1772,7 @@ function kickprio()
         'Call of the Flock','Mana Void','Monotonous Lecture', 'Arcane Missiles','Astral Bomb',  -- AA
         'Icebolt','Ice Shield','Cold Claws','Cinderbolt','Lightning Bolt','Crackling Detonation','Thunder Bolt','Flashfire','Shock Blast',       --RLP
         'Mystic Vapors','Erratic Growth','Waking Bane','Condensed Frost','Icy Bindings', --AV
-        'Disruptive Shout','Disruptive Shout','Stormbolt','Surge','Tempest','Summon Squall','Stormbolt','Thunderstrike','Death Bolt Volley','Death Bolt','Rotting Wind','Swift Wind','Bloodcurdling Shout','Deadly Thunder','Bloodcurdling Shout', -- NO
+        'Storm Bolt','Disruptive Shout','Disruptive Shout','Stormbolt','Surge','Tempest','Summon Squall','Stormbolt','Thunderstrike','Death Bolt Volley','Death Bolt','Rotting Wind','Swift Wind','Bloodcurdling Shout','Deadly Thunder','Bloodcurdling Shout', -- NO
 
     }
     local currentspellchannel = select(1,UnitChannelInfo('target'))
@@ -1797,7 +1797,7 @@ function kickprio()
             'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb','Astral Whirlwind',   -- AA
             'Tectonic Slam','Ice Shield','Cold Claws','Burning Ambition','Flame Dance','Thunderclap',       --RLP
             'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
-            'Pierce','Swift Stab','Rain of Arrows','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
+            'Storm Bolt','Pierce','Swift Stab','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
             'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
         }
         
@@ -1825,7 +1825,7 @@ function kickprio()
             'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb','Astral Whirlwind',   -- AA
             'Tectonic Slam','Ice Shield','Cold Claws','Burning Ambition','Flame Dance','Thunderclap',       --RLP
             'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
-            'Pierce','Swift Stab','Rain of Arrows','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
+            'Storm Bolt','Pierce','Swift Stab','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
             'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
         }
             
@@ -2086,3 +2086,24 @@ function RangeCount10()
 
     return range_counter
 end
+
+
+
+function combatmobs40()
+    local totalRange40 = 0
+   
+
+
+    for id = 1, 40 do
+        local unitID = "nameplate" .. id
+        if UnitCanAttack("player", unitID) and RangeCount("Avenger's Shield")
+            and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
+            totalRange40 = totalRange40 + 1
+        end
+    end
+
+
+    return totalRange40
+end
+
+
