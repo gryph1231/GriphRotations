@@ -332,20 +332,8 @@ end
         Finishers = function()
 
 
-            if true then
-                -- variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
-                if S.TotLB:IsAvailable() then
-                    DSrange = inRange20
-                else
-                    DSrange = inRange10
-                end
-
-            VarDsCastable = (DSrange>=3 or DSrange>=2 and not S.DivineArbiter:IsAvailable() or AuraUtil.FindAuraByName("Empyrean Power", "player")) and not AuraUtil.FindAuraByName("Empyrean Legacy", "player")
-            and not (AuraUtil.FindAuraByName("Divine Arbiter", "player") and DAstack>24) and RubimRH.AoEON()
-            end
-
             -- divine_storm,if=variable.ds_castable&(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
-            if S.DivineStorm:IsReady() and targetRange8 and VarDsCastable and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
+            if S.DivineStorm:IsReady() and VarDsCastable and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
             or not RubimRH.CDsON() or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then
             return S.DivineStorm:Cast() 
             end
@@ -531,7 +519,7 @@ end
 
 
 local function APL()
-    
+    local _,instanceType = IsInInstance()
     inRange8 = RangeCount("Rebuke")
     inRange10 = RangeCount("Hammer of Justice")
     inRange20 = RangeCount("Blade of Justice")
@@ -541,13 +529,24 @@ local function APL()
     targetRange20 = TargetInRange("Blade of Justice")
     targetRange30 = TargetInRange("Hammer of Wrath")
 
+
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
         DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
     else
         DAstack = 0
     end
 
+    if true then
+        -- variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
+        if S.TotLB:IsAvailable() then
+            DSrange = inRange20
+        else
+            DSrange = inRange8
+        end
 
+    VarDsCastable = (DSrange>=3 or DSrange>=2 and not S.DivineArbiter:IsAvailable() or AuraUtil.FindAuraByName("Empyrean Power", "player")) and not AuraUtil.FindAuraByName("Empyrean Legacy", "player")
+    and not (AuraUtil.FindAuraByName("Divine Arbiter", "player") and DAstack>24) and RubimRH.AoEON()
+    end
         castchannelTime = math.random(250, 500) / 1000
         HolyPower = Player:HolyPower()
         local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
@@ -567,7 +566,8 @@ local function APL()
     validmobsinrange30y = combatmobs40() * .6
 
 
-    if inRange10 > validmobsinrange10y and combatmobs40() > 0 then
+
+    if (inRange10 > validmobsinrange10y or instanceType=='raid') and combatmobs40() > 0 then
         aoecds10y = true
     else
         aoecds10y = false
@@ -575,7 +575,7 @@ local function APL()
 
 
 
-    if inRange30 > validmobsinrange30y and combatmobs40() > 0 then
+    if (inRange30 > validmobsinrange30y or instanceType=='raid') and combatmobs40() > 0 then
         aoecds30y = true
     else
         aoecds30y = false

@@ -261,7 +261,7 @@ local function APL()
     channelTime = elapsedTimech / 1000
 
     WordofGlorycast = (
-        Player:BuffP(S.DivinePurposeBuff) or Player:BuffP(S.ShiningLight) or Player:Buff(S.BastionofLight))
+        AuraUtil.FindAuraByName("Divine Purpose", "player") or AuraUtil.FindAuraByName("Shining Light", "player") or AuraUtil.FindAuraByName("Bastion of Light", "player"))
 
     if UnitClassification("target") == "worldboss"
         or UnitClassification("target") == "rareelite"
@@ -384,7 +384,7 @@ local useEoT = not AuraUtil.FindAuraByName("Divine Shield", "player") and not Au
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
-    if S.DivineSteed:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffP(S.DivineSteedBuff) then
+    if S.DivineSteed:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Divine Steed", "player") then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
 
@@ -401,6 +401,241 @@ local useEoT = not AuraUtil.FindAuraByName("Divine Shield", "player") and not Au
     if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or inRange30 == 0) then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
+
+
+
+    if not IsCurrentSpell(6603) and Player:CanAttack(Target)
+        and Target:AffectingCombat() and Player:AffectingCombat() and targetRange30 then
+        return S.autoattack:Cast()
+    end
+
+
+    
+    --health pot -- will need to update item ID of HPs as expansions progress
+    if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and IsUsableItem(191380) == true and
+        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
+        and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+    end
+
+--abnout to die need heals or immunity
+    if S.DivineShield:IsReady() and inRange30 >= 1 and Player:HealthPercentage() < 15 then
+    return S.DivineShield:Cast()
+end
+
+if S.LayonHands:IsReady() and Player:HealthPercentage() < 15 and S.DivineShield:CooldownRemains() > Player:GCD() and not Player:Debuff(S.Forbearance)
+    and inRange30 >= 1 then
+    return S.LayonHands:Cast()
+end
+
+
+
+    -- defensives for trash on M+ key <= level 3
+    if (not IsEncounterInProgress(Boss) or level <= highkey or dawn == true) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
+        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
+            and inRange30 >= 1
+            and Player:HealthPercentage() < 35
+            and useDS then
+            return S.DivineShield:Cast()
+        end
+
+
+        if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
+            and inRange30 >= 1 
+            and (HPpercentloss > 12
+                and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
+                and useGoAK then
+            return S.GuardianofAncientKings:Cast()
+        end
+
+        if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5
+            and inRange30 >= 1
+            and (HPpercentloss > 12
+                and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
+                and  useAD then
+            return S.ArdentDefender:Cast()
+        end
+
+    --  if about to die and shield up
+    if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 45 
+            and (WordofGlorycast or Player:HolyPower() >= 3) and inRange10==0)
+    then
+        return S.WordofGlory:Cast()
+    end
+
+        if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
+            and (inRange8>= 1 or targetRange8) and useEoT then
+            return S.EyeofTyr:Cast()
+        end
+    end
+
+    if S.BlessingofSpellWarding:IsReady() and Player:HealthPercentage()<30 and select(1, UnitCastingInfo('target')) == 'Nightmare Breath' then
+        return S.BlessingofSpellWarding:Cast()
+    end
+
+    -- defensives for bosses
+    if (mitigatedng() and level > highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
+        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
+        and inRange30 >= 1
+        and Player:HealthPercentage() < 35
+        and useDS  then
+        return S.DivineShield:Cast()
+    end
+
+
+    if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
+        and inRange30 >= 1 
+        and (HPpercentloss > 12
+            and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
+        and useGoAK then
+        return S.GuardianofAncientKings:Cast()
+    end
+
+    if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5
+        and inRange30 >= 1
+        and (HPpercentloss > 12
+            and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
+            and useAD then
+        return S.ArdentDefender:Cast()
+    end
+
+
+    --  if about to die and shield up
+    if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 45 
+            and (WordofGlorycast or Player:HolyPower() >= 3) and inRange10==0)
+    then
+        return S.WordofGlory:Cast()
+    end
+
+
+    if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
+        and (inRange8>= 1 or targetRange8) and useEoT then
+        return S.EyeofTyr:Cast()
+    end
+    end
+
+    -- heals/active mitigation
+    -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
+    if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 65
+        and (WordofGlorycast or Player:BuffRemains(S.ShieldoftheRighteousBuff) >= Player:GCD() * 3 ) then
+        return S.WordofGlory:Cast()
+    end
+
+
+
+    if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8 >= 1)
+        and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
+    then
+        return S.ShieldoftheRighteous:Cast()
+    end
+
+
+    -- no enemies/out of target range heal/HP == 5 or if about to die and shield up
+    if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 55
+            and inRange30 == 0 and Player:HolyPower() == 5
+            or Player:HealthPercentage() < 45 and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 3
+            and (WordofGlorycast or Player:HolyPower() >= 3))
+    then
+        return S.WordofGlory:Cast()
+    end
+
+    -------------DEFENSIVES_-------------
+    if Target:Exists() and Player:CanAttack(Target) and (inRange40>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
+        -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
+        if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and
+            (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or AuraUtil.FindAuraByName("Divine Purpose", "player") or AuraUtil.FindAuraByName("Shining Light", "player") or Player:HealthPercentage() < 45) then
+            return S.WordofGlory:Cast()
+        end
+
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) 
+            and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
+                and (Player:ActiveMitigationNeeded()
+                    or Player:HealthPercentage() <= 80)) then
+            return S.ShieldoftheRighteous:Cast()
+        end
+
+
+        if S.BastionofLight:IsReadyP() and inRange8 >= 1 and RubimRH.CDsON() then
+            return S.BastionofLight:Cast()
+        end
+
+
+
+        if S.WordofGlory:IsReadyP() and Player:HealthPercentage() < 65 and WordofGlorycast and
+            Player:BuffRemains(S.ShieldoftheRighteousBuff) > 5 then
+            return S.WordofGlory:Cast()
+        end
+
+
+        if S.WordofGlory:IsReadyP() and
+            (
+                Player:HealthPercentage() < 45 and WordofGlorycast or
+                Player:HealthPercentage() < 70 and Player:HolyPower() == 5 and inRange30 == 0) and
+                AuraUtil.FindAuraByName("Shield of the Righteous", "player") then
+            return S.WordofGlory:Cast()
+        end
+
+        -- if S.BlessingofProtection:IsReadyP() and Player:HealthPercentage() <= 20
+        --     and not Player:DebuffP(S.Forbearance) and
+        --     S.DivineShield:CooldownRemains() > Player:GCD()
+        --     and not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
+        --     and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
+        --     and S.LayonHands:CooldownRemains() > Player:GCD() and
+        --     inRange10 >= 1 then
+        --     return S.BlessingofProtection:Cast()
+        -- end
+    
+
+        if RubimRH.CDsON() and inRange8 >= 1 then
+            if RubimRH.CDsON() and targetRange8
+            and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or S.AvengingWrath:CooldownRemains()>20)
+            and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
+            local ShouldReturn = UseItems();
+            if ShouldReturn then return ShouldReturn; end
+            end
+
+
+            if S.AvengingWrath:IsReadyP() and not AuraUtil.FindAuraByName("Avenging Wrath", "player") then
+                return S.AvengingWrath:Cast()
+            end
+
+            if S.HolyAvenger:IsReadyP() and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or S.AvengingWrath:CooldownRemains() > 60) then
+                return S.HolyAvenger:Cast()
+            end
+
+            if S.MomentofGlory:IsReadyP() and Player:PrevGCD(1, S.AvengersShield) and not S.AvengersShield:CooldownUp() then
+                return S.MomentofGlory:Cast()
+            end
+        end
+
+        if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangling) then
+        return S.BlessingofFreedom:Cast()
+        end
+
+
+
+
+        -- shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
+
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and
+            (
+                Target:Debuff(S.JudgmentDebuff) or
+                Player:HealthPercentage() < 90 and not AuraUtil.FindAuraByName("Shield of the Righteous", "player") and
+                (Player:NeedMajorHealing() or Player:NeedPanicHealing()))
+
+        then
+            return S.ShieldoftheRighteous:Cast()
+        end
+
+        -- shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
+
+        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and Player:HealthPercentage()>=80 and 
+            (
+                Player:HolyPower() == 5  or
+                Player:HolyPower() == 4 and S.SanctifiedWrath:IsAvailable() and AuraUtil.FindAuraByName("Avenging Wrath", "player")) then
+            return S.ShieldoftheRighteous:Cast()
+        end
+
 
 
     -- --Freedom
@@ -469,245 +704,17 @@ local useEoT = not AuraUtil.FindAuraByName("Divine Shield", "player") and not Au
     end
 
 
-    -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
-    --     return S.HammerofJustice:Cast()
-    -- end
-
-    if not IsCurrentSpell(6603) and Player:CanAttack(Target)
-        and Target:AffectingCombat() and Player:AffectingCombat() and targetRange30 then
-        return S.autoattack:Cast()
-    end
-
-
-    -- if  IsUsableItem(5512) == true and Player:HealthPercentage()<50
-    -- and GetItemCount(5512) >= 1 and GetItemCooldown(5512) == 0
-    -- then
-    -- return S.HSicon:Cast()
-    -- end
-
-    
-    --health pot -- will need to update item ID of HPs as expansions progress
-    if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and IsUsableItem(191380) == true and
-        GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1
-        and (not Player:InArena() and not Player:InBattlegrounds()) then
-        return I.HPIcon:Cast()
-    end
-
---abnout to die need heals or immunity
-    if S.DivineShield:IsReady() and inRange30 >= 1 and Player:HealthPercentage() < 15 then
-    return S.DivineShield:Cast()
-end
-
-if S.LayonHands:IsReady() and Player:HealthPercentage() < 20 and S.DivineShield:CooldownRemains() > Player:GCD() and not Player:Debuff(S.Forbearance)
-    and inRange30 >= 1 then
-    return S.LayonHands:Cast()
-end
-
-
-
-    -- defensives for trash on M+ key <= level 3
-    if (not IsEncounterInProgress(Boss) or level <= highkey or dawn == true) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
-        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
-            and inRange30 >= 1
-            and Player:HealthPercentage() < 35
-            and useDS then
-            return S.DivineShield:Cast()
-        end
-
-
-        if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
-            and inRange30 >= 1 
-            and (HPpercentloss > 12
-                and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
-                and useGoAK then
-            return S.GuardianofAncientKings:Cast()
-        end
-
-        if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5
-            and inRange30 >= 1
-            and (HPpercentloss > 12
-                and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
-                and  useAD then
-            return S.ArdentDefender:Cast()
-        end
-
-        if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
-            and (inRange8>= 1 or targetRange8) and useEoT then
-            return S.EyeofTyr:Cast()
-        end
-    end
-
-    if S.BlessingofSpellWarding:IsReady() and Player:HealthPercentage()<30 and select(1, UnitCastingInfo('target')) == 'Nightmare Breath' then
-        return S.BlessingofSpellWarding:Cast()
-    end
-
-    -- defensives for bosses
-    if (mitigatedng() and level > highkey) and S.GuardianofAncientKings:TimeSinceLastCast()>Player:GCD() then
-        if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
-        and inRange30 >= 1
-        and Player:HealthPercentage() < 35
-        and useDS  then
-        return S.DivineShield:Cast()
-    end
-
-
-    if S.GuardianofAncientKings:IsReady() and S.ArdentDefender:TimeSinceLastCast() > 0.5 
-        and inRange30 >= 1 
-        and (HPpercentloss > 12
-            and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 50)
-        and useGoAK then
-        return S.GuardianofAncientKings:Cast()
-    end
-
-    if S.ArdentDefender:IsReady() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5
-        and inRange30 >= 1
-        and (HPpercentloss > 12
-            and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
-            and useAD then
-        return S.ArdentDefender:Cast()
-    end
-
-    if S.EyeofTyr:IsReady() and HPpercentloss > 5 and Player:HealthPercentage() < 95
-        and (inRange8>= 1 or targetRange8) and useEoT then
-        return S.EyeofTyr:Cast()
-    end
-    end
-
-    -- heals/active mitigation
-    -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
-    if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 65
-        and (WordofGlorycast or Player:BuffRemains(S.ShieldoftheRighteousBuff) >= Player:GCD() * 3 ) then
-        return S.WordofGlory:Cast()
-    end
-
-
-    --  if about to die and shield up
-    if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 45 and Player:Buff(S.ShieldoftheRighteousBuff)
-            and (WordofGlorycast or Player:HolyPower() >= 3))
-    then
-        return S.WordofGlory:Cast()
-    end
-
-    if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8 >= 1)
-        and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
-    then
-        return S.ShieldoftheRighteous:Cast()
-    end
-
-
-    -- no enemies/out of target range heal/HP == 5 or if about to die and shield up
-    if S.WordofGlory:IsReady() and (Player:HealthPercentage() < 55
-            and inRange30 == 0 and Player:HolyPower() == 5
-            or Player:HealthPercentage() < 45 and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 3
-            and (WordofGlorycast or Player:HolyPower() >= 3))
-    then
-        return S.WordofGlory:Cast()
-    end
-
-    -------------DEFENSIVES_-------------
-    if Target:Exists() and Player:CanAttack(Target) and (inRange40>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
-        -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
-        if S.WordofGlory:IsReady() and Player:HealthPercentage() <= 70 and not Player:HealingAbsorbed() and
-            (Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 5 or Player:Buff(S.DivinePurposeBuff) or Player:Buff(S.ShiningLight) or Player:HealthPercentage() < 45) then
-            return S.WordofGlory:Cast()
-        end
-
-        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) 
-            and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
-                and (Player:ActiveMitigationNeeded()
-                    or Player:HealthPercentage() <= 80)) then
-            return S.ShieldoftheRighteous:Cast()
-        end
-
-
-        if S.BastionofLight:IsReadyP() and inRange8 >= 1 and RubimRH.CDsON() then
-            return S.BastionofLight:Cast()
-        end
-
-
-
-        if S.WordofGlory:IsReadyP() and Player:HealthPercentage() < 65 and WordofGlorycast and
-            Player:BuffRemains(S.ShieldoftheRighteousBuff) > 5 then
-            return S.WordofGlory:Cast()
-        end
-
-
-        if S.WordofGlory:IsReadyP() and
-            (
-                Player:HealthPercentage() < 45 and WordofGlorycast or
-                Player:HealthPercentage() < 70 and Player:HolyPower() == 5 and inRange30 == 0) and
-            Player:Buff(S.ShieldoftheRighteousBuff) then
-            return S.WordofGlory:Cast()
-        end
-
-        -- if S.BlessingofProtection:IsReadyP() and Player:HealthPercentage() <= 20
-        --     and not Player:DebuffP(S.Forbearance) and
-        --     S.DivineShield:CooldownRemains() > Player:GCD()
-        --     and not Player:BuffP(S.ArdentDefender) and S.ArdentDefender:CooldownRemains() > Player:GCD()
-        --     and not Player:Buff(S.GuardianofAncientKings) and S.GuardianofAncientKings:CooldownRemains() > Player:GCD()
-        --     and S.LayonHands:CooldownRemains() > Player:GCD() and
-        --     inRange10 >= 1 then
-        --     return S.BlessingofProtection:Cast()
-        -- end
-    
-
-        if RubimRH.CDsON() and inRange8 >= 1 then
-            if RubimRH.CDsON() and targetRange8
-            and (Player:Buff(S.AvengingWrath) or S.AvengingWrath:CooldownRemains()>20)
-            and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
-            local ShouldReturn = UseItems();
-            if ShouldReturn then return ShouldReturn; end
-            end
-
-
-            if S.AvengingWrath:IsReadyP() and not Player:BuffP(S.AvengingWrathBuff) then
-                return S.AvengingWrath:Cast()
-            end
-
-            if S.HolyAvenger:IsReadyP() and (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 60) then
-                return S.HolyAvenger:Cast()
-            end
-
-            if S.MomentofGlory:IsReadyP() and Player:PrevGCD(1, S.AvengersShield) and not S.AvengersShield:CooldownUp() then
-                return S.MomentofGlory:Cast()
-            end
-        end
-
-        if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangling) then
-        return S.BlessingofFreedom:Cast()
-        end
-
-        -- shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
-
-        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and
-            (
-                Target:Debuff(S.JudgmentDebuff) or
-                Player:HealthPercentage() < 90 and not Player:Buff(S.ShieldoftheRighteousBuff) and
-                (Player:NeedMajorHealing() or Player:NeedPanicHealing()))
-
-        then
-            return S.ShieldoftheRighteous:Cast()
-        end
-
-        -- shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
-
-        if S.ShieldoftheRighteous:IsReady() and (targetRange8 or inRange8>=1) and Player:HealthPercentage()>=80 and 
-            (
-                Player:HolyPower() == 5  or
-                Player:HolyPower() == 4 and S.SanctifiedWrath:IsAvailable() and Player:BuffP(S.AvengingWrathBuff)) then
-            return S.ShieldoftheRighteous:Cast()
-        end
 
         -- -- more dr if dropped before everything
         if S.Consecration:IsReady() and not AuraUtil.FindAuraByName("Consecration", "player") and consecrationdrop
-            and (Player:Buff(S.ShieldoftheRighteousBuff) or HL.CombatTime() < 6 or Player:HealthPercentage() > 90) then
+            and (AuraUtil.FindAuraByName("Shield of the Righteous", "player") or HL.CombatTime() < 6 or Player:HealthPercentage() > 90) then
             return S.Consecration:Cast()
         end
 
         -- divine_toll
 
         if S.DivineToll:IsReadyP() and (not IsInInstance() or inRange30>=5 and IsInInstance()) and targetRange30 and  RubimRH.CDsON() and
-        (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 0) then
+        (AuraUtil.FindAuraByName("Avenging Wrath", "player") or S.AvengingWrath:CooldownRemains() > 0) then
             return S.DivineToll:Cast()
         end
 
@@ -721,7 +728,7 @@ end
 
         -- avengers_shield,if=debuff.vengeful_shock.down&conduit.vengeful_shock.enabled
         if S.AvengersShield:IsReady() and targetRange30 and (Target:Debuff(S.JudgmentDebuff) or inRange30 >= 3)
-            and (Player:Buff(S.ShieldoftheRighteousBuff) 
+            and (AuraUtil.FindAuraByName("Shield of the Righteous", "player")
             or HL.CombatTime() < 10 or Player:HealthPercentage() > 90 
             or RubimRH.CDsON() and S.DivineToll:CooldownUp())
         then
@@ -731,7 +738,7 @@ end
         -- divine_toll
 
         if S.DivineToll:IsReadyP() and (not IsInInstance() or inRange30>=3) and  RubimRH.CDsON() and
-            (Player:BuffP(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() > 0) then
+            (AuraUtil.FindAuraByName("Avenging Wrath", "player") or S.AvengingWrath:CooldownRemains() > 0) then
             return S.DivineToll:Cast()
         end
 
@@ -743,7 +750,7 @@ end
         -- hammer_of_wrath
 
         if S.HammerofWrath:IsReadyP() and targetRange30 and
-            (Target:HealthPercentage() <= 20 or Player:BuffP(S.AvengingWrathBuff)) then
+            (Target:HealthPercentage() <= 20 or AuraUtil.FindAuraByName("Avenging Wrath", "player")) then
             return S.HammerofWrath:Cast()
         end
 
@@ -821,7 +828,7 @@ end
     -- call precombat
     if not Player:AffectingCombat() then
         if S.WordofGlory:IsCastable() and Player:HealthPercentage() < 75 and
-            (Player:HolyPower() >= 3 or Player:BuffP(S.DivinePurpose) or Player:BuffP(S.ShiningLight)) then
+            (Player:HolyPower() >= 3 or AuraUtil.FindAuraByName("Divine Purpose", "player")  or AuraUtil.FindAuraByName("Shining Light", "player") ) then
             return S.WordofGlory:Cast()
         end
 
