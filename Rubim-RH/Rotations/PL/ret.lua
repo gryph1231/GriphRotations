@@ -74,7 +74,6 @@ JudgmentDebuff                        = Spell(197277),
 -- Pool
 Pool                                  = Spell(999910),
 
-FrostShock = Spell(385963),
 TemplarsVerdict                       = Spell(85256),
 -- Talents
 AshestoDust                           = Spell(383300),
@@ -121,7 +120,7 @@ SenseUndead = Spell(5502),
 EmpyreanLegacyBuff = Spell(387178),
 Entangling = Spell(408556),
 
-
+deepchill = Spell(391634),
 lust1                    = Spell(57724),
 lust2                    = Spell(57723),
 lust3                    = Spell(80354),
@@ -130,7 +129,7 @@ lust5                    = Spell(264689),
 lustAT                   = Spell(255647), -- lights judgment
 IcyBindings = Spell(377488),
 
-
+FrostShock = Spell(385963),
 DivineSteedBuff          = Spell(221886),
 BlessingofProtection     = Spell(1022),
 Forbearance              = Spell(25771),
@@ -239,23 +238,22 @@ local VarDsCastable
 
 local function freedom()
     if Player:AffectingCombat() then
-    
-    for id = 1, 40 do
-    
-        local spell = { 'Crystalline Rupture','Arcane Lockdown', }
-        local unitID = "nameplate" .. id
-    local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
-    local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-    
-    for idx = 1, #spell do
-    if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-    return true
-    end
-    end
-    end
+        for id = 1, 40 do
+            local spell = { 'Crystalline Rupture','Arcane Lockdown', }
+            local unitID = "nameplate" .. id
+            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+                UnitCastingInfo(unitID)
+            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+            for idx = 1, #spell do
+                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                    return true
+                end
+            end
+        end
     end
     return false
-    end
+end
     
 
   
@@ -339,10 +337,10 @@ local function freedom()
                 if S.TotLB:IsAvailable() then
                     DSrange = inRange20
                 else
-                    DSrange = inRange8
+                    DSrange = RangeCount11()
                 end
 
-            VarDsCastable = (DSrange>3 or DSrange>=2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and not (Player:Buff(S.DivineArbiterBuff) and Player:BuffStack(S.DivineArbiterBuff)>24) and RubimRH.AoEON()
+            VarDsCastable = (DSrange>3 or DSrange>=2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and  (not Player:Buff(S.DivineArbiterBuff) and Player:BuffStack(S.DivineArbiterBuff)<=24) and RubimRH.AoEON()
             end
 
             -- divine_storm,if=variable.ds_castable&(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
@@ -561,14 +559,14 @@ local function APL()
 
         HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
-    validmobsinrange8y = combatmobs40() * .7
+    validmobsinrange10y = combatmobs40() * .7
     validmobsinrange30y = combatmobs40() * .7
 
 
-    if inRange8 > validmobsinrange8y and combatmobs40() > 0 then
-        aoecds8y = true
+    if inRange10 > validmobsinrange10y and combatmobs40() > 0 then
+        aoecds10y = true
     else
-        aoecds8y = false
+        aoecds10y = false
     end
 
 
@@ -580,8 +578,8 @@ local function APL()
     end
 
     consecrationdrop = (
-        (Player:CanAttack(Target) and targetRange8
-            and aoecds8y
+        (Player:CanAttack(Target) and targetRange10
+            and aoecds10y
         ) or inRange8>= 3)
     --         --battle rez
 
@@ -665,7 +663,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
         end
-
+        if Player:AffectingCombat() then 
         if S.DivineShield:IsReady() and Player:HealthPercentage() <= 50 and not Player:Debuff(S.Forbearance) and
         not Player:BuffP(S.ShieldofVengeance) and (Player:InArena() or Player:InBattlegrounds() or Target:IsAPlayer()) then
         return S.DivineShield:Cast()
@@ -709,7 +707,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         and not Player:Buff(S.DivineProtection) or Player:HealthPercentage()<35) then
         return S.WordofGlory:Cast()
         end
-
+    end
 -- print(targetRange30)
         if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target) then 
 
@@ -746,27 +744,29 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 return S.Rebuke:Cast()
             end
         
+            -- --Stun
+            if S.HammerofJustice:IsReady() and stunprio() 
+            and targetRange10 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
+                return S.HammerofJustice:Cast()
+            end
+
             -- --blind
             if S.BlindingLight:IsReady() and blindprio()
-            and targetRange20 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
+            and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
                 return S.BlindingLight:Cast()
             end
         
         
-            -- --Stun
-            if S.HammerofJustice:IsReady() and stunprio() 
-            and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
-                return S.HammerofJustice:Cast()
-            end
+
         
   
         end
 
     -- --Freedom
-    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings) or Player:Debuff(S.FrostShock)) and inRange10 >= 1 then
+
+    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings) or Player:Debuff(S.FrostShock) or Player:Debuff(S.deepchill))  then
         return S.BlessingofFreedom:Cast()
     end
-
 
         -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
         --     return S.HammerofJustice:Cast()
