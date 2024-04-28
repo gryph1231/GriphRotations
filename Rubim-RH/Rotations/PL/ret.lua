@@ -295,20 +295,20 @@ end
      --|cooldown.avenging_wrath.remains>15)&(holy_power>=4&time<5|holy_power>=3&time>5|holy_power>=2&talent.divine_auxiliary)&(target.time_to_die>8&!talent.executioners_will|target.time_to_die>12)
             if S.ExecutionSentence:IsCastable() and targetRange20 and ((not Player:Buff(S.CrusadeBuff) and S.Crusade:CooldownRemains() > 10 
             or Player:BuffStack(S.CrusadeBuff) == 10 or S.AvengingWrath:CooldownRemains() > 10) 
-            and (HolyPower >= 3 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) and aoeTTD() > 8) then
+            and (HolyPower >= 3 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) and (aoeTTD() > 8 or Target:TimeToDie()>8)) then
                 return S.ExecutionSentence:Cast()
             end
 
             -- avenging_wrath,if=(holy_power>=4&time<5|holy_power>=3&(time>5|!talent.vanguard_of_justice)|holy_power>=2&talent.divine_auxiliary
             --&(cooldown.execution_sentence.remains=0|cooldown.final_reckoning.remains=0))&(!raid_event.adds.up|target.time_to_die>10)
-            if S.AvengingWrath:IsCastable()  and targetRange8 and (HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 
+            if S.AvengingWrath:IsCastable()  and targetRange10 and ((HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 
             and (HL.CombatTime() > 5 or not S.VanguardofJustice:IsAvailable()) or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable() 
-            and (S.ExecutionSentence:CooldownUp() or S.FinalReckoning:CooldownUp())) then
+            and (S.ExecutionSentence:CooldownUp() or S.FinalReckoning:CooldownUp())) or DSrange>=3) then
             return S.AvengingWrath:Cast()
             end
 
             --crusade,if=holy_power>=5&time<5|holy_power>=3&time>5
-            if S.Crusade:IsCastable() and targetRange8 and (HolyPower >= 5 and HL.CombatTime() < 5 or HolyPower >= 3 and HL.CombatTime() > 5) then
+            if S.Crusade:IsCastable() and targetRange10 and (HolyPower >= 5 and HL.CombatTime() < 5 or HolyPower >= 3 and HL.CombatTime() > 5) then
             return S.Crusade:Cast()
             end
        
@@ -337,10 +337,11 @@ end
                 if S.TotLB:IsAvailable() then
                     DSrange = inRange20
                 else
-                    DSrange = RangeCount11()
+                    DSrange = inRange10
                 end
 
-            VarDsCastable = (DSrange>3 or DSrange>=2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and not (AuraUtil.FindAuraByName("Divine Arbiter", "player") and DAstack>24) and RubimRH.AoEON()
+            VarDsCastable = (DSrange>=3 or DSrange>=2 and not S.DivineArbiter:IsAvailable() or AuraUtil.FindAuraByName("Empyrean Power", "player")) and not AuraUtil.FindAuraByName("Empyrean Legacy", "player")
+            and not (AuraUtil.FindAuraByName("Divine Arbiter", "player") and DAstack>24) and RubimRH.AoEON()
             end
 
             -- divine_storm,if=variable.ds_castable&(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
@@ -421,7 +422,7 @@ end
                 --wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6)
                 --&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
                 if S.WakeofAshes:IsCastable() and aoecds10y and RubimRH.CDsON() and targetRange8 and HolyPower <= 2 and (S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6) 
-                and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or aoeTTD() < 8) then
+                and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or (aoeTTD() < 8 or Target:TimeToDie()<8)) then
                 return S.WakeofAshes:Cast()
                 end
 
@@ -540,15 +541,12 @@ local function APL()
     targetRange20 = TargetInRange("Blade of Justice")
     targetRange30 = TargetInRange("Hammer of Wrath")
 
---  print(aoeTTD())
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
         DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
     else
         DAstack = 0
     end
-    -- print('IR10:',RangeCount10())
-    -- print('IR11:',RangeCount11())
-    -- print('inRange8',inRange8)
+
 
         castchannelTime = math.random(250, 500) / 1000
         HolyPower = Player:HolyPower()
@@ -565,8 +563,8 @@ local function APL()
 
         HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
-    validmobsinrange10y = combatmobs40() * .7
-    validmobsinrange30y = combatmobs40() * .7
+    validmobsinrange10y = combatmobs40() * .6
+    validmobsinrange30y = combatmobs40() * .6
 
 
     if inRange10 > validmobsinrange10y and combatmobs40() > 0 then
