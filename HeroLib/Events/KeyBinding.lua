@@ -39,11 +39,11 @@ local function ParseBar(Bar, Override)
       if Button.icon:IsShown() and ButtonTexture and ButtonHotKey and strbyte(ButtonHotKey) ~= 226 then
         -- If button is a macro check that the macro casts a spell else ignore
         local buttonActionType, buttonActionId
-        if _G.ElvUI or _G.Bartender4 then
-          buttonActionType, buttonActionId = GetActionInfo(Button._state_action)
-        else
-          buttonActionType, buttonActionId = GetActionInfo(Button:GetPagedID())
-        end
+        -- if _G.ElvUI or _G.Bartender4 then
+        --   buttonActionType, buttonActionId = GetActionInfo(Button._state_action)
+        -- else
+        --   buttonActionType, buttonActionId = GetActionInfo(Button:GetPagedID())
+        -- end
         if buttonActionType == "macro" then
           --Item is a macro so check it plans to cast a spell
           local macrospellid = GetMacroSpell(buttonActionId)

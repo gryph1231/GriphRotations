@@ -1806,6 +1806,40 @@ end
 
 
 
+local initialTotalMaxHealth = 0
+local combatStartTime = 0
+local inCombat = false
+
+local function getTotalHealthOfCombatMobs()
+    local totalMaxHealth = 0
+    local totalCurrentHealth = 0
+
+    for i = 1, 40 do
+        local unitID = "nameplate" .. i
+        if UnitExists(unitID) and UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) then
+            totalMaxHealth = totalMaxHealth + UnitHealthMax(unitID)
+            totalCurrentHealth = totalCurrentHealth + UnitHealth(unitID)
+        end
+    end
+
+    return totalMaxHealth, totalCurrentHealth
+end
+
+-- Event Frame for tracking combat state
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
+
+eventFrame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        inCombat = true
+        combatStartTime = GetTime()
+        initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        inCombat = false
+    end
+end)
+
 function getCurrentDPS()
     if inCombat and combatStartTime > 0 then
         local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
@@ -1823,7 +1857,7 @@ end
 
 
 
-function aoeTTD()
+ function aoeTTD()
     local currentDPS = getCurrentDPS()
     local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
 
@@ -1838,62 +1872,3 @@ end
 
 
 
- function IsReady(spell, range_check, aoe_check)
-    local start, duration, enabled = GetSpellCooldown(tostring(spell))
-    local usable, noMana = IsUsableSpell(tostring(spell))
-    local range_counter = 0
-
-    if duration and start then
-        cooldown_remains = tonumber(duration) - (GetTime() - tonumber(start))
-        --gcd_remains = 1.5 / (GetHaste() + 1) - (GetTime() - tonumber(start))
-    end
-
-    if cooldown_remains and cooldown_remains < 0 then
-        cooldown_remains = 0
-    end
-
-    -- if gcd_remains and gcd_remains < 0 then
-    -- gcd_remains = 0
-    -- end
-
-    if aoe_check then
-        if Spell then
-            for i = 1, 40 do
-                local unitID = "nameplate" .. i
-                if UnitExists(unitID) then
-                    local nameplate_guid = UnitGUID(unitID)
-                    local npc_id = select(6, strsplit("-", nameplate_guid))
-                    if npc_id ~= '120651' and npc_id ~= '161895' then
-                        if UnitCanAttack("player", unitID) and IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
-                            range_counter = range_counter + 1
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-
-    -- if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
-    if usable and enabled and cooldown_remains < 0.5 then
-        if range_check then
-            if IsSpellInRange(tostring(spell), "target") then
-                return true
-            else
-                return false
-            end
-        elseif aoe_check then
-            if range_counter >= aoe_check then
-                return true
-            else
-                return false
-            end
-        elseif range_check and aoe_check then
-            return 'Input range check or aoe check, not both'
-        elseif not range_check and not aoe_check then
-            return true
-        end
-    else
-        return false
-    end
-end
