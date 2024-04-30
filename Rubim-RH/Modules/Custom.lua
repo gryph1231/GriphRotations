@@ -1596,6 +1596,30 @@ function tierequipped()
 end
 
 
+
+function tierequipped30()
+    local items = {
+
+        "Zealous Pyreknight's Ailettes",
+        "Zealous Pyreknight's Barbute",
+        "Zealous Pyreknight's Jeweled Guantlets",
+        "Zealous Pyreknight's Warplate",
+        "Zealous Pyreknight's Cuisses",
+
+    }
+
+    local count = 0
+
+    for _, itemName in ipairs(items) do
+        if IsEquippedItem(itemName) then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
+
 function UseItems()
     
     -- if not Item then Item = {}; end
