@@ -198,6 +198,9 @@ drums = Item(193470),
 local I = Item.Paladin.Retribution;
 
 
+
+
+
 local function ConsecrationTime()
 for i = 1, 5 do
 local active, totemName, startTime, duration, textureId = GetTotemInfo(i)
@@ -266,7 +269,7 @@ end
 
   
 
-            if S.Judgment:IsCastable() and targetRange30 then
+            if IsReady("Judgment") and targetRange30 then
             return S.Judgment:Cast()
             end
 
@@ -282,13 +285,6 @@ end
 
         Cooldowns = function()
 
-            if RubimRH.CDsON() and targetRange20
-            and ((Player:Buff(S.AvengingWrath) or S.AvengingWrath:CooldownRemains()>20 and not S.Crusade:IsAvailable()) 
-            or (Player:Buff(S.Crusade) or S.Crusade:CooldownRemains()>20 and S.Crusade:IsAvailable()))
-            and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
-            local ShouldReturn = UseItems();
-            if ShouldReturn then return ShouldReturn; end
-            end
 
 
      -- execution_sentence,if=(!buff.crusade.up&cooldown.crusade.remains>15|buff.crusade.stack=10|cooldown.avenging_wrath.remains<0.75
@@ -427,7 +423,7 @@ end
 
 
                 -- judgment,if=dot.expurgation.ticking&!buff.echoes_of_wrath.up&set_bonus.tier31_2pc
-                if S.Judgment:IsReady() and targetRange30 and AuraUtil.FindAuraByName("Expurgation","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Echoes of Wrath", "player") and tierequipped()>=2 then
+                if IsReady("Judgment") and targetRange30 and AuraUtil.FindAuraByName("Expurgation","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Echoes of Wrath", "player") and tierequipped()>=2 then
                 return S.Judgment:Cast()
                 end
 
@@ -446,7 +442,7 @@ end
                 end
 
                 -- judgment,if=!debuff.judgment.up&(holy_power<=3|!talent.boundless_judgment)
-                if S.Judgment:IsReady() and targetRange30 and (not Target:Debuff(S.JudgmentDebuff) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable())) then
+                if IsReady("Judgment") and targetRange30 and (not Target:Debuff(S.JudgmentDebuff) and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable())) then
                     return S.Judgment:Cast()
                 end
 
@@ -487,7 +483,7 @@ end
                     return S.CrusaderStrike:Cast()
                 end
                 -- judgment,if=holy_power<=3|!talent.boundless_judgment
-                if S.Judgment:IsReady() and targetRange30 and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
+                if IsReady("Judgment") and targetRange30 and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
                     return S.Judgment:Cast()
                 end
                 -- hammer_of_wrath,if=holy_power<=3|target.health.pct>20|!talent.vanguards_momentum
@@ -528,6 +524,7 @@ local function APL()
     targetRange10 = TargetInRange("Hammer of Justice")
     targetRange20 = TargetInRange("Blade of Justice")
     targetRange30 = TargetInRange("Hammer of Wrath")
+
 
 
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
@@ -713,10 +710,10 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         end
     end
 -- print(targetRange30)
-        if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target) then 
+        if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target)  and not Target:IsDeadOrGhost() then 
 
 
-        if not IsCurrentSpell(6603) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and Target:AffectingCombat() and targetRange20 then
+        if not IsCurrentSpell(6603) and targetRange20 then
         return S.autoattack:Cast()
         end
 
@@ -728,7 +725,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.HammerofWrath:Cast()
         end
 
-        if S.Judgment:IsReady() and UnitName('target') == 'Explosives' then
+        if IsReady("Judgment") and UnitName('target') == 'Explosives' then
         return S.Judgment:Cast()
         end
 
@@ -736,10 +733,10 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.CrusaderStrike:Cast()
         end
 
-        if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangling) then
+        if S.BlessingofFreedom:IsReady() and (freedom() or AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") or AuraUtil.FindAuraByName("Frost Shock", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL"))  then
             return S.BlessingofFreedom:Cast()
-            end
-
+        end
+    
         if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
             --Kick
             if S.Rebuke:IsReady() 
@@ -766,18 +763,14 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
   
         end
 
-    -- --Freedom
-
-    if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.IcyBindings) or Player:Debuff(S.FrostShock) or Player:Debuff(S.deepchill))  then
-        return S.BlessingofFreedom:Cast()
-    end
-
-        -- if S.HammerofJustice:IsReady(8) and UnitName('target') == 'Spiteful Shade' then
-        --     return S.HammerofJustice:Cast()
-        -- end
 
 
-
+        if RubimRH.CDsON() and targetRange20
+        and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or S.AvengingWrath:CooldownRemains()>20 or S.Crusade:CooldownRemains()>20)
+        and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
+        end
 
 
             if not targetRange20 then

@@ -1612,16 +1612,16 @@ function UseItems()
 
     local trinket1 = GetInventoryItemID("player", 13)
     local trinket2 = GetInventoryItemID("player", 14)
-    local trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
-    local trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+    local trinket1ready = IsUsableItem(trinket1) and (GetItemCooldown(trinket1) == 0 and trinket1 ~= 193701 or trinket1 == 193701 and select(2,GetItemCooldown(trinket1)) <1.5) and  IsEquippedItem(trinket1)
+    local trinket2ready = IsUsableItem(trinket2) and (GetItemCooldown(trinket2) == 0 and trinket2 ~= 193701 or trinket2 == 193701 and select(2,GetItemCooldown(trinket2)) <1.5) and  IsEquippedItem(trinket2)
 
     if trinket1ready 
-    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket1 == 203963 or trinket1 ~= 203963) and trinket1 ~= 203729
+    and (not Player:IsMoving() and (trinket1 == 203963 or trinket1 == 193701) or trinket1 ~= 203963 and trinket1 ~= 193701)
      then
         return Item(118330):Cast()
     end
     if trinket2ready 
-    and ((Player:MovingFor() < 0.2 and not Player:IsMoving()) and trinket2 == 203963 or trinket2 ~= 203963) and trinket2 ~= 203729
+    and (not Player:IsMoving() and (trinket2 == 203963 or trinket2 == 193701) or trinket2 ~= 203963 and  trinket2 ~= 193701)
      then
         return Item(114616):Cast()
     end
@@ -1652,6 +1652,24 @@ function GetAppropriateCureSpell()
 end
 
 
+
+function GetAppropriateCureSpellfocus()
+    local debuffTypePoison = "Poison"
+    local debuffTypeDisease = "Disease"
+    
+    for i = 1, 40 do
+        local name, _, _, debuffType = UnitDebuff("focus", i)
+        if not name then break end  -- No more debuffs, exit the loop
+
+        if debuffType == debuffTypePoison then
+            return debuffTypePoison
+        elseif debuffType == debuffTypeDisease then
+            return debuffTypeDisease
+        end
+    end
+    
+    return nil  -- No poison or disease found
+end
 
 
 
@@ -1872,3 +1890,16 @@ end
 
 
 
+function GetFocusTargetHealthPercentage()
+    if UnitExists("focus") then
+        local health = UnitHealth("focus")
+        local maxHealth = UnitHealthMax("focus")
+        if maxHealth == 0 then
+            return 0
+        else
+            return (health / maxHealth) * 100
+        end
+    else
+        return nil -- No focus target
+    end
+end
