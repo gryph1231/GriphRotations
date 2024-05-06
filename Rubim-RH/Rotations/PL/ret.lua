@@ -397,7 +397,11 @@ end
 
 
                -- call_action_list,name=finishers,if=holy_power=5|buff.echoes_of_wrath.up&set_bonus.tier31_4pc&talent.crusading_strikes|(debuff.judgment.up|holy_power=4)&buff.divine_resonance.up&!set_bonus.tier31_2pc          
-                     if (HolyPower ==5 or AuraUtil.FindAuraByName("Echoes of Wrath", "player") and tierequipped()>=4 and S.CrusadingStrike:IsAvailable() or (AuraUtil.FindAuraByName("Judgment","target","PLAYER|HARMFUL") or HolyPower==4) and  AuraUtil.FindAuraByName("Divine Resonance", "player") and tierequipped()<2) then
+                     if (HolyPower ==5 or AuraUtil.FindAuraByName("Echoes of Wrath", "player") 
+                     and tierequipped()>=4 and S.CrusadingStrikes:IsAvailable()
+                      or (AuraUtil.FindAuraByName("Judgment","target","PLAYER|HARMFUL") 
+                      or HolyPower==4) and  AuraUtil.FindAuraByName("Divine Resonance", "player")
+                       and tierequipped()<2) then
                 if Finishers() ~= nil then
                     return Finishers()
                 end

@@ -22,7 +22,7 @@ RubimRH.Spell[66] = {
 SanctificationBuff                    = Spell(424616), -- T31, 2pc
 SanctificationEmpowerBuff             = Spell(424622), -- T31, 2pc
 BulwarkofRighteousFuryBuff            = Spell(386652),
-
+Sentinel = Spell(389539),
 BlessingofFreedom           = Spell(1044),
 BlindingLight               = Spell(115750),
 SenseUndead                 = Spell(5502),
@@ -64,9 +64,9 @@ HammerofWrath               = Spell(24275),
 HolyAvenger                 = Spell(105809),
 HolyAvengerBuff             = Spell(105809),
 LayonHands                  = Spell(633),
-Seraphim                    = Spell(152262),
-SeraphimBuff                = Spell(152262),
+
 -- Covenants (Shadowlands)
+BlessingofFreedomz = Spell(10326), -- turn evil for focus freedom
 AshenHallow                 = Spell(316958),
 BlessingofAutumn            = Spell(328622),
 BlessingofSpring            = Spell(328282),
@@ -262,7 +262,7 @@ local function APL()
             if true then
             inInstance, instanceType = IsInInstance()
             end
-
+            -- print(instanceType)
             local lostimer = GetTime() - losCheckTimer
             local los
             
@@ -271,10 +271,12 @@ local function APL()
             else
                 los = false
             end
-            
-            -- if UnitExists('focus') then
-            -- print(AuraUtil.FindAuraByName("Forbearance", "focus"))
+            -- if UnitExists("focus") then
+            --  res = UnitIsDeadOrGhost("focus") and Player:HolyPower()<3 and S.Intercession:Charges()>=1 and los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1
+            -- else 
+            --     res = nil
             -- end
+            local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
             local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
             local highkey = 4
@@ -347,8 +349,8 @@ local function APL()
             ) or inRange8>= 3)
 
 
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:CooldownUp()
-            and Player:HolyPower() < 3 and partyOrRaidDead() >= 1 then
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:CooldownUp() 
+            and Player:HolyPower() < 3 and partyOrRaidDead() >= 1 and S.Intercession:Charges()>=1 then
             if S.Judgment:IsReady() and targetRange30 then
             return S.Judgment:Cast()
             end
@@ -358,14 +360,16 @@ local function APL()
             end
             end
 
-
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0) then
-            RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-            end
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady()
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() and S.Intercession:Charges()>=1
             and Player:HolyPower() >= 3 then
             return S.intercession:Cast() 
             end
+
+
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0 or S.Intercession:Charges()<1) then
+            RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+            end
+      
 
 
             if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
@@ -419,7 +423,6 @@ local function APL()
             end
 
 
-
             --health pot -- will need to update item ID of HPs as expansions progress
             if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
             GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(207023) == true and
@@ -468,6 +471,9 @@ local function APL()
             end
             end
 
+
+
+ 
             -- defensives for trash on M+ key <= level 3
             if (not IsEncounterInProgress(Boss) or level <= highkey)  then
                 if S.DivineShield:IsReady() and not Player:Debuff(S.Forbearance) and S.FinalStand:IsAvailable() 
@@ -517,10 +523,8 @@ local function APL()
 
 
 
-
             -------------DEFENSIVES_-------------
             if Target:Exists() and Player:CanAttack(Target) and (inRange40>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
-
 
                 -- heals/active mitigation
                 -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
@@ -593,7 +597,7 @@ local function APL()
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
 
                 if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1 then 
-                    if S.Intercession:IsReady() and Player:HolyPower()>=3 and UnitExists("focus") and UnitIsDeadOrGhost("focus") then
+                    if S.Intercession:IsCastable() and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and S.Intercession:Charges()>=1 then
                         return S.intercession:Cast()
                     end
 
@@ -603,13 +607,13 @@ local function APL()
                     if S.BlessingofProtection:IsReady() and inRange30>1 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
                         return S.BlessingofProtectionFocus:Cast()
                     end
-                    if S.BlessingofSacrifice:IsReady() and GetFocusTargetHealthPercentage()<60 and not AuraUtil.FindAuraByName("Blessing of Protection", "focus")  then
+                    if S.BlessingofSacrifice:IsReady() and (GetFocusTargetHealthPercentage()<60 or mitigate()) then
                         return S.BlessingofSacrifice:Cast()
                     end
-                    if S.WordofGlory:IsReady() and GetFocusTargetHealthPercentage()<30 and (WordofGlorycast or Player:HolyPower()>=3) then
+                    if S.WordofGlory:IsReady() and GetFocusTargetHealthPercentage()<45 and (WordofGlorycast or Player:HolyPower()>=3) then
                         return S.WordofGloryFocus:Cast()
                     end
-                    if S.CleanseToxins:IsReady() and (GetAppropriateCureSpellfocus()=='Poison' or GetAppropriateCureSpellfocus()=='Disease') then
+                    if S.CleanseToxins:IsReady() and (GetAppropriateCureSpellfocus()=='Poison' or GetAppropriateCureSpellfocus()=='Disease') and Player:HealthPercentage()>80 then
                         return S.CleanseToxinsFocus:Cast()
                     end
                     
@@ -619,8 +623,23 @@ local function APL()
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
+                if S.CleanseToxins:IsReady() and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease') then
+                    return S.CleanseToxins:Cast()
+                end
+                if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1  then
+                             -- --Freedom
+                             if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangled)  then
+                             return S.BlessingofFreedomz:Cast()
+                             end
+                end
 
 
+                -- --Freedom
+                if S.BlessingofFreedom:IsReady() and (freedom() or AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") 
+                or AuraUtil.FindAuraByName("Frost Shock", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL") or Player:Debuff(S.Entangled))  then
+                return S.BlessingofFreedom:Cast()
+                end
+                
             if RubimRH.CDsON() and inRange8 >= 1 then
             if RubimRH.CDsON() and targetRange8
             and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or S.AvengingWrath:CooldownRemains()>20)
@@ -629,6 +648,9 @@ local function APL()
             if ShouldReturn then return ShouldReturn; end
             end
 
+            if S.Sentinel:IsReadyP() and not AuraUtil.FindAuraByName("Sentinel", "player") then
+              return S.AvengingWrath:Cast()
+              end
 
             if S.AvengingWrath:IsReadyP() and not AuraUtil.FindAuraByName("Avenging Wrath", "player") then
             return S.AvengingWrath:Cast()
@@ -643,15 +665,8 @@ local function APL()
             end
             end
 
-            if S.CleanseToxins:IsReady() and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease') then
-                return S.CleanseToxins:Cast()
-            end
 
-            -- --Freedom
-            if S.BlessingofFreedom:IsReady() and (freedom() or AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") 
-            or AuraUtil.FindAuraByName("Frost Shock", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL") or Player:Debuff(S.Entangled))  then
-            return S.BlessingofFreedom:Cast()
-            end
+         
 
             -- kick off GCD
             if (castTime > castchannelTime +0.5 or channelTime > castchannelTime +0.5)
@@ -719,7 +734,7 @@ local function APL()
 end
 
  -- consecration,if=buff.sanctification.stack=buff.sanctification.max_stack
- if S.Consecration:IsCastable()  and targetRange8 and (Player:BuffStack(S.SanctificationBuff) == 5) then
+ if S.Consecration:IsCastable() and targetRange8 and (Player:BuffStack(S.SanctificationBuff) == 5 or not AuraUtil.FindAuraByName("Consecration", "player")) then
     return S.Consecration:Cast()
 end
   -- shield_of_the_righteous,if=(((!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up)&(!buff.sanctification.up|buff.sanctification.stack<buff.sanctification.max_stack)
@@ -761,7 +776,7 @@ end
     return S.Judgment:Cast()
 end
   -- consecration,if=!consecration.up&(!buff.sanctification.stack=buff.sanctification.max_stack|!set_bonus.tier31_2pc)
-  if S.Consecration:IsCastable() and (not Player:Buff(S.ConsecrationBuff) and (Player:BuffStack(S.SanctificationBuff) ~= 5 or tierequipped()<2)) then
+  if S.Consecration:IsCastable() and targetRange8 and (not Player:Buff(S.ConsecrationBuff) and (Player:BuffStack(S.SanctificationBuff) ~= 5 or tierequipped()<2)) then
     return S.Consecration:Cast()
 end
   -- eye_of_tyr,if=talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3

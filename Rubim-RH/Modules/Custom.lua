@@ -1542,7 +1542,7 @@ function mitigate()
         for id = 1, 40 do
             local spell = {
                 'Decay Spray', 'Gushing Ooze',                                                     --BH
-                'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', --halls of infusion
+                'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', 'Inundate',--halls of infusion
                 'Magma Eruption', 'Might of the Forge', 'Volatile Mutation', 'Candescent Tempest', -- neltharus
                 'Shocking Quake', 'Crushing Stomp', 'Thunderous Clap', 'Wing Buffet',              -- Uldaman
                 'Infinite Fury', 'Stonecracker Barrage',--DotI                                                                      
@@ -1571,11 +1571,11 @@ end
 
 function tierequipped()
     local items = {
-        "Lucid Shadewalker's Clawgrips",
-        "Lucid Shadewalker's Chausses",
-        "Lucid Shadewalker's Cuirass",
-        "Lucid Shadewalker's Bladed Spaulders",
-        "Lucid Shadewalker's Deathmask",
+        "Lurking Specter's Tights",
+        "Lurking Specter's Brigandine",
+        "Lurking Specter's Handgrips",
+        "Lurking Specter's Shoulderblades",
+        "Lurking Specter's Visage",
         "Heartfire Sentinel's Forgehelm",
         "Heartfire Sentinel's Steelwings",
         "Heartfire Sentinel's Brigandine",
