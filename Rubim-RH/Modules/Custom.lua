@@ -1581,6 +1581,11 @@ function tierequipped()
         "Heartfire Sentinel's Brigandine",
         "Heartfire Sentinel's Protectors",
         "Heartfire Sentinel's Faulds",
+        "Lucid Shadewalker's Clawgrips",
+        "Lucid Shadewalker's Chausses",
+        "Lucid Shadewalker's Cuirass",
+        "Lucid Shadewalker's Bladed Spaulders",
+        "Lucid Shadewalker's Deathmask",
 
     }
 
