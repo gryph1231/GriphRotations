@@ -25,6 +25,8 @@ autoattack             = Spell(59752), -- will to survive (human racial)
 TotLB = Spell(383396),
 VanguardofJustice = Spell(406545),
 -- Racials
+Repentance = Spell(20066),
+TurnEvil = Spell(10326),
 --  AncestralCall                         = Spell(274738),
 CleanseToxins = Spell(213644),
 ArcanePulse                           = Spell(260364),
@@ -239,25 +241,6 @@ frame:SetScript("OnEvent", UpdateTemplarsVerdictSpellId)
 local VarDsCastable
 
 
-local function freedom()
-    if Player:AffectingCombat() then
-        for id = 1, 40 do
-            local spell = { 'Crystalline Rupture','Arcane Lockdown', }
-            local unitID = "nameplate" .. id
-            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-                UnitCastingInfo(unitID)
-            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-
-            for idx = 1, #spell do
-                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
-    
 
   
         Ranged = function()
@@ -536,14 +519,21 @@ end
 
 local function APL()
     local _,instanceType = IsInInstance()
-    inRange8 = RangeCount("Rebuke")
-    inRange10 = RangeCount("Hammer of Justice")
-    inRange20 = RangeCount("Blade of Justice")
-    inRange30 = RangeCount("Hammer of Wrath")
-    targetRange8 = TargetInRange("Rebuke")
-    targetRange10 = TargetInRange("Hammer of Justice")
-    targetRange20 = TargetInRange("Blade of Justice")
-    targetRange30 = TargetInRange("Hammer of Wrath")
+
+    inRange5 = RangeCount(5)
+    inRange8 = RangeCount(8)
+    inRange10 = RangeCount(10)
+    inRange15 = RangeCount(15)
+    inRange20 = RangeCount(20)
+    inRange25 = RangeCount(25)
+    inRange30 = RangeCount(30)
+    targetRange5 = IsItemInRange(8149, "target")
+    targetRange8 = IsItemInRange(34368, "target")
+    targetRange10 = IsItemInRange(32321, "target")
+    targetRange15 = IsItemInRange(33069, "target")
+    targetRange20 = IsItemInRange(10645, "target")
+    targetRange25 = IsItemInRange(24268, "target")
+    targetRange30 = IsItemInRange(835, "target")
 
 
 
@@ -776,6 +766,18 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 return S.BlindingLight:Cast()
             end
         
+            if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
+                return S.HammerofJustice:Cast()
+                end
+    
+                if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+                  return S.Repentance:Cast()
+                  end
+    
+                if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+                  return S.TurnEvil:Cast()
+                  end
+         
         
 
         

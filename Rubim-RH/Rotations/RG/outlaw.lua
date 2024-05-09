@@ -145,6 +145,7 @@ RubimRH.Spell[260] = {
     Evasion                = Spell(5277),
     WoundPoison            = Spell(8679),
     chronofaded = Spell(404141),
+    audacitySS = Spell(20594), --stone form
     Crackshot              = Spell(423703),
     UnderhandedUpperHand   = Spell(424044),
     SepsisBuff             = Spell(375939),
@@ -281,7 +282,10 @@ local function stealth()
     and fthrank >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:Buff(S.Broadside) and Player:ComboPoints() <= 1 or Player:Buff(S.GreenSkinsWickersBuff)) then
         return S.PistolShot:Cast()
     end
-
+		--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
+        if S.Ambush:IsReady() and not finish_condition and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange8 and S.HiddenOpportunity:IsAvailable() and (Player:Buff(S.AudacityBuff) ) and Player:ComboPoints()<=5 then
+            return S.audacitySS:Cast()
+        end
 	--ambush,if=talent.hidden_opportunity
     if S.Ambush:IsReady() and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange8 and S.HiddenOpportunity:IsAvailable() and not finish_condition then
         return S.Ambush:Cast()
@@ -330,7 +334,10 @@ local function builders()
     if S.EchoingReprimand:IsReady() and not finish_condition and targetRange8  then
         return S.EchoingReprimand:Cast()
     end
-	
+		--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
+        if S.Ambush:IsReady() and not finish_condition and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange8 and S.HiddenOpportunity:IsAvailable() and (Player:Buff(S.AudacityBuff) ) and Player:ComboPoints()<=5 then
+            return S.audacitySS:Cast()
+        end
 	--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
     if S.Ambush:IsReady() and not finish_condition and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange8 and S.HiddenOpportunity:IsAvailable() and (Player:Buff(S.AudacityBuff) or Player:Buff(S.SepsisBuff)) and Player:ComboPoints()<=5 then
         return S.Ambush:Cast()
@@ -393,10 +400,11 @@ local function cooldowns()
     end
 	
 	--roll_the_bones,if=variable.rtb_reroll|rtb_buffs.max_remains<=set_bonus.tier31_4pc+(cooldown.shadow_dance.remains<=1|cooldown.vanish.remains<=1)*6
-	if S.RolltheBones:IsCastable() and not stealthall and ((basic_rtb_reroll or rtb_reroll)
+	if S.RolltheBones:IsCastable()  and ((basic_rtb_reroll or rtb_reroll)
     or (MaxRtB_BuffRemains() <= num(tierequipped() >= 4)  + (num(RubimRH.CDsON())*(num(S.ShadowDance:CooldownRemains() <= 1) or num(S.Vanish:CooldownRemains() <= 1)))*6)) then
 		return S.RolltheBones:Cast()
 	end
+    
 	
     --keep_it_rolling,if=!variable.rtb_reroll&rtb_buffs>=3+set_bonus.tier31_4pc&(buff.shadow_dance.down|rtb_buffs>=6)
     -- if S.KeepitRolling:IsReady() and not RtB_Reroll() and RtB_Buffs() >= 3 + num(tierequipped() >= 4) and (not Player:Buff(S.ShadowDanceBuff) or RtB_Buffs() >= 6) then
@@ -471,21 +479,22 @@ end
 
 	
 local function APL()
-
 RtB_Buffs()
 
-inRange8 = RangeCount("Ambush")
-inRange10 = RangeCount("Pick Pocket")
-inRange20 = RangeCount("Blind")
-inRange25 = RangeCount("Shadowstep")
-inRange30 = RangeCount("Between the Eyes")
-targetRange8 = TargetInRange("Ambush")
-targetRange10 = TargetInRange("Pick Pocket")
-targetRange20 = TargetInRange("Blind")
-targetRange25 = TargetInRange("Shadowstep")
-targetRange30 = TargetInRange("Between the Eyes")
-
-
+inRange5 = RangeCount(5)
+inRange8 = RangeCount(8)
+inRange10 = RangeCount(10)
+inRange15 = RangeCount(15)
+inRange20 = RangeCount(20)
+inRange25 = RangeCount(25)
+inRange30 = RangeCount(30)
+targetRange5 = IsItemInRange(8149, "target")
+targetRange8 = IsItemInRange(34368, "target")
+targetRange10 = IsItemInRange(32321, "target")
+targetRange15 = IsItemInRange(33069, "target")
+targetRange20 = IsItemInRange(10645, "target")
+targetRange25 = IsItemInRange(24268, "target")
+targetRange30 = IsItemInRange(835, "target")
 
 
 -- --------------------------------------------------------------------------------------------------------------------------------------------
@@ -624,10 +633,14 @@ end
 --Out of Combat-----------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 if not Player:AffectingCombat() and not Player:Buff(S.VanishBuff) and (IsResting("player") == false or Player:CanAttack(Target) or Player:StoppedFor()<5) then
-    if S.BladeFlurry:IsReady() and Player:IsMoving() and targetRange8 and Player:ComboPointsDeficit()>=3 and inRange10>=3 and not finish_condition then
+    if S.BladeFlurry:IsReady() and Player:IsMoving() and targetRange8 and (Player:ComboPointsDeficit()>=3 or not Player:Buff(S.BladeFlurry)) and inRange10>=3 and not finish_condition then
         return S.BladeFlurry:Cast()
     end
-
+		--ambush,if=talent.hidden_opportunity&(buff.audacity.up|buff.sepsis_buff.up)
+        if S.Ambush:IsReady() and not finish_condition and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange8 and S.HiddenOpportunity:IsAvailable() and (Player:Buff(S.AudacityBuff) ) and Player:ComboPoints()<=5 then
+            return S.audacitySS:Cast()
+        end
+        
     if S.Ambush:IsReady() and Player:IsMoving() and inRange10>=1 and targetRange8 then
         return S.Ambush:Cast()
     end
@@ -735,6 +748,15 @@ if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") a
     and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5)  and not isEnraged then
 		return S.KidneyShot:Cast()
 	end
+
+    if S.KidneyShot:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
+        return S.KidneyShot:Cast()
+        end
+
+        if S.Blind:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+          return S.Blind:Cast()
+          end
+
 
 	--Shiv
 	if S.Shiv:IsReady() and targetRange8 and isEnraged and Player:AffectingCombat() and TargetTTD() > 8 and TargetTTD() <100 and UnitName("target")~= "Soul Thorns" then

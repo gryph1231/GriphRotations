@@ -1190,6 +1190,24 @@ do
 
 
 
+ function freedom()
+    if Player:AffectingCombat() then
+    for id = 1, 40 do
+    local spell = { 'Crystalline Rupture','Arcane Lockdown', }
+    local unitID = "nameplate" .. id
+    local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+    UnitCastingInfo(unitID)
+    local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+    
+    for idx = 1, #spell do
+    if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+    return true
+    end
+    end
+    end
+    end
+    return false
+    end
 
 
 
@@ -1197,8 +1215,37 @@ do
 
 
 
-
-
+     function mitigatedng()
+        if Player:AffectingCombat() then
+        for id = 1, 40 do
+        local spell = {
+        
+            'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
+        'Savage Peck', 'Barkbreaker', --Academy boss
+        'Erupting Fissure','Dragon Strike','Ice Cutter', -- Azure vault boss
+        'Brutalize','Rending Strike','Conductive Strike', -- NO boss
+        'Decaystrike', -- BHH boss
+        'Fiery Focus','Heated Swings',--neltharus boss
+        'Wild Cleave', 'Sand Breath', --uldaman boss
+        'Squall Buffet', --HoI
+        
+        
+        
+        }
+        local unitID = "nameplate" .. id
+        local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+        UnitCastingInfo(unitID)
+        local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+        
+        for idx = 1, #spell do
+        if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+        return true
+        end
+        end
+        end
+        end
+        return false
+        end
 
 
 
@@ -1309,34 +1356,96 @@ RubimRH.List.PvEInterrupts = {
 
 
     
+function RangeCount(range,spell_range_check)
+	local range_counter = 0
+		
+		if range and not spell_range_check then
+			if range == 5 then
+				input = 8149
+			elseif range == 8 then
+				input = 34368
+			elseif range == 10 then
+				input = 32321
+			elseif range == 15 then
+				input = 33069
+			elseif range == 20 then
+				input = 10645
+			elseif range == 25 then
+				input = 24268
+			elseif range == 30 then
+				input = 835
+			else
+				local input = nil
+			end
 
- function RangeCount(spellName)
-    local range_counter = 0
+			for i=1,40 do
+				local unitID = "nameplate" .. i
+				if UnitExists("nameplate"..i) then           
+					local nameplate_guid = UnitGUID("nameplate"..i) 
+					local npc_id = select(6, strsplit("-",nameplate_guid))
+					if npc_id ~='120651' and npc_id ~='161895' then
+						if UnitCanAttack("player",unitID) and IsItemInRange(input, unitID) and UnitHealthMax(unitID) > 5
+						and UnitName(unitID) ~= "Incorporeal Being" then
+							range_counter = range_counter + 1
+						end                    
+					end
+				end
+			end
+		elseif spell_range_check and not range then
+			for i=1,40 do
+				local unitID = "nameplate" .. i
+				if UnitExists("nameplate"..i) then           
+					local nameplate_guid = UnitGUID("nameplate"..i) 
+					local npc_id = select(6, strsplit("-",nameplate_guid))
+					if npc_id ~='120651' and npc_id ~='161895' then
+						if UnitCanAttack("player",unitID) and IsSpellInRange(spell_range_check, unitID) == 1 and UnitHealthMax(unitID) > 5
+						and UnitName(unitID) ~= "Incorporeal Being" then
+							range_counter = range_counter + 1
+						end                    
+					end
+				end
+			end
+		else
+			range_counter = 0
+		end
 
-    if spellName then
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then           
-                local nameplate_guid = UnitGUID(unitID) 
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and IsSpellInRange(spellName, unitID) == 1 and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end                    
-                end
-            end
-        end
-    end
-
-    return range_counter
+	return range_counter
 end
 
- function TargetInRange(spellName)
-    if spellName and IsSpellInRange(spellName, "target") == 1 then
-        return true
-    else
-        return false    
-    end
+function TargetinRange(range,spell_range_check)
+	if range and not spell_range_check then
+		if range == 5 then
+			input = 8149
+		elseif range == 8 then
+			input = 34368
+		elseif range == 10 then
+			input = 32321
+		elseif range == 15 then
+			input = 33069
+		elseif range == 20 then
+			input = 10645
+		elseif range == 25 then
+			input = 24268
+		elseif range == 30 then
+			input = 835
+		else
+			local input = nil
+		end
+
+		if IsItemInRange(input,"target") then
+			return true
+		else
+			return false
+		end
+	elseif spell_range_check and not range then
+		if IsSpellInRange(spell_range_check,"target") == 1 then
+			return true
+		else
+			return false
+		end	
+	else
+		return false
+	end
 end
 
 function target_is_dummy()
@@ -1457,7 +1566,7 @@ function kickprio()
     local KickSpells = {
 
      
-        'Hideous Cackle','Decay Surge','Withering Burst','Earthbolt','Infuse Corruption','Decaying Roots','Burst of Decay','Screech','Decay Surge', --BRH
+        'Hideous Cackle','Decay Surge','Withering Burst','Earth Bolt','Infuse Corruption','Decaying Roots','Burst of Decay','Screech','Decay Surge', --BRH
         'Molten Core','Burning Roar','Mending Clay','Melt','Mote of Combustion','Lava Bolt','Molten Army', -- Neltharus
         'Expulse','Demoralizing Shout','Elemental Focus','Dazzle','Pyretic Burst','Cauterize','Refreshing Tide','Boiling Rage','Tidal Divergence','Water Bolt','Aqueous Barrier', -- HoI
         'Spiked Carapace','Stone Spike','Chain Lightning','Stone Bolt','Earthen Ward','Curse of Stone','Sonic Burst','Hasten', -- Uldaman
@@ -1541,7 +1650,7 @@ function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-                'Decay Spray', 'Gushing Ooze',                                                     --BH
+             
                 'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', 'Inundate',--halls of infusion
                 'Magma Eruption', 'Might of the Forge', 'Volatile Mutation', 'Candescent Tempest', -- neltharus
                 'Shocking Quake', 'Crushing Stomp', 'Thunderous Clap', 'Wing Buffet',              -- Uldaman
@@ -1784,71 +1893,6 @@ end
 
 
 
-function RangeCount11()
-    local range_counter = 0
-
-  
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then
-                local nameplate_guid = UnitGUID(unitID)
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,2) and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end
-                end
-            end
-        end
-    
-
-    return range_counter
-end
-
-
-
-function RangeCount10()
-    local range_counter = 0
-
-  
-        for i = 1, 40 do
-            local unitID = "nameplate" .. i
-            if UnitExists(unitID) then
-                local nameplate_guid = UnitGUID(unitID)
-                local npc_id = select(6, strsplit("-", nameplate_guid))
-                if npc_id ~= '120651' and npc_id ~= '161895' then
-                    if UnitCanAttack("player", unitID) and CheckInteractDistance(unitID,3) and UnitHealthMax(unitID) > 5 then
-                        range_counter = range_counter + 1
-                    end
-                end
-            end
-        end
-    
-
-    return range_counter
-end
-
-
-
-function combatmobs40()
-    local totalRange40 = 0
-   
-
-
-    for id = 1, 40 do
-        local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and RangeCount("Avenger's Shield")
-            and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
-            totalRange40 = totalRange40 + 1
-        end
-    end
-
-
-    return totalRange40
-end
-
-
-
 
 
 
@@ -1932,3 +1976,7 @@ function GetFocusTargetHealthPercentage()
         return nil -- No focus target
     end
 end
+
+
+
+

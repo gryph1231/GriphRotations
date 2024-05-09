@@ -19,6 +19,8 @@ local Item = HL.Item
 -- Spells
 RubimRH.Spell[66] = {
 -- 42422
+Repentance = Spell(20066),
+TurnEvil = Spell(10326),
 SanctificationBuff                    = Spell(424616), -- T31, 2pc
 SanctificationEmpowerBuff             = Spell(424622), -- T31, 2pc
 BulwarkofRighteousFuryBuff            = Spell(386652),
@@ -182,56 +184,6 @@ tx2 = Item(114616),
 local I = Item.Paladin.Protection;
 
 
-local function freedom()
-if Player:AffectingCombat() then
-for id = 1, 40 do
-local spell = { 'Crystalline Rupture','Arcane Lockdown', }
-local unitID = "nameplate" .. id
-local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-UnitCastingInfo(unitID)
-local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-
-for idx = 1, #spell do
-if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-return true
-end
-end
-end
-end
-return false
-end
-
-local function mitigatedng()
-if Player:AffectingCombat() then
-for id = 1, 40 do
-local spell = {
-
-    'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
-'Savage Peck', 'Barkbreaker', --Academy boss
-'Erupting Fissure','Dragon Strike','Ice Cutter', -- Azure vault boss
-'Brutalize','Rending Strike','Conductive Strike', -- NO boss
-'Decaystrike', -- BHH boss
-'Fiery Focus','Heated Swings',--neltharus boss
-'Wild Cleave', 'Sand Breath', --uldaman boss
-'Squall Buffet', --HoI
-
-
-
-}
-local unitID = "nameplate" .. id
-local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-UnitCastingInfo(unitID)
-local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-
-for idx = 1, #spell do
-if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-return true
-end
-end
-end
-end
-return false
-end
 
 
 if not loscheck then
@@ -250,16 +202,36 @@ end)
 
 local function APL()
 
-            inRange8 = RangeCount("Rebuke")
-            inRange10 = RangeCount("Hammer of Justice")
-            inRange40 = RangeCount("Flash of Light")
-            inRange30 = RangeCount("Avenger's Shield")
-            targetRange8 = TargetInRange("Rebuke")
-            targetRange10 = TargetInRange("Hammer of Justice")
-            targetRange30 = TargetInRange("Avenger's Shield")
-            targetRange40 = TargetInRange("Flash of Light")
+  inRange5 = RangeCount(5)
+  inRange8 = RangeCount(8)
+  inRange10 = RangeCount(10)
+  inRange15 = RangeCount(15)
+  inRange20 = RangeCount(20)
+  inRange25 = RangeCount(25)
+  inRange30 = RangeCount(30)
+  targetRange5 = IsItemInRange(8149, "target")
+  targetRange8 = IsItemInRange(34368, "target")
+  targetRange10 = IsItemInRange(32321, "target")
+  targetRange15 = IsItemInRange(33069, "target")
+  targetRange20 = IsItemInRange(10645, "target")
+  targetRange25 = IsItemInRange(24268, "target")
+  targetRange30 = IsItemInRange(835, "target")
+          --   print('inrange5:',IsItemInRange(8149, "target"))  
 
-            if true then
+          --   print('inrange8:',IsItemInRange(34368, "target"))  
+
+          --   print('inrange10:',IsItemInRange(32321, "target"))  
+
+          --  print('inrange15:',IsItemInRange(33069, "target"))  
+          --  print('inrange20:',IsItemInRange(10645, "target"))  
+
+          --  print('inrange25:',IsItemInRange(24268, "target"))  
+
+          --  print('inrange30:',IsItemInRange(835, "target"))  
+
+          --  10645, -- Gnomish Death Ray
+           
+           if true then
             inInstance, instanceType = IsInInstance()
             end
             -- print(instanceType)
@@ -271,11 +243,7 @@ local function APL()
             else
                 los = false
             end
-            -- if UnitExists("focus") then
-            --  res = UnitIsDeadOrGhost("focus") and Player:HolyPower()<3 and S.Intercession:Charges()>=1 and los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1
-            -- else 
-            --     res = nil
-            -- end
+
             local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
             local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
@@ -418,7 +386,7 @@ local function APL()
 
 
             if not IsCurrentSpell(6603) and Player:CanAttack(Target)
-            and Target:AffectingCombat() and Player:AffectingCombat() and targetRange30 then
+            and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
             return S.autoattack:Cast()
             end
 
@@ -524,7 +492,7 @@ local function APL()
 
 
             -------------DEFENSIVES_-------------
-            if Target:Exists() and Player:CanAttack(Target) and (inRange40>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
+            if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
 
                 -- heals/active mitigation
                 -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
@@ -628,7 +596,7 @@ local function APL()
                 end
                 if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1  then
                              -- --Freedom
-                             if S.BlessingofFreedom:IsReady() and Player:Debuff(S.Entangled)  then
+                             if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.Entangled))  then
                              return S.BlessingofFreedomz:Cast()
                              end
                 end
@@ -705,7 +673,7 @@ local function APL()
             -- and select(8, UnitCastingInfo("target")) == false 
 
             --     and 
-            RubimRH.InterruptsON() and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
+            RubimRH.InterruptsON() and targetRange10 and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
             and blindprio() 
             then
             return S.BlindingLight:Cast()
@@ -716,9 +684,18 @@ local function APL()
             return S.HammerofWrath:Cast()
             end
 
-            if S.HammerofJustice:IsReady() and UnitName('target') == 'Incorporeal Being' then
+            if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
             return S.HammerofJustice:Cast()
             end
+
+            if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+              return S.Repentance:Cast()
+              end
+
+            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+              return S.TurnEvil:Cast()
+              end
+     
 
             if S.Judgment:IsReady() and UnitName('target') == 'Explosives' then
             return S.Judgment:Cast()
@@ -734,7 +711,7 @@ local function APL()
 end
 
  -- consecration,if=buff.sanctification.stack=buff.sanctification.max_stack
- if S.Consecration:IsCastable() and targetRange8 and (Player:BuffStack(S.SanctificationBuff) == 5 or not AuraUtil.FindAuraByName("Consecration", "player")) then
+ if S.Consecration:IsCastable() and (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving()) and (Player:BuffStack(S.SanctificationBuff) == 5 or not AuraUtil.FindAuraByName("Consecration", "player")) then
     return S.Consecration:Cast()
 end
   -- shield_of_the_righteous,if=(((!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up)&(!buff.sanctification.up|buff.sanctification.stack<buff.sanctification.max_stack)
@@ -776,7 +753,7 @@ end
     return S.Judgment:Cast()
 end
   -- consecration,if=!consecration.up&(!buff.sanctification.stack=buff.sanctification.max_stack|!set_bonus.tier31_2pc)
-  if S.Consecration:IsCastable() and targetRange8 and (not Player:Buff(S.ConsecrationBuff) and (Player:BuffStack(S.SanctificationBuff) ~= 5 or tierequipped()<2)) then
+  if S.Consecration:IsCastable() and  (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving()) and (not Player:Buff(S.ConsecrationBuff) and (Player:BuffStack(S.SanctificationBuff) ~= 5 or tierequipped()<2)) then
     return S.Consecration:Cast()
 end
   -- eye_of_tyr,if=talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3
@@ -806,7 +783,7 @@ end
 
 
   -- consecration,if=!buff.sanctification_empower.up
-  if S.Consecration:IsCastable() and targetRange8 and (not Player:Buff(S.SanctificationEmpowerBuff)) then
+  if S.Consecration:IsCastable() and (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving()) and (not Player:Buff(S.SanctificationEmpowerBuff)) then
     return S.Consecration:Cast()
 end
 
@@ -824,7 +801,7 @@ end
             end
 
             if S.BlessedHammer:IsCastable() and Player:IsMoving() and IsResting("player") == false 
-            and inRange40 >= 1 and inRange10 == 0 
+            and inRange30 >= 1 and inRange10 == 0 
             and (S.BlessedHammer:ChargesFractional() >= 2.9 and Player:HolyPower() < 5 or
             S.BlessedHammer:ChargesFractional() >= 0.9 and Player:HolyPower() < 3)
             then
