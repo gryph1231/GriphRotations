@@ -829,7 +829,9 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
                 end
 
-
+                if S.CleanseToxins:IsCastable() and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell() == "Poison" or GetAppropriateCureSpell() == "Disease") then
+                    return S.CleanseToxins:Cast()
+                end
 
                 -- if targetRange30 then
                 --     return S.CrusaderStrike:Cast()
