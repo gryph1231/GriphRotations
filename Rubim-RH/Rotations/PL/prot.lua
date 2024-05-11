@@ -68,7 +68,7 @@ HolyAvengerBuff             = Spell(105809),
 LayonHands                  = Spell(633),
 
 -- Covenants (Shadowlands)
-BlessingofFreedomz = Spell(10326), -- turn evil for focus freedom
+BlessingofFreedomz = Spell(5502), -- turn evil focus macro kb to sense undead
 AshenHallow                 = Spell(316958),
 BlessingofAutumn            = Spell(328622),
 BlessingofSpring            = Spell(328282),
@@ -382,19 +382,18 @@ local function APL()
             if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or inRange30 == 0) then
             RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
             end
+            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+              return S.TurnEvil:Cast()
+              end
+     
+            if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+              return S.Repentance:Cast()
+              end
 
             if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
               return S.HammerofJustice:Cast()
               end
-  
-              if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
-                return S.Repentance:Cast()
-                end
-  
-              if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
-                return S.TurnEvil:Cast()
-                end
-       
+
 
 
             if not IsCurrentSpell(6603) and Player:CanAttack(Target)
@@ -506,6 +505,10 @@ local function APL()
             -------------DEFENSIVES_-------------
             if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
 
+
+              if S.HandofReckoning:IsReady() and targetRange30 and isTanking==false then
+              return S.HandofReckoning:Cast()
+              end
                 -- heals/active mitigation
                 -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
                 if S.WordofGlory:IsReady() and not Player:HealingAbsorbed() and Player:HealthPercentage() <= 65
@@ -672,7 +675,7 @@ local function APL()
 
 
   -- divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
-  if RubimRH.CDsON() and S.DivineToll:IsReady() and targetRange30 and inRange30>=3 then
+  if RubimRH.CDsON() and S.DivineToll:IsReady() and targetRange30 and inRange30>=3 and HL.CombatTime()>2 then
     return S.DivineToll:Cast()
 end
   -- avengers_shield,if=spell_targets.avengers_shield>2|buff.moment_of_glory.up

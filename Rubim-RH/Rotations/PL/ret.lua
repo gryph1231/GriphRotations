@@ -232,13 +232,12 @@ end
 
 
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_TALENT_UPDATE")
-frame:SetScript("OnEvent", UpdateTemplarsVerdictSpellId)
+-- local frame = CreateFrame("Frame")
+-- frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+-- frame:SetScript("OnEvent", UpdateTemplarsVerdictSpellId)
 
 
 
-local VarDsCastable
 
 
 
@@ -312,8 +311,10 @@ local VarDsCastable
 
 
             -- divine_storm,if=variable.ds_castable&(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
-            if S.DivineStorm:IsReady() and VarDsCastable and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
-            or not RubimRH.CDsON() or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then
+            if S.DivineStorm:IsReady() 
+            and VarDSCastable and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
+            or not RubimRH.CDsON() or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) 
+            then
             return S.DivineStorm:Cast() 
             end
 
@@ -546,11 +547,11 @@ local function APL()
     if true then
         -- variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
         if S.TotLB:IsAvailable() then
-            DSrange = inRange20
+            DSrange = inRange15
         else
             DSrange = inRange8
         end
-        VarDSCastable = ((DSrange >= 3 or DSrange >= 2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and not (Player:Buff(S.DivineArbiterBuff) and Player:BuffStack(S.DivineArbiterBuff) > 24)) and RubimRH.AoEON()
+        VarDSCastable = ((DSrange >= 3 or DSrange >= 2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and (not Player:Buff(S.DivineArbiterBuff) and Player:BuffStack(S.DivineArbiterBuff) <= 24)) 
 
     end
         castchannelTime = math.random(250, 500) / 1000
@@ -563,7 +564,6 @@ local function APL()
         if Player:IsChanneling() or Player:IsCasting() then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
         end
-
 
 
         HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
@@ -766,18 +766,19 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 return S.BlindingLight:Cast()
             end
         
+            if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+                return S.Repentance:Cast()
+                end
+
+                if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+                    return S.TurnEvil:Cast()
+                    end
+           
             if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
                 return S.HammerofJustice:Cast()
                 end
     
-                if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
-                  return S.Repentance:Cast()
-                  end
-    
-                if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
-                  return S.TurnEvil:Cast()
-                  end
-         
+
         
 
         

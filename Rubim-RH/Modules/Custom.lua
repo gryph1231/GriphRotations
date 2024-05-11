@@ -1227,6 +1227,7 @@ do
         'Decaystrike', -- BHH boss
         'Fiery Focus','Heated Swings',--neltharus boss
         'Wild Cleave', 'Sand Breath', --uldaman boss
+        'Explosive Brand',--AV
         'Squall Buffet', --HoI
         
         
