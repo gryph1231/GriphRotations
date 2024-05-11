@@ -749,13 +749,14 @@ if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") a
 		return S.KidneyShot:Cast()
 	end
 
+    if S.Blind:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+        return S.Blind:Cast()
+        end
+        
     if S.KidneyShot:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
         return S.KidneyShot:Cast()
         end
 
-        if S.Blind:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
-          return S.Blind:Cast()
-          end
 
 
 	--Shiv

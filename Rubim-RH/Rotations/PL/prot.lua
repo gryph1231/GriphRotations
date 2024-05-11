@@ -647,68 +647,37 @@ local function APL()
 
 
          
-
-            -- kick off GCD
-            if (castTime > castchannelTime +0.5 or channelTime > castchannelTime +0.5)
-            -- and level> highkey
-            and kickprio() and not isEnraged
-            and select(8, UnitCastingInfo("target")) == false 
-            and RubimRH.InterruptsON() and Player:AffectingCombat() and S.Rebuke:IsReady() and targetRange8 then
-            return S.Rebuke:Cast()
-            end
-
+           if (castTime > 0.1 or channelTime > 0.1) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and not isEnraged then
 
             -- kick on GCD
-            if S.AvengersShield:IsReady() 
-            and kickprio() 
-            and targetRange8 and (castTime > castchannelTime or channelTime > castchannelTime)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged 
-            and
-            RubimRH.InterruptsON() and S.AvengersShield:IsReady() and targetRange30 and Player:AffectingCombat()
-            and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
+            if S.AvengersShield:IsReady() and targetRange30 and kickprio() and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
             return S.AvengersShield:Cast()
             end
 
-            --Stun
+            -- kick on GCD
+            if S.Rebuke:IsReady() and kickprio() and targetRange8 then
+            return S.Rebuke:Cast()
+            end
 
-            if 
-            (castTime > castchannelTime or channelTime > castchannelTime) 
-            and RubimRH.InterruptsON() and S.HammerofJustice:IsReady() and Player:AffectingCombat() and targetRange10
-            and 
-            stunprio() 
-            then
+            --Stun
+            if S.HammerofJustice:IsReady() and targetRange10 and stunprio() then
             return S.HammerofJustice:Cast()
             end
 
             --Blind
-            if 
-            -- (castTime > 0.1 or channelTime > 0.1) 
-            -- and select(8, UnitCastingInfo("target")) == false 
-
-            --     and 
-            RubimRH.InterruptsON() and targetRange10 and S.BlindingLight:IsReady() and inRange8 >= 1 and Player:AffectingCombat()
-            and blindprio() 
-            then
+            if targetRange10 and S.BlindingLight:IsReady() and inRange8 >= 1 and blindprio() then
             return S.BlindingLight:Cast()
             end
+          end
 
-
-            if S.HammerofWrath:IsReady() and UnitName('target') == 'Explosives' then
-            return S.HammerofWrath:Cast()
-            end
-
-
-
-            if S.Judgment:IsReady() and UnitName('target') == 'Explosives' then
-            return S.Judgment:Cast()
-            end
-
-            if S.AvengersShield:IsReady() and UnitName('target') == 'Explosives' then
-            return S.AvengersShield:Cast()
-            end
 
   -- divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
   if RubimRH.CDsON() and S.DivineToll:IsReady() and targetRange30 and inRange30>=3 then
     return S.DivineToll:Cast()
+end
+  -- avengers_shield,if=spell_targets.avengers_shield>2|buff.moment_of_glory.up
+  if S.AvengersShield:IsCastable() and targetRange30 and (inRange30 > 2 or Player:Buff(S.MomentofGloryBuff)) then
+    return S.AvengersShield:Cast()
 end
 
  -- consecration,if=buff.sanctification.stack=buff.sanctification.max_stack
@@ -737,10 +706,7 @@ end
   if S.Judgment:IsReady() and targetRange30 and (S.Judgment:Charges() >= 2 or S.Judgment:FullRechargeTime() <= Player:GCD() + 0.25) then
     return S.Judgment:Cast()
 end
-  -- avengers_shield,if=spell_targets.avengers_shield>2|buff.moment_of_glory.up
-  if S.AvengersShield:IsCastable() and targetRange30 and (inRange30 > 2 or Player:Buff(S.MomentofGloryBuff)) then
-    return S.AvengersShield:Cast()
-end
+
   -- divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
   if RubimRH.CDsON() and S.DivineToll:IsReady()  and targetRange30 and inRange30>=3 then
     return S.DivineToll:Cast()
