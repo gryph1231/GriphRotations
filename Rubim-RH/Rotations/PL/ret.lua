@@ -37,6 +37,11 @@ BloodFury                             = Spell(20572),
 Fireblood                             = Spell(265221),
 GiftoftheNaaru                        = Spell(59542),
 -- Abilities
+BlessingofSacrifice = Spell(6940),
+WordofGloryFocus = Spell(5502), --sense undead
+CleanseToxinsFocus = Spell(20594), --stone form
+LayonHandsFocus = Spell(172321),--seraphim
+BlessingofProtectionFocus = Spell(28880),-- gift of naaru
 Consecration                          = Spell(26573),
 CrusaderStrike                         = Spell(35395),
 -- crusaderstrike = Spell(205191), -- eye for an eye
@@ -71,6 +76,8 @@ SeraphimBuff                          = Spell(152262),
 ShieldoftheRighteousBuff              = Spell(132403),
 DivineProtection = Spell(403876),
 -- Debuffs
+
+
 ConsecrationDebuff                    = Spell(204242),
 JudgmentDebuff                        = Spell(197277),
 -- Pool
@@ -718,6 +725,32 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.WordofGlory:Cast()
         end
     end
+
+
+    if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1 then 
+        if S.Intercession:IsCastable() and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and S.Intercession:Charges()>=1 then
+            return S.intercession:Cast()
+        end
+
+        if S.LayonHands:IsReady() and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+            return S.LayonHandsFocus:Cast()
+        end
+        if S.BlessingofProtection:IsReady() and inRange30>2 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+            return S.BlessingofProtectionFocus:Cast()
+        end
+        if S.BlessingofSacrifice:IsReady() and (GetFocusTargetHealthPercentage()<60 or mitigate()) then
+            return S.BlessingofSacrifice:Cast()
+        end
+        if S.WordofGlory:IsReady() and GetFocusTargetHealthPercentage()<45 and (WordofGlorycast or Player:HolyPower()>=3) then
+            return S.WordofGloryFocus:Cast()
+        end
+        if S.CleanseToxins:IsReady() and (GetAppropriateCureSpellfocus()=='Poison' or GetAppropriateCureSpellfocus()=='Disease') and Player:HealthPercentage()>80 then
+            return S.CleanseToxinsFocus:Cast()
+        end
+        
+    end
+
+
 -- print(targetRange30)
         if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Target)  and not Target:IsDeadOrGhost() then 
 

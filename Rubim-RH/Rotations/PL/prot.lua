@@ -27,7 +27,7 @@ BulwarkofRighteousFuryBuff            = Spell(386652),
 Sentinel = Spell(389539),
 BlessingofFreedom           = Spell(1044),
 BlindingLight               = Spell(115750),
-SenseUndead                 = Spell(5502),
+-- SenseUndead                 = Spell(5502),
 
 CleanseToxins               = Spell(213644),
 autoattack                  = Spell(291944), -- regeneratin
@@ -382,11 +382,11 @@ local function APL()
             if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or inRange30 == 0) then
             RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
             end
-            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") then
               return S.TurnEvil:Cast()
               end
      
-            if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL")  then
+            if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") then
               return S.Repentance:Cast()
               end
 
@@ -584,10 +584,10 @@ local function APL()
                         return S.intercession:Cast()
                     end
 
-                    if S.LayonHands:IsReady() and GetFocusTargetHealthPercentage()<25 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+                    if S.LayonHands:IsReady() and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
                         return S.LayonHandsFocus:Cast()
                     end
-                    if S.BlessingofProtection:IsReady() and inRange30>1 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+                    if S.BlessingofProtection:IsReady() and inRange30>2 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
                         return S.BlessingofProtectionFocus:Cast()
                     end
                     if S.BlessingofSacrifice:IsReady() and (GetFocusTargetHealthPercentage()<60 or mitigate()) then
