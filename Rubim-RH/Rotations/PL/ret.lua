@@ -697,9 +697,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         end
 
         if S.DivineProtection:IsReady() and Player:AffectingCombat() 
-        and not Player:BuffP(S.ShieldofVengeance) and (Player:HealthPercentage() <= 65 or HPpercentloss>10) 
-        and S.DivineShield:CooldownRemainsP() > Player:GCD() and
-        S.LayonHands:CooldownRemainsP() > Player:GCD() and inRange20 >= 1 then
+        and not Player:BuffP(S.ShieldofVengeance) and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and inRange20 >= 1 then
         return S.divineprotection:Cast()
         end
 
