@@ -1215,6 +1215,43 @@ do
 
 
 
+    -- function spellreflect()
+    --     if Player:AffectingCombat() then
+    --     for id = 1, 40 do
+    --     local spell = {
+        
+    --         'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
+    --     'Savage Peck', 'Barkbreaker', --Academy boss
+    --     'Erupting Fissure','Dragon Strike','Ice Cutter', -- Azure vault boss
+    --     'Brutalize','Rending Strike','Conductive Strike', -- NO boss
+    --     'Decaystrike', -- BHH boss
+    --     'Fiery Focus','Heated Swings',--neltharus boss
+    --     'Wild Cleave', 'Sand Breath', --uldaman boss
+    --     'Explosive Brand',--AV
+    --     'Squall Buffet', --HoI
+        
+        
+        
+    --     }
+    --     local unitID = "nameplate" .. id
+    --     local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+    --     UnitCastingInfo(unitID)
+    --     local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+        
+    --     for idx = 1, #spell do
+    --     if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+    --     return true
+    --     end
+    --     end
+    --     end
+    --     end
+    --     return false
+    --     end
+
+
+
+
+
      function mitigatedng()
         if Player:AffectingCombat() then
         for id = 1, 40 do
@@ -1775,7 +1812,8 @@ end
 function GetAppropriateCureSpell()
     local debuffTypePoison = "Poison"
     local debuffTypeDisease = "Disease"
-    
+    local debuffTypeCurse = "Curse"
+
     for i = 1, 40 do
         local name, _, _, debuffType = UnitDebuff("player", i)
         if not name then break end  -- No more debuffs, exit the loop
@@ -1784,6 +1822,8 @@ function GetAppropriateCureSpell()
             return debuffTypePoison
         elseif debuffType == debuffTypeDisease then
             return debuffTypeDisease
+        elseif debuffType == debuffTypeCurse then
+            return debuffTypeCurse
         end
     end
     

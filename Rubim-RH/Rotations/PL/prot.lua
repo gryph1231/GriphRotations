@@ -231,9 +231,7 @@ local function APL()
 
           --  10645, -- Gnomish Death Ray
            
-           if true then
-            inInstance, instanceType = IsInInstance()
-            end
+       
             -- print(instanceType)
             local lostimer = GetTime() - losCheckTimer
             local los
@@ -245,6 +243,7 @@ local function APL()
             end
 
             local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+            inInstance, instanceType = IsInInstance()
 
             local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
             local highkey = 4
