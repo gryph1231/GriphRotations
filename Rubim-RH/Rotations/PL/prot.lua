@@ -216,23 +216,7 @@ local function APL()
   targetRange20 = IsItemInRange(10645, "target")
   targetRange25 = IsItemInRange(24268, "target")
   targetRange30 = IsItemInRange(835, "target")
-          --   print('inrange5:',IsItemInRange(8149, "target"))  
 
-          --   print('inrange8:',IsItemInRange(34368, "target"))  
-
-          --   print('inrange10:',IsItemInRange(32321, "target"))  
-
-          --  print('inrange15:',IsItemInRange(33069, "target"))  
-          --  print('inrange20:',IsItemInRange(10645, "target"))  
-
-          --  print('inrange25:',IsItemInRange(24268, "target"))  
-
-          --  print('inrange30:',IsItemInRange(835, "target"))  
-
-          --  10645, -- Gnomish Death Ray
-           
-       
-            -- print(instanceType)
             local lostimer = GetTime() - losCheckTimer
             local los
             
@@ -243,21 +227,21 @@ local function APL()
             end
 
             local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
-            inInstance, instanceType = IsInInstance()
+            local inInstance, instanceType = IsInInstance()
 
             local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
             local highkey = 4
 
-            castchannelTime = math.random(250, 500) / 1000
+            local castchannelTime = math.random(250, 500) / 1000
 
             local startTimeMS = select(4, UnitCastingInfo('target')) or 0
             local currentTimeMS = GetTime() * 1000
             local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
-            castTime = elapsedTimeca / 1000
+            local castTime = elapsedTimeca / 1000
             local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
             local currentTimeMS = GetTime() * 1000
             local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
-            channelTime = elapsedTimech / 1000
+            local channelTime = elapsedTimech / 1000
 
             WordofGlorycast = (
             AuraUtil.FindAuraByName("Divine Purpose", "player") or Player:Buff(S.ShiningLightFreeBuff) or AuraUtil.FindAuraByName("Bastion of Light", "player") or Player:HolyPower()>=3)
@@ -272,6 +256,8 @@ local function APL()
             elite = false
             end
 
+            local incorporeal = UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Imprison","target","HARMFUL") and not AuraUtil.FindAuraByName("Freezing Trap","target","HARMFUL")  
+            and not AuraUtil.FindAuraByName("Blind","target","HARMFUL")  and not AuraUtil.FindAuraByName("Turn Evil","target","HARMFUL")  and not AuraUtil.FindAuraByName("Repentance","target","HARMFUL")  
             -- Define a list of dungeon boss encounter IDs
             local Boss = {
             'The Raging Tempest', 'Teera', 'Balakar Khan','Maruuk',                   -- Nokhud Offensive
@@ -292,28 +278,12 @@ local function APL()
             validmobsinrange10y = combatmobs40() * .7
             validmobsinrange30y = combatmobs40() * .7
 
-            if inRange10 > validmobsinrange10y and combatmobs40() > 0 then
-            aoecds10y = true
-            else
-            aoecds10y = false
-            end
+       
 
             local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
             local useDS = not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
             local useGoAK = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Ardent Defender", "player")
             local useEoT = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
-
-
-            if inRange30 > validmobsinrange30y and combatmobs40() > 0 then
-            aoecds30y = true
-            else
-            aoecds30y = false
-            end
-
-            consecrationdrop = (
-            (Player:CanAttack(Target) and targetRange8
-            and aoecds10y
-            ) or inRange8>= 3)
 
 
             if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:CooldownUp() 
@@ -381,15 +351,16 @@ local function APL()
             if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or inRange30 == 0) then
             RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
             end
-            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") then
+
+            if S.TurnEvil:IsReady() and incorporeal and targetRange10 and not Player:IsMoving() then
               return S.TurnEvil:Cast()
               end
      
-            if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") then
+            if S.Repentance:IsReady() and incorporeal and targetRange30 and not Player:IsMoving() then
               return S.Repentance:Cast()
               end
 
-            if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") and not AuraUtil.FindAuraByName("Hammer of Justice","target") then
+            if S.HammerofJustice:IsReady() and incorporeal and targetRange10 then
               return S.HammerofJustice:Cast()
               end
 

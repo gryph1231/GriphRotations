@@ -543,8 +543,6 @@ local function APL()
     targetRange25 = IsItemInRange(24268, "target")
     targetRange30 = IsItemInRange(835, "target")
 
-
-
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
         DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
     else
@@ -594,15 +592,6 @@ local function APL()
         aoecds30y = false
     end
 
-    consecrationdrop = (
-        (Player:CanAttack(Target) and targetRange10
-            and aoecds10y
-        ) or inRange8>= 3)
-    --         --battle rez
-
--- print('combatmobs40',combatmobs40())
--- print('(70% of combatmobs):',validmobsinrange8y)
--- print('All in range 8y:',inRange8)
 
 
 
@@ -796,15 +785,17 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
             and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
                 return S.BlindingLight:Cast()
             end
-            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") then
+            local incorporeal = UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Imprison","target","HARMFUL") and not AuraUtil.FindAuraByName("Freezing Trap","target","HARMFUL")  
+
+            if S.TurnEvil:IsReady() and incorporeal and targetRange10 and not Player:IsMoving() then
                 return S.TurnEvil:Cast()
                 end
        
-              if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") then
+              if S.Repentance:IsReady() and incorporeal and targetRange30 and not Player:IsMoving() then
                 return S.Repentance:Cast()
                 end
   
-              if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") and not AuraUtil.FindAuraByName("Hammer of Justice","target") then
+              if S.HammerofJustice:IsReady() and incorporeal and targetRange10 then
                 return S.HammerofJustice:Cast()
                 end
   

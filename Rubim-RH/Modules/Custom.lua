@@ -1192,7 +1192,7 @@ do
 
  function freedom()
     if Player:AffectingCombat() then
-    for id = 1, 40 do
+    for id = 1, 10 do
     local spell = { 'Crystalline Rupture','Arcane Lockdown', }
     local unitID = "nameplate" .. id
     local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -1214,39 +1214,6 @@ do
 
 
 
-
-    -- function spellreflect()
-    --     if Player:AffectingCombat() then
-    --     for id = 1, 40 do
-    --     local spell = {
-        
-    --         'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
-    --     'Savage Peck', 'Barkbreaker', --Academy boss
-    --     'Erupting Fissure','Dragon Strike','Ice Cutter', -- Azure vault boss
-    --     'Brutalize','Rending Strike','Conductive Strike', -- NO boss
-    --     'Decaystrike', -- BHH boss
-    --     'Fiery Focus','Heated Swings',--neltharus boss
-    --     'Wild Cleave', 'Sand Breath', --uldaman boss
-    --     'Explosive Brand',--AV
-    --     'Squall Buffet', --HoI
-        
-        
-        
-    --     }
-    --     local unitID = "nameplate" .. id
-    --     local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-    --     UnitCastingInfo(unitID)
-    --     local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-        
-    --     for idx = 1, #spell do
-    --     if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-    --     return true
-    --     end
-    --     end
-    --     end
-    --     end
-    --     return false
-    --     end
 
 
 
@@ -1686,7 +1653,7 @@ function kickprio()
 
 function mitigate()
     if Player:AffectingCombat() then
-        for id = 1, 40 do
+        for id = 1, 10 do
             local spell = {
                 'Explosive Brand',--AV
                 'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', 'Inundate',--halls of infusion
@@ -1921,9 +1888,9 @@ end
 function combatmobs40()
     local totalRange40 = 0
    
-    for id = 1, 40 do
+    for id = 1, 10 do
         local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and  RangeCount("Hammer of Wrath")
+        if UnitCanAttack("player", unitID) and IsItemInRange(28767, unitID)
             and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
             totalRange40 = totalRange40 + 1
         end
