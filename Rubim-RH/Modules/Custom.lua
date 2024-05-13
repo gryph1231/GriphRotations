@@ -1259,12 +1259,12 @@ do
         
             'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
         'Savage Peck', 'Barkbreaker', --Academy boss
-        'Erupting Fissure','Dragon Strike','Ice Cutter', -- Azure vault boss
+        'Erupting Fissure','Dragon Strike','Ice Cutter', 'Arcane Cleave',-- Azure vault boss
         'Brutalize','Rending Strike','Conductive Strike', -- NO boss
         'Decaystrike', -- BHH boss
         'Fiery Focus','Heated Swings',--neltharus boss
         'Wild Cleave', 'Sand Breath', --uldaman boss
-        'Explosive Brand',--AV
+       
         'Squall Buffet', --HoI
         
         
@@ -1688,7 +1688,7 @@ function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-             
+                'Explosive Brand',--AV
                 'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', 'Inundate',--halls of infusion
                 'Magma Eruption', 'Might of the Forge', 'Volatile Mutation', 'Candescent Tempest', -- neltharus
                 'Shocking Quake', 'Crushing Stomp', 'Thunderous Clap', 'Wing Buffet',              -- Uldaman

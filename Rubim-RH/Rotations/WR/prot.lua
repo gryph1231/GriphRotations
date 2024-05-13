@@ -153,6 +153,17 @@ local function IgnorePainWillNotCap()
 	local NewAbsorb = Player:AttackPowerDamageMod() * 4.375 * (1 + Player:VersatilityDmgPct() / 100)
 	local IPBuffTable = Player:AuraInfo(S.IgnorePain, nil, true)
 	local OldAbsorb = IPBuffTable.points[1]
+
+	if IPBuffTable == nil then
+		IPBuffTable = 0
+	else
+		IPBuffTable = Player:AuraInfo(S.IgnorePain, nil, true)
+	end
+	if IPBuffTable.points[1] == nil then
+		IPBuffTable = 0
+	else
+		OldAbsorb = IPBuffTable.points[1]
+	end
 	-- Ignore Pain appears to cap at 30% of player's max health
 	-- https://github.com/simulationcraft/simc/blob/dragonflight/engine/class_modules/sc_warrior.cpp#L7789 as of Sept 21, 2023
 	return OldAbsorb + NewAbsorb < Player:MaxHealth() * 0.3
@@ -317,7 +328,7 @@ local function APL()
 		local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
 		local pressshieldblock = isTanking ==true and S.ShieldBlock:IsReady() and ((not Player:Buff(S.ShieldBlockBuff)  or Player:BuffRemains(S.ShieldBlockBuff) < S.ShieldSlam:CooldownRemains()) and not Player:Buff(S.LastStandBuff) and Target:HealthPercentage() > 20)
-		local useDefensive =   (not AuraUtil.FindAuraByName("Avatar", "player") and S.ImmovableObject:IsAvailable() or not S.ImmovableObject:IsAvailable()) and not AuraUtil.FindAuraByName("Shield Wall", "player") and not AuraUtil.FindAuraByName("Last Stand", "player")
+		local useDefensive =   not AuraUtil.FindAuraByName("Demoralizing Shout","target","PLAYER|HARMFUL") and  (not AuraUtil.FindAuraByName("Avatar", "player") and S.ImmovableObject:IsAvailable() or not S.ImmovableObject:IsAvailable()) and not AuraUtil.FindAuraByName("Shield Wall", "player") and not AuraUtil.FindAuraByName("Last Stand", "player")
 
 		HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
@@ -353,12 +364,30 @@ local function APL()
 
 		}
 
+
+		
+		validmobsinrange8y = combatmobs40() * .7
+		validmobsinrange30y = combatmobs40() * .7
+
+		if inRange8 > validmobsinrange8y and combatmobs40() > 0 then
+		aoecds8y = true
+		else
+		aoecds8y = false
+		end
+
 		if Player:IsCasting() or Player:IsChanneling() or AuraUtil.FindAuraByName("Drink", "player") 
 		or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
 		return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 		end 
 
--- print(HPpercentloss)
+		-- if Player:Buff(S.IgnorePain) then
+		-- 	local IPBuffInfo = Player:BuffInfo(S.IgnorePain, nil, true)
+		-- 	return IPBuffInfo.points[1]
+		-- 	else
+		-- 	return 0 
+		-- 	end
+
+-- print(IgnorePainWillNotCap())
 		--------------------------------------------------------------------------------------------------------------------------------------------
 		----------------------------------------------------------Spell Queue-----------------------------------------------------------------------
 		--------------------------------------------------------------------------------------------------------------------------------------------
@@ -368,9 +397,9 @@ local function APL()
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 		end
 
-		if S.HeroicThrow:ID() == RubimRH.queuedSpell[1]:ID() and targetRange8 then
-		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-		end
+		-- if S.HeroicThrow:ID() == RubimRH.queuedSpell[1]:ID() and targetRange5 then
+		-- RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+		-- end
 
 		if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
 		and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and Player:CanAttack(Target) and 
@@ -419,11 +448,23 @@ local function APL()
 			return S.Taunt:Cast()
 			end
 
+
+			if RubimRH.InterruptsON() and not isEnraged and S.Pummel:IsReady() and kickprio() and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
+				return S.Pummel:Cast()
+				end
+				if RubimRH.InterruptsON() and not isEnraged and S.StormBolt:IsReady() and stunprio() and targetRange20 and not isEnraged then
+					return S.StormBolt:Cast()
+					end
+	
+				if RubimRH.InterruptsON() and not isEnraged and S.Shockwave:IsReady() and stunprio() and targetRange8 and not isEnraged then
+				return S.Shockwave:Cast()
+				end
+	
    
-            if S.IntimidatingShout:IsReady() and targetRange8 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Storm Bolt","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL")  then
+            if S.IntimidatingShout:IsReady() and targetRange8 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Storm Bolt","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL")  then
                 return S.IntimidatingShout:Cast()
                 end
-				if S.StormBolt:IsReady() and targetRange8 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Storm Bolt","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL")  then
+				if S.StormBolt:IsReady() and targetRange8 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Storm Bolt","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL")  then
 					return S.StormBolt:Cast()
 					end
 
@@ -441,36 +482,39 @@ local function APL()
 			end
 	
 
-				if S.ShieldWall:IsReady() and (targetRange30 or inRange30>=1) and Player:HealthPercentage()<20 then
+				if S.ShieldWall:IsReady() and (targetRange30 or inRange30>=1) and Player:HealthPercentage()<25 then
 				return S.ShieldWall:Cast()
 				end
-
-				if S.RallyingCry:IsReady()  and Player:HealthPercentage()<40 and (targetRange30 or inRange30>=1) then
+				if S.LastStand:IsReady() and HPpercentloss > 10 and Player:HealthPercentage()<30 and useDefensive and (targetRange30 or inRange30>=1) then
+					return S.LastStand:Cast()
+					end
+				if S.RallyingCry:IsReady() and HPpercentloss > 10 and Player:HealthPercentage()<30 and (targetRange30 or inRange30>=1) and not AuraUtil.FindAuraByName("Last Stand", "player")  then
 				return S.RallyingCry:Cast()
 				end
 
-				if S.SpellReflection:IsCastable() and HPpercentloss > 12 
-				and Player:HealthPercentage() < 30 and (targetRange20 or inRange20>=1) then
-				return S.SpellReflection:Cast()
-				end
-
-				if S.SpellBlock:IsCastable() and HPpercentloss > 12 and not AuraUtil.FindAuraByName("Spell Reflection", "player") 
+				if S.SpellBlock:IsCastable() and HPpercentloss > 5 and not AuraUtil.FindAuraByName("Spell Reflection", "player") 
 				and Player:HealthPercentage() < 30 and (targetRange20 or inRange20>=1) then
 				return S.SpellBlock:Cast()
 				end
 
 			if ((IsEncounterInProgress(Boss) or level>highkey) and mitigatedng()) then 
 
-				if S.LastStand:IsReady()  and useDefensive and (targetRange30 or inRange30>=1) then
+				if S.LastStand:IsReady()  and useDefensive and (targetRange30 or inRange30>=1)  then
 				return S.LastStand:Cast()
 				end
 
 				if S.ShieldWall:IsReady()  and useDefensive and (targetRange30 or inRange30>=1) then
 				return S.ShieldWall:Cast()
 				end
+				if S.RallyingCry:IsReady() and useDefensive and (targetRange30 or inRange30>=1) and not AuraUtil.FindAuraByName("Last Stand", "player") then
+				return S.RallyingCry:Cast()
+				end
 
 				if S.Avatar:IsCastable() and useDefensive and  targetRange10  and S.ImmovableObject:IsAvailable() then
 				return S.Avatar:Cast()
+				end
+				if S.DemoralizingShout:IsCastable() and useDefensive and targetRange8 then
+				return S.DemoralizingShout:Cast()
 				end
 
 
@@ -478,24 +522,29 @@ local function APL()
 
 
 			if (not IsEncounterInProgress(Boss) or level <= highkey)  then
-				if S.LastStand:IsReady() and useDefensive and (targetRange30 or inRange30>=1)
-				and HPpercentloss > 12
-				and Player:HealthPercentage() < 45 then
+				if S.LastStand:IsReady() and useDefensive and (targetRange30 or inRange30>=1) 
+				and HPpercentloss > 10
+				and Player:HealthPercentage() < 60 then
 				return S.LastStand:Cast()
 				end
 
 				if S.ShieldWall:IsReady() and HPpercentloss > 12
-				and Player:HealthPercentage() < 45 and useDefensive and (targetRange30 or inRange30>=1) then
+				and Player:HealthPercentage() < 55 and useDefensive and (targetRange30 or inRange30>=1) then
 				return S.ShieldWall:Cast()
 				end
 				if S.Avatar:IsCastable() and HPpercentloss > 12 and useDefensive
 				and Player:HealthPercentage() < 55 and targetRange10  and S.ImmovableObject:IsAvailable() then
 				return S.Avatar:Cast()
 				end
-				if S.RallyingCry:IsReady() and useDefensive and (targetRange30 or inRange30>=1)
+				if S.RallyingCry:IsReady() and useDefensive and (targetRange30 or inRange30>=1)  and not AuraUtil.FindAuraByName("Last Stand", "player") 
 				and HPpercentloss > 10
-				and Player:HealthPercentage() < 65 then
+				and Player:HealthPercentage() < 60 then
 				return S.RallyingCry:Cast()
+				end
+
+				if S.DemoralizingShout:IsCastable() and HPpercentloss > 5 and useDefensive
+				and Player:HealthPercentage() < 90 and targetRange8   then
+				return S.DemoralizingShout:Cast()
 				end
 
 			end
@@ -507,15 +556,6 @@ local function APL()
 
 			if S.BitterImmunity:IsReady() and Player:HealthPercentage()<80 and inRange20>=1 and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease' or GetAppropriateCureSpell()=='Curse' or Player:HealthPercentage()<50) then
 				return S.BitterImmunity:Cast()
-			end
-
-
-			if RubimRH.InterruptsON() and not isEnraged and S.Pummel:IsReady() and kickprio() and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
-			return S.Pummel:Cast()
-			end
-			
-			if RubimRH.InterruptsON() and not isEnraged and S.Shockwave:IsReady() and stunprio() and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
-			return S.Shockwave:Cast()
 			end
 
 			if S.Avatar:IsCastable() and targetRange5 and RubimRH.CDsON() and not S.ImmovableObject:IsAvailable() then
@@ -556,12 +596,12 @@ local function APL()
 			return S.LastStand:Cast()
 			end
 			-- ravager
-			if RubimRH.CDsON() and S.Ravager:IsCastable() and targetRange5 and inRange8>=3 then
+			if RubimRH.CDsON() and S.Ravager:IsCastable() and targetRange5 and inRange8>=3 and aoecds8y == true and HL.CombatTime()>2  then
 			SuggestRageDump(10)
 			return S.Ravager:Cast()
 			end
 			--demoralizing_shout,if=talent.booming_voice.enabled
-			if S.DemoralizingShout:IsCastable() and HPpercentloss>5 and (S.BoomingVoice:IsAvailable()) and targetRange10 then
+			if S.DemoralizingShout:IsCastable() and HPpercentloss>5 and (S.BoomingVoice:IsAvailable()) and targetRange10 and (not IsEncounterInProgress(Boss) or level <= highkey) then
 			SuggestRageDump(30)
 			return S.DemoralizingShout:Cast()
 			end
@@ -571,7 +611,7 @@ local function APL()
 			return S.ChampionsSpear:Cast()
 			end
 			-- thunderous_roar
-			if RubimRH.CDsON() and S.ThunderousRoar:IsCastable() and targetRange8 and inRange10>=3 then
+			if RubimRH.CDsON() and S.ThunderousRoar:IsCastable() and targetRange8 and inRange10>=3 and aoecds8y == true and HL.CombatTime()>2 then
 			return S.ThunderousRoar:Cast()
 			end
 			-- shield_slam,if=buff.fervid.up
@@ -585,7 +625,7 @@ local function APL()
 			-- 	return S.Shockwave:Cast()
 			-- end
 			-- shield_charge
-			if S.ShieldCharge:IsCastable() and targetRange8 then
+			if S.ShieldCharge:IsCastable() and targetRange5 then
 			SuggestRageDump(40)
 			return S.ShieldCharge:Cast()
 			end
