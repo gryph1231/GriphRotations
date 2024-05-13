@@ -796,15 +796,15 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
             and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
                 return S.BlindingLight:Cast()
             end
-            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Freezing Trap","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") then
+            if S.TurnEvil:IsReady() and targetRange10 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") then
                 return S.TurnEvil:Cast()
                 end
        
-              if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Freezing Trap","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") then
+              if S.Repentance:IsReady() and targetRange30 and not Player:IsMoving() and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") then
                 return S.Repentance:Cast()
                 end
   
-              if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Freezing Trap","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Blind","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Kidney Shot","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Turn Evil","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Repentance","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Hammer of Justice","target","PLAYER|HARMFUL") then
+              if S.HammerofJustice:IsReady() and targetRange10 and UnitName('target') == 'Incorporeal Being'  and not AuraUtil.FindAuraByName("Imprison","target") and not AuraUtil.FindAuraByName("Freezing Trap","target") and not AuraUtil.FindAuraByName("Blind","target") and not AuraUtil.FindAuraByName("Kidney Shot","target") and not AuraUtil.FindAuraByName("Turn Evil","target") and not AuraUtil.FindAuraByName("Repentance","target") and not AuraUtil.FindAuraByName("Hammer of Justice","target") then
                 return S.HammerofJustice:Cast()
                 end
   

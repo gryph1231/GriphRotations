@@ -1259,7 +1259,7 @@ do
         
             'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
         'Savage Peck', 'Barkbreaker', --Academy boss
-        'Erupting Fissure','Dragon Strike','Ice Cutter', 'Arcane Cleave',-- Azure vault boss
+        'Erupting Fissure','Ice Cutter', 'Arcane Cleave',-- Azure vault boss
         'Brutalize','Rending Strike','Conductive Strike', -- NO boss
         'Decaystrike', -- BHH boss
         'Fiery Focus','Heated Swings',--neltharus boss
