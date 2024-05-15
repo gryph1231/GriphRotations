@@ -593,7 +593,11 @@ local function APL()
     end
 
 
-
+    if S.Intercession:Charges()== nil then
+        rezcharges = 0
+      else
+        rezcharges=S.Intercession:Charges()
+      end
 
 local startTimeMS = select(4, UnitCastingInfo('target')) or 0
 local currentTimeMS = GetTime() * 1000
@@ -805,7 +809,37 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
   
         end
 
+        ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
+            ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
+            ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
 
+                if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1 then 
+                    if S.Intercession:IsCastable() and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
+                        return S.intercession:Cast()
+                    end
+
+                    if S.LayonHands:IsReady() and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+                        return S.LayonHandsFocus:Cast()
+                    end
+                    if S.BlessingofProtection:IsReady() and inRange30>2 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+                        return S.BlessingofProtectionFocus:Cast()
+                    end
+                    if S.BlessingofSacrifice:IsReady() and (GetFocusTargetHealthPercentage()<60 or mitigate()) then
+                        return S.BlessingofSacrifice:Cast()
+                    end
+                    if S.WordofGlory:IsReady() and GetFocusTargetHealthPercentage()<45 and (WordofGlorycast or Player:HolyPower()>=3) then
+                        return S.WordofGloryFocus:Cast()
+                    end
+                    if S.CleanseToxins:IsReady() and (GetAppropriateCureSpellfocus()=='Poison' or GetAppropriateCureSpellfocus()=='Disease') and Player:HealthPercentage()>80 then
+                        return S.CleanseToxinsFocus:Cast()
+                    end
+                    
+                end
+
+
+            ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
+            ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
+            ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
 
         if RubimRH.CDsON() and targetRange20
         and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or S.AvengingWrath:CooldownRemains()>20 or S.Crusade:CooldownRemains()>20)

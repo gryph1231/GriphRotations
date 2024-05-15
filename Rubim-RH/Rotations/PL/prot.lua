@@ -267,7 +267,7 @@ local function APL()
             'Leymor','Umbrelskul', -- Azure vault
             'Kokia Blazehoof','Erkhart Stormvein', 'Defier Draghar','Flamegullet','Thunderhead',--RLP
             'Decatriarch Wratheye',--BHH
-            'Chargath, Bane of Scales', 'Forgemaster Gorek', --neltharus
+            'Forgemaster Gorek', --neltharus
             'Primal Tsunami', -- HoI
 
 
@@ -277,9 +277,11 @@ local function APL()
 
             validmobsinrange10y = combatmobs40() * .7
             validmobsinrange30y = combatmobs40() * .7
-
-       
-
+if S.Intercession:Charges()== nil then
+  rezcharges = 0
+else
+  rezcharges=S.Intercession:Charges()
+end
             local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
             local useDS = not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
             local useGoAK = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Ardent Defender", "player")
@@ -287,7 +289,7 @@ local function APL()
 
 
             if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:CooldownUp() 
-            and Player:HolyPower() < 3 and partyOrRaidDead() >= 1 and S.Intercession:Charges()>=1 then
+            and Player:HolyPower() < 3 and partyOrRaidDead() >= 1 and (rezcharges>=1 or level == 0) then
             if S.Judgment:IsReady() and targetRange30 then
             return S.Judgment:Cast()
             end
@@ -297,13 +299,13 @@ local function APL()
             end
             end
 
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() and S.Intercession:Charges()>=1
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:IsReady() and (rezcharges>=1 or level == 0)
             and Player:HolyPower() >= 3 then
             return S.intercession:Cast() 
             end
 
 
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0 or S.Intercession:Charges()<1) then
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0 or rezcharges>=1) then
             RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
             end
       
@@ -550,7 +552,7 @@ local function APL()
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
 
                 if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1 then 
-                    if S.Intercession:IsCastable() and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and S.Intercession:Charges()>=1 then
+                    if S.Intercession:IsCastable() and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
                         return S.intercession:Cast()
                     end
 
@@ -581,7 +583,7 @@ local function APL()
                 end
                 if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1  then
                              -- --Freedom
-                             if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.Entangled))  then
+                             if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
                              return S.BlessingofFreedomz:Cast()
                              end
                 end
