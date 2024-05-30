@@ -1688,6 +1688,7 @@ function tierequipped()
         "Lurking Specter's Tights",
         "Lurking Specter's Brigandine",
         "Lurking Specter's Handgrips",
+        217207, -- "Lurking Specter's Handgrips"
         "Lurking Specter's Shoulderblades",
         "Lurking Specter's Visage",
         "Heartfire Sentinel's Forgehelm",

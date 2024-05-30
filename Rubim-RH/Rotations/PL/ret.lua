@@ -300,7 +300,7 @@ end
             -- final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&(time>=8|!talent.vanguard_of_justice)|holy_power>=2&talent.divine_auxiliary)
             --&(cooldown.avenging_wrath.remains>10|cooldown.crusade.remains&(!buff.crusade.up|buff.crusade.stack>=10))&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)
 
-            if S.FinalReckoning:IsCastable() and aoecds10y 
+            if S.FinalReckoning:IsCastable() and aoecds8y 
             and targetRange8 
             and (HolyPower >= 4 and HL.CombatTime() < 8 
             or HolyPower >= 3 and (HL.CombatTime() >= 8 or not S.VanguardofJustice:IsAvailable()) or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
@@ -332,7 +332,7 @@ end
             end
 
            --templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
-            if (IsReady("Final Verdict") or IsReady("Templar's Verdict")) and targetRange8 and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
+            if (IsReady("Final Verdict") or IsReady("Templar's Verdict")) and targetRange20 and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
             or not RubimRH.CDsON() or Player:Buff(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then
             return S.TemplarsVerdict:Cast()
             end
@@ -357,7 +357,7 @@ end
                     if S.FinalReckoning:IsReady() 
                     and RubimRH.CDsON() 
                     and targetRange8
-                    and inRange8>=1 then                        
+                    and inRange5>=1 then                        
                         return S.FinalReckoning:Cast()
                     end
 
@@ -400,7 +400,7 @@ end
 
                 --wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6)
                 --&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
-                if S.WakeofAshes:IsCastable() and aoecds10y and RubimRH.CDsON() and targetRange8 and HolyPower <= 2 and (S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6) 
+                if S.WakeofAshes:IsCastable() and aoecds8y and RubimRH.CDsON() and targetRange8 and HolyPower <= 2 and (S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6) 
                 and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or (aoeTTD() < 8 or Target:TimeToDie()<8)) then
                 return S.WakeofAshes:Cast()
                 end
@@ -412,7 +412,7 @@ end
                     end
 
                     -- divine_toll,if=holy_power<=2&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|fight_remains<8)
-                if S.DivineToll:IsCastable() and aoecds10y and targetRange30 and HolyPower<=2 and RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15) then
+                if S.DivineToll:IsCastable() and aoecds8y and targetRange30 and HolyPower<=2 and RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15) then
                 return S.DivineToll:Cast()
                 end
 
@@ -573,15 +573,15 @@ local function APL()
 
         HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
-    validmobsinrange10y = combatmobs40() * .6
+        validmobsinrange8y = combatmobs40() * .6
     validmobsinrange30y = combatmobs40() * .6
 
 
 
-    if (inRange10 > validmobsinrange10y or instanceType=='raid') and combatmobs40() > 0 then
-        aoecds10y = true
+    if (inRange8 > validmobsinrange8y or instanceType=='raid') and combatmobs40() > 0 then
+        aoecds8y = true
     else
-        aoecds10y = false
+        aoecds8y = false
     end
 
 
@@ -591,6 +591,7 @@ local function APL()
     else
         aoecds30y = false
     end
+
 
 
     if S.Intercession:Charges()== nil then
