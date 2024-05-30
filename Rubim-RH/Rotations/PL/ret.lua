@@ -766,10 +766,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.CrusaderStrike:Cast()
         end
 
-        if S.BlessingofFreedom:IsReady() and (freedom() or AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") or AuraUtil.FindAuraByName("Frost Shock", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL"))  then
-            return S.BlessingofFreedom:Cast()
-        end
-    
+
         if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
             --Kick
             if S.Rebuke:IsReady() 
@@ -840,6 +837,24 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+                if S.CleanseToxins:IsReady() and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease') then
+                    return S.CleanseToxins:Cast()
+                end
+                if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1  then
+                             -- --Freedom
+                             if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
+                             return S.BlessingofFreedomz:Cast()
+                             end
+                end
+
+
+
+                if S.BlessingofFreedom:IsReady() and (freedom() or AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") or AuraUtil.FindAuraByName("Frost Shock", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL"))  then
+                    return S.BlessingofFreedom:Cast()
+                end
+            
 
         if RubimRH.CDsON() and targetRange20
         and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or S.AvengingWrath:CooldownRemains()>20 or S.Crusade:CooldownRemains()>20)
