@@ -1777,6 +1777,7 @@ end
 
 
 
+
 function GetAppropriateCureSpell()
     local debuffTypePoison = "Poison"
     local debuffTypeDisease = "Disease"

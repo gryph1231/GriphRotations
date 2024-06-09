@@ -179,7 +179,7 @@ CruelGarroteDebuff          = Spell(230011),
 FinalVerdictBuff            = Spell(337228),
 
 CrusadeTalent       = Spell(384392),
- 
+mhweapcast = Spell(383185), --exorcism
 
 }
 
@@ -203,6 +203,7 @@ healingpot = Item(187802),
 healingpoticon = Item(169451),
 healthstone = Item(5512), --health stone
 drums = Item(193470),
+legendary = Item(206448), --Fyrakk leggo
 };
 local I = Item.Paladin.Retribution;
 
@@ -342,7 +343,7 @@ end
 
 
         Generators = function()
-                -- --burst AOE
+   
                 if RubimRH.AoEON() and inRange20>=5 then
 
 
@@ -365,9 +366,12 @@ end
                         return S.DivineStorm:Cast()
                     end
 
+        
+
                     if S.WakeofAshes:IsReady()
                     and RubimRH.CDsON() 
                     and HolyPower<=2
+                    and (aoecds8y or target_is_dummy())
                     and targetRange8  
                     and inRange8 >=1
                     and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
@@ -382,7 +386,18 @@ end
                     then
                         return S.DivineToll:Cast()
                     end
-        
+
+                    if I.legendary:CooldownRemains()<1.5
+                    and (RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains()>15 or S.Crusade:CooldownRemains()>15))
+                    and targetRange8 
+                    and (S.WakeofAshes:CooldownRemains()>1)
+                    and (AuraUtil.FindAuraByName("Avenging Wrath","player")  or AuraUtil.FindAuraByName("Crusade","player")  )
+                    and (aoecds8y or target_is_dummy())
+                    and inRange8 >=1
+                    and (S.ExecutionSentence:IsAvailable() or not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
+                    then
+                        return S.mhweapcast:Cast()
+                    end
 
                 end
 
@@ -400,11 +415,23 @@ end
 
                 --wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6)
                 --&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
-                if S.WakeofAshes:IsCastable() and aoecds8y and RubimRH.CDsON() and targetRange8 and HolyPower <= 2 and (S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6) 
+                if S.WakeofAshes:IsCastable() and (aoecds8y or target_is_dummy()) and RubimRH.CDsON() and targetRange8 and HolyPower <= 2 and (S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6) 
                 and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or (aoeTTD() < 8 or Target:TimeToDie()<8)) then
                 return S.WakeofAshes:Cast()
                 end
 
+                if I.legendary:CooldownRemains()<1.5
+                and (RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains()>15 or S.Crusade:CooldownRemains()>15))
+                and targetRange8 
+                and (S.WakeofAshes:CooldownRemains()>1)
+                and (AuraUtil.FindAuraByName("Avenging Wrath","player")  or AuraUtil.FindAuraByName("Crusade","player")  )
+
+                and (aoecds8y or target_is_dummy())
+                and inRange8 >=1
+                and (S.ExecutionSentence:IsAvailable() or not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
+                then
+                    return S.mhweapcast:Cast()
+                end
 
                 -- blade_of_justice,if=!dot.expurgation.ticking&set_bonus.tier31_2pc
                 if S.BladeofJustice:IsCastable() and targetRange20 and not AuraUtil.FindAuraByName("Expurgation","target","PLAYER|HARMFUL") and tierequipped()>=2 then
@@ -556,7 +583,7 @@ local function APL()
         else
             DSrange = inRange8
         end
-        VarDSCastable = ((DSrange >= 3 or DSrange >= 2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and (not Player:Buff(S.DivineArbiterBuff) and Player:BuffStack(S.DivineArbiterBuff) <= 24)) 
+        VarDSCastable = ((DSrange >= 3 or DSrange >= 2 and not S.DivineArbiter:IsAvailable() or Player:Buff(S.EmpyreanPowerBuff)) and not Player:Buff(S.EmpyreanLegacyBuff) and (not Player:Buff(S.DivineArbiterBuff) or Player:BuffStack(S.DivineArbiterBuff) <= 24)) 
 
     end
         castchannelTime = math.random(250, 500) / 1000
@@ -577,7 +604,8 @@ local function APL()
     validmobsinrange30y = combatmobs40() * .6
 
 
-
+     
+-- print(I.legendary:CooldownRemains())
     if (inRange8 > validmobsinrange8y or instanceType=='raid') and combatmobs40() > 0 then
         aoecds8y = true
     else
