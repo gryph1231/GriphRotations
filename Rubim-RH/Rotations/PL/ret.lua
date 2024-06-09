@@ -309,6 +309,16 @@ end
                 return S.FinalReckoning:Cast()
             end
 
+            if I.legendary:CooldownRemains()<1.5
+            and RubimRH.CDsON()
+            and targetRange5 
+            and aoecds8y
+            and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or (S.AvengingWrath:CooldownRemains()>45 and S.AvengingWrath:IsAvailable() or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
+           and not Target:IsMoving()
+            then
+                return S.mhweapcast:Cast()
+            end
+
 
         end
 
@@ -387,17 +397,7 @@ end
                         return S.DivineToll:Cast()
                     end
 
-                    if I.legendary:CooldownRemains()<1.5
-                    and (RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains()>15 or S.Crusade:CooldownRemains()>15))
-                    and targetRange8 
-                    and (S.WakeofAshes:CooldownRemains()>1)
-                    and (AuraUtil.FindAuraByName("Avenging Wrath","player")  or AuraUtil.FindAuraByName("Crusade","player")  )
-                    and (aoecds8y or target_is_dummy())
-                    and inRange8 >=1
-                    and (S.ExecutionSentence:IsAvailable() or not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
-                    then
-                        return S.mhweapcast:Cast()
-                    end
+
 
                 end
 
@@ -420,18 +420,7 @@ end
                 return S.WakeofAshes:Cast()
                 end
 
-                if I.legendary:CooldownRemains()<1.5
-                and (RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains()>15 or S.Crusade:CooldownRemains()>15))
-                and targetRange8 
-                and (S.WakeofAshes:CooldownRemains()>1)
-                and (AuraUtil.FindAuraByName("Avenging Wrath","player")  or AuraUtil.FindAuraByName("Crusade","player")  )
 
-                and (aoecds8y or target_is_dummy())
-                and inRange8 >=1
-                and (S.ExecutionSentence:IsAvailable() or not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
-                then
-                    return S.mhweapcast:Cast()
-                end
 
                 -- blade_of_justice,if=!dot.expurgation.ticking&set_bonus.tier31_2pc
                 if S.BladeofJustice:IsCastable() and targetRange20 and not AuraUtil.FindAuraByName("Expurgation","target","PLAYER|HARMFUL") and tierequipped()>=2 then
