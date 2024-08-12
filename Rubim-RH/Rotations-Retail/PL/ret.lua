@@ -77,7 +77,7 @@ ShieldoftheRighteousBuff              = Spell(132403),
 DivineProtection = Spell(403876),
 -- Debuffs
 
-
+ConsecratedBlade = Spell(404834),
 ConsecrationDebuff                    = Spell(204242),
 JudgmentDebuff                        = Spell(197277),
 -- Pool
@@ -484,7 +484,7 @@ end
                 end
 
                 -- consecration,if=!consecration.up&spell_targets.divine_storm>=2
-                if IsReady("Consecration") and targetRange8 and (Target:DebuffDown(S.ConsecrationDebuff) and inRange10 >= 2) then
+                if IsReady("Consecration") and targetRange8 and (Target:DebuffDown(S.ConsecrationDebuff) and inRange10 >= 2) and not S.ConsecratedBlade:IsAvailable() then
                     return S.Consecration:Cast()
                 end
 
@@ -528,7 +528,7 @@ end
                 --   end
 
                 -- consecration
-                if IsReady("Consecration") and targetRange10 then
+                if IsReady("Consecration") and targetRange10 and not S.ConsecratedBlade:IsAvailable() then
                     return S.Consecration:Cast()
                 end
 
@@ -558,6 +558,8 @@ local function APL()
     targetRange20 = IsItemInRange(10645, "target")
     targetRange25 = IsItemInRange(24268, "target")
     targetRange30 = IsItemInRange(835, "target")
+
+
 
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
         DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
@@ -641,7 +643,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
             end
 
 
-        if S.ShieldofVengeance:IsCastable() and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and
+        if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and
         (Player:InArena() or Player:InBattlegrounds() or Target:IsAPlayer()) then
         return S.ShieldofVengeance:Cast()
         end
