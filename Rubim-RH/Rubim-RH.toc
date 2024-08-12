@@ -29,34 +29,34 @@ Modules\PredictHeal.lua
 Modules\Quest.lua
 Modules\Lists.lua
 Modules\MiniMap.lua
-Rotations\Shared.lua
+Rotations-Retail\Shared.lua
 
-Rotations\RG\outlaw.lua
-Rotations\RG\sub.lua
-Rotations\PL\ret.lua
-Rotations\PL\prot.lua
+Rotations-Retail\RG\outlaw.lua
+Rotations-Retail\RG\sub.lua
+Rotations-Retail\PL\ret.lua
+Rotations-Retail\PL\prot.lua
 
-Rotations\WL\affli.lua
+Rotations-Retail\WL\affli.lua
 
 
-Rotations\WR\arms.lua
-Rotations\WR\fury.lua
-Rotations\WR\prot.lua
-Rotations\WL\demo.lua
-Rotations\HR\bm.lua
-Rotations\HR\mm.lua
-Rotations\HR\survival.lua
-Rotations\SM\enha.lua
-Rotations\DH\havoc.lua
-Rotations\MK\mist.lua
-Rotations\DR\feral.lua
-Rotations\DR\balance.lua
-Rotations\MK\wind.lua
-Rotations\MK\brew.lua
+Rotations-Retail\WR\arms.lua
+Rotations-Retail\WR\fury.lua
+Rotations-Retail\WR\prot.lua
+Rotations-Retail\WL\demo.lua
+Rotations-Retail\HR\bm.lua
+Rotations-Retail\HR\mm.lua
+Rotations-Retail\HR\survival.lua
+Rotations-Retail\SM\enha.lua
+Rotations-Retail\DH\havoc.lua
+Rotations-Retail\MK\mist.lua
+Rotations-Retail\DR\feral.lua
+Rotations-Retail\DR\balance.lua
+Rotations-Retail\MK\wind.lua
+Rotations-Retail\MK\brew.lua
 
-Rotations\DK\unholy.lua
-Rotations\DK\frost.lua
+Rotations-Retail\DK\unholy.lua
+Rotations-Retail\DK\frost.lua
 
-Rotations\MG\fire.lua
-Rotations\MG\frost.lua
+Rotations-Retail\MG\fire.lua
+Rotations-Retail\MG\frost.lua
 
