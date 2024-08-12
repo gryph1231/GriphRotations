@@ -594,8 +594,9 @@ local function APL()
         validmobsinrange8y = combatmobs40() * .6
     validmobsinrange30y = combatmobs40() * .6
 
+-- print('validmobsinrange8y:',validmobsinrange8y)
+-- print('inRange8:',inRange8)
 
-     
 -- print(I.legendary:CooldownRemains())
     if (inRange8 > validmobsinrange8y or instanceType=='raid') and combatmobs40() > 0 then
         aoecds8y = true
@@ -835,7 +836,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease') then
                     return S.CleanseToxins:Cast()
                 end
-                if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1  then
+                if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus")  then
                              -- --Freedom
                              if IsReady("Blessing of Freedom") and (freedom() or Player:Debuff(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
                              return S.BlessingofFreedomz:Cast()

@@ -588,9 +588,9 @@ local function APL()
                 if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease') then
                     return S.CleanseToxins:Cast()
                 end
-                if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1  then
+                if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus")  then
                              -- --Freedom
-                             if S.BlessingofFreedom:IsReady() and (freedom() or Player:Debuff(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
+                             if IsReady("Blessing of Freedom") and (freedom() or Player:Debuff(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
                              return S.BlessingofFreedomz:Cast()
                              end
                 end
