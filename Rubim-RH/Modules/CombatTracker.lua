@@ -85,7 +85,7 @@ local function addToData(GUID)
             -- DS: Last N sec (Only Taken) 
             DS = {},
             -- Absorb (Only Taken)       
-            absorb_spells = dynamic_array(2),
+            -- absorb_spells = dynamic_array(2),
             -- Shared 
             combat_time = GetTime(),
             spell_value = {},
@@ -209,31 +209,31 @@ local logHealing = function(...)
     Data[DestGUID].spell_value[spellID] = {Amount = prev + Amount, TIME = GetTime()} 
 end
 
---[[ This Logs the shields for every unit ]]
-local logAbsorb = function(...)
-    local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName,_, auraType, Amount = CombatLogGetCurrentEventInfo()    
-    if auraType == "BUFF" and Amount then
-        Data[DestGUID].absorb_spells[spellName]["Amount"] = Amount      
-    end    
-end
+-- --[[ This Logs the shields for every unit ]]
+-- local logAbsorb = function(...)
+--     local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName,_, auraType, Amount = CombatLogGetCurrentEventInfo()    
+--     if auraType == "BUFF" and Amount then
+--         Data[DestGUID].absorb_spells[spellName]["Amount"] = Amount      
+--     end    
+-- end
 
-local remove_logAbsorb = function(...)
-    local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName,_, auraType, Amount = CombatLogGetCurrentEventInfo()
-    if auraType == "BUFF" and Amount then
-        Data[DestGUID].absorb_spells[spellName]["Amount"] = nil               
-    end
-end
+-- local remove_logAbsorb = function(...)
+--     local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName,_, auraType, Amount = CombatLogGetCurrentEventInfo()
+--     if auraType == "BUFF" and Amount then
+--         Data[DestGUID].absorb_spells[spellName]["Amount"] = nil               
+--     end
+-- end
 
---[[ This Logs the last cast and amount for every unit ]]
-local logLastCast = function(...)
-    local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName = CombatLogGetCurrentEventInfo()
-    -- LastCast time
-    Data[SourceGUID].spell_lastcast_time[spellID] = GetTime() 
-    Data[SourceGUID].spell_lastcast_time[spellName] = GetTime() 
-    -- Counter 
-    Data[SourceGUID].spell_counter[spellID] = (not Data[SourceGUID].spell_counter[spellID] and 1) or (Data[SourceGUID].spell_counter[spellID] + 1)
-    Data[SourceGUID].spell_counter[spellName] = (not Data[SourceGUID].spell_counter[spellName] and 1) or (Data[SourceGUID].spell_counter[spellName] + 1)
-end 
+-- --[[ This Logs the last cast and amount for every unit ]]
+-- local logLastCast = function(...)
+--     local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName = CombatLogGetCurrentEventInfo()
+--     -- LastCast time
+--     Data[SourceGUID].spell_lastcast_time[spellID] = GetTime() 
+--     Data[SourceGUID].spell_lastcast_time[spellName] = GetTime() 
+--     -- Counter 
+--     Data[SourceGUID].spell_counter[spellID] = (not Data[SourceGUID].spell_counter[spellID] and 1) or (Data[SourceGUID].spell_counter[spellID] + 1)
+--     Data[SourceGUID].spell_counter[spellName] = (not Data[SourceGUID].spell_counter[spellName] and 1) or (Data[SourceGUID].spell_counter[spellName] + 1)
+-- end 
 
 --[[ These are the events we're looking for and its respective action ]]
 local EVENTS = {

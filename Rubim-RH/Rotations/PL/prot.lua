@@ -368,7 +368,7 @@ end
 
 
 
-            if not IsCurrentSpell(6603) and Player:CanAttack(Target)
+            if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
             and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
             return S.autoattack:Cast()
             end
