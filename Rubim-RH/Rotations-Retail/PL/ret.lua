@@ -649,7 +649,9 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.ShieldofVengeance:Cast()
         end
 
-
+        if S.HammerofJustice:ID() == RubimRH.queuedSpell[1]:ID() and (not Target:Exists() or not Player:CanAttack(Target)) then
+            RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+            end
 
         if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Intercession") then
         return S.intercession:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
