@@ -738,7 +738,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
 
-                if los == false and UnitExists('focus') and IsSpellInRange("Flash of Light", "focus")==1 then 
+                if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus") then 
                     if IsReady("Intercession") and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
                         return S.intercession:Cast()
                     end
