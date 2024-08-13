@@ -309,15 +309,15 @@ end
                 return S.FinalReckoning:Cast()
             end
 
-            if I.legendary:CooldownRemains()<1.5
-            and RubimRH.CDsON()
-            and targetRange5 
-            and aoecds8y
-            and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or (S.AvengingWrath:CooldownRemains()>45 and S.AvengingWrath:IsAvailable() or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
-           and not Target:IsMoving()
-            then
-                return S.mhweapcast:Cast()
-            end
+        --     if I.legendary:CooldownRemains()<1.5
+        --     and RubimRH.CDsON()
+        --     and targetRange5 
+        --     and aoecds8y
+        --     and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or (S.AvengingWrath:CooldownRemains()>45 and S.AvengingWrath:IsAvailable() or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
+        --    and not Target:IsMoving()
+        --     then
+        --         return S.mhweapcast:Cast()
+        --     end
 
 
         end
@@ -448,7 +448,7 @@ end
             
 
                 -- templar_slash,if=buff.templar_strikes.remains<gcd&spell_targets.divine_storm>=2
-                if IsReady("Templar Slash") and targetRange10 and (S.TemplarStrike:TimeSinceLastCast() + Player:GCD() < 4 and inRange10 >= 2) then
+                if IsReady("Templar Slash") and targetRange10 and (S.TemplarStrike:TimeSinceLastCast() + Player:GCD() < 4 and inRange10 >= 2) and not S.CrusadingStrikes:IsAvailable() then
                 return S.CrusaderStrike:Cast()
                 end
 
@@ -464,7 +464,7 @@ end
                 end
 
                 -- templar_slash,if=buff.templar_strikes.remains<gcd&spell_targets.divine_storm>=2
-                if IsReady("Templar Slash") and targetRange10 and (S.TemplarStrike:TimeSinceLastCast() + Player:GCD() < 4) then
+                if IsReady("Templar Slash") and targetRange10 and (S.TemplarStrike:TimeSinceLastCast() + Player:GCD() < 4) and not S.CrusadingStrikes:IsAvailable() then
                     return S.CrusaderStrike:Cast()
                     end
 
@@ -493,7 +493,7 @@ end
                     return S.DivineHammer:Cast()
                 end
                 -- crusader_strike,if=cooldown.crusader_strike.charges_fractional>=1.75&(holy_power<=2|holy_power<=3&cooldown.blade_of_justice.remains>gcd*2|holy_power=4&cooldown.blade_of_justice.remains>gcd*2&cooldown.judgment.remains>gcd*2)
-                if IsReady("Crusader Strike") and targetRange8 and (S.CrusaderStrike:ChargesFractional() >= 1.75 
+                if IsReady("Crusader Strike") and not S.CrusadingStrikes:IsAvailable() and targetRange8 and (S.CrusaderStrike:ChargesFractional() >= 1.75 
                 and (HolyPower <= 2 or HolyPower <= 3 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 
                 or HolyPower == 4 and S.BladeofJustice:CooldownRemains() > Player:GCD() * 2 and S.Judgment:CooldownRemains() > Player:GCD() * 2)) then
                     return S.CrusaderStrike:Cast()
@@ -502,13 +502,9 @@ end
                 -- call_action_list,name=finishers
                 local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
                 -- templar_slash
-                if IsReady("Templar Slash") and targetRange10 then
+                if IsReady("Templar Slash") and targetRange10 and not S.CrusadingStrikes:IsAvailable() then
                     return S.CrusaderStrike:Cast()
-                end
-                -- templar_strike
-                if  IsReady("Templar Strike") and targetRange10 then
-                    return S.CrusaderStrike:Cast()
-                end
+                end 
                 -- judgment,if=holy_power<=3|!talent.boundless_judgment
                 if IsReady("Judgment") and targetRange30 and (HolyPower <= 3 or not S.BoundlessJudgment:IsAvailable()) then
                     return S.Judgment:Cast()
@@ -518,7 +514,7 @@ end
                     return S.HammerofWrath:Cast()
                 end
                 -- crusader_strike
-                if IsReady("Crusader Strike") and targetRange10 then
+                if IsReady("Crusader Strike") and targetRange10 and not S.CrusadingStrikes:IsAvailable() then
                     return S.CrusaderStrike:Cast()
                 end
 
@@ -791,11 +787,6 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.Judgment:Cast()
         end
 
-        if (IsReady("Templar Slash") or IsReady("Templar Strike") or IsReady("Crusader Strike")) and UnitName('target') == 'Explosives' then
-        return S.CrusaderStrike:Cast()
-        end
-
-
         if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
             --Kick
             if IsReady("Rebuke") 
@@ -896,9 +887,6 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                     return S.CleanseToxins:Cast()
                 end
 
-                -- if targetRange30 then
-                --     return S.CrusaderStrike:Cast()
-                -- end
 
                 if IsReady("Retribution Aura") and not Player:BuffP(S.RetributionAura) then
                 return S.RetributionAura:Cast()
