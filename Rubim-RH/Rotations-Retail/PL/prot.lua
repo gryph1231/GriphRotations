@@ -286,6 +286,32 @@ local function APL()
             rezcharges=S.Intercession:Charges()
             end
 
+
+
+
+            -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
+            if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
+              if IsReady("Intercession") then
+                return S.intercession:Cast()
+              elseif Player:HolyPower() < 3 then
+                if IsReady("Judgment",1) then
+                  return S.Judgment:Cast()
+                end
+  
+                if IsReady("Hammer of Wrath",1) then
+                  return S.HammerofWrath:Cast()
+                end
+  
+                if IsReady("Blessed Hammer") then
+                  return S.BlessedHammer:Cast()
+                end
+              end
+            end
+            
+          --  print("isready:",IsReady("Intercession"))
+          --  print("rezcharges:",rezcharges)
+          --  print("level==0:",level==0)
+          --  print("los == false",los == false)
             local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
             local useDS = not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
             local useGoAK = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Ardent Defender", "player")
@@ -505,11 +531,12 @@ local function APL()
                 end
 
 
-
-                if IsReady("Shield of the Righteous") and (targetRange8 or inRange8 >= 1)
-                and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
-                then
-                return S.ShieldoftheRighteous:Cast()
+                if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
+                  if IsReady("Shield of the Righteous") and (targetRange8 or inRange8 >= 1)
+                  and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
+                  then
+                  return S.ShieldoftheRighteous:Cast()
+                  end
                 end
 
 
@@ -522,12 +549,10 @@ local function APL()
                 return S.WordofGlory:Cast()
                 end
             
-
-            if IsReady("Shield of the Righteous") and (targetRange8 or inRange8>=1) 
-            and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
-            and (Player:ActiveMitigationNeeded()
-            or Player:HealthPercentage() <= 80)) then
-            return S.ShieldoftheRighteous:Cast()
+            if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
+              if IsReady("Shield of the Righteous") and (targetRange8 or inRange8>=1) and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2 and (Player:ActiveMitigationNeeded() or Player:HealthPercentage() <= 80)) then
+                return S.ShieldoftheRighteous:Cast()
+              end
             end
 
 
@@ -672,8 +697,11 @@ end
 end
   -- shield_of_the_righteous,if=(((!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up)&(!buff.sanctification.up|buff.sanctification.stack<buff.sanctification.max_stack)
   -- TODO: Find a way to track RighteousProtector ICD.
-  if IsReady("Shield of the Righteous") and targetRange8 and ((Player:HolyPower() > 2 or Player:Buff(S.BastionofLightBuff) or Player:Buff(S.DivinePurposeBuff)) and (not Player:Buff(S.SanctificationBuff) or Player:BuffStack(S.SanctificationBuff) < 5)) then
-    return S.ShieldoftheRighteous:Cast()
+  if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
+
+    if IsReady("Shield of the Righteous") and targetRange8 and ((Player:HolyPower() > 2 or Player:Buff(S.BastionofLightBuff) or Player:Buff(S.DivinePurposeBuff)) and (not Player:Buff(S.SanctificationBuff) or Player:BuffStack(S.SanctificationBuff) < 5)) then
+      return S.ShieldoftheRighteous:Cast()
+  end
 end
   -- judgment,target_if=min:debuff.judgment.remains,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
   if IsReady("Judgment") and targetRange30 and (inRange10 > 3 and Player:BuffStack(S.BulwarkofRighteousFuryBuff) >= 3 and Player:HolyPower() < 3) then
@@ -772,8 +800,8 @@ end
 
 RubimRH.Rotation.SetAPL(66, APL)
 
--- local function PASSIVE()
+local function PASSIVE()
 
--- end
+end
 
--- RubimRH.Rotation.SetPASSIVE(66, PASSIVE)
+RubimRH.Rotation.SetPASSIVE(66, PASSIVE)

@@ -1819,10 +1819,7 @@ function GetAppropriateCureSpellfocus()
     return nil  -- No poison or disease found
 end
 
-
-
-
-function IsReady(spell,range_check,aoe_check,queue)
+function IsReady(spell,range_check,aoe_check,queue,no_power_check)
 	local start,duration,enabled = GetSpellCooldown(tostring(spell))
 	local usable, noMana = IsUsableSpell(tostring(spell))
 	local range_counter = 0
@@ -1863,7 +1860,7 @@ function IsReady(spell,range_check,aoe_check,queue)
 					local nameplate_guid = UnitGUID(unitID) 
 					local npc_id = select(6, strsplit("-", nameplate_guid))
 					if npc_id ~= '120651' and npc_id ~= '161895' then
-						if UnitCanAttack("player", unitID) and C_Spell.IsSpellInRange(Spell, unitID) == 1 and UnitHealthMax(unitID) > 5 then
+						if UnitCanAttack("player", unitID) and C_Spell.IsSpellInRange(Spell, unitID) and UnitHealthMax(unitID) > 5 then
 							range_counter = range_counter + 1
 						end                    
 					end
@@ -1873,7 +1870,7 @@ function IsReady(spell,range_check,aoe_check,queue)
 	end
 
 	--if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
-	if usable and enabled and (cooldown_remains < 0.5 or (queue and cooldown_remains < 1.5)) and spell ~= 1 then
+	if (usable or no_power_check) and enabled and (cooldown_remains < 0.5 or (queue and cooldown_remains < 1.5)) and spell ~= 1 then
 		if range_check then
 			if in_range == true then 
 				return true
@@ -1895,7 +1892,6 @@ function IsReady(spell,range_check,aoe_check,queue)
 		return false
 	end
 end
-
 
   
 
