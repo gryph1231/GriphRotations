@@ -1753,18 +1753,17 @@ function UseItems()
     -- };
     
     -- local I = Item;
-
     local trinket1 = GetInventoryItemID("player", 13)
     local trinket2 = GetInventoryItemID("player", 14)
     local trinket1ready = IsUsableItem(trinket1) and (GetItemCooldown(trinket1) == 0 and trinket1 ~= 193701 or trinket1 == 193701 and select(2,GetItemCooldown(trinket1)) <1.5) and  IsEquippedItem(trinket1)
     local trinket2ready = IsUsableItem(trinket2) and (GetItemCooldown(trinket2) == 0 and trinket2 ~= 193701 or trinket2 == 193701 and select(2,GetItemCooldown(trinket2)) <1.5) and  IsEquippedItem(trinket2)
 
-    if trinket1ready 
+    if trinket1ready and trinket1 ~= 202612
     and (not Player:IsMoving() and (trinket1 == 203963 or trinket1 == 193701) or trinket1 ~= 203963 and trinket1 ~= 193701)
      then
         return Item(118330):Cast()
     end
-    if trinket2ready 
+    if trinket2ready and trinket2 ~= 202612
     and (not Player:IsMoving() and (trinket2 == 203963 or trinket2 == 193701) or trinket2 ~= 203963 and  trinket2 ~= 193701)
      then
         return Item(114616):Cast()
@@ -1772,7 +1771,6 @@ function UseItems()
 	
 	return nil
 end
-
 
 
 
