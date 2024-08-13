@@ -733,6 +733,30 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         and not Player:Buff(S.DivineProtection) or Player:HealthPercentage()<35) then
         return S.WordofGlory:Cast()
         end
+
+
+
+
+        
+            -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
+            if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
+                if IsReady("Intercession") then
+                  return S.intercession:Cast()
+                elseif Player:HolyPower() < 3 then
+                  if IsReady("Judgment",1) then
+                    return S.Judgment:Cast()
+                  end
+    
+                  if IsReady("Hammer of Wrath",1) then
+                    return S.HammerofWrath:Cast()
+                  end
+    
+                  if IsReady("Blessed Hammer") then
+                    return S.BlessedHammer:Cast()
+                  end
+                end
+              end
+              
     end
 
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
