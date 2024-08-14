@@ -1,24 +1,32 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL          = ...
 -- HeroLib
-local Cache, Utils = HeroCache, HL.Utils
-local Unit = HL.Unit
-local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target
-local Focus, MouseOver = Unit.Focus, Unit.MouseOver
+local Cache, Utils           = HeroCache, HL.Utils
+local Unit                   = HL.Unit
+local Player, Pet, Target    = Unit.Player, Unit.Pet, Unit.Target
+local Focus, MouseOver       = Unit.Focus, Unit.MouseOver
 local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
-local Party, Raid = Unit.Party, Unit.Raid
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
-local pairs = pairs
-local select = select
-local tablesort = table.sort
--- WoW API
-local UnitPower, UnitPowerMax, GetPowerRegen = UnitPower, UnitPowerMax, GetPowerRegen
--- File Locals
+local Party, Raid            = Unit.Party, Unit.Raid
+local Spell                  = HL.Spell
+local Item                   = HL.Item
 
+-- Base API locals
+local Enum                   = Enum
+local GetPowerRegen          = GetPowerRegen
+-- Accepts: nil; Returns: basePowerRegen (number), castingPowerRegen (number)
+local UnitPower              = UnitPower
+-- Accepts: unitID, powerType, unmodified; Returns: power (number)
+local UnitPowerMax           = UnitPowerMax
+-- Accepts: unitID, powerType, unmodified; Returns: maxPower (number)
+
+-- lua locals
+local GetTime                = GetTime
+local pairs                  = pairs
+local tablesort              = table.sort
+
+-- File Locals
 
 
 --- ============================ CONTENT ============================
@@ -222,7 +230,7 @@ do
 
   -- Get the Focus we will loose when our cast will end, if we cast.
   function Player:FocusLossOnCastEnd()
-    return self:IsCasting() and Spell(self:CastID()):Cost() or 0
+    return self:IsCasting() and Spell(self:CastSpellID()):Cost() or 0
   end
 
   -- Predict the expected Focus at the end of the Cast/GCD.
@@ -254,8 +262,8 @@ end
 do
   local EnergyPowerType = Enum.PowerType.Energy
   -- energy.max
-  function Player:EnergyMax()
-    return UnitPowerMax(self.UnitID, EnergyPowerType)
+  function Player:EnergyMax(MaxOffset)
+    return math.max(0, UnitPowerMax(self.UnitID, EnergyPowerType) + (MaxOffset or 0))
   end
 
   -- energy
@@ -269,29 +277,29 @@ do
   end
 
   -- energy.pct
-  function Player:EnergyPercentage()
-    return (self:Energy() / self:EnergyMax()) * 100
+  function Player:EnergyPercentage(MaxOffset)
+    return math.min(100, (self:Energy() / self:EnergyMax(MaxOffset)) * 100)
   end
 
   -- energy.deficit
-  function Player:EnergyDeficit()
-    return self:EnergyMax() - self:Energy()
+  function Player:EnergyDeficit(MaxOffset)
+    return math.max(0, self:EnergyMax(MaxOffset) - self:Energy())
   end
 
   -- "energy.deficit.pct"
-  function Player:EnergyDeficitPercentage()
-    return (self:EnergyDeficit() / self:EnergyMax()) * 100
+  function Player:EnergyDeficitPercentage(MaxOffset)
+    return (self:EnergyDeficit(MaxOffset) / self:EnergyMax(MaxOffset)) * 100
   end
 
   -- "energy.regen.pct"
-  function Player:EnergyRegenPercentage()
-    return (self:EnergyRegen() / self:EnergyMax()) * 100
+  function Player:EnergyRegenPercentage(MaxOffset)
+    return (self:EnergyRegen() / self:EnergyMax(MaxOffset)) * 100
   end
 
   -- energy.time_to_max
-  function Player:EnergyTimeToMax()
+  function Player:EnergyTimeToMax(MaxOffset)
     if self:EnergyRegen() == 0 then return -1 end
-    return self:EnergyDeficit() / self:EnergyRegen()
+    return self:EnergyDeficit(MaxOffset) / self:EnergyRegen()
   end
 
   -- "energy.time_to_x"
@@ -319,21 +327,21 @@ do
   end
 
   -- Predict the expected Energy at the end of the Cast/GCD.
-  function Player:EnergyPredicted(Offset)
+  function Player:EnergyPredicted(Offset, MaxOffset)
     if self:EnergyRegen() == 0 then return -1 end
-    return math.min(Player:EnergyMax(), self:Energy() + self:EnergyRemainingCastRegen(Offset))
+    return math.min(Player:EnergyMax(MaxOffset), self:Energy() + self:EnergyRemainingCastRegen(Offset))
   end
 
   -- Predict the expected Energy Deficit at the end of the Cast/GCD.
-  function Player:EnergyDeficitPredicted(Offset)
+  function Player:EnergyDeficitPredicted(Offset, MaxOffset)
     if self:EnergyRegen() == 0 then return -1 end
-    return math.max(0, self:EnergyDeficit() - self:EnergyRemainingCastRegen(Offset))
+    return math.max(0, self:EnergyDeficit(MaxOffset) - self:EnergyRemainingCastRegen(Offset))
   end
 
   -- Predict time to max energy at the end of Cast/GCD
-  function Player:EnergyTimeToMaxPredicted()
+  function Player:EnergyTimeToMaxPredicted(Offset, MaxOffset)
     if self:EnergyRegen() == 0 then return -1 end
-    local EnergyDeficitPredicted = self:EnergyDeficitPredicted()
+    local EnergyDeficitPredicted = self:EnergyDeficitPredicted(Offset, MaxOffset)
     if EnergyDeficitPredicted <= 0 then
       return 0
     end
@@ -367,6 +375,7 @@ end
 ---------------------------------
 do
   local RunicPowerPowerType = Enum.PowerType.RunicPower
+
   -- runicpower.max
   function Player:RunicPowerMax()
     return UnitPowerMax(self.UnitID, RunicPowerPowerType)
@@ -398,14 +407,15 @@ end
 ---------------------------
 do
   local GetRuneCooldown = GetRuneCooldown
+
   -- Computes any rune cooldown.
   local function ComputeRuneCooldown(Slot, BypassRecovery)
     -- Get rune cooldown infos
     local CDTime, CDValue = GetRuneCooldown(Slot)
     -- Return 0 if the rune isn't in CD.
-    if CDTime == 0 then return 0 end
+    if CDTime == 0 or CDTime == nil then return 0 end
     -- Compute the CD.
-    local CD = CDTime + CDValue - HL.GetTime() - (BypassRecovery and 0 or HL.RecoveryOffset())
+    local CD = CDTime + CDValue - GetTime() - HL.RecoveryOffset(BypassRecovery)
     -- Return the Rune CD
     return CD > 0 and CD or 0
   end
@@ -444,21 +454,21 @@ end
 --- 7 | Soul Shards  ---
 ------------------------
 do
-  -- soul_shard.max
   local SoulShardsPowerType = Enum.PowerType.SoulShards
+
+  -- soul_shard.max
   function Player:SoulShardsMax()
     return UnitPowerMax(self.UnitID, SoulShardsPowerType)
   end
 
   -- soul_shard
-  local WarlockPowerBar_UnitPower = WarlockPowerBar_UnitPower
   function Player:SoulShards()
-    return WarlockPowerBar_UnitPower(self.UnitID)
+    return UnitPower(self.UnitID, SoulShardsPowerType)
   end
 
   -- soul shards predicted, customize in spec overrides
   function Player:SoulShardsP()
-    return WarlockPowerBar_UnitPower(self.UnitID)
+    return UnitPower(self.UnitID, SoulShardsPowerType)
   end
 
   -- soul_shard.deficit
@@ -472,6 +482,7 @@ end
 ------------------------
 do
   local LunarPowerPowerType = Enum.PowerType.LunarPower
+
   -- astral_power.max
   function Player:AstralPowerMax()
     return UnitPowerMax(self.UnitID, LunarPowerPowerType)
@@ -504,6 +515,7 @@ end
 --------------------------------
 do
   local HolyPowerPowerType = Enum.PowerType.HolyPower
+
   -- holy_power.max
   function Player:HolyPowerMax()
     return UnitPowerMax(self.UnitID, HolyPowerPowerType)
@@ -563,6 +575,8 @@ end
 --------------------------------------
 do
   local ChiPowerType = Enum.PowerType.Chi
+  local UnitStagger = UnitStagger
+
   -- chi.max
   function Player:ChiMax()
     return UnitPowerMax(self.UnitID, ChiPowerType)
@@ -609,6 +623,7 @@ end
 ------------------------------
 do
   local InsanityPowerType = Enum.PowerType.Insanity
+
   -- insanity.max
   function Player:InsanityMax()
     return UnitPowerMax(self.UnitID, InsanityPowerType)
@@ -646,6 +661,7 @@ end
 -----------------------------------
 do
   local ArcaneChargesPowerType = Enum.PowerType.ArcaneCharges
+
   -- arcanecharges.max
   function Player:ArcaneChargesMax()
     return UnitPowerMax(self.UnitID, ArcaneChargesPowerType)
@@ -677,6 +693,7 @@ end
 ---------------------------
 do
   local FuryPowerType = Enum.PowerType.Fury
+
   -- fury.max
   function Player:FuryMax()
     return UnitPowerMax(self.UnitID, FuryPowerType)
@@ -708,6 +725,7 @@ end
 ---------------------------
 do
   local PainPowerType = Enum.PowerType.Pain
+
   -- pain.max
   function Player:PainMax()
     return UnitPowerMax(self.UnitID, PainPowerType)
@@ -735,11 +753,57 @@ do
 end
 
 ------------------------------
+--- 19 | Essence Functions ---
+------------------------------
+do
+  local EssencePowerType = Enum.PowerType.Essence
+
+  -- essence.max
+  function Player:EssenceMax()
+    return UnitPowerMax(self.UnitID, EssencePowerType)
+  end
+
+  -- essence
+  function Player:Essence()
+    return UnitPower(self.UnitID, EssencePowerType)
+  end
+
+  -- essence.deficit
+  function Player:EssenceDeficit()
+    return self:EssenceMax() - self:Essence()
+  end
+
+  --[[ Moved these functions to Evoker Events/Overrides
+  -- essence.time_to_max
+  function Player:EssenceTimeToMax()
+    local Deficit = Player:EssenceDeficit()
+    if Deficit == 0 then return 0; end
+    local Regen = GetPowerRegenForPowerType(EssencePowerType)
+    local TimeToOneEssence = 5 / (5 / (1 / Regen))
+    local LastUpdate = Cache.Persistent.Player.LastPowerUpdate
+    return Deficit * TimeToOneEssence - (GetTime() - LastUpdate)
+  end
+
+  -- essence.time_to_x
+  function Player:EssenceTimeToX(Amount)
+    local Essence = Player:Essence()
+    if Essence >= Amount then return 0; end
+    local Regen = GetPowerRegenForPowerType(EssencePowerType)
+    local TimeToOneEssence = 5 / (5 / (1 / Regen))
+    local LastUpdate = Cache.Persistent.Player.LastPowerUpdate
+    return ((Amount - Essence) * TimeToOneEssence) - (GetTime() - LastUpdate)
+  end
+  ]]
+end
+
+------------------------------
 --- Predicted Resource Map ---
 ------------------------------
 
 do
   Player.PredictedResourceMap = {
+    -- Health (but might be percentage only?), cf. https://github.com/herotc/hero-lib/issues/35
+    [-2] = function() return Player:Health() end,
     -- Mana
     [0] = function() return Player:ManaP() end,
     -- Rage
@@ -750,9 +814,9 @@ do
     [3] = function() return Player:EnergyPredicted() end,
     -- ComboPoints
     [4] = function() return Player:ComboPoints() end,
-    -- Runes
-    [5] = function() return Player:Runes() end,
     -- Runic Power
+    [5] = function() return Player:Rune() end,
+    -- Runes
     [6] = function() return Player:RunicPower() end,
     -- Soul Shards
     [7] = function() return Player:SoulShardsP() end,
@@ -772,6 +836,8 @@ do
     [17] = function() return Player:Fury() end,
     -- Pain
     [18] = function() return Player:Pain() end,
+    -- Essence
+    [19] = function() return Player:Essence() end,
   }
 end
 
@@ -791,9 +857,9 @@ do
     [3] = function(Value) return Player:EnergyTimeToX(Value) end,
     -- ComboPoints
     [4] = function() return nil end,
-    -- Runes
-    [5] = function() return nil end,
     -- Runic Power
+    [5] = function() return nil end,
+    -- Runes
     [6] = function(Value) return Player:RuneTimeToX(Value) end,
     -- Soul Shards
     [7] = function() return nil end,
@@ -813,5 +879,8 @@ do
     [17] = function() return nil end,
     -- Pain
     [18] = function() return nil end,
+    -- Essence
+    -- TODO: Add EssenceTimeToX()
+    [19] = function() return nil end,
   }
 end

@@ -1,257 +1,219 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL          = ...
+-- HeroDBC
+local DBC                    = HeroDBC.DBC
 -- HeroLib
-local Cache, Utils = HeroCache, HL.Utils
-local Unit = HL.Unit
-local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target
-local Focus, MouseOver = Unit.Focus, Unit.MouseOver
+local Cache, Utils           = HeroCache, HL.Utils
+local Unit                   = HL.Unit
+local Player, Pet, Target    = Unit.Player, Unit.Pet, Unit.Target
+local Focus, MouseOver       = Unit.Focus, Unit.MouseOver
 local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
-local Party, Raid = Unit.Party, Unit.Raid
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
-local mathrandom = math.random
-local pairs = pairs
-local tableinsert = table.insert
-local tablesort = table.sort
-local tostring = tostring
-local type = type
--- File Locals
+local Party, Raid            = Unit.Party, Unit.Raid
+local Spell                  = HL.Spell
+local Item                   = HL.Item
 
+-- C_Item locals
+local IsItemInRange          = C_Item.IsItemInRange
+-- Accepts: itemInfo, targetToken; Returns: result (bool)
 
+-- C_Spell locals
+local IsSpellInRange         = C_Spell.IsSpellInRange
+-- Accepts: spellIdentifier, targetUnit; Returns: inRange (bool)
 
---- ============================ CONTENT ============================
---- IsInRange
--- Run ManuallyFilterItemRanges() while standing at less than 1yds from an hostile target and the same for a friendly focus (easy with dummies like the ones in Orgrimmar)
--- Keep running this function until you get the message in the chat saying that the filtering is done.
--- Due to some issues with the Blizzard API we need to do multiple iterations on different frame (ideally do one call each 3-5secs)
-function HL.ManuallyFilterItemRanges(LastPass)
-  -- Reset (in case you spammed it too much!)
-  if HL.ManualIsInRangeTableIterations then
-    local Iterations = HL.ManualIsInRangeTableIterations
-    if Iterations.Current == Iterations.Last then
-      HL.Print('ManuallyFilterItemRanges reset !')
-      HL.ManualIsInRangeTable = nil
-    end
-  end
+-- Base API locals
+local InCombatLockdown       = InCombatLockdown
+-- Accepts: nil; Returns: inLockdown (bool)
+local IsActionInRange        = IsActionInRange
+-- Accepts: actionSlot; Returns: inRange (bool)
 
-  -- Init
-  if not HL.ManualIsInRangeTable then
-    HL.Print('ManuallyFilterItemRanges initialized...')
-    HL.ManualIsInRangeTable = {
-      Hostile = {
-        RangeIndex = {},
-        ItemRange = {}
-      },
-      Friendly = {
-        RangeIndex = {},
-        ItemRange = {}
-      }
-    }
-    HL.ManualIsInRangeTableIterations = {
-      Current = 0,
-      Last = 15
-    }
-  end
+-- Lua locals
+local mathmax                = math.max
+local mathrandom             = math.random
+local pairs                  = pairs
+local tablesort              = table.sort
+local type                   = type
+local unpack                 = unpack
 
-  -- Locals
-  local IsInRangeTable = HL.ManualIsInRangeTable
-  local Iterations = HL.ManualIsInRangeTableIterations
-  local HostileTable, FriendlyTable = IsInRangeTable.Hostile, IsInRangeTable.Friendly
-  local HTItemRange, HTRangeIndex = HostileTable.ItemRange, HostileTable.RangeIndex
-  local FTItemRange, FTRangeIndex = FriendlyTable.ItemRange, FriendlyTable.RangeIndex
-  local TUnitID, FUnitID = Target.UnitID, Focus.UnitID
-  local IsItemInRange = IsItemInRange
-  local ValueIsInTable = Utils.ValueIsInTable
+-- File locals
 
-  -- Inside a given frame, we do 5 iterations.
-  for i = 1, 5 do
-    -- Filter items that can only be casted on an unit. (i.e. blacklist ground targeted aoe items)
-    for Type, Ranges in pairs(HL.Enum.ItemRangeUnfiltered) do
-      for Range, ItemIDs in pairs(Ranges) do
-        -- RangeIndex
-        if Type == "Melee" and Range == 5 then
-          -- Special case for melees
-          Range = "Melee"
-        else
-          -- The parser assume a string that's why we convert it to a string
-          Range = tostring(Range)
-        end
-
-        for i = 1, #ItemIDs do
-          local ItemID = ItemIDs[i]
-
-          -- Hostile filter
-          if IsItemInRange(ItemID, TUnitID) then
-            -- Make the Range table if it doesn't exist yet
-            if not HTItemRange[Range] then
-              HTItemRange[Range] = {}
-              tableinsert(HTRangeIndex, Range)
-            end
-            -- Check if the item isn't already inserted since we do multiple passes then insert it
-            if not ValueIsInTable(HTItemRange[Range], ItemID) then
-              tableinsert(HTItemRange[Range], ItemID)
-            end
-          end
-
-          -- Friendly filter
-          if IsItemInRange(ItemID, FUnitID) then
-            -- Make the Range table if it doesn't exist yet
-            if not FTItemRange[Range] then
-              FTItemRange[Range] = {}
-              tableinsert(FTRangeIndex, Range)
-            end
-            -- Check if the item isn't already inserted since we do multiple passes
-            if not ValueIsInTable(FTItemRange[Range], ItemID) then
-              tableinsert(FTItemRange[Range], ItemID)
-            end
-          end
-        end
-      end
-    end
-  end
-
-  -- Increment the pass counter
-  Iterations.Current = Iterations.Current + 1
-
-  if Iterations.Current == Iterations.Last then
-    -- Encode in JSON the content (JSON is used since it's easier to work with)
-    HostileTable.ItemRange = Utils.JSON.encode(HTItemRange)
-    HostileTable.RangeIndex = Utils.JSON.encode(HTRangeIndex)
-    FriendlyTable.ItemRange = Utils.JSON.encode(FTItemRange)
-    FriendlyTable.RangeIndex = Utils.JSON.encode(FTRangeIndex)
-
-    -- Pass it to SavedVariables
-    _G.HeroLibDB = IsInRangeTable
-    HL.Print('ManuallyFilterItemRanges done.')
-  else
-    HL.Print('ManuallyFilterItemRanges still needs ' .. Iterations.Last - Iterations.Current .. ' iteration(s).')
-  end
-end
 
 -- IsInRangeTable generated manually by FilterItemRange
-local IsInRangeTable = {
-  Hostile = {
-    RangeIndex = {},
-    ItemRange = {}
+local RangeTableByType = {
+  Melee = {
+    Hostile = {
+      RangeIndex = {},
+      ItemRange = {}
+    },
+    Friendly = {
+      RangeIndex = {},
+      ItemRange = {}
+    }
   },
-  Friendly = {
-    RangeIndex = {},
-    ItemRange = {}
+  Ranged = {
+    Hostile = {
+      RangeIndex = {},
+      ItemRange = {}
+    },
+    Friendly = {
+      RangeIndex = {},
+      ItemRange = {}
+    }
   }
 }
 do
-  local Enum = HL.Enum.ItemRange
-  local Hostile, Friendly = IsInRangeTable.Hostile, IsInRangeTable.Friendly
+  local Types = { "Melee", "Ranged" }
 
-  Hostile.RangeIndex = Enum.Hostile.RangeIndex
-  tablesort(Hostile.RangeIndex, Utils.SortMixedASC)
-  Friendly.RangeIndex = Enum.Friendly.RangeIndex
-  tablesort(Friendly.RangeIndex, Utils.SortMixedASC)
+  for _, Type in pairs(Types) do
+    local ItemRange = DBC.ItemRange[Type]
+    local Hostile, Friendly = RangeTableByType[Type].Hostile, RangeTableByType[Type].Friendly
 
-  for k, v in pairs(Enum.Hostile.ItemRange) do
-    Hostile.ItemRange[k] = v[mathrandom(1, #v)]
+    -- Map the range indices and sort them since the order is not guaranteed.
+    Hostile.RangeIndex = { unpack(ItemRange.Hostile.RangeIndex) }
+    tablesort(Hostile.RangeIndex, Utils.SortMixedASC)
+    Friendly.RangeIndex = { unpack(ItemRange.Friendly.RangeIndex) }
+    tablesort(Friendly.RangeIndex, Utils.SortMixedASC)
+
+    -- Take randomly one item for each range.
+    for k, v in pairs(ItemRange.Hostile.ItemRange) do
+      Hostile.ItemRange[k] = v[mathrandom(1, #v)]
+    end
+    for k, v in pairs(ItemRange.Friendly.ItemRange) do
+      Friendly.ItemRange[k] = v[mathrandom(1, #v)]
+    end
   end
-  Enum.Hostile.ItemRange = nil
-  for k, v in pairs(Enum.Friendly.ItemRange) do
-    Friendly.ItemRange[k] = v[mathrandom(1, #v)]
-  end
-  Enum.Friendly.ItemRange = nil
 end
--- Get if the unit is in range, you can use a number or a spell as argument.
-function Unit:IsInRange(Distance, AoESpell)
+
+--- ============================ CONTENT ============================
+-- Get if the unit is in range, distance check through IsItemInRange.
+-- Do keep in mind that if you're checking the range for a distance from the player (player-centered AoE like Fan of Knives),
+-- you should use the radius - 1.5yds as distance (ex: instead of 10 you should use 8.5) because the player CombatReach is ignored (the distance is computed from the center to the edge, instead of edge to edge).
+-- Supported hostile ranges (will take a lower one if you specify a different one): 5 - 6.5 - 7 - 8 - 10 - 15 - 20 - 25 - 30 - 35 - 38 - 40 - 45 - 50 - 55 - 60 - 70 - 80 - 90 - 100
+function Unit:IsInRange(Distance)
+  assert(type(Distance) == "number", "Distance must be a number.")
+  assert(Distance >= 5 and Distance <= 100, "Distance must be between 5 and 100.")
+
   local GUID = self:GUID()
-  if GUID then
-    -- Regular ranged distance check through IsItemInRange & Special distance check (like melee)
-    local DistanceType, Identifier, IsInRange = type(Distance), nil, nil
-    if DistanceType == "number" or (DistanceType == "string" and Distance == "Melee") then
-      Identifier = Distance
-      -- Select the hostile or friendly range table
-      local RangeTable = Player:CanAttack(self) and IsInRangeTable.Hostile or IsInRangeTable.Friendly
-      local ItemRange = RangeTable.ItemRange
-      -- AoESpell Offset & Distance Fallback
-      if DistanceType == "number" then
-        -- AoESpell ignores Player CombatReach which is equals to 1.5yds
-        if AoESpell then
-          Distance = Distance - 1.5
-        end
-        -- If the distance we wants to check doesn't exists, we look for a fallback.
-        if not ItemRange[Distance] then
-          local RangeIndex = RangeTable.RangeIndex
-          for i = #RangeIndex, 1, -1 do
-            local Range = RangeIndex[i]
-            if type(Range) == "number" and Range < Distance then
-              Distance = Range
-              break
-            end
-          end
-          -- Test again in case we didn't found a new range
-          if not ItemRange[Distance] then
-            Distance = "Melee"
-          end
-        end
-      end
-      IsInRange = IsItemInRange(ItemRange[Distance], self.UnitID)
-      -- Distance check through IsSpellInRange (works only for targeted spells only)
-    elseif DistanceType == "table" then
-      Identifier = tostring(Distance:ID())
-      IsInRange = IsSpellInRange(Distance:Name(), self.UnitID) == 1
-    else
-      error("Invalid Distance.")
-    end
+  if not GUID then return false end
 
-    local UnitInfo = Cache.UnitInfo[GUID]
-    if not UnitInfo then
-      UnitInfo = {}
-      Cache.UnitInfo[GUID] = UnitInfo
-    end
-
-    local UI_IsInRange
-    if AoESpell then
-      UI_IsInRange = UnitInfo.IsInRangeAoE
-      if not UI_IsInRange then
-        UI_IsInRange = {}
-        UnitInfo.IsInRangeAoE = UI_IsInRange
-      end
-    else
-      UI_IsInRange = UnitInfo.IsInRange
-      if not UI_IsInRange then
-        UI_IsInRange = {}
-        UnitInfo.IsInRange = UI_IsInRange
-      end
-    end
-    if UI_IsInRange[Identifier] == nil then
-      UI_IsInRange[Identifier] = IsInRange
-    end
-
-    return IsInRange
+  local UnitInfo = Cache.UnitInfo[GUID]
+  if not UnitInfo then
+    UnitInfo = {}
+    Cache.UnitInfo[GUID] = UnitInfo
   end
-  return nil
+  local UnitInfoIsInRange = UnitInfo.IsInRange
+  if not UnitInfoIsInRange then
+    UnitInfoIsInRange = {}
+    UnitInfo.IsInRange = UnitInfoIsInRange
+  end
+
+  local Identifier = Distance -- Considering the Distance can change if it doesn't exist we use the one passed as argument for the cache
+  local IsInRange = UnitInfoIsInRange[Identifier]
+  if IsInRange == nil then
+    -- For now, if we're in combat and trying to range check a friendly unit or enemy player, just return true to avoid icon shading.
+    -- TODO: Come up with friendly tracking while in combat.
+    if InCombatLockdown() and (self:IsAPlayer() or not Player:CanAttack(self)) then return true end
+    -- Select the hostile or friendly range table
+    local RangeTableByReaction = RangeTableByType.Ranged
+    local RangeTable = Player:CanAttack(self) and RangeTableByReaction.Hostile or RangeTableByReaction.Friendly
+    local ItemRange = RangeTable.ItemRange
+
+    -- If the distance we want to check doesn't exists, we look for a fallback.
+    if not ItemRange[Distance] then
+      -- Iterate in reverse order the ranges in order to find the exact rannge or one that is lower than the one we look for (so we are guarantee it is in range)
+      local RangeIndex = RangeTable.RangeIndex
+      for i = #RangeIndex, 1, -1 do
+        local Range = RangeIndex[i]
+        if Range == Distance then break end
+        if Range < Distance then
+          Distance = Range
+          break
+        end
+      end
+    end
+
+    IsInRange = IsItemInRange(ItemRange[Distance], self:ID())
+    UnitInfoIsInRange[Identifier] = IsInRange
+  end
+
+  return IsInRange
 end
 
---- Find Range mixin (used in xDistanceToPlayer)
--- param Unit Object_Unit Unit to query on.
--- param Max Boolean Min or Max range ?
-local function FindRange(Unit, Max)
-  local RangeIndex = IsInRangeTable.Hostile.RangeIndex
+-- Get if the unit is in range, distance check through IsItemInRange.
+-- Melee ranges are different than Ranged one, we can only check the 5y Melee range through items at this moment.
+-- If you have a spell that increase your melee range you should instead use Unit:IsSpellInRange().
+-- Supported hostile ranges: 5
+-- Supported friendly ranges: 5
+function Unit:IsInMeleeRange(Distance)
+  assert(type(Distance) == "number", "Distance must be a number.")
+  assert(Distance >= 5 and Distance <= 100, "Distance must be between 5 and 100.")
+
+  -- At this moment we cannot check multiple melee range (5, 8, 10), only the 5yds one from the item.
+  -- So we use the ranged item while substracting 1.5y, which is the player hitbox radius.
+  -- Make sure subtracting 1.5y won't put us under 5y.
+  Distance = mathmax(Distance - 1.5, 5)
+  if (Distance ~= 5) then
+    return self:IsInRange(Distance)
+  end
+
+  local GUID = self:GUID()
+  if not GUID then return false end
+
+  -- Again, if in combat and target is friendly unit or enemy player, return true to avoid icon shading.
+  -- TODO: Come up with friendly tracking while in combat.
+  if InCombatLockdown() and (self:IsAPlayer() or not Player:CanAttack(self)) then return true end
+
+  local RangeTableByReaction = RangeTableByType.Melee
+  local RangeTable = Player:CanAttack(self) and RangeTableByReaction.Hostile or RangeTableByReaction.Friendly
+  local ItemRange = RangeTable.ItemRange
+
+  return IsItemInRange(ItemRange[Distance], self:ID())
+end
+
+-- Get if the unit is in range, distance check through IsSpellInRange (works only for targeted spells only)
+function Unit:IsSpellInRange(ThisSpell)
+  local GUID = self:GUID()
+  if not GUID then return false end
+  
+  return IsSpellInRange(ThisSpell:ID(), self:ID())
+end
+
+-- Get if the unit is in range, distance check through IsItemInRange (works only for targeted items only)
+function Unit:IsItemInRange(Item)
+  local GUID = self:GUID()
+  if not GUID then return false end
+
+  -- If in combat and target is friendly or an enemy player, return false.
+  if InCombatLockdown() and (self:IsAPlayer() or not Player:CanAttack(self)) then return false end
+  return IsItemInRange(Item:ID(), self:ID())
+end
+
+-- Get if the unit is in range, distance check through IsActionInRange (works only for targeted actions only)
+function Unit:IsActionInRange(ActionSlot)
+  return IsActionInRange(ActionSlot, self:ID())
+end
+
+-- Find Range mixin, used by Unit:MinDistance() and Unit:MaxDistance()
+local function FindRange(ThisUnit, Max)
+  if InCombatLockdown() and (ThisUnit:IsAPlayer() or not Player:CanAttack(ThisUnit)) then return 0 end
+  local RangeTableByReaction = RangeTableByType.Ranged
+  local RangeTable = Player:CanAttack(ThisUnit) and RangeTableByReaction.Hostile or RangeTableByReaction.Friendly
+  local RangeIndex = RangeTable.RangeIndex
+
   for i = #RangeIndex - (Max and 1 or 0), 1, -1 do
-    if not Unit:IsInRange(RangeIndex[i]) then
+    if not ThisUnit:IsInRange(RangeIndex[i]) then
       return Max and RangeIndex[i + 1] or RangeIndex[i]
     end
   end
-  return "Melee"
 end
 
--- Get the minimum distance to the player.
-function Unit:MinDistanceToPlayer(IntOnly)
-  local Range = FindRange(self)
-  return IntOnly and ((Range == "Melee" and 5) or Range) or Range
+-- Get the minimum distance to the player, using Unit:IsInRange().
+function Unit:MinDistance()
+  return FindRange(self)
 end
 
--- Get the maximum distance to the player.
-function Unit:MaxDistanceToPlayer(IntOnly)
-  local Range = FindRange(self, true)
-  return IntOnly and ((Range == "Melee" and 5) or Range) or Range
+-- Get the maximum distance to the player, using Unit:IsInRange().
+function Unit:MaxDistance()
+  return FindRange(self, true)
 end

@@ -14,7 +14,6 @@ RubimRH.Spell[3] = {
 	Default = Spell(1),
 	SteadyShot = Spell(34120),
 	SteadyShotz = Spell(25264), --thunder clap
-	MultiShot = Spell(25294),
 	MultiShotz = Spell(1715), --hamstring
 	ArcaneShot = Spell(14287),
 	ArcaneShotz = Spell(12328), --sweeping strikes
@@ -40,8 +39,6 @@ RubimRH.Spell[3] = {
 	FeignDeathz = Spell(71), --defensive stance
 	RapidFire = Spell(3045),
 	RapidFirez = Spell(7386), --sunder
-	HuntersMark = Spell(1130),
-	HuntersMarkr1 = Spell(14325),
 	HuntersMarkz = Spell(5246), --intimidating shout
 	AutoAttkz = Spell(20230), --retaliation
 	MongooseBite = Spell(14271),
@@ -79,16 +76,37 @@ RubimRH.Spell[3] = {
 	SyncMacroz = Spell(14895), --overpower
 };
 
+RubimRH.Spell[65] = {
+FlashofLight = Spell(19750),
+BlessingofFreedom = Spell(1044),
+BlessingofProtection = Spell(1022),
+BlindingLight = Spell(115750),
+HolyPrism = Spell(114165),
+Daybreak = Spell(414170),
+DivineShield = Spell(642),
+HammerofJustice = Spell(853),
+HandofDivinity = Spell(414273),
+DivineToll = Spell(375576),
+BeaconofVirtue = Spell(200025),
+TyrsDeliverance = Spell(200652),
+AuraMastery = Spell(31821),
+Intercession = Spell(391054),
+Cleanse = Spell(4987),
+};
+
 RubimRH.Spell[263] = {
 Hailstorm = Spell(334195),
+AncestralGuidance = Spell(108281),
 Windstrike = Spell(115356),	
 AncestralSpirit = Spell(2008),
+LightningLasso = Spell(305483),
+Thunderstorm = Spell(51490),
 ChainLightning = Spell(188443),
-EarthElemental = Spell(198103),
 AstralShift = Spell(108271),
 PrimordialWave = Spell(375982),
 DoomWinds = Spell(384352),
 EarthbindTotem = Spell(2484),
+EarthElemental = Spell(198103),
 CapacitorTotem = Spell(192058),
 FlameShock = Spell(188389),
 ChainHeal = Spell(1064),
@@ -152,14 +170,20 @@ RubimRH.Spell[253] = {
 	AspectoftheWild = Spell(193530),
 	WildSpirits = Spell(328231),
     Intimidation = Spell(19577),
+    HuntersMark = Spell(257284),
+    ArcaneTorrent = Spell(80483),
 	SoulShape = Spell(310143),
     Exhilaration = Spell(109304),
+	MultiShot = Spell(2643),
 	Flare = Spell(1543),
     MendPet = Spell(136),
 	ResonatingArrow = Spell(308491),
     BindingShot = Spell(109248),
+    ScatterShot = Spell(213691),
 	WailingArrow = Spell(392060),
     TranqShot = Spell(19801),
+    CalloftheWild = Spell(359844),
+    Beaconz = Spell(69041), --rocket barrage
  }
  
 RubimRH.Spell[254] = {
@@ -175,6 +199,7 @@ RubimRH.Spell[255] = {
 	AspectoftheWild = Spell(193530),
 	WildSpirits = Spell(328231),
     Intimidation = Spell(19577),
+    CalloftheWild = Spell(359844),
     FreezingTrap = Spell(187650),
     FreezingTrapz = Spell(255654), --bullrush
 	CoordinatedAssault = Spell(360952),
@@ -427,130 +452,125 @@ EclipseSolar = Spell(48517),
 
 -- Spells
 RubimRH.Spell[66] = {
-     -- 42422
-   
-     BlessingofFreedom           = Spell(1044),
-     BlindingLight               = Spell(115750),
-     SenseUndead                 = Spell(5502),
- 
-     CleanseToxins               = Spell(213644),
-     autoattack                  = Spell(291944), -- regeneratin
-     tempestofthelightbringer    = Spell(383396),
- 
-     DivineSteedBuff             = Spell(221883),
-     BlessingofProtection        = Spell(1022),
-     Forbearance                 = Spell(25771),
-     -- Racials
-     AncestralCall               = Spell(274738),
-     ArcanePulse                 = Spell(260364),
-     ArcaneTorrent               = Spell(155145),
-     BagofTricks                 = Spell(312411),
-     Berserking                  = Spell(26297),
-     BloodFury                   = Spell(20572),
-     -- Fireblood                             = Spell(265221),
-     GiftoftheNaaru              = Spell(59542),
-     -- Abilities
-     FinalStand                  = Spell(204077),
-     Consecration                = Spell(26573),
-     CrusaderStrike              = Spell(35395),
-     DivineShield                = Spell(642),
-     DivineSteed                 = Spell(190784),
-     FlashofLight                = Spell(19750),
-     HammerofJustice             = Spell(853),
-     HandofReckoning             = Spell(62124),
-     Rebuke                      = Spell(96231),
-     ShieldoftheRighteous        = Spell(53600),
-     WordofGlory                 = Spell(85673),
-     -- Talents
-     AvengingWrath               = Spell(31884),
-     HammerofWrath               = Spell(24275),
-     HolyAvenger                 = Spell(105809),
-     HolyAvengerBuff             = Spell(105809),
-     LayonHands                  = Spell(633),
-     Seraphim                    = Spell(152262),
-     SeraphimBuff                = Spell(152262),
-     -- Covenants (Shadowlands)
-     AshenHallow                 = Spell(316958),
-     BlessingofAutumn            = Spell(328622),
-     BlessingofSpring            = Spell(328282),
-     BlessingofSummer            = Spell(328620),
-     BlessingofWinter            = Spell(328281),
-     DivinePurpose               = Spell(223817),
-     -- DivineTollCov                         = Spell(304971),
-     DoorofShadows               = Spell(300728),
-     Fleshcraft                  = Spell(324631),
-     Soulshape                   = Spell(310143),
-     SummonSteward               = Spell(324739),
-     VanquishersHammer           = Spell(328204),
-     VanquishersHammerBuff       = Spell(328204),
-     -- Soulbinds/Conduits (Shadowlands)
-     Expurgation                 = Spell(339371),
-     PustuleEruption             = Spell(351094),
-     VengefulShock               = Spell(340006),
-     VengefulShockDebuff         = Spell(340007),
-     VolatileSolvent             = Spell(323074),
-     VolatileSolventHumanBuff    = Spell(323491),
-     -- Auras
-     ConcentrationAura           = Spell(317920),
-     CrusaderAura                = Spell(32223),
-     DevotionAura                = Spell(465),
-     RetributionAura             = Spell(183435),
-     -- Buffs
-     BlessingofSpellWarding = Spell(204018),
-     Intercession                = Spell(391054),
-     intercession                = Spell(105809),
-     trinket                     = Spell(59547), -- gift of narru
- 
-     AvengingWrathBuff           = Spell(31884),
-     ConsecrationBuff            = Spell(188370),
-     DivinePurposeBuff           = Spell(223819),
-     ScarsofFraternalStrifeBuff4 = Spell(368638),
-     ShieldoftheRighteousBuff    = Spell(132403),
-     TemptationBuff              = Spell(234143),
-     -- Debuffs
-     CruelGarroteDebuff          = Spell(230011),
-     -- Legendary Effects
-     DivineResonanceBuff         = Spell(355455),
-     FinalVerdictBuff            = Spell(337228),
-     -- Pool
- 
-     Entangling = Spell(408556),
-     -- Pool                                  = Spell(999910),
-     Pool = Spell(397799),
- 
- 
-     HSicon = Spell(255647),--lights judgment
-     lust1    = Spell(57724),
-     lust2    = Spell(57723),
-     lust3    = Spell(80354),
-     lust4    = Spell(95809),
-     lust5    = Spell(264689),
-     lustAT   = Spell(20549), -- war stomp
- 
-     EyeofTyr = Spell(387174),
- 
-     IcyBindings = Spell(377488),
- 
-     ArdentDefender         = Spell(31850),
-     AvengersShield         = Spell(31935),
-     GuardianofAncientKings = Spell(86659),
- 
-     HammeroftheRighteous   = Spell(53595),
-     Judgment               = Spell(275779),
-     JudgmentDebuff         = Spell(197277),
-     ShiningLight           = Spell(327510),
-     -- Talents
-     BlessedHammer          = Spell(204019),
-     CrusadersJudgment      = Spell(204023),
-     MomentofGlory          = Spell(327193),
-     SanctifiedWrath        = Spell(171648),
-     DivineToll             = Spell(375576),
- 
- 
- 
-     BastionofLight = Spell(378974),
- 
+    BlessingofFreedom = Spell(1044),
+    BlindingLight = Spell(115750),
+    SenseUndead = Spell(5502),
+CleanseToxins = Spell(213644),
+    autoattack = Spell(291944), -- regeneratin
+    wristsx = Spell(255647), -- lights judgmenet
+    tempestofthelightbringer = Spell(383396),
 
+    DivineSteedBuff          = Spell(221883),
+    BlessingofProtection     = Spell(1022),
+    Forbearance              = Spell(25771),
+    -- Racials
+    AncestralCall            = Spell(274738),
+    ArcanePulse              = Spell(260364),
+    ArcaneTorrent            = Spell(155145),
+    BagofTricks              = Spell(312411),
+    Berserking               = Spell(26297),
+    BloodFury                = Spell(20572),
+    -- Fireblood                             = Spell(265221),
+    GiftoftheNaaru           = Spell(59542),
+    -- LightsJudgment                        = Spell(255647),
+    -- Abilities
+    Consecration             = Spell(26573),
+    CrusaderStrike           = Spell(35395),
+    DivineShield             = Spell(642),
+    DivineSteed              = Spell(190784),
+    FlashofLight             = Spell(19750),
+    HammerofJustice          = Spell(853),
+    HandofReckoning          = Spell(62124),
+    Rebuke                   = Spell(96231),
+    ShieldoftheRighteous     = Spell(53600),
+    WordofGlory              = Spell(85673),
+    -- Talents
+    AvengingWrath            = Spell(31884),
+    HammerofWrath            = Spell(24275),
+    HolyAvenger              = Spell(105809),
+    HolyAvengerBuff          = Spell(105809),
+    LayonHands               = Spell(633),
+    Seraphim                 = Spell(152262),
+    SeraphimBuff             = Spell(152262),
+    -- Covenants (Shadowlands)
+    AshenHallow              = Spell(316958),
+    BlessingofAutumn         = Spell(328622),
+    BlessingofSpring         = Spell(328282),
+    BlessingofSummer         = Spell(328620),
+    BlessingofWinter         = Spell(328281),
+    DivinePurpose            = Spell(223817),
+    -- DivineTollCov                         = Spell(304971),
+    DoorofShadows            = Spell(300728),
+    Fleshcraft               = Spell(324631),
+    Soulshape                = Spell(310143),
+    SummonSteward            = Spell(324739),
+    VanquishersHammer        = Spell(328204),
+    VanquishersHammerBuff    = Spell(328204),
+    -- Soulbinds/Conduits (Shadowlands)
+    Expurgation              = Spell(339371),
+    PustuleEruption          = Spell(351094),
+    VengefulShock            = Spell(340006),
+    VengefulShockDebuff      = Spell(340007),
+    VolatileSolvent          = Spell(323074),
+    VolatileSolventHumanBuff = Spell(323491),
+    -- Auras
+    ConcentrationAura        = Spell(317920),
+    CrusaderAura             = Spell(32223),
+    DevotionAura             = Spell(465),
+    RetributionAura          = Spell(183435),
+    -- Buffs
+    Intercession             = Spell(391054),
+    intercession           = Spell(105809),
+    trinket                  = Spell(59547), -- gift of narru
+
+    AvengingWrathBuff           = Spell(31884),
+    ConsecrationBuff            = Spell(188370),
+    DivinePurposeBuff           = Spell(223819),
+    ScarsofFraternalStrifeBuff4 = Spell(368638),
+    ShieldoftheRighteousBuff    = Spell(132403),
+    TemptationBuff              = Spell(234143),
+    -- Debuffs
+    ConsecrationDebuff          = Spell(204242),
+    CruelGarroteDebuff          = Spell(230011),
+    -- Legendary Effects
+    DivineResonanceBuff         = Spell(355455),
+    FinalVerdictBuff            = Spell(337228),
+    -- Pool
+
+
+    -- Pool                                  = Spell(999910),
+    Pool = Spell(397799),
+
+
+    lust1 = Spell(57724),
+    lust2 = Spell(57723),
+    lust3 = Spell(80354),
+    lust4 = Spell(95809),
+    lust5 = Spell(264689),
+    lustAT                   = Spell(20549), -- war stomp
+
+    EyeofTyr = Spell(387174),
+   
+
+    ArdentDefender             = Spell(31850),
+    ArdentDefenderBuff         = Spell(31850),
+    AvengersShield             = Spell(31935),
+    GuardianofAncientKings     = Spell(86659),
+
+    HammeroftheRighteous       = Spell(53595),
+    Judgment                   = Spell(275779),
+    JudgmentDebuff             = Spell(197277),
+    ShiningLight       = Spell(327510),
+    -- Talents
+    BlessedHammer              = Spell(204019),
+    CrusadersJudgment          = Spell(204023),
+    MomentofGlory              = Spell(327193),
+    SanctifiedWrath            = Spell(171648),
+    DivineToll                 = Spell(375576),
+
+
+
+BastionofLight = Spell(378974),
 
 }
 
@@ -635,156 +655,96 @@ RubimRH.Spell[268] = {
 
 --Retribution
 RubimRH.Spell[70] = {
-    autoattack             = Spell(59752), -- will to survive (human racial)
-    TotLB = Spell(383396),
-    -- Racials
-    --  AncestralCall                         = Spell(274738),
-    ArcanePulse                           = Spell(260364),
-    ArcaneTorrent                         = Spell(50613),
-    BagofTricks                           = Spell(312411),
-    Berserking                            = Spell(26297),
-    BloodFury                             = Spell(20572),
-    Fireblood                             = Spell(265221),
-    GiftoftheNaaru                        = Spell(59542),
-    -- Abilities
-    Consecration                          = Spell(26573),
-    CrusaderStrike                        = Spell(35395),
-    crusaderstrike = Spell(205191), -- eye for an eye
-    DivineShield                          = Spell(642),
-    DivineSteed                           = Spell(190784),
-    FlashofLight                          = Spell(19750),
-    HammerofJustice                       = Spell(853),
-    HandofReckoning                       = Spell(62124),
-    Judgment                              = Spell(20271),
-    Rebuke                                = Spell(96231),
-    ShieldoftheRighteous                  = Spell(53600),
-    WordofGlory                           = Spell(85673),
-    -- Talents
-    AvengingWrath                         = Spell(31884),
-    HammerofWrath                         = Spell(24275),
-    HolyAvenger                           = Spell(105809),
-    LayonHands                            = Spell(633),
-    Seraphim                              = Spell(152262),
-    ZealotsParagon                        = Spell(391142),
-    -- Auras
-    ConcentrationAura                     = Spell(317920),
-    CrusaderAura                          = Spell(32223),
-    DevotionAura                          = Spell(465),
-    RetributionAura                       = Spell(183435),
-    -- Buffs
-    AvengingWrathBuff                     = Spell(31884),
-    BlessingofDuskBuff                    = Spell(385126),
-    ConsecrationBuff                      = Spell(188370),
-    DivinePurposeBuff                     = Spell(223819),
-    HolyAvengerBuff                       = Spell(105809),
-    SeraphimBuff                          = Spell(152262),
-    ShieldoftheRighteousBuff              = Spell(132403),
-    DivineProtection = Spell(403876),
-    -- Debuffs
-    ConsecrationDebuff                    = Spell(204242),
-    JudgmentDebuff                        = Spell(197277),
-    -- Pool
-    Pool                                  = Spell(999910),
-    
-    
-    TemplarsVerdict                       = Spell(85256),
-    -- Talents
-    AshestoDust                           = Spell(383300),
-    BladeofJustice                        = Spell(184575),
-    BladeofWrath                          = Spell(231832),
-    BlessedChampion                       = Spell(403010),
-    BoundlessJudgment                     = Spell(405278),
-    Crusade                               = Spell(231895),
-    DivineAuxiliary                       = Spell(406158),
-    DivineHammer                          = Spell(198034),
-    DivineResonance                       = Spell(384027),
-    DivineStorm                           = Spell(53385),
-    DivineToll                            = Spell(375576),
-    EmpyreanLegacy                        = Spell(387170),
-    EmpyreanPower                         = Spell(326732),
-    ExecutionSentence                     = Spell(343527),
-    ExecutionersWrath                     = Spell(387196),
-    Exorcism                              = Spell(383185),
-    Expurgation                           = Spell(383344),
-    FinalReckoning                        = Spell(343721),
-    FinalVerdict                          = Spell(383328),
-    FiresofJustice                        = Spell(203316),
-    HolyBlade                             = Spell(383342),
-    JusticarsVengeance                    = Spell(215661),
-    Burst = Spell(243237),
-    RighteousVerdict                      = Spell(267610),
-    ShieldofVengeance                     = Spell(184662),
-    TemplarSlash                          = Spell(406647),
-    TemplarStrike                         = Spell(407480),
-    VanguardsMomentum                     = Spell(383314),
-    WakeofAshes                           = Spell(255937),
-    Zeal                                  = Spell(269569),
-    -- Buffs
-    CrusadeBuff                           = Spell(231895),
-    DivineArbiterBuff                     = Spell(406975),
-    DivineResonanceBuff                   = Spell(384029),
-    EmpyreanLegacyBuff                    = Spell(387178),
-    EmpyreanPowerBuff                     = Spell(326733),
-    divineprotection = Spell(210256), -- blessing of sanctuary
-    BlessingofFreedom = Spell(1044),
-    BlindingLight = Spell(115750),
-    SenseUndead = Spell(5502),
-    
-    
-    
-    
-    lust1                    = Spell(57724),
-    lust2                    = Spell(57723),
-    lust3                    = Spell(80354),
-    lust4                    = Spell(95809),
-    lust5                    = Spell(264689),
-    lustAT                   = Spell(255647), -- war stomp
-    IcyBindings = Spell(377488),
-    
-    
-    DivineSteedBuff          = Spell(221886),
-    BlessingofProtection     = Spell(1022),
-    Forbearance              = Spell(25771),
-    -- Racials
-    
-    
-    DivinePurpose            = Spell(223817),
-    -- DivineTollCov                         = Spell(304971),
-    DoorofShadows            = Spell(300728),
-    Fleshcraft               = Spell(324631),
-    Soulshape                = Spell(310143),
-    SummonSteward            = Spell(324739),
-    VanquishersHammer        = Spell(328204),
-    VanquishersHammerBuff    = Spell(328204),
-    -- Soulbinds/Conduits (Shadowlands)
-    
-    PustuleEruption          = Spell(351094),
-    VengefulShock            = Spell(340006),
-    VengefulShockDebuff      = Spell(340007),
-    VolatileSolvent          = Spell(323074),
-    VolatileSolventHumanBuff = Spell(323491),
-    -- Auras
-    
-    -- Buffs
-    Intercession             = Spell(391054),
-    intercession           = Spell(105809), --holy avenger
-    trinket                  = Spell(59547), -- gift of narru
-    
-    
-    ScarsofFraternalStrifeBuff4 = Spell(368638),
-    
-    TemptationBuff              = Spell(234143),
-    -- Debuffs
-    
-    CruelGarroteDebuff          = Spell(230011),
-    -- Legendary Effects
-    
-    FinalVerdictBuff            = Spell(337228),
-    
-    -- HSicon = Spell(255647), -- lights judgment
-    CrusadeTalent       = Spell(384392),
-    
- 
+BlessingofProtection = Spell(1022),
+BlessingofFreedom = Spell(1044),
+HammerofJustice = Spell(853),
+hammerofjustice = Spell(20594),
+DivineShield = Spell(642),
+ArcaneTorrent = Spell(155145),
+WakeofAshes = Spell(255937),
+HandofHindrance = Spell(183218),
+FlashofLight = Spell(19750),
+KingsB = Spell(203538),
+Kings = Spell(265221),
+WisdomB = Spell(203539),
+Wisdom = Spell(255647),
+RecklessForce = Spell(298445),
+trinket = Spell(20549),
+HoJ = Spell(20594),
+HS = Spell(291944),
+FAB = Spell(299338),
+FABg = Spell(84963),
+BladeofJustice = Spell(184575),
+Consecration = Spell(205228),
+CrusaderStrike = Spell(35395),
+DivineJudgment = Spell(271580),
+DivineHammer = Spell(198034),
+DivinePurpose = Spell(223817),
+DivinePurposeBuff = Spell(223819),
+DivineStorm = Spell(53385),
+ExecutionSentence = Spell(343527),
+GreaterJudgment = Spell(218718),
+HolyWrath = Spell(210220),
+Judgment = Spell(20271),
+JudgmentDeBuff = Spell(197277),
+JusticarsVengeance = Spell(215661),
+TemplarsVerdict = Spell(85256),
+TheFiresofJustice = Spell(203316),
+TheFiresofJusticeBuff = Spell(209785),
+Zeal = Spell(217020),
+FinalVerdict = Spell(198038),
+ShieldofVengeance = Spell(184662),
+Forbearance = Spell(25771),
+AvengingWrath = Spell(31884),
+Crusade = Spell(231895),
+Inquisition = Spell(84963),
+DivineJudgement = Spell(271580),
+HammerofWrath = Spell(24275),
+RighteousVerdict = Spell(267610),
+EmpyreanPowerAzerite = Spell(286390),
+EmpyreanPowerBuffAzerite = Spell(286393),
+DivineStormBuffAzerite = Spell(278523),
+DivineRight = Spell(277678),
+SelfLessHealerBuff = Spell(114250),
+LayonHands = Spell(633),
+WordofGlory = Spell(210191),
+Rebuke = Spell(96231),
+DivineSteed = Spell(190784),
+LiadrinsFuryUnleashed = Spell(208408),
+ScarletInquisitorsExpurgation = Spell(248289),
+WhisperoftheNathrezim = Spell(207635),
+HammerOfReckoning = Spell(247675),
+HammerOfReckoningBuff = Spell(247677),
+HandOfHidrance = Spell(183218),
+CondensedLifeForce = Spell(299358),
+UnleashHeartOfAzeroth = Spell(280431),
+BloodOfTheEnemy = Spell(297108),
+BloodOfTheEnemy2 = Spell(298273),
+BloodOfTheEnemy3 = Spell(298277),
+ConcentratedFlame = Spell(295373),
+ConcentratedFlame2 = Spell(299349),
+ConcentratedFlame3 = Spell(299353),
+GuardianOfAzeroth = Spell(295840),
+GuardianOfAzeroth2 = Spell(299355),
+GuardianOfAzeroth3 = Spell(299358),
+FocusedAzeriteBeam = Spell(295258),
+FocusedAzeriteBeam2 = Spell(299336),
+FocusedAzeriteBeam3 = Spell(299338),
+PurifyingBlast = Spell(295337),
+PurifyingBlast2 = Spell(299345),
+PurifyingBlast3 = Spell(299347),
+TheUnboundForce = Spell(298452),
+TheUnboundForce2 = Spell(299376),
+TheUnboundForce3 = Spell(299378),
+RippleInSpace = Spell(302731),
+RippleInSpace2 = Spell(302982),
+RippleInSpace3 = Spell(302983),
+WorldveinResonance = Spell(295186),
+WorldveinResonance2 = Spell(298628),
+WorldveinResonance3 = Spell(299334),
+MemoryOfLucidDreams = Spell(298357),
+MemoryOfLucidDreams2 = Spell(299372),
+MemoryOfLucidDreams3 = Spell(299374),
 }
 
 RubimRH.Spell[251] = {
@@ -909,348 +869,215 @@ Lichborne = Spell(49039),
   }
 
 RubimRH.Spell[73] = {
-  
+    -- Racials
+	RallyingCry = Spell(97462),
+    BattleShout = Spell(6673),
+    ArcaneTorrent = Spell(69179),
+    Berserking = Spell(26297),
+	Reflect = Spell(23920),
+	ShieldBlockBuff = Spell(132404),
+    Shadowmeld = Spell(58984),
+    -- Abilities
+	CracklingThunder = Spell(203201),
+    Ravager = Spell(22401),
+    BattleCry = Spell(1719),
+	StormBolt = Spell(107570),
+    BerserkerRage = Spell(18499),
+    Charge = Spell(100),
+    DemoralizingShout = Spell(1160),
+    Devastate = Spell(20243),
+    FuriousSlash = Spell(100130),
+    HeroicLeap = Spell(6544),
+    HeroicThrow = Spell(57755),
+    Revenge = Spell(6572),
+    RevengeBuff = Spell(5302),
+    ShieldSlam = Spell(23922),
+    ThunderClap = Spell(6343),
+    VictoryRush = Spell(34428),
+    Victorious = Spell(32216),
+	DragonRoar = Spell (23260),
+    -- Talents
+	BoomingVoice = Spell(202743),
+	ShieldBash = Spell(35178),
+	Bolster = Spell(280001),
+    ImpendingVictory = Spell(202168),
+    ImpendingVictoryProc = Spell(32216),
+    Shockwave = Spell(46968),
+    Vengeance = Spell(202572),
+    VengeanceIP = Spell(202574),
+    VengeanceRV = Spell(202573),
+	Execute = Spell(163201), 
+	UnstoppableForce = Spell(275336),
+    -- Artifact
+    NeltharionsFury = Spell(203524),
+    -- Defensive
+    IgnorePain = Spell(190456),
+    LastStand = Spell(12975),
+    Pummel = Spell(6552),
+    ShieldBlock = Spell(2565),
+    ShieldBlockB = Spell(132404),
+    Avatar = Spell(107574),
+	ShieldWall = Spell(871),
+	FM = Spell(20594),
+    Condemn = Spell(317349),
+    trinket = Spell(155145),
+    IntimidatingShout = Spell(5246),
+}
+
+RubimRH.Spell[260] = {
+    Shiv = Spell(5938),
+
+BladeRush = Spell(271877),
+
+stopcasting = Spell(291944), -- regeneratin
+
+ 
+CripplingPoison = Spell(3408),
+cripplingpoison = Spell(260364), -- arcane pulse
+InstantPoison = Spell(315584),
+instantpoison = Spell(274738), --ancestral call
+ 
+
 lust1 = Spell(57724),
 lust2 = Spell(57723),
 lust3 = Spell(80354),
 lust4 = Spell(95809),
 lust5 = Spell(264689),
-lustAT = Spell(265221), -- fireblood
--- Racials
---   AncestralCall                         = Spell(274738),
---   ArcaneTorrent                         = Spell(50613),
---   BagofTricks                           = Spell(312411),
---   Berserking                            = Spell(26297),
---   BloodFury                             = Spell(20572),
---   Fireblood                             = Spell(265221),
---   LightsJudgment                        = Spell(255647),
--- Abilities
-BattleShout                           = Spell(6673),
-Charge                                = Spell(100),
-HeroicThrow                           = Spell(57755),
-Pummel                                = Spell(6552),
-Slam                                  = Spell(1464),
-VictoryRush                           = Spell(34428),
-DefensiveStance                       = Spell(386208),
--- Talents
-Avatar                                = Spell(107574),
-BerserkerRage                         = Spell(18499),
-BerserkersTorment                     = Spell(390123),
-BloodandThunder                       = Spell(384277),
-DoubleTime                            = Spell(103827),
-CrushingForce                         = Spell(382764),
-FrothingBerserker                     = Spell(215571),
-Hurricane                             = Spell(390563),
-ImmovableObject                       = Spell(394307),
-IntimidatingShout                     = Spell(5246),
-HeroicLeap                            = Spell(6544),
-ImpendingVictory                      = Spell(202168),
-OverwhelmingRage                      = Spell(382767),
-RallyingCry                           = Spell(97462),
-RumblingEarth                         = Spell(275339),
-Shockwave                             = Spell(46968),
-SonicBoom                             = Spell(390725),
-ChampionsSpear                        = Spell(376079),
-SpellReflection                       = Spell(23920),
-StormBolt                             = Spell(107570),
+--enrage
+UndyingRage = Spell(333227),
 
-ThunderousRoar                        = Spell(384318),
-TitanicThrow                          = Spell(384090),
-WreckingThrow                         = Spell(384110),
--- Buffs
-AvatarBuff                            = Spell(107574),
-BattleShoutBuff                       = Spell(6673),
-ElysianMightBuff                      = Spell(386286),
-HurricaneBuff                         = Spell(390581),
-WarMachineBuff                        = Spell(262232),
--- Debuffs
-MarkofFyralathDebuff                  = Spell(414532),
-ThunderousRoarDebuff                  = Spell(397364),
--- Pool
-Pool                                  = Spell(999910),
--- Abilities
-BattleStance                          = Spell(386164),
-Devastate                             = Spell(20243),
-Execute                               = Spell(163201),
-ShieldBlock                           = Spell(2565),
-ShieldSlam                            = Spell(23922),
--- Talents
-Avatar                                = Spell(401150),
-BarbaricTraining                      = Spell(390675),
-Bolster                               = Spell(280001),
-BoomingVoice                          = Spell(202743),
-ChampionsBulwark                      = Spell(386328),
-DemoralizingShout                     = Spell(1160),
-EnduringDefenses                      = Spell(386027),
-HeavyRepercussions                    = Spell(203177),
-IgnorePain                            = Spell(190456),
-Taunt = Spell(355),
-Intervene                             = Spell(3411),
-ImpenetrableWall                      = Spell(384072),
-Juggernaut                            = Spell(393967),
-LastStand                             = Spell(12975),
-Massacre                              = Spell(281001),
-Ravager                               = Spell(228920),
-Rend                                  = Spell(394062),
-Revenge                               = Spell(6572),
-SeismicReverberation                  = Spell(382956),
-ShieldCharge                          = Spell(385952),
-ShieldWall                            = Spell(871),
-SuddenDeath                           = Spell(29725),
-UnnervingFocus                        = Spell(384042),
-UnstoppableForce                      = Spell(275336),
--- Buffs
-AvatarBuff                            = Spell(401150),
-EarthenTenacityBuff                   = Spell(410218), -- T30 4P
-FervidBuff                            = Spell(425517), -- T31 2P
-LastStandBuff                         = Spell(12975),
-RallyingCryBuff                       = Spell(97463),
-RevengeBuff                           = Spell(5302),
-SeeingRedBuff                         = Spell(386486),
-ShieldBlockBuff                       = Spell(132404),
-ShieldWallBuff                        = Spell(871),
-SuddenDeathBuff                       = Spell(52437),
-ViolentOutburstBuff                   = Spell(386478),
-VanguardsDeterminationBuff            = Spell(394056), -- T29 2P
--- Debuffs
-RendDebuff                            = Spell(388539),
-}
+		  --8.2 Essences
+  CondensedLifeForce = Spell(299358),
+  UnleashHeartOfAzeroth = Spell(280431),
+  BloodOfTheEnemy       = Spell(297108),
+  BloodOfTheEnemy2      = Spell(298273),
+  BloodOfTheEnemy3      = Spell(298277),
+  ConcentratedFlame     = Spell(295373),
+  ConcentratedFlame2    = Spell(299349),
+  ConcentratedFlame3    = Spell(299353),
+  GuardianOfAzeroth     = Spell(295840),
+  GuardianOfAzeroth2    = Spell(299355),
+  GuardianOfAzeroth3    = Spell(299358),
+  FocusedAzeriteBeam    = Spell(295258),
+  FocusedAzeriteBeam2   = Spell(299336),
+  FocusedAzeriteBeam3   = Spell(299338),
+  PurifyingBlast        = Spell(295337),
+  PurifyingBlast2       = Spell(299345),
+  PurifyingBlast3       = Spell(299347),
+  TheUnboundForce       = Spell(298452),
+  TheUnboundForce2      = Spell(299376),
+  TheUnboundForce3      = Spell(299378),
+  RippleInSpace         = Spell(302731),
+  RippleInSpace2        = Spell(302982),
+  RippleInSpace3        = Spell(302983),
+  WorldveinResonance    = Spell(295186),
+  WorldveinResonance2   = Spell(298628),
+  WorldveinResonance3   = Spell(299334),
+  MemoryOfLucidDreams   = Spell(298357),
+  MemoryOfLucidDreams2  = Spell(299372),
+  MemoryOfLucidDreams3  = Spell(299374),
+  trink2 = Spell(59547), -- gift of naaru
+	  ConcentratedFlamedebuff     = Spell(295368),
+	FocusedAzeriteBeam = Spell(295258),
+	KYWAY = Spell(288979),
+	
+    AceUpYourSleeve = Spell(278676),
+    Deadshot = Spell(272935),
+    Berserking = Spell(26297),
 
-RubimRH.Spell[260] = {
-    --INTERRUPTS
-    --INTERRUPTS
-    SummarilyDispatched    = Spell(381990),
-    KeepitRolling          = Spell(381989),
-    ShadowRunner           = Spell(378807),
-    Audacity               = Spell(381845),
-    AudacityBuff           = Spell(386270),
-    SubterfugeBuff         = Spell(115192),
-    Subterfuge             = Spell(108208),
-    ThistleTea             = Spell(381623),
-    HiddenOpportunity      = Spell(383281),
-    autoattack             = Spell(274738), -- ancestral call
-    ImprovedBetweentheEyes = Spell(235484),
-    ColdBlood              = Spell(382245),
-    ShadowDance            = Spell(185313),
-    ShadowDanceBuff        = Spell(185422),
-    DeftManeuvers          = Spell(381878),
-    AcrobaticStrikes       = Spell(196924),
-    Sepsis                 = Spell(385408), --check if this is buff or just talent/spell
-    --Dungeons
-    --Enrage
-    LoadedDiceBuff         = Spell(256171),
-    ViciousFollowup        = Spell(394879),
-    EchoingReprimand       = Spell(385616),
-    EchoingReprimandCP2    = Spell(323558),
-    EchoingReprimandCP3    = Spell(323559),
-    EchoingReprimandCP4    = Spell(323560),
-    EchoingReprimandCP5    = Spell(354838),
-    BladeRush              = Spell(271877),
-    CripplingPoison        = Spell(3408),
-    AtrophicPoison         = Spell(381637),
-    InstantPoison          = Spell(315584),
-    NumbingPoison          = Spell(5761),
-    lust1                  = Spell(57724),
-    lust2                  = Spell(57723),
-    lust3                  = Spell(80354),
-    lust4                  = Spell(95809),
-    lust5                  = Spell(264689),
-	ImprovedAdrenalineRush = Spell(395422),
-    FantheHammer           = Spell(381846),
-    SwiftSlasher           = Spell(381988),
-    Shadowstep = Spell(36554),
-    CounttheOdds           = Spell(381982),
-    Dreadblades            = Spell(343142),
-    Detection              = Spell(56814),
-    KidneyShot             = Spell(408),
-    Deadshot               = Spell(272935),
-    Berserking             = Spell(26297),
-    Darkflight             = Spell(68992),
-    Distract               = Spell(1725),
-    lustAT                 = Spell(155145), --arcane torrent
-    WaterStrider           = Spell(118089),
-    BugMount               = Spell(243795),
-    razorcoral             = Spell(303568),
-    ConductiveInk          = Spell(302565),
-    AdrenalineRush         = Spell(13750),
-    Ambush                 = Spell(8676),
-    BetweentheEyes         = Spell(315341),
-    BladeFlurry            = Spell(13877),
-    Shadowmeld             = Spell(135201),
-    DeviousStratagem       = Spell(394321),
-    Opportunity            = Spell(195627),
-    PistolShot             = Spell(185763),
-    RolltheBones           = Spell(315508),
-    Dispatch               = Spell(2098),
-    SinisterStrike         = Spell(193315),
-    ImprovedAmbush         = Spell(381620),
-    -- Stealth                = Spell(1784),
-    FindWeakness           = Spell(91023),
-    FindWeaknessDebuff     = Spell(316220),
-    Vanish                 = Spell(1856),
-    VanishBuff             = Spell(11327),
-    Shiv                   = Spell(5938),
-    -- Riposte = Spell(199754), -- evasion
-    WilloftheForsaken      = Spell(7744),
-    CloakofShadows         = Spell(31224),
-    Alacrity               = Spell(193539),
-    AlacrityBuff           = Spell(193538),
-    Anticipation           = Spell(114015),
-    CannonballBarrage      = Spell(185767),
-    DeathfromAbove         = Spell(152150),
-    DeeperStratagem        = Spell(193531),
-    DirtyTricks            = Spell(108216),
-    GhostlyStrike          = Spell(196937),
-    KillingSpree           = Spell(51690),
-    MarkedforDeath         = Spell(137619),
-    QuickDraw              = Spell(196938),
-    GreenSkinsWickers      = Spell(386823), --386823 --394131
-    GreenSkinsWickersBuff  = Spell(394131),
-    SliceandDice           = Spell(315496),
-    Vigor                  = Spell(14983),
-    Exhaustion             = Spell(57723),
-    PrecisionShot          = Spell(428377),
-    Blind                  = Spell(2094),
-    Blunderbuss            = Spell(202895),
-    CurseoftheDreadblades  = Spell(202665),
-    HiddenBlade            = Spell(202754),
-    LoadedDice             = Spell(256170),
-    DeadshotBuff           = Spell(272940),
-    AceUpYourSleeve        = Spell(278676),
-    SnakeEyes              = Spell(275846),
-    SnakeEyesBuff          = Spell(275863),
-    CheapShot              = Spell(1833),
-    CrimsonVial            = Spell(185311),
-    Feint                  = Spell(1966),
-    Gouge                  = Spell(1776),
-    Kick                   = Spell(1766),
-    Sprint                 = Spell(2983),
-    Broadside              = Spell(193356),
-    BuriedTreasure         = Spell(199600),
-    GrandMelee             = Spell(193358),
-    SkullandCrossbones     = Spell(199603),
-    GCBoon                 = Spell(20572),
-    RuthlessPrecision      = Spell(193357),
-    TrueBearing            = Spell(193359),
-    Evasion                = Spell(5277),
-    WoundPoison            = Spell(8679),
-    Crackshot              = Spell(423703),
-    UnderhandedUpperHand   = Spell(424044),
-    SepsisBuff             = Spell(375939),
+    Darkflight = Spell(68992),
+
+    -- Debuff List
+	Distract = Spell(1725),
+	distract = Spell(20572), --shadowmeld
+lustAT = Spell(155145),
+
+bagoftricks = Spell(312411),
+    	--Mount
+    WaterStrider = Spell(118089),
+    BugMount = Spell(243795),
+razorcoral = Spell(303568),
+ConductiveInk = Spell(302565),
+    -- Abilities
+    AdrenalineRush = Spell(13750),
+    Ambush = Spell(8676),
+    Detection = Spell(56814), --opener
+	KidneyShot = Spell(408),
+    BetweentheEyes = Spell(315341),
+    BladeFlurry = Spell(13877),
+    BladeFlurry2 = Spell(103828), -- Icon: Prot. Warrior Warbringer
+    DeeperStratagem = Spell(193531),
+    DeviousStratagem = Spell(394321),
+    Opportunity = Spell(195627),
+    PistolShot = Spell(185763),
+    RolltheBones = Spell(315508),
+    Dispatch = Spell(2098),
+    SinisterStrike = Spell(193315),
+	Dreadblades = Spell(343142),
+    Stealth = Spell(1784),
+    Vanish = Spell(1856),
+    VanishBuff = Spell(11327),
+    Shivv = Spell(248744),
+    Riposte = Spell(199754),
+    WilloftheForsaken = Spell(7744),
+    CloakofShadows = Spell(31224),
+    -- Talents
+	trink = Spell(265221),
+    Alacrity = Spell(193539),
+    AlacrityBuff = Spell(193538),
+    Anticipation = Spell(114015),
+    CannonballBarrage = Spell(185767),
+    DeathfromAbove = Spell(152150),
+    DeeperStratagem = Spell(193531),
+    DirtyTricks = Spell(108216),
+    GhostlyStrike = Spell(196937),
+    KillingSpree = Spell(51690),
+    MarkedforDeath = Spell(137619),
+    QuickDraw = Spell(196938),
+    Tricks = Spell(57934),
+    ToTT = Spell(58984),
+	sliceanddice = Spell(198529), -- plunder armor
+    SliceandDice = Spell(315496),
+    Vigor = Spell(14983),
+    -- Artifact
+	Exhaustion = Spell(57723),
+	Blind = Spell(2094),
+    Blunderbuss = Spell(202895),
+    CurseoftheDreadblades = Spell(202665),
+    HiddenBlade = Spell(202754),
+    LoadedDice = Spell(256171),
+    DeadshotBuff = Spell(272940),
+	AceUpYourSleeve = Spell(278676),
+	SnakeEyes = Spell(275846),
+	SnakeEyesBuff = Spell(275863),
+    -- Defensive
+	DS = Spell(642),
+	CheapShot = Spell(1833),
+	Dismantle= Spell(207777),
+    CrimsonVial = Spell(185311),
+    Feint = Spell(1966),
+    -- Utility
+    Gouge = Spell(1776),
+    Kick = Spell(1766),
+    Sprint = Spell(2983),
+    -- Roll the Bones
+    Broadside = Spell(193356),
+    BuriedTreasure = Spell(199600),
+    GrandMelee = Spell(193358),
+    SkullandCrossbones = Spell(199603),
+	GCBoon = Spell(20572),
+    RuthlessPrecision = Spell(193357),
+    TrueBearing = Spell(193359),
+
 
 }
 
 RubimRH.Spell[269] = {
-
-MarkoftheCrane = Spell(228287),
-
- -- Racials
-  Bloodlust                             = Spell(2825),
-  ArcaneTorrent                         = Spell(25046),
-  Berserking                            = Spell(26297),
-  BloodFury                             = Spell(20572),
-  GiftoftheNaaru                        = Spell(59547),
-  fortifyingbrew                        = Spell(58984),--shadowmeld
-  QuakingPalm                           = Spell(107079),
-  expelharm                             = Spell(265221),
-  AncestralCall                         = Spell(274738),
-
-  -- Abilities
-  TigerPalm                             = Spell(100780),
-  RisingSunKick                         = Spell(107428),
-  FistsofFury                           = Spell(113656),
-  SpinningCraneKick                     = Spell(101546),
-  StormEarthandFire                     = Spell(137639),
-  FlyingSerpentKick                     = Spell(101545),
-  FlyingSerpentKick2                    = Spell(115057),
-  TouchofDeath                          = Spell(322109),
-  CracklingJadeLightning                = Spell(117952),
-  BlackoutKick                          = Spell(100784),
-  BlackoutKickBuff                      = Spell(116768),
-  DanceofChijiBuff                      = Spell(325202),
-DanceofChijiBuffAzerite = Spell(286585),
-  -- Talents
-  ChiWave                               = Spell(115098),
-  ChiBurst                              = Spell(123986),
-  FistoftheWhiteTiger                   = Spell(261947),
-  HitCombo                              = Spell(196741),
-  InvokeXuentheWhiteTiger               = Spell(123904),
-  RushingJadeWind                       = Spell(261715),
-  WhirlingDragonPunch                   = Spell(152175),
-  WhirlingDragonPunchBuff = Spell(196742),
-  Serenity                              = Spell(152173),
-ConflictandStrife = Spell(169900),
-  -- Artifact
-  StrikeOfTheWindlord                   = Spell(205320),
-  	lust1 = Spell(57724),
-	lust2 = Spell(57723),
-	lust3 = Spell(80354),
-	lust4 = Spell(95809),
-	lust5 = Spell(264689),
-lustAT = Spell(155145),
-  -- Defensive
-  TouchofKarma                          = Spell(122470),
-  DiffuseMagic                          = Spell(122783), --Talent
-  DampenHarm                            = Spell(122278), --Talent
-
-  -- Utility
-  Detox                                 = Spell(218164),
-  Effuse                                = Spell(116694),
-  EnergizingElixir                      = Spell(115288), --Talent
-  TigersLust                            = Spell(116841), --Talent
-  LegSweep                              = Spell(119381), 
-  Disable                               = Spell(116095),
-  HealingElixir                         = Spell(122281), --Talent
-  Paralysis                             = Spell(115078),
-  SpearHandStrike                       = Spell(116705),
-
-  -- Legendaries
-  TheEmperorsCapacitor                  = Spell(235054),
-ChiEnergy = Spell(337571),
-  -- Tier Set
-  PressurePoint                         = Spell(247255),
-
-  -- Azerite Traits
-  SwiftRoundhouse                       = Spell(277669),
-  SwiftRoundhouseBuff                   = Spell(278710),
-  FortifyingBrew = Spell(243435),
-  RingofPeace = Spell(116844),
-  -- PvP Abilities
-  ReverseHarm                           = Spell(287771),
-  ExpelHarm = Spell(322101),
-  --8.2 Essences
-  UnleashHeartOfAzeroth                 = Spell(280431),
-  BloodOfTheEnemy                       = Spell(297108),
-  BloodOfTheEnemy2                      = Spell(298273),
-  BloodOfTheEnemy3                      = Spell(298277),
-  ConcentratedFlame                     = Spell(295373),
-  ConcentratedFlame2                    = Spell(299349),
-  ConcentratedFlame3                    = Spell(299353),
-  GuardianOfAzeroth                     = Spell(295840),
-  GuardianOfAzeroth2                    = Spell(299355),
-  GuardianOfAzeroth3                    = Spell(299358),
-  FocusedAzeriteBeam                    = Spell(295258),
-  FocusedAzeriteBeam2                   = Spell(299336),
-  FocusedAzeriteBeam3                   = Spell(299338),
-  PurifyingBlast                        = Spell(295337),
-  PurifyingBlast2                       = Spell(299345),
-  PurifyingBlast3                       = Spell(299347),
-  TheUnboundForce                       = Spell(298452),
-  TheUnboundForce2                      = Spell(299376),
-  TheUnboundForce3                      = Spell(299378),
-  RippleInSpace                         = Spell(302731),
-  RippleInSpace2                        = Spell(302982),
-  RippleInSpace3                        = Spell(302983),
-  WorldveinResonance                    = Spell(295186),
-  WorldveinResonance2                   = Spell(298628),
-  WorldveinResonance3                   = Spell(299334),
-  MemoryOfLucidDreams                   = Spell(298357),
-  MemoryOfLucidDreams2                  = Spell(299372),
-  MemoryOfLucidDreams3                  = Spell(299374),
-
-  -- Misc
-  --PoolEnergy                            = Spell(9999000010)
-	
+RingofPeace = Spell(116844),
+LegSweep = Spell(119381),
+FlyingSerpentKick = Spell(101545),
+Paralysis = Spell(115078),
+CracklingJadeLightning = Spell(117952),
 }
 
 RubimRH.Spell[270] = {
@@ -1269,7 +1096,6 @@ RubimRH.Spell[262] = {
     -- Racials
     Berserking = Spell(26297),
     BloodFury = Spell(33697),
-
     -- Abilities
     FlameShock = Spell(188389),
     FlameShockDebuff = Spell(188389),
@@ -1287,7 +1113,6 @@ RubimRH.Spell[262] = {
     EarthShock = Spell(8042),
     LavaBurst = Spell(51505),
     FireElemental = Spell(198067),
-    EarthElemental = Spell(198103),
     LightningBolt = Spell(188196),
     LavaBeam = Spell(114074),
     EarthQuake = Spell(61882),
@@ -1328,83 +1153,59 @@ RubimRH.Spell[262] = {
 
 --SUB
 RubimRH.Spell[261] = {
-    lust1                  = Spell(57724),
-    lust2                  = Spell(57723),
-    lust3                  = Spell(80354),
-    lust4                  = Spell(95809),
-    lust5                  = Spell(264689),
-	lustAT                 = Spell(155145), --arcane torrent
-
-	EchoingReprimand = Spell(323547),
-	EchoingReprimandCP2 = Spell(323558),
-	EchoingReprimandCP3 = Spell(323559),
-	EchoingReprimandCP4 = Spell(323560),
-	NumbingPoison = Spell(5761),
-	BlackPowder = Spell(319175),
-	SilentStorm = Spell(385727),
-	ColdBlood = Spell(382245),
-	ShadowBlades = Spell(121471),
-	Shadowstrike = Spell(185438),
-	Backstab = Spell(53),
+    -- Racials
+    brez = Spell(69070), --rocket jump
 	Rupture = Spell(1943),
-	ShadowDance = Spell(185313),
-	ShurikenToss = Spell(114014),
-	ShurikenStorm = Spell(197835),
-	SymbolsofDeath = Spell(212283),
+    ArcanePulse = Spell(260364),
+    ArcaneTorrent = Spell(50613),
+    Berserking = Spell(26297),
+    BloodFury = Spell(20572),
+    Shadowmeld = Spell(58984),
+    -- Abilities
+    Backstab = Spell(53),
 	ShurikenTornado = Spell(277925),
-	SecretTechnique = Spell(280719),
-	Eviscerate = Spell(196819),
-	PerforatedVeins = Spell(394254),
-	Nightstalker = Spell(14062),
-	DarkShadow = Spell(245687),
-	ShadowDanceBuff = Spell(185422),
-	WoundPoison = Spell(8679),
-	CripplingPoison = Spell(3408),
-	InstantPoison = Spell(315584),
-	AtrophicPoison = Spell(381637),
-	KidneyShot = Spell(408),
-	Gloomblade = Spell(200758),
-    FinalityRupture = Spell(385951),
-	Distract = Spell(1725),
-	LingeringShadow = Spell(382524),
-	LingeringShadowBuff = Spell(385960),
-    SealFate = Spell(14190),
-    DanseMacabre = Spell(382528),
-	DanseMacabreBuff = Spell(393969),
-	TheRotton = Spell(382015),
-	FindWeakness = Spell(316220),
-    DeeperStratagem = Spell(193531),
+    Eviscerate = Spell(196819),
+    Nightblade = Spell(195452),
+    ShadowBlades = Spell(121471),
+    ShurikenComboBuff = Spell(245640),
+    ShadowDance = Spell(185313),
+    ShadowDanceBuff = Spell(185422),
+    Shadowstrike = Spell(185438),
+    ShurikenStorm = Spell(197835),
+    ShurikenToss = Spell(114014),
     Stealth = Spell(1784),
-    ThistleTea = Spell(381623),
+    Stealth2 = Spell(115191), -- w/ Subterfuge Talent
+    SymbolsofDeath = Spell(212283),
     Vanish = Spell(1856),
-    PremeditationBuff = Spell(343173),
-    MasterofShadows = Spell(196976),
-    ShadowFocus = Spell(108209),
     VanishBuff = Spell(11327),
-    Shiv = Spell(5938),
-    autoattack = Spell(274738), -- ancestral call
-    ImprovedShurikenStorm = Spell(319951),
-    Gouge = Spell(1776),
-    WilloftheForsaken = Spell(7744),
-    CloakofShadows = Spell(31224),
-    DarkBrew = Spell(382504),
-    SecretStratagem = Spell(394320),
-    GhostlyStrike = Spell(196937),
+    VanishBuff2 = Spell(115193), -- w/ Subterfuge Talent
+    -- Talents
+    Alacrity = Spell(193539),
+    DarkShadow = Spell(245687),
+    DeeperStratagem = Spell(193531),
+    EnvelopingShadows = Spell(238104),
+    FindWeaknessDebuff = Spell(91021),
+    Gloomblade = Spell(200758),
     MarkedforDeath = Spell(137619),
-    SliceandDice = Spell(315496),
+    MasterofShadows = Spell(196976),
+    Nightstalker = Spell(14062),
+    SecretTechnique = Spell(280719),
+    ShadowFocus = Spell(108209),
+    ShurikenTornado = Spell(277925),
+    Subterfuge = Spell(108208),
     Vigor = Spell(14983),
-	Blind = Spell(2094),
-	Alacrity = Spell(193539),
-	CheapShot = Spell(1833),
-	Premeditation = Spell(343160),
+    -- Azerite Traits
+    SharpenedBladesBuff = Spell(272916),
+    -- Defensive
     CrimsonVial = Spell(185311),
     Feint = Spell(1966),
+    -- Utility
+    Blind = Spell(2094),
+    CheapShot = Spell(1833),
     Kick = Spell(1766),
+    KidneyShot = Spell(408),
     Sprint = Spell(2983),
-	Evasion = Spell(5277),
-	Flagellation = Spell(384631),
-	SubterfugeBuff = Spell(115192),
-	Healthstonez = Spell(260364), --arcane pulse
+    -- Misc
 }
 
 ----HUNTER
@@ -1413,122 +1214,66 @@ RubimRH.Spell[261] = {
 ----DRUID
 -- Feral
 RubimRH.Spell[103] = {
-    -- Racials
-  Berserking                            = Spell(26297),
-  Shadowmeld                            = Spell(58984),
-  -- Abilities
-  Barkskin                              = Spell(22812),
-  BearForm                              = Spell(5487),
-  CatForm                               = Spell(768),
-  FerociousBite                         = Spell(22568),
-  MarkoftheWild                         = Spell(1126),
-  Moonfire                              = Spell(8921),
-  Prowl                                 = Spell(5215),
-  Shred                                 = Spell(5221),
-  -- Talents
-  ConvoketheSpirits                     = Spell(391528),
-  FrenziedRegeneration                  = Spell(22842),
-  HeartoftheWild                        = Spell(319454),
-  Innervate                             = Spell(29166),
-  Ironfur                               = Spell(192081),
-  Maim                                  = Spell(22570),
-  MightyBash                            = Spell(5211),
-  NaturesVigil                          = Spell(124974),
-  Rake                                  = Spell(1822),
-  Rip                                   = Spell(1079),
-  SkullBash                             = Spell(106839),
-  Starfire                              = Spell(194153),
-  Sunfire                               = Spell(93402),
-  SurvivalInstincts                     = Spell(61336),
-
-  -- Buffs
-  FrenziedRegenerationBuff              = Spell(22842),
-  HeartoftheWildBuff                    = Spell(319454),
-  IronfurBuff                           = Spell(192081),
-  MarkoftheWildBuff                     = Spell(1126),
-  -- Debuffs
-  MoonfireDebuff                        = Spell(164812),
-  RakeDebuff                            = Spell(155722),
-  RipDebuff                             = Spell(1079),
-  SunfireDebuff                         = Spell(164815),
-  -- Covenant Abilities
-  AdaptiveSwarmCov                      = Spell(325727),
-  AdaptiveSwarmCovDebuff                = Spell(325733),
-  AdaptiveSwarmCovHeal                  = Spell(325748),
-  AstralCommunion                       = Spell(202359),
-  ConvoketheSpiritsCov                  = Spell(323764),
-  EmpowerBond                           = Spell(326647),
-  Fleshcraft                            = Spell(324631),
-  KindredSpirits                        = Spell(326434),
-  KindredEmpowermentEnergizeBuff        = Spell(327022),
-  RavenousFrenzy                        = Spell(323546),
-  RavenousFrenzyBuff                    = Spell(323546),
-  RavenousFrenzySHBuff                  = Spell(355315),
-  -- Soulbind Abilities
-  ThrillSeeker                          = Spell(331586),
-  ThrillSeekerBuff                      = Spell(331939),
-  -- Conduit Effects
-  DeepAllegiance                        = Spell(341378),
-  PreciseAlignment                      = Spell(340706),
-  PustuleEruption                       = Spell(351094),
-  SavageCombatant                       = Spell(340609),
-  SavageCombatantBuff                   = Spell(340613),
-  SuddenAmbushBuff                      = Spell(340698),
-  TasteForBlood                         = Spell(340682),
-  VolatileSolvent                       = Spell(323074),
-  -- Legendary Effects
-  OathoftheElderDruidBuff               = Spell(338643),
-  -- Trinket Effects (SL)
-  AcquiredAxeBuff                       = Spell(368656),
-  AcquiredSwordBuff                     = Spell(368657),
-  AcquiredWandBuff                      = Spell(368654),
-  ScarsofFraternalStrifeBuff4           = Spell(368638),
-  TormentedInsightBuff                  = Spell(355321),
-  -- Other
-
- -- Abilties
-  -- Talents
-  AdaptiveSwarm                         = Spell(391888),
-  ApexPredatorsCraving                  = Spell(391881),
-  AshamanesGuidance                     = Spell(391548),
-  Berserk                               = Spell(106951),
-  BerserkHeartoftheLion                 = Spell(391174),
-  Bloodtalons                           = Spell(319439),
-  CircleofLifeandDeath                  = Spell(400320),
-  BrutalSlash                           = Spell(202028),
-  DoubleClawedRake                      = Spell(391700),
-  FeralFrenzy                           = Spell(274837),
-  Incarnation                           = Spell(102543),
-  LionsStrength                         = Spell(391972),
-  LunarInspiration                      = Spell(155580),
-  LIMoonfire                            = Spell(155625), -- Lunar Inspiration Moonfire
-  MomentofClarity                       = Spell(236068),
-  Predator                              = Spell(202021),
-  PrimalWrath                           = Spell(285381),
-  RipandTear                            = Spell(391347),
-  Sabertooth                            = Spell(202031),
-  SouloftheForest                       = Spell(158476),
-  Swipe                                 = Spell(106785),
-  TearOpenWounds                        = Spell(391785),
-  ThrashingClaws                        = Spell(405300),
-  TigersFury                            = Spell(5217),
-  WildSlashes                           = Spell(390864),
-  -- Buffs
-  ApexPredatorsCravingBuff              = Spell(391882),
-  BloodtalonsBuff                       = Spell(145152),
-  Clearcasting                          = Spell(135700),
-  SabertoothBuff                        = Spell(391722),
-  -- Debuffs
-  AdaptiveSwarmDebuff                   = Spell(391889),
-  AdaptiveSwarmHeal                     = Spell(391891),
-  LIMoonfireDebuff                      = Spell(155625),
-  ThrashDebuff                          = Spell(405233),
-
+    Regrowth = Spell(8936),
+	Soothe = Spell(2908),
+    Hibernate = Spell(2637),
+    RemoveCorruption = Spell(2782),
+	WildCharge = Spell(49376),
+	Typhoon = Spell(132469),
+	Typhoonz = Spell(20549), --war stomp
+	Vortex = Spell(102793),
+    Convoke = Spell(391528),
+    Bloodtalons = Spell(155672),
+    StampedingRoar = Spell(77764),
+    CatForm = Spell(768),
+	IncapacitatingRoar = Spell(99),
+    BearForm = Spell(5487),
+    Prowl = Spell(5215),
+    Rebirth = Spell(20484),
+    IncarnationBuff = Spell(102543),
+    JungleStalkerBuff = Spell(252071),
+	Maim = Spell(22570),
+    Berserk = Spell(106951),
+    TigersFury = Spell(5217),
+    TigersFuryBuff = Spell(5217),
+    EntanglingRoots = Spell(339),
+    Berserking = Spell(26297),
+    FeralFrenzy = Spell(274837),
+    Incarnation = Spell(102543),
+    BerserkBuff = Spell(106951),
+    Shadowmeld = Spell(58984),
+    Rake = Spell(1822),
+    RakeDebuff = Spell(155722),
+    BloodtalonsBuff = Spell(145152),
+    CatFormBuff = Spell(768),
+    ProwlBuff = Spell(5215),
+    ShadowmeldBuff = Spell(58984),
+    FerociousBite = Spell(22568),
+    RipDebuff = Spell(1079),
+    Sabertooth = Spell(202031),
+    PredatorySwiftnessBuff = Spell(69369),
+    ApexPredatorBuff = Spell(252752),
+    MomentofClarity = Spell(236068),
+    SavageRoar = Spell(52610),
+    SavageRoarBuff = Spell(52610),
+    Rip = Spell(1079),
+    FerociousBiteMaxEnergy = Spell(22568),
+    BrutalSlash = Spell(202028),
+    ThrashCat = Spell(106830),
+    ThrashCatDebuff = Spell(106830),
+    MoonfireCat = Spell(155625),
+    MoonfireCatDebuff = Spell(155625),
+    ClearcastingBuff = Spell(135700),
+    SwipeCat = Spell(106785),
+    Shred = Spell(5221),
+    LunarInspiration = Spell(155580),
+	Dash = Spell(1850),
+	FrenziedRegeneration = Spell(22842),
 }
 -- Guardian
 RubimRH.Spell[104] = {
 Quake = Spell(240447),
-
+MarkOfTheWild = Spell(1126),
 MassEntanglement = Spell(102359),
 forceofnature = Spell(205636),
 Vortex = Spell(102793),
@@ -1552,9 +1297,9 @@ Rejuvenation = Spell(774),
 WildGrowth = Spell(48438),
 RemoveCorruption = Spell(2782),
 Dash = Spell(1850),
-StampedingRoar = Spell(77764),
+StampedingRoar = Spell(106898),
 
-
+    Pull                             	    = Spell(8921),	
     Gore                                    = Spell(210706),
     GoreBuff                                = Spell(93622),
     GoryFur                                 = Spell(201671),

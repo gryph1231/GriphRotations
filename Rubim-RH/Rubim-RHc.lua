@@ -280,7 +280,6 @@ function RubimRH.RacialToggle()
     RubimRH.playSoundR(891);
     if RubimRH.db.profile.mainOption.useRacial == false then
         RubimRH.db.profile.mainOption.useRacial = true
-
     else
         RubimRH.db.profile.mainOption.useRacial = false
     end

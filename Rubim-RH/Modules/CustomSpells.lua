@@ -15,12 +15,12 @@ local function GetTexture (Object)
     if SpellID then
         if Object.TextureSpellID ~= nil then
             if #Object.TextureSpellID == 1 then
-                return GetSpellTexture(Object.TextureSpellID[1]);
+                return C_Spell.GetSpellTexture(Object.TextureSpellID[1]);
             else
                 return Object.TextureSpellID[2];
             end
         else
-            return GetSpellTexture(SpellID);
+            return C_Spell.GetSpellTexture(SpellID);
         end
 
     end
@@ -199,43 +199,43 @@ function Spell:IsAvailable(CheckPet)
     return CheckPet and IsSpellKnown(self.SpellID, true) or IsPlayerSpell(self.SpellID);
 end
 
-function Spell:CooldownRemains(BypassRecovery, Offset)
-    if RubimRH.db.profile[RubimRH.playerSpec].Spells ~= nil then
-        for i, v in pairs(RubimRH.db.profile[RubimRH.playerSpec].Spells) do
-            if v.spellID == self:ID() and v.isActive == false then
-                return 1000
-            end
-        end
-    end
+-- function Spell:CooldownRemains(BypassRecovery, Offset)
+--     if RubimRH.db.profile[RubimRH.playerSpec].Spells ~= nil then
+--         for i, v in pairs(RubimRH.db.profile[RubimRH.playerSpec].Spells) do
+--             if v.spellID == self:ID() and v.isActive == false then
+--                 return 1000
+--             end
+--         end
+--     end
 
-    if self:IsEnabled() == false then
-        return 1000
-    end
+--     if self:IsEnabled() == false then
+--         return 1000
+--     end
 
-    if self:IsEnabledCD() == false or self:IsEnabledCleave() == false then
-        return 1000
-    end
+--     if self:IsEnabledCD() == false or self:IsEnabledCleave() == false then
+--         return 1000
+--     end
 
-    local SpellInfo = Cache.SpellInfo[self.SpellID]
-    if not SpellInfo then
-        SpellInfo = {}
-        Cache.SpellInfo[self.SpellID] = SpellInfo
-    end
-    local Cooldown = Cache.SpellInfo[self.SpellID].Cooldown
-    local CooldownNoRecovery = Cache.SpellInfo[self.SpellID].CooldownNoRecovery
-    if (not BypassRecovery and not Cooldown) or (BypassRecovery and not CooldownNoRecovery) then
-        if BypassRecovery then
-            CooldownNoRecovery = self:ComputeCooldown(BypassRecovery)
-        else
-            Cooldown = self:ComputeCooldown()
-        end
-    end
-    if Offset then
-        return BypassRecovery and math.max(HL.OffsetRemains(CooldownNoRecovery, Offset), 0) or math.max(HL.OffsetRemains(Cooldown, Offset), 0)
-    else
-        return BypassRecovery and CooldownNoRecovery or Cooldown
-    end
-end
+--     local SpellInfo = Cache.SpellInfo[self.SpellID]
+--     if not SpellInfo then
+--         SpellInfo = {}
+--         Cache.SpellInfo[self.SpellID] = SpellInfo
+--     end
+--     local Cooldown = Cache.SpellInfo[self.SpellID].Cooldown
+--     local CooldownNoRecovery = Cache.SpellInfo[self.SpellID].CooldownNoRecovery
+--     if (not BypassRecovery and not Cooldown) or (BypassRecovery and not CooldownNoRecovery) then
+--         if BypassRecovery then
+--             CooldownNoRecovery = self:ComputeCooldown(BypassRecovery)
+--         else
+--             Cooldown = self:ComputeCooldown()
+--         end
+--     end
+--     if Offset then
+--         return BypassRecovery and math.max(HL.OffsetRemains(CooldownNoRecovery, Offset), 0) or math.max(HL.OffsetRemains(Cooldown, Offset), 0)
+--     else
+--         return BypassRecovery and CooldownNoRecovery or Cooldown
+--     end
+-- end
 
 function Spell:CooldownRemainsTrue(BypassRecovery, Offset)
     local SpellInfo = Cache.SpellInfo[self.SpellID]
@@ -636,8 +636,8 @@ HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
     end
     for i, spell in pairs(RubimRH.Spell[RubimRH.playerSpec]) do
         if SpellID == spell.SpellID then
-            spell.LastCastTime = HL.GetTime()
-            spell.LastHitTime = HL.GetTime() + spell:TravelTime()
+            spell.LastCastTime = GetTime()
+            spell.LastHitTime = GetTime() + spell:TravelTime()
         end
     end
 end, "SPELL_CAST_SUCCESS")
@@ -646,8 +646,8 @@ end, "SPELL_CAST_SUCCESS")
 HL:RegisterForPetCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
     for i, spell in pairs(RubimRH.allSpells) do
         if SpellID == spell.SpellID then
-            spell.LastCastTime = HL.GetTime()
-            spell.LastHitTime = HL.GetTime() + spell:TravelTime()
+            spell.LastCastTime = GetTime()
+            spell.LastHitTime = GetTime() + spell:TravelTime()
         end
     end
 end, "SPELL_CAST_SUCCESS")
@@ -656,16 +656,16 @@ end, "SPELL_CAST_SUCCESS")
 HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
     for i, spell in pairs(RubimRH.Spell[RubimRH.playerSpec]) do
         if SpellID == spell.SpellID then
-            spell.LastAppliedOnPlayerTime = HL.GetTime()
+            spell.LastAppliedOnPlayerTime = GetTime()
         end
     end
-end, "SPELL_AURA_APPLIED")
+end, "SPELL_AURA_APPLIED","SPELL_AURA_REFRESH")
 
 -- Player Aura Removed Listener
 HL:RegisterForSelfCombatEvent(function(_, _, _, _, _, _, _, _, _, _, _, SpellID)
     for i, spell in pairs(RubimRH.Spell[RubimRH.playerSpec]) do
         if SpellID == spell.SpellID then
-            spell.LastRemovedFromPlayerTime = HL.GetTime()
+            spell.LastRemovedFromPlayerTime = GetTime()
         end
     end
 end, "SPELL_AURA_REMOVED")

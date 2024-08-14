@@ -1,20 +1,20 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL          = ...
 -- HeroLib
-local Cache, Utils = HeroCache, HL.Utils
-local Unit = HL.Unit
-local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target
-local Focus, MouseOver = Unit.Focus, Unit.MouseOver
+local Cache, Utils           = HeroCache, HL.Utils
+local Unit                   = HL.Unit
+local Player, Pet, Target    = Unit.Player, Unit.Pet, Unit.Target
+local Focus, MouseOver       = Unit.Focus, Unit.MouseOver
 local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
-local Party, Raid = Unit.Party, Unit.Raid
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
+local Party, Raid            = Unit.Party, Unit.Raid
+local Spell                  = HL.Spell
+local Item                   = HL.Item
+
+-- Lua locals
 
 -- File Locals
-
 
 
 --- ============================ CONTENT ============================
@@ -27,7 +27,7 @@ do
       -- T20 ToS
       Spell(239932) -- Felclaws (KJ)
     },
-    Debuff = {},
+    Debuff = {}, -- TODO ?
     Cast = {
       -- PR Legion
       197810, -- Wicked Slam (ARC - 3rd)
@@ -50,21 +50,55 @@ do
       244899, -- Fiery Strike (Coven)
       245458, -- Foe Breaker (Aggramar)
       248499, -- Sweeping Scythe (Argus)
-      258039 -- Deadly Scythe (Argus)
+      258039, -- Deadly Scythe (Argus)
+      -- T29 VotI
+      376279, -- Concussive Slam (Terros)
+      372056, -- Crush (Primal Council)
+      375580, -- Zephyr Slam (Dathea)
+      390548, -- Sundering Strike (Kurog)
+      375870, -- Mortal Stoneclaws (Broodkeeper)
+      377658, -- Electrified Jaws (Raszageth)
+      -- T30 Aberrus
+      404744, -- Terror Claws (Kazzara)
+      403699, -- Shadow Spike (Amalgamation)
+      403203, -- Flame Slash (Amalgamation)
+      405914, -- Withering Vulnerability (Amalgamation)
+      406783, -- Shadowflame Burst (Amalgamation)
+      401258, -- Heavy Cudgel (Assault)
+      410351, -- Flaming Cudgel (Assault)
+      407547, -- Flaming Slash (Rashok)
+      407597, -- Earthen Crush (Rashok)
+      401348, -- Incinerating Maws (Magmorax)
+      401022, -- Calamitous Strike (Echo)
+      407790, -- Sunder Shadow (Echo)
+      401325, -- Burning Claws (Sarkareth)
+      411236, -- Void Claws (Sarkareth)
+      408422, -- Void Slash (Sarkareth)
+      -- T31 Amirdrassil
+      424352, -- Dreadfire Barrage (Gnarlroot)
+      421020, -- Agonizing Claws (Council)
+      418637, -- Furious Charge (Larodar)
+      421343, -- Brand of Damnation (Smolderon)
+      417431, -- Fyr'alath's Bite (Fyrakk)
+      425492, -- Infernal Maw (Fyrakk)
     },
-    Channel = {}
+    Channel = {} -- TODO ?
   }
   function Player:ActiveMitigationNeeded()
-    if Player:IsTanking(Target) then
-      if ActiveMitigationSpells.Cast[Target:CastID()] then
+    if not Player:IsTanking(Target) then return false end
+
+    -- Check casts
+    if ActiveMitigationSpells.Cast[Target:CastSpellID()] then
+      return true
+    end
+
+    -- Check buffs
+    for _, Buff in pairs(ActiveMitigationSpells.Buff) do
+      if Target:BuffUp(Buff, true) then
         return true
       end
-      for _, Buff in pairs(ActiveMitigationSpells.Buff) do
-        if Target:Buff(Buff, nil, true) then
-          return true
-        end
-      end
     end
+
     return false
   end
 end
@@ -73,15 +107,18 @@ do
   local HealingAbsorbedSpells = {
     Debuff = {
       -- T21 Antorus
-      Spell(243961) -- Misery (Varimathras)
+      Spell(243961), -- Misery (Varimathras)
+      -- T31 Amirdrassil
+      Spell(421656), -- Cauterizing Wound (Smolderon)
     }
   }
   function Player:HealingAbsorbed()
     for _, Debuff in pairs(HealingAbsorbedSpells.Debuff) do
-      if Player:Debuff(Debuff, nil, true) then
+      if Player:DebuffUp(Debuff, true) then
         return true
       end
     end
+
     return false
   end
 end

@@ -85,7 +85,7 @@ local function addToData(GUID)
             -- DS: Last N sec (Only Taken) 
             DS = {},
             -- Absorb (Only Taken)       
-            -- absorb_spells = dynamic_array(2),
+            --absorb_spells = dynamic_array(2),
             -- Shared 
             combat_time = GetTime(),
             spell_value = {},
@@ -224,16 +224,16 @@ end
 --     end
 -- end
 
--- --[[ This Logs the last cast and amount for every unit ]]
--- local logLastCast = function(...)
---     local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName = CombatLogGetCurrentEventInfo()
---     -- LastCast time
---     Data[SourceGUID].spell_lastcast_time[spellID] = GetTime() 
---     Data[SourceGUID].spell_lastcast_time[spellName] = GetTime() 
---     -- Counter 
---     Data[SourceGUID].spell_counter[spellID] = (not Data[SourceGUID].spell_counter[spellID] and 1) or (Data[SourceGUID].spell_counter[spellID] + 1)
---     Data[SourceGUID].spell_counter[spellName] = (not Data[SourceGUID].spell_counter[spellName] and 1) or (Data[SourceGUID].spell_counter[spellName] + 1)
--- end 
+--[[ This Logs the last cast and amount for every unit ]]
+local logLastCast = function(...)
+    local _,_,_, SourceGUID, _,_,_, DestGUID, DestName,_,_, spellID, spellName = CombatLogGetCurrentEventInfo()
+    -- LastCast time
+    Data[SourceGUID].spell_lastcast_time[spellID] = GetTime() 
+    Data[SourceGUID].spell_lastcast_time[spellName] = GetTime() 
+    -- Counter 
+    Data[SourceGUID].spell_counter[spellID] = (not Data[SourceGUID].spell_counter[spellID] and 1) or (Data[SourceGUID].spell_counter[spellID] + 1)
+    Data[SourceGUID].spell_counter[spellName] = (not Data[SourceGUID].spell_counter[spellName] and 1) or (Data[SourceGUID].spell_counter[spellName] + 1)
+end 
 
 --[[ These are the events we're looking for and its respective action ]]
 local EVENTS = {
@@ -255,8 +255,9 @@ local EVENTS = {
 --[[ Returns the total ammount of time a unit is in-combat for ]]
 function RubimRH.CombatTime(UNIT)
     if not UNIT then UNIT = "player" end;    
-    local GUID = UnitGUID(UNIT)     
-    if Data[GUID] and InCombatLockdown() then
+    local GUID = UnitGUID(UNIT)   
+    --if Data[GUID] and InCombatLockdown() then  
+    if Data[GUID] then
         local combatTime = (GetTime() - Data[GUID].combat_time)      
         return combatTime              
     end
@@ -425,7 +426,7 @@ end
 --[[ Get Heal Taken ]]
 function RubimRH.getAbsorb(unit, spellID)
     local GUID = UnitGUID(unit)
-    return (not spellID and UnitGetTotalAbsorbs(unit)) or (spellID and Data[GUID] and Data[GUID].absorb_spells[GetSpellInfo(spellID)]["Amount"]) or 0
+    return (not spellID and UnitGetTotalAbsorbs(unit)) or (spellID and Data[GUID] and Data[GUID].absorb_spells[C_Spell.GetSpellInfo(spellID)]["Amount"]) or 0
 end 
 
 --[[function RubimRH.TimeToDie(unit)
@@ -512,7 +513,7 @@ function SpellLastCast(UNIT, SPELL, byID)
     local GUID = UnitGUID(UNIT)
     if Data[GUID] then
         if not byID and type(SPELL) == "number" then 
-            SPELL = GetSpellInfo(SPELL)
+            SPELL = C_Spell.GetSpellInfo(SPELL)
         end 
         timer = Data[GUID].spell_lastcast_time[SPELL] or 0
     end 
@@ -525,7 +526,7 @@ function SpellTimeSinceLastCast(UNIT, SPELL, byID)
     local GUID = UnitGUID(UNIT)
     if Data[GUID] then
         if not byID and type(SPELL) == "number" then 
-            SPELL = GetSpellInfo(SPELL)
+            SPELL = C_Spell.GetSpellInfo(SPELL)
         end 
         timer = Data[GUID].spell_lastcast_time[SPELL] or 0
 		if timer > 0 then 
@@ -540,7 +541,7 @@ function SpellCounter(UNIT, SPELL, byID)
     local GUID = UnitGUID(UNIT)
     if Data[GUID] then
         if not byID and type(SPELL) == "number" then 
-            SPELL = GetSpellInfo(SPELL)
+            SPELL = C_Spell.GetSpellInfo(SPELL)
         end 
         timer = Data[GUID].spell_counter[SPELL] or 0
     end 

@@ -1,20 +1,39 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL          = ...
 -- HeroLib
-local Cache, Utils = HeroCache, HL.Utils
-local Unit = HL.Unit
-local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target
-local Focus, MouseOver = Unit.Focus, Unit.MouseOver
+local Cache, Utils           = HeroCache, HL.Utils
+local Unit                   = HL.Unit
+local Player, Pet, Target    = Unit.Player, Unit.Pet, Unit.Target
+local Focus, MouseOver       = Unit.Focus, Unit.MouseOver
 local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
-local Party, Raid = Unit.Party, Unit.Raid
-local Spell = HL.Spell
-local Item = HL.Item
+local Party, Raid            = Unit.Party, Unit.Raid
+local Spell                  = HL.Spell
+local Item                   = HL.Item
+
+-- Base API locals
+local CR_VERSATILITY_DAMAGE_DONE = CR_VERSATILITY_DAMAGE_DONE
+local GetCombatRatingBonus   = GetCombatRatingBonus
+-- Accepts: ratingIndex; Returns: ratingBonus (number)
+local GetCritChance          = GetCritChance
+-- Accepts: nil; Returns: critChance (number)
+local GetHaste               = GetHaste
+-- Accepts: nil; Returns: haste (number)
+local GetMasteryEffect       = GetMasteryEffect
+-- Accepts: nil; Returns: masteryEffect (number), bonusCoefficient (number)
+local GetVersatilityBonus    = GetVersatilityBonus
+-- Accepts: combatRating; Returns: versatilityBonus (number)
+local UnitAttackPower        = UnitAttackPower
+-- Accepts: unitID; Returns: base (number), posBuff (number), negBuff (number)
+local UnitAttackSpeed        = UnitAttackSpeed
+-- Accepts: unitID; Returns: mainSpeed (number), offSpeed (number)
+local UnitDamage             = UnitDamage
+-- Accepts: unitID; Returns: minDamage (number), maxDamage (number), offhandMinDamage (number), offhandMaxDamage (number), posBuff (number), negBuff (number), percent (number)
+
 -- Lua
 
 -- File Locals
-
 
 
 --- ============================ CONTENT ============================
@@ -26,21 +45,28 @@ do
     [260] = true, -- Outlaw
     [261] = true, -- Subtlety
     [268] = true, -- Brewmaster
-    [269] = true -- Windwalker
+    [269] = true, -- Windwalker
   }
   function Player:GCD()
     local GUID = self:GUID()
     if GUID then
-      local UnitInfo = Cache.UnitInfo[GUID] if not UnitInfo then UnitInfo = {} Cache.UnitInfo[GUID] = UnitInfo end
-      if not UnitInfo.GCD then
+      local UnitInfo = Cache.UnitInfo[GUID]
+      if not UnitInfo then
+        UnitInfo = {}
+        Cache.UnitInfo[GUID] = UnitInfo
+      end
+
+      local GCD = UnitInfo.GCD
+      if not GCD then
         if GCD_OneSecond[Cache.Persistent.Player.Spec[1]] then
-          UnitInfo.GCD = 1
+          GCD = 1
         else
           local GCD_Value = 1.5 / (1 + self:HastePct() / 100)
-          UnitInfo.GCD = GCD_Value > 0.75 and GCD_Value or 0.75
+          GCD = GCD_Value > 0.75 and GCD_Value or 0.75
         end
+        UnitInfo.GCD = GCD
       end
-      return UnitInfo.GCD
+      return GCD
     end
   end
 end
@@ -51,13 +77,11 @@ do
   function Player:GCDRemains()
     return GCDSpell:CooldownRemains(true)
   end
-  
+
   function Player:GCDStartTime()
-    local GCDStartTime, GCDDuration = GCDSpell:CooldownInfo()
-    if GCDDuration > 0 then
-      return GCDStartTime
-    end
-    return 0
+    local StartTime = GCDSpell:CooldownInfo()
+
+    return StartTime
   end
 end
 

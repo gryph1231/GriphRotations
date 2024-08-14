@@ -11,27 +11,54 @@ local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
 local Party, Raid = Unit.Party, Unit.Raid
 local Spell = HL.Spell
 local Item = HL.Item
--- Lua
+
+-- Base API locals
+local GetUnitSpeed = GetUnitSpeed
+-- Accepts: unitID; Returns: currentSpeed (number), runSpeed (number), flightSpeed (number), swimSpeed (number)
+local UnitAffectingCombat = UnitAffectingCombat
+-- Accepts: unitID; Returns: affectingCombat (bool)
+local UnitCanAttack = UnitCanAttack
+-- Accepts: unitID, unitID; Returns: canAttack (bool)
+local UnitClassification = UnitClassification
+-- Accepts: unitID; Returns: classifiction (string)
+local UnitExists = UnitExists
+-- Accepts: unitID; Returns: exists (bool)
+local UnitGUID = UnitGUID
+-- Accepts: unitID; Returns: guid (string)
+local UnitHealth = UnitHealth
+-- Accepts: unitID; Returns: health (number)
+local UnitHealthMax = UnitHealthMax
+-- Accepts: unitID; Returns: maxHealth (number)
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+-- Accepts: unitID; Returns: isDeadOrGhost (bool)
+local UnitIsPlayer = UnitIsPlayer
+-- Accepts: unitID; Returns: isPlayer (bool)
+local UnitIsUnit = UnitIsUnit
+-- Accepts: unitID, unitID; Returns: isSame (bool)
+local UnitIsVisible = UnitIsVisible
+-- Accepts: unitID; Returns: visible (bool)
+local UnitLevel = UnitLevel
+-- Accepts: unitID; Returns: level (number)
+local UnitName = UnitName
+-- Accepts: unitID; Returns: name (string), realm (string, if different from player; nil otherwise)
+local UnitThreatSituation = UnitThreatSituation
+-- Accepts: unitID, mobUnit; Returns: status (number)
+-- Statuses:
+-- nil (unitID not on mobUnit's threat table)
+--  0  (unitID has less than 100% threat for mobUnit)
+--  1  (unitID has higher than 100% threat for mobUnit, but is not mobUnit's primary target)
+--  2  (unitID is mobUnit's primary target, but another unit has higher than 100% threat)
+--  3  (unitID is the primary target for mobUnit and no other unit has higher than 100% threat)
+
+-- Lua locals
+local strsplit = strsplit
 local tonumber = tonumber
+
+
 -- File Locals
 
--- Blizzard API Mappings
-local UnitGUID = UnitGUID
-local UnitName = UnitName
-local UnitExists = UnitExists
-local UnitIsVisible = UnitIsVisible
-local UnitLevel = UnitLevel
-local UnitCanAttack = UnitCanAttack
-local UnitIsPlayer = UnitIsPlayer
-local UnitHealth = UnitHealth
-local UnitHealthMax = UnitHealthMax
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitAffectingCombat = UnitAffectingCombat
-local UnitIsUnit = UnitIsUnit
-local UnitClassification = UnitClassification
-local UnitThreatSituation = UnitThreatSituation
-local GetUnitSpeed = GetUnitSpeed
 
+--- ============================ CONTENT ============================
 function Unit:Cache()
   self:RemoveUnitGUIDMapEntry()
   self.UnitExists = UnitExists(self.UnitID) or false
@@ -48,7 +75,6 @@ function Unit:Cache()
   -- Classification?
 end
 
---- ============================ CONTENT ============================
 -- Get the unit ID.
 function Unit:ID()
   return self.UnitID
@@ -59,6 +85,7 @@ function Unit:GUID()
   if self.UseCache then
     return self.UnitGUID
   end
+
   return UnitGUID(self.UnitID)
 end
 
@@ -67,6 +94,7 @@ function Unit:Name()
   if self.UseCache then
     return self.UnitName
   end
+
   return UnitName(self.UnitID)
 end
 
@@ -75,6 +103,7 @@ function Unit:Exists()
   if self.UseCache then
     return self.UnitExists and UnitIsVisible(self.UnitID)
   end
+
   return UnitExists(self.UnitID) and UnitIsVisible(self.UnitID)
 end
 
@@ -85,23 +114,26 @@ function Unit:NPCID(BypassCache)
   end
 
   local GUID = self:GUID()
-  if GUID then
-    local UnitInfo = Cache.UnitInfo[GUID]
-    if not UnitInfo then
-      UnitInfo = {}
-      Cache.UnitInfo[GUID] = UnitInfo
-    end
-    if not UnitInfo.NPCID then
-      local type, _, _, _, _, npcid = strsplit('-', GUID)
-      if type == "Creature" or type == "Pet" or type == "Vehicle" then
-        UnitInfo.NPCID = tonumber(npcid)
-      else
-        UnitInfo.NPCID = -2
-      end
-    end
-    return UnitInfo.NPCID
+  if not GUID then return -1 end
+
+  local UnitInfo = Cache.UnitInfo[GUID]
+  if not UnitInfo then
+    UnitInfo = {}
+    Cache.UnitInfo[GUID] = UnitInfo
   end
-  return -1
+
+  local NPCID = UnitInfo.NPCID
+  if not NPCID then
+    local Type, _, _, _, _, NPCIDFromGUID = strsplit('-', GUID)
+    if Type == "Creature" or Type == "Pet" or Type == "Vehicle" then
+      NPCID = tonumber(NPCIDFromGUID)
+    else
+      NPCID = -2
+    end
+    UnitInfo.NPCID = NPCID
+  end
+
+  return NPCID
 end
 
 -- Get the level of the unit
@@ -109,25 +141,46 @@ function Unit:Level()
   return UnitLevel(self.UnitID)
 end
 
--- Get if an unit with a given NPC ID is in the Boss list and has less HP than the given ones.
-function Unit:IsInBossList(NPCID, HP)
-  local NPCID = NPCID or self:NPCID()
-  local HP = HP or 100
-  local ThisUnit
+-- Get the class of the unit
+function Unit:Class()
+  return UnitClass(self.UnitID)
+end
+
+-- Get if the unit (or a given NPC ID) is in the Boss list.
+function Unit:IsInBossList(NPCID)
+  local ThisNPCID = NPCID or self:NPCID()
+
   for _, ThisUnit in pairs(Boss) do
-    if ThisUnit:Exists() and ThisUnit:NPCID() == NPCID and ThisUnit:HealthPercentage() <= HP then
+    if ThisUnit:Exists() and ThisUnit:NPCID() == ThisNPCID then
       return true
     end
   end
+
+  return false
+end
+
+-- Get if the unit (or a given NPC ID) is in the Boss list and has less HP than the given ones.
+function Unit:CheckHPFromBossList(NPCID, HP)
+  local ThisNPCID = NPCID or self:NPCID()
+  local ThisHP = HP or 100
+
+  for _, ThisUnit in pairs(Boss) do
+    if ThisUnit:Exists() and ThisUnit:NPCID() == ThisNPCID and ThisUnit:HealthPercentage() <= ThisHP then
+      return true
+    end
+  end
+
   return false
 end
 
 -- Get if the unit CanAttack the other one.
 function Unit:CanAttack(Other)
-  if self.UnitID == "player" and Other.UseCache then
+  local UnitID = self:ID()
+  if UnitID == "player" and Other.UseCache then
     return Other.UnitCanBeAttacked
   end
-  return UnitCanAttack(self.UnitID, Other.UnitID)
+
+  return UnitCanAttack(UnitID, Other:ID())
 end
 
 local DummyUnits = {
@@ -138,6 +191,7 @@ local DummyUnits = {
   [32667] = true, -- Training Dummy
   [46647] = true, -- Training Dummy
   [114832] = true, -- PvP Training Dummy
+  [153285] = true, -- Training Dummy
   [153292] = true, -- Training Dummy
   -- MoP Shrine of Two Moons
   [67127] = true, -- Training Dummy
@@ -212,11 +266,27 @@ local DummyUnits = {
   [174487] = true, -- Training Dummy
   [174488] = true, -- Raider's Training Dummy
   [174491] = true, -- Tanking Dummy
+  -- DargonFlight Valdrakken
+  [198594] = true, -- Cleave Training Dummy
+  [194648] = true, -- Training Dummy
+  [189632] = true, -- Animated Duelist
+  [194643] = true, -- Dungeoneer's Training Dummy
+  [194644] = true, -- Dungeoneer's Training Dummy
+  [197833] = true, -- PvP Training Dummy
+  [189617] = true, -- Boulderfist
+  [194649] = true, -- Normal Tank Dummy
+  -- DargonFlight Iskaara
+  [193563] = true, -- Training Dummy
   -- Other
-  [65310] = true, -- Turnip Punching Bag
+  [65310] = true, -- Turnip Punching Bag (toy)
+  [66374] = true, -- Anatomical Dummy (toy)
+  [196394] = true, -- Tuskarr Training Dummy (toy)
+  [196406] = true, -- Rubbery Fish Head (toy)
+  [199057] = true, -- Black Dragon's Challenge Dummy (toy)
 }
 function Unit:IsDummy()
   local NPCID = self:NPCID()
+
   return NPCID >= 0 and DummyUnits[NPCID] == true
 end
 
@@ -237,7 +307,10 @@ end
 
 -- Get the unit Health Percentage
 function Unit:HealthPercentage()
-  return self:Health() ~= -1 and self:MaxHealth() ~= -1 and self:Health() / self:MaxHealth() * 100
+  local Health = self:Health()
+  local MaxHealth = self:MaxHealth()
+
+  return Health > 0 and MaxHealth > 0 and Health / MaxHealth * 100 or -1
 end
 
 -- Get if the unit Is Dead Or Ghost.
@@ -262,20 +335,19 @@ end
 
 -- Get if we are Tanking or not the Unit.
 function Unit:IsTanking(Other, ThreatThreshold)
-  local ThreatThreshold = ThreatThreshold or 2
-  local ThreatSituation = UnitThreatSituation(self.UnitID, Other.UnitID)
-  return ThreatSituation and ThreatSituation >= ThreatThreshold or false
+  local ThreatSituation = UnitThreatSituation(self:ID(), Other:ID())
+
+  return (ThreatSituation and ThreatSituation >= (ThreatThreshold or 2)) or false
 end
 
 function Unit:IsTankingAoE(Radius, ThreatSituation)
-  local Radius = Radius or 8
-  HL.GetEnemies(Radius, true)
   local IsTankingAOE = false
-  for _, Unit in pairs(Cache.Enemies[Radius]) do
-    if self:IsTanking(Unit, ThreatSituation) then
+  for _, ThisUnit in pairs(Player:GetEnemiesInRange(Radius or 6.5)) do
+    if self:IsTanking(ThisUnit, ThreatSituation) then
       IsTankingAOE = true
     end
   end
+
   return IsTankingAOE
 end
 

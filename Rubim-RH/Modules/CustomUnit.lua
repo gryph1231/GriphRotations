@@ -277,7 +277,7 @@ end
 -- @return boolean
 function Unit:CastSeconds()
     if self:IsCasting() or self:IsChanneling() then
-        return self:CastDuration() * ((HL.GetTime() - self:CastStart()) / (self:CastEnd() - self:CastStart()))
+        return self:CastDuration() * ((GetTime()- self:CastStart()) / (self:CastEnd() - self:CastStart()))
     end
     return 0
 end
@@ -285,7 +285,7 @@ end
 -- @return boolean
 function Unit:CastSecondsRemaining()
     if self:IsCasting() or self:IsChanneling() then
-        return self:CastDuration() - (self:CastDuration() * ((HL.GetTime() - self:CastStart()) / (self:CastEnd() - self:CastStart())))
+        return self:CastDuration() - (self:CastDuration() * ((GetTime()- self:CastStart()) / (self:CastEnd() - self:CastStart())))
     end
     return 0
 end
@@ -363,10 +363,11 @@ local HealerSpecs = {
     [257] = true, -- Holy
     [264] = true -- Restoration(shaman)
 }
-
+print(RubimRH.PlayerSpec)
 -- @return boolean
 function Unit:IsHealer()
-    local specID = self:SpecID()
+    local id, name, description, icon, role, classFile, className = GetSpecializationInfo(GetSpecialization())
+    local specID = id
 
     if HealerSpecs[specID] then
         return true
@@ -633,7 +634,7 @@ function Unit:IsRanged(ID)
     return false
 end
 
-local timer = HL.GetTime()
+local timer = GetTime()
 local totalEnemies = 0
 
 function Unit:EnemiesAround(distance, ignoreCombat)
@@ -822,10 +823,10 @@ function RubimRH.PetAoE(spellID, stop)
 end 
 
 -- ================= CORE =================
-local PetEvent_timestamp = HL.GetTime() 
+local PetEvent_timestamp = GetTime()
 
 local function UpdatePetSlots()
-    PetEvent_timestamp = HL.GetTime() 
+    PetEvent_timestamp = GetTime()
     local display_error = false    
     for k, v in pairs(oPetSlots[RubimRH.playerSpec]) do            
         if v == 0 then 
@@ -843,7 +844,7 @@ local function UpdatePetSlots()
     end        
     -- Display errors 
     if display_error then 
-        print(HL.GetTime() .. ": The following spells missed on your action bars:")
+        print(GetTime().. ": The following spells missed on your action bars:")
         print("Note: PetActionBar doesn't work, you need place following pet spells to normal any slot on any action bar")
         for k, v in pairs(oPetSlots[RubimRH.playerSpec]) do
             if v == 0 then
@@ -854,7 +855,7 @@ local function UpdatePetSlots()
 end 
 
 RubimRH.Listener:Add('PetSlots_Events', "UNIT_PET", function(...)
-        if oPetSlots[RubimRH.playerSpec] and  ... == "player" and (PetHasActionBar() or GetPetActionsUsable()) and HL.GetTime() ~= PetEvent_timestamp then     
+        if oPetSlots[RubimRH.playerSpec] and  ... == "player" and (PetHasActionBar() or GetPetActionsUsable()) and GetTime()~= PetEvent_timestamp then     
             for k, v in pairs(oPetSlots[RubimRH.playerSpec]) do
                 if v == 0 then 
                     UpdatePetSlots()
@@ -865,7 +866,7 @@ RubimRH.Listener:Add('PetSlots_Events', "UNIT_PET", function(...)
 end)
 
 RubimRH.Listener:Add('PetSlots_Events', "ACTIONBAR_SLOT_CHANGED", function(...)
-        if oPetSlots[RubimRH.playerSpec] and (PetHasActionBar() or GetPetActionsUsable()) and HL.GetTime() ~= PetEvent_timestamp then
+        if oPetSlots[RubimRH.playerSpec] and (PetHasActionBar() or GetPetActionsUsable()) and GetTime()~= PetEvent_timestamp then
             for k, v in pairs(oPetSlots[RubimRH.playerSpec]) do
                 if v == 0 or v == ... then 
                     oPetSlots[RubimRH.playerSpec][k] = 0
@@ -922,7 +923,7 @@ RubimRH.Listener:Add('PvP_Events_Logs', "COMBAT_LOG_EVENT_UNFILTERED", function(
 end)
 
 RubimRH.Listener:Add('PvP_Events_UI', "UI_ERROR_MESSAGE", function(...)
-        if LOSCheck and ... == 50 and LOSUnit and not InLOS[LOSUnit]["unit_LOS"] and InLOS[LOSUnit]["unit_time"] and HL.GetTime() >= InLOS[LOSUnit]["unit_time"] then
+        if LOSCheck and ... == 50 and LOSUnit and not InLOS[LOSUnit]["unit_LOS"] and InLOS[LOSUnit]["unit_time"] and GetTime()>= InLOS[LOSUnit]["unit_time"] then
             local skip_timer = 3.5
             -- Fix for HealingEngine on targets by GUID 
             if not string.find(LOSUnit, "party") 
@@ -938,23 +939,23 @@ RubimRH.Listener:Add('PvP_Events_UI', "UI_ERROR_MESSAGE", function(...)
                     skip_timer = 8.5
                 end 
             end
-            InLOS[LOSUnit]["unit_LOS"] = HL.GetTime() + skip_timer -- Skip
+            InLOS[LOSUnit]["unit_LOS"] = GetTime()+ skip_timer -- Skip
             InLOSCache[LOSUnit] = LOSUnit  
             LOSUnit = nil -- Now we can check another unit 
         end
 end)
 
 function GetLOS(unit) -- Physical button call   
-    if LOSCheck and (not InLOS[unit]["unit_LOS"] or HL.GetTime() >= InLOS[unit]["unit_LOS"]) and (not InLOS[unit]["unit_time"] or HL.GetTime() >= InLOS[unit]["unit_time"]) then 
+    if LOSCheck and (not InLOS[unit]["unit_LOS"] or GetTime()>= InLOS[unit]["unit_LOS"]) and (not InLOS[unit]["unit_time"] or GetTime()>= InLOS[unit]["unit_time"]) then 
         LOSUnit = unit
-        InLOS[unit]["unit_time"] = HL.GetTime() + 0.3 --start time (0.3 delay added to skip wrong event from another key)
+        InLOS[unit]["unit_time"] = GetTime()+ 0.3 --start time (0.3 delay added to skip wrong event from another key)
         InLOS[unit]["unit_LOS"] = nil --reset skip time since now we need again check if he's in los
         InLOSCache[unit] = nil -- Remove from query cache already lost units
     end
 end
 
 function RubimRH.InLOS(unit)
-    return LOSCheck and InLOS[unit]["unit_LOS"] and HL.GetTime() < InLOS[unit]["unit_LOS"]
+    return LOSCheck and InLOS[unit]["unit_LOS"] and GetTime()< InLOS[unit]["unit_LOS"]
 end
 
 --- Instance checker

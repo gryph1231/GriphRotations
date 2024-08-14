@@ -1,19 +1,31 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL   = ...
 -- HeroLib
-local Cache = HeroCache
-local Unit = HL.Unit
-local Player = Unit.Player
-local Target = Unit.Target
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
-local mathmax = math.max
-local select = select
--- File Locals
+local Cache           = HeroCache
+local Unit            = HL.Unit
+local Player          = Unit.Player
+local Target          = Unit.Target
+local Spell           = HL.Spell
+local Item            = HL.Item
 
+-- Base API locals
+local GetInstanceInfo = GetInstanceInfo
+-- Accepts: nil
+-- Returns: name (string), instancetype (string), difficultyID (number), difficultyName (string), maxPlayers (number)
+-- dynamicDifficulty (number), isDynamicInstance (bool), instanceID (number), instanceGroupSize (number), LfgDungeonID (number)
+local GetNetStats     = GetNetStats
+-- Accepts: nil; Returns: bandwidthIn (number), bandwidthOut (number), latencyHome (number), latencyWorld (number)
+
+-- Lua locals
+local CreateFrame     = CreateFrame
+local GetTime         = GetTime
+local UIParent        = UIParent
+local mathmax         = math.max
+local select          = select
+
+-- File Locals
 
 
 --- ============================ CONTENT ============================
@@ -68,66 +80,57 @@ function HL.GetInstanceDifficulty()
   return HL.GetInstanceInfo(3)
 end
 
--- Get the Latency (it's updated every 30s).
--- TODO: Cache it in Persistent Cache and update it only when it changes
-function HL.Latency()
-  return select(4, GetNetStats())
-end
-
--- Retrieve the Recovery Timer based on Settings.
--- TODO: Optimize, to see how we'll implement it in the GUI.
-function HL.RecoveryTimer()
-  return HL.GUISettings.General.RecoveryMode == "GCD" and Player:GCDRemains() * 1000 or HL.GUISettings.General.RecoveryTimer
-end
-
--- Compute the Recovery Offset with Lag Compensation.
-function HL.RecoveryOffset()
-  return (HL.Latency() + HL.RecoveryTimer()) / 1000
-end
-
 -- Get the time since combat has started.
 function HL.CombatTime()
-  return HL.CombatStarted ~= 0 and HL.GetTime() - HL.CombatStarted or 0
+  return HL.CombatStarted ~= 0 and GetTime() - HL.CombatStarted or 0
 end
 
 -- Get the time since combat has ended.
 function HL.OutOfCombatTime()
-  return HL.CombatEnded ~= 0 and HL.GetTime() - HL.CombatEnded or 0
+  return HL.CombatEnded ~= 0 and GetTime() - HL.CombatEnded or 0
 end
 
 -- Get the Boss Mod Pull Timer.
 function HL.BMPullTime()
-  if not HL.BossModTime or HL.BossModTime == 0 or HL.BossModEndTime - HL.GetTime() < 0 then
+  if not HL.BossModTime or HL.BossModTime == 0 or HL.BossModEndTime - GetTime() < 0 then
     return 60
   else
-    return HL.BossModEndTime - HL.GetTime()
+    return HL.BossModEndTime - GetTime()
   end
 end
 
---[[*
-  * @mixin HL.OffsetRemains
-  * @desc Apply an offset to an expiration time.
-  *
-  * @param {number} ExpirationTime - The expiration time to apply the offset on.
-  * @param {string|number} Offset - The offset to apply, can be a string for a known method or directly the offset value in seconds.
-  *
-  * @returns {number}
-  *]]
-function HL.OffsetRemains(ExpirationTime, Offset)
-  if type(Offset) == "number" then
-    ExpirationTime = ExpirationTime - Offset
-  elseif type(Offset) == "string" then
+do
+  -- Get the Latency in seconds (the game update it every 30s).
+  local Latency = 0
+  local LatencyFrame = CreateFrame("Frame", "HeroLib_LatencyFrame", UIParent)
+  local LatencyFrameNextUpdate = 0
+  local LatencyFrameUpdateFrequency = 30 -- 30 seconds
+  LatencyFrame:SetScript(
+    "OnUpdate",
+    function ()
+      if GetTime() <= LatencyFrameNextUpdate then return end
+      LatencyFrameNextUpdate = GetTime() + LatencyFrameUpdateFrequency
+
+      local _, _, _, lagWorld = GetNetStats()
+      Latency = lagWorld / 1000
+    end
+  )
+  function HL.Latency()
+    return Latency
+  end
+
+  -- Get the recovery timer based the remaining time of the GCD or the current cast (whichever is higher) in order to improve prediction.
+  function HL.RecoveryTimer()
     local CastRemains = Player:CastRemains()
     local GCDRemains = Player:GCDRemains()
-    if Offset == "GCDRemains" then
-      ExpirationTime = ExpirationTime - GCDRemains
-    elseif Offset == "CastRemains" then
-      ExpirationTime = ExpirationTime - CastRemains
-    elseif Offset == "Auto" then
-      ExpirationTime = ExpirationTime - mathmax(GCDRemains, CastRemains)
-    end
-  else
-    error("Invalid Offset.")
+    return mathmax(GCDRemains, CastRemains)
   end
-  return ExpirationTime
+
+  -- Compute the Recovery Offset with Lag Compensation.
+  -- Bypass is there in case we want to ignore it (instead of handling this bypass condition in every method the offset is called)
+  function HL.RecoveryOffset(Bypass)
+    if (Bypass) then return 0 end
+
+    return Latency + HL.RecoveryTimer()
+  end
 end

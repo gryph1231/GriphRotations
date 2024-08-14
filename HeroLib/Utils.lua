@@ -2,25 +2,31 @@
 --- ======= LOCALIZE =======
 -- Addon
 local addonName, HL = ...
-local Cache = HeroCache
+local Cache         = HeroCache
 -- Lua
-local gmatch = gmatch
-local pairs = pairs
-local print = print
-local stringupper = string.upper
-local tableinsert = table.insert
-local tonumber = tonumber
-local type = type
-local wipe = table.wipe
+local gmatch        = gmatch
+local pairs         = pairs
+local stringupper   = string.upper
+local tableinsert   = table.insert
+local tonumber      = tonumber
+local type          = type
 -- File Locals
-local Utils = {}
+local Utils         = {}
 
 --- ======= GLOBALIZE =======
 -- Addon
-HL.Utils = Utils
+HL.Utils            = Utils
 
 
 --- ============================ CONTENT ============================
+function Utils.BoolToInt(Value)
+  return Value and 1 or 0
+end
+
+function Utils.IntToBool(Value)
+  return Value ~= 0
+end
+
 -- Uppercase the first letter in a string
 function Utils.UpperCaseFirst(ThisString)
   return (ThisString:gsub("^%l", stringupper))
@@ -32,7 +38,28 @@ function Utils.ValueIsInTable(Table, SearchValue)
       return true
     end
   end
+
   return false
+end
+
+function Utils.ValueIsInArray(Array, SearchValue)
+  for Index = 1, #Array do
+    local Value = Array[Index]
+    if Value == SearchValue then
+      return true
+    end
+  end
+
+  return false
+end
+
+function Utils.FindValueIndexInArray(Array, SearchValue)
+  for Index = 1, #Array do
+    local Value = Array[Index]
+    if Value == SearchValue then
+      return Index
+    end
+  end
 end
 
 -- Merge two tables
@@ -43,6 +70,18 @@ function Utils.MergeTable(T1, T2)
   end
   for _, Value in pairs(T2) do
     tableinsert(Table, Value)
+  end
+  return Table
+end
+
+-- Merge two tables by key
+function Utils.MergeTableByKey(T1, T2)
+  local Table = {}
+  for Key, Value in pairs(T1) do
+    Table[Key] = Value
+  end
+  for Key, Value in pairs(T2) do
+    Table[Key] = Value
   end
   return Table
 end
@@ -77,6 +116,16 @@ function Utils.SubStringCount(String, SubString)
   return Count
 end
 
+-- cf. http://lua-users.org/wiki/StringRecipes
+-- Determines whether a string begins with the characters of a specified string.
+function Utils.StartsWith(String, StartString)
+  return String:sub(1, #StartString) == StartString
+end
+-- Determines whether a string ends with the characters of a specified string.
+function Utils.EndsWith(String, EndString)
+  return EndString == "" or String:sub(-#EndString) == EndString
+end
+
 -- Revert a table index
 function Utils.RevertTableIndex(Table)
   local NewTable = {}
@@ -105,4 +154,20 @@ function Utils.SortMixedASC(a, b)
   else
     return a < b
   end
+end
+
+function Utils.ShortenHotKey(RawHotKey)
+  local HotKey = RawHotKey:upper()
+    :gsub(" ", "")
+    :gsub("ALT%-", "A")
+    :gsub("CTRL%-", "C")
+    :gsub("SHIFT%-", "S")
+    :gsub("BUTTON", "M")
+    :gsub("NUMPAD", "N")
+    :gsub("DIVIDE", "%/")
+    :gsub("MINUS", "%-")
+    :gsub("MULTIPLY", "%*")
+    :gsub("PLUS", "%+")
+
+  return HotKey
 end

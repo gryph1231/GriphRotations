@@ -1,41 +1,59 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL          = ...
 -- HeroLib
-local Cache, Utils = HeroCache, HL.Utils
-local Unit = HL.Unit
-local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target
-local Focus, MouseOver = Unit.Focus, Unit.MouseOver
+local Cache, Utils           = HeroCache, HL.Utils
+local Unit                   = HL.Unit
+local Player, Pet, Target    = Unit.Player, Unit.Pet, Unit.Target
+local Focus, MouseOver       = Unit.Focus, Unit.MouseOver
 local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
-local Party, Raid = Unit.Party, Unit.Raid
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
-local select = select
--- File Locals
+local Party, Raid            = Unit.Party, Unit.Raid
+local Spell                  = HL.Spell
+local Item                   = HL.Item
 
+-- Base API locals
+local GetPowerRegen          = GetPowerRegen
+-- Accepts: nil; Returns: basePowerRegen (number), castingPowerRegen (number)
+local UnitPower              = UnitPower
+-- Accepts: unitID, powerType, unmodified; Returns: power (number)
+local UnitPowerMax           = UnitPowerMax
+-- Accepts: unitID, powerType, unmodified; Returns: maxPower (number)
+local UnitPowerType          = UnitPowerType
+-- Accepts: unitID, index; Returns: powerType (Enum.PowerType), powerTypeToken (string), rgbX (number), rgbY (number), rgbZ (number)
+
+-- Lua locals
+
+-- File Locals
 
 
 --- ============================ CONTENT ============================
 -- Get the unit's power type
 function Unit:PowerType()
-  return UnitPowerType(self.UnitID)
+  local UnitID = self:ID()
+
+  return UnitPowerType(UnitID)
 end
 
 -- power.max
 function Unit:PowerMax()
-  return UnitPowerMax(self.UnitID, self:PowerType())
+  local UnitID = self:ID()
+
+  return UnitPowerMax(UnitID, self:PowerType())
 end
 
 -- power
 function Unit:Power()
-  return UnitPower(self.UnitID, self:PowerType())
+  local UnitID = self:ID()
+
+  return UnitPower(UnitID, self:PowerType())
 end
 
 -- power.regen
 function Unit:PowerRegen()
-  return GetPowerRegen(self.UnitID)
+  local UnitID = self:ID()
+
+  return GetPowerRegen(UnitID)
 end
 
 -- power.pct

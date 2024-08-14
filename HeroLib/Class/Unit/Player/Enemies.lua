@@ -1,27 +1,28 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL          = ...
 -- HeroLib
-local Cache, Utils = HeroCache, HL.Utils
-local Unit = HL.Unit
-local Player, Pet, Target = Unit.Player, Unit.Pet, Unit.Target
-local Focus, MouseOver = Unit.Focus, Unit.MouseOver
+local Cache, Utils           = HeroCache, HL.Utils
+local Unit                   = HL.Unit
+local Player, Pet, Target    = Unit.Player, Unit.Pet, Unit.Target
+local Focus, MouseOver       = Unit.Focus, Unit.MouseOver
 local Arena, Boss, Nameplate = Unit.Arena, Unit.Boss, Unit.Nameplate
-local Party, Raid = Unit.Party, Unit.Raid
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
-local pairs = pairs
-local tableinsert = table.insert
-local tablesort = table.sort
-local wipe = table.wipe
+local Party, Raid            = Unit.Party, Unit.Raid
+local Spell                  = HL.Spell
+local Item                   = HL.Item
+
+-- Lua locals
+local pairs                  = pairs
+local tableinsert            = table.insert
+local tablesort              = table.sort
+
 -- File Locals
-local ItemActionEnemies = Cache.Enemies.ItemAction
-local MeleeEnemies = Cache.Enemies.Melee
-local RangedEnemies = Cache.Enemies.Ranged
-local SpellActionEnemies = Cache.Enemies.SpellAction
-local SpellEnemies = Cache.Enemies.Spell
+local ItemActionEnemies      = Cache.Enemies.ItemAction
+local MeleeEnemies           = Cache.Enemies.Melee
+local RangedEnemies          = Cache.Enemies.Ranged
+local SpellActionEnemies     = Cache.Enemies.SpellAction
+local SpellEnemies           = Cache.Enemies.Spell
 local UnitIDs = {
   "Arena",
   "Boss",
@@ -138,7 +139,7 @@ do
     -- Build from all the available units.
     local RangeCheck = RangeCheckByIdentifier[Identifier]
     if not RangeCheck then
-      RangeCheck = function (ThisUnit) return ThisUnit:IsInSpellRange(ThisSpell) end
+      RangeCheck = function (ThisUnit) return ThisUnit:IsSpellInRange(ThisSpell) end
       RangeCheckByIdentifier[Identifier] = RangeCheck
     end
     InsertAvailableUnits(EnemiesTable, RangeCheck)

@@ -1,15 +1,17 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL  = ...
 -- HeroLib
-local Utils = HL.Utils
--- Lua
-local stringformat = string.format
-local strsplit = strsplit
+local Utils          = HL.Utils
+
+-- Lua locals
+local stringformat   = string.format
+local strsplit       = strsplit
+
 -- File Locals
-HL.GUI = {}
-local GUI = HL.GUI
+HL.GUI               = {}
+local GUI            = HL.GUI
 local StringToNumberIfPossible = Utils.StringToNumberIfPossible
 local SubStringCount = Utils.SubStringCount
 
@@ -43,6 +45,7 @@ end
 local function AnchorTooltip(Frame, Tooltip)
   Frame:SetScript("OnEnter",
     function(self)
+      Mixin(GameTooltip, BackdropTemplateMixin)
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
       GameTooltip:ClearLines()
       GameTooltip:SetBackdropColor(0, 0, 0, 1)
@@ -65,12 +68,12 @@ local function CreateCheckButton(Parent, Setting, Text, Tooltip, Optionals)
   CheckButton.SavedVariablesTable, CheckButton.SavedVariablesKey = Parent.SavedVariablesTable, Setting
 
   -- Frame init
-  if not LastOptionAttached[Parent.name] then
-    CheckButton:SetPoint("TOPLEFT", 15, -15)
+  if not LastOptionAttached[Parent.usedName] then
+    CheckButton:SetPoint("TOPLEFT", 15, -10)
   else
-    CheckButton:SetPoint("TOPLEFT", LastOptionAttached[Parent.name][1], "BOTTOMLEFT", LastOptionAttached[Parent.name][2], LastOptionAttached[Parent.name][3] - 5)
+    CheckButton:SetPoint("TOPLEFT", LastOptionAttached[Parent.usedName][1], "BOTTOMLEFT", LastOptionAttached[Parent.usedName][2], LastOptionAttached[Parent.usedName][3])
   end
-  LastOptionAttached[Parent.name] = { CheckButton, 0, 0 }
+  LastOptionAttached[Parent.usedName] = { CheckButton, 0, 0 }
 
   CheckButton:SetChecked(CheckButton.SettingTable[CheckButton.SettingKey])
 
@@ -97,8 +100,7 @@ end
 -- Make a dropdown
 local function CreateDropdown(Parent, Setting, Values, Text, Tooltip, Optionals)
   -- Constructor
-  --local Dropdown = CreateFrame("Button", "$parent_" .. Setting, Parent, "L_UIDropDownMenuTemplate")
-  local Dropdown = L_Create_UIDropDownMenu("$parent_" .. Setting, Parent)
+  local Dropdown = CreateFrame("Frame", "$parent_" .. Setting, Parent, "UIDropDownMenuTemplate")
   Parent[Setting] = Dropdown
   Dropdown.SettingTable, Dropdown.SettingKey = FindSetting(Parent.SettingsTable, strsplit(".", Setting))
   Dropdown.SavedVariablesTable, Dropdown.SavedVariablesKey = Parent.SavedVariablesTable, Setting
@@ -107,45 +109,45 @@ local function CreateDropdown(Parent, Setting, Values, Text, Tooltip, Optionals)
   local UpdateSetting
   if Optionals and Optionals["ReloadRequired"] then
     UpdateSetting = function(self)
-      L_UIDropDownMenu_SetSelectedID(Dropdown, self:GetID())
-      Dropdown.SavedVariablesTable[Dropdown.SavedVariablesKey] = L_UIDropDownMenu_GetText(Dropdown)
+      UIDropDownMenu_SetSelectedID(Dropdown, self:GetID())
+      Dropdown.SavedVariablesTable[Dropdown.SavedVariablesKey] = UIDropDownMenu_GetText(Dropdown)
     end
   else
     UpdateSetting = function(self)
-      L_UIDropDownMenu_SetSelectedID(Dropdown, self:GetID())
-      local SettingValue = L_UIDropDownMenu_GetText(Dropdown)
+      UIDropDownMenu_SetSelectedID(Dropdown, self:GetID())
+      local SettingValue = UIDropDownMenu_GetText(Dropdown)
       Dropdown.SettingTable[Dropdown.SettingKey] = SettingValue
       Dropdown.SavedVariablesTable[Dropdown.SavedVariablesKey] = SettingValue
     end
   end
 
   -- Frame init
-  if not LastOptionAttached[Parent.name] then
+  if not LastOptionAttached[Parent.usedName] then
     Dropdown:SetPoint("TOPLEFT", 0, -30)
   else
-    Dropdown:SetPoint("TOPLEFT", LastOptionAttached[Parent.name][1], "BOTTOMLEFT", LastOptionAttached[Parent.name][2] - 15, LastOptionAttached[Parent.name][3] - 25)
+    Dropdown:SetPoint("TOPLEFT", LastOptionAttached[Parent.usedName][1], "BOTTOMLEFT", LastOptionAttached[Parent.usedName][2] - 15, LastOptionAttached[Parent.usedName][3] - 20)
   end
-  LastOptionAttached[Parent.name] = { Dropdown, 15, 0 }
+  LastOptionAttached[Parent.usedName] = { Dropdown, 15, 0 }
 
   local function Initialize(Self, Level)
-    local Info = L_UIDropDownMenu_CreateInfo()
+    local Info = UIDropDownMenu_CreateInfo()
     for Key, Value in pairs(Values) do
-      Info = L_UIDropDownMenu_CreateInfo()
+      Info = UIDropDownMenu_CreateInfo()
       Info.text = Value
       Info.value = Value
       Info.func = UpdateSetting
-      L_UIDropDownMenu_AddButton(Info, Level)
+      UIDropDownMenu_AddButton(Info, Level)
     end
   end
 
-  L_UIDropDownMenu_Initialize(Dropdown, Initialize)
-  L_UIDropDownMenu_SetSelectedValue(Dropdown, Dropdown.SettingTable[Dropdown.SettingKey])
-  L_UIDropDownMenu_JustifyText(Dropdown, "LEFT")
+  UIDropDownMenu_Initialize(Dropdown, Initialize)
+  UIDropDownMenu_SetSelectedValue(Dropdown, Dropdown.SettingTable[Dropdown.SettingKey])
+  UIDropDownMenu_JustifyText(Dropdown, "LEFT")
 
   local Title = Dropdown:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   Parent[Setting .. "DropdownTitle"] = Title
   Title:SetPoint("BOTTOMLEFT", Dropdown, "TOPLEFT", 20, 5)
-  Title:SetWidth(InterfaceOptionsFramePanelContainer:GetRight() - InterfaceOptionsFramePanelContainer:GetLeft() - 30)
+  --Title:SetWidth(InterfaceOptionsFramePanelContainer:GetRight() - InterfaceOptionsFramePanelContainer:GetLeft() - 30)
   Title:SetJustifyH("LEFT")
   Title:SetText("|c00dfb802" .. Text .. "|r")
 
@@ -161,12 +163,12 @@ local function CreateSlider(Parent, Setting, Values, Text, Tooltip, Action, Opti
   Slider.SavedVariablesTable, Slider.SavedVariablesKey = Parent.SavedVariablesTable, Setting
 
   -- Frame init
-  if not LastOptionAttached[Parent.name] then
-    Slider:SetPoint("TOPLEFT", 20, -30)
+  if not LastOptionAttached[Parent.usedName] then
+    Slider:SetPoint("TOPLEFT", 20, -25)
   else
-    Slider:SetPoint("TOPLEFT", LastOptionAttached[Parent.name][1], "BOTTOMLEFT", LastOptionAttached[Parent.name][2] + 5, LastOptionAttached[Parent.name][3] - 25)
+    Slider:SetPoint("TOPLEFT", LastOptionAttached[Parent.usedName][1], "BOTTOMLEFT", LastOptionAttached[Parent.usedName][2] + 5, LastOptionAttached[Parent.usedName][3] - 20)
   end
-  LastOptionAttached[Parent.name] = { Slider, -5, -20 }
+  LastOptionAttached[Parent.usedName] = { Slider, -5, -20 }
 
   Slider:SetMinMaxValues(Values[1], Values[2])
   Slider.minValue, Slider.maxValue = Slider:GetMinMaxValues()
@@ -233,12 +235,12 @@ local function CreateButton(Parent, Setting, Text, Tooltip, Action, Width, Heigh
   end
 
   -- Frame init
-  if not LastOptionAttached[Parent.name] then
-    Button:SetPoint("TOPLEFT", 15, -15)
+  if not LastOptionAttached[Parent.usedName] then
+    Button:SetPoint("TOPLEFT", 15, -10)
   else
-    Button:SetPoint("TOPLEFT", LastOptionAttached[Parent.name][1], "BOTTOMLEFT", LastOptionAttached[Parent.name][2], LastOptionAttached[Parent.name][3] - 5)
+    Button:SetPoint("TOPLEFT", LastOptionAttached[Parent.usedName][1], "BOTTOMLEFT", LastOptionAttached[Parent.usedName][2], LastOptionAttached[Parent.usedName][3])
   end
-  LastOptionAttached[Parent.name] = { Button, 0, 0 }
+  LastOptionAttached[Parent.usedName] = { Button, 0, 0 }
 
   _G[Button:GetName() .. "Text"]:SetText("|c00dfb802" .. Text .. "|r")
 
@@ -258,8 +260,11 @@ function GUI.CreatePanel(Parent, Addon, PName, SettingsTable, SavedVariablesTabl
   Parent.Panel.SavedVariablesTable = SavedVariablesTable
   Panel.name = Addon
   Panel.usedName = Addon:gsub(" ", "")
-  InterfaceOptions_AddCategory(Panel)
+  local category = Settings.RegisterCanvasLayoutCategory(Panel, Addon)
+  Settings.RegisterAddOnCategory(category)
+  Panel.category = category
   GUI.PanelsTable[Panel.usedName] = Panel
+  GUI.PanelsTable[Panel.category] = category
   return Panel
 end
 
@@ -270,7 +275,8 @@ function GUI.CreateChildPanel(Parent, CName)
   local CLevel = SubStringCount(ParentName, "_ChildPanel_")
   local CName = CName
   for i = 0, CLevel do
-    CName = "   " .. CName
+    -- Leaving this in and commented out. I don't think it's necessary with the new settings system.
+    --CName = "   " .. CName
   end
 
   local CP = CreateFrame("Frame", ParentName .. "_ChildPanel_" .. CName, Parent)
@@ -280,12 +286,15 @@ function GUI.CreateChildPanel(Parent, CName)
   CP.SavedVariablesTable = Parent.SavedVariablesTable
   CP.name = CName
   CP.parent = Parent.name
-  CP.usedName = CName:gsub(" ", "")
-  InterfaceOptions_AddCategory(CP)
-  if Parent.collapsed then
-    GUI.TogglePanel(Parent)
-  end
+  CP.usedName = ParentName .. "_ChildPanel_" .. CName:gsub(" ", "")
+  local category = Settings.RegisterCanvasLayoutSubcategory(Parent.category, CP, CName)
+  Settings.RegisterAddOnCategory(category)
+  CP.category = category
+--[[   if Parent.collapsed then
+    GUI.TogglePanel(Parent) -- TODO: check if this has any impact, commented this part to collapse the options by default
+  end ]]
   GUI.PanelsTable[CP.usedName] = CP
+  GUI.PanelsTable[CP.category] = category
   return CP
 end
 
@@ -309,4 +318,34 @@ end
 
 function GUI.GetPanelByName(PanelName)
   return GUI.PanelsTable[PanelName]
+end
+
+function GUI.LoadSettingsRecursively (Table, KeyChain)
+  local KeyChain = KeyChain or ""
+  for Key, Value in pairs(Table) do
+    -- Generate the NewKeyChain
+    local NewKeyChain
+    if KeyChain ~= "" then
+      NewKeyChain = KeyChain .. "." .. Key
+    else
+      NewKeyChain = Key
+    end
+    -- Continue the table browsing
+    if type(Value) == "Table" then
+      GUI.LoadSettingsRecursively(Value, NewKeyChain)
+    -- Update teh value
+    else
+      -- Check if the final key is a string or a number (the case for table values with numeric index)
+      local ParsedKey = StringToNumberIfPossible(Key)
+      -- Load the saved value
+      local DBSetting = HeroLibDB.GUISettings[NewKeyChain]
+      -- If the saved value exists, take it
+      if DBSetting ~= nil then
+        Table[ParsedKey] = DBSetting
+      -- Else, save the default value
+      else
+        HeroLibDB.GUISettings[NewKeyChain] = Value
+      end
+    end
+  end
 end

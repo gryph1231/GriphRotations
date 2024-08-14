@@ -15,5 +15,4 @@
     <Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml" />
 	<Include file="Libs\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.xml"/>
     <Include file="Libs\LibSpellRange-1.0\LibSpellRange-1.0.lua"/>
-    <Include file="Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
 </Ui>

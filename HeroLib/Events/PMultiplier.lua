@@ -1,21 +1,23 @@
 --- ============================ HEADER ============================
 --- ======= LOCALIZE =======
 -- Addon
-local addonName, HL = ...
+local addonName, HL  = ...
 -- HeroLib
-local Cache = HeroCache
-local Unit = HL.Unit
-local Player = Unit.Player
-local Pet = Unit.Pet
-local Target = Unit.Target
-local Spell = HL.Spell
-local Item = HL.Item
--- Lua
-local pairs = pairs
-local GetTime = GetTime
+local Cache          = HeroCache
+local Unit           = HL.Unit
+local Player         = Unit.Player
+local Pet            = Unit.Pet
+local Target         = Unit.Target
+local Spell          = HL.Spell
+local Item           = HL.Item
+
+-- Lua locals
+local pairs          = pairs
+local GetTime        = GetTime
+
 -- File Locals
 local ListenedSpells = {}
-local ListenedAuras = {}
+local ListenedAuras  = {}
 
 
 --- ============================ CONTENT ============================
@@ -81,7 +83,7 @@ local function ComputePMultiplier(ListenedSpell)
       local ThisSpell = Buff[1]
       local Modifier = Buff[2]
 
-      if Player:Buff(ThisSpell) or ThisSpell:TimeSinceLastRemovedOnPlayer() < 0.1 then
+      if Player:BuffUp(ThisSpell) or ThisSpell:TimeSinceLastRemovedOnPlayer() < 0.1 then
         local ModifierType = type(Modifier)
 
         if ModifierType == "number" then
@@ -111,7 +113,7 @@ HL:RegisterForSelfCombatEvent(
       ListenedSpell.Units[DestGUID] = { PMultiplier = PMultiplier, Time = GetTime(), Applied = false }
     end
   end,
-  "SPELL_DAMAGE"
+  "SPELL_CAST_SUCCESS"
 )
 -- PMultiplier OnApply/OnRefresh Listener
 HL:RegisterForSelfCombatEvent(
