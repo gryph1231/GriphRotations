@@ -71,8 +71,10 @@ RubimRH.Spell[65] = {
     HolyPrismP3 = Spell(183998), --lotm
     HolyPrismP4 = Spell(59752), --human racial
     Potion = Spell(176108),
+    SetFocus = Spell(31884), --avenging wrath
+    ClearFocus = Spell(200652), --tyrs deliverance
 };
---unused icons: hand of div, tyrs del, daybreak, trink2, avenging wrath
+--unused icons: daybreak, hand of div, trink2, avenging wrath
 local S = RubimRH.Spell[65]
 
 if not Item.Paladin then
@@ -95,7 +97,7 @@ local function num(val)
 end
 
 local function Spender()
-    if IsReady("Word of Glory") and IsUsableSpell("Word of Glory") and los == false then
+    if IsReady("Word of Glory") and los == false then
         if C_Spell.IsSpellInRange("Word of Glory",LowestAlly("UnitID")) and (LowestAlly("HP") < 90 or (not Player:AffectingCombat() and LowestAlly("HP") < 95)) then
             if LowestAlly("UnitID") == "player" then
                 return S.WordofGlory:Cast()
@@ -121,7 +123,7 @@ local function Spender()
         end
     end
 
-    if IsReady("Shield of the Righteous") and IsUsableSpell("Shield of the Righteous") and TargetinRange(5) and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+    if IsReady("Shield of the Righteous") and TargetinRange(5) and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
         return S.ShieldoftheRighteous:Cast()
     end  
 
@@ -170,9 +172,17 @@ if true then
 	
 	trinket2 = GetInventoryItemID("player", 14)
 
-	trinket1ready = IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and IsEquippedItem(trinket1)
+    if trinket1 then
+	    trinket1ready = C_Item.IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and C_Item.IsEquippedItem(trinket1)
+    else
+        trinket1ready = false
+    end
 	
-	trinket2ready = IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and IsEquippedItem(trinket2)
+    if trinket2 then
+	    trinket2ready = C_Item.IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and C_Item.IsEquippedItem(trinket2)
+    else
+        trinket2ready = false
+    end
 
 	_,_,_,_,_,_,_,notInterruptible,_ = UnitCastingInfo("target")
 	
@@ -190,6 +200,50 @@ if true then
 	
 	channel_time = elapsed_time_channel_ch / 1000
 end
+--Afflicted Soul
+--if instanceType == "dungeon" then
+if UnitName("mouseover") == "Afflicted Soul" or UnitExists("focus") then
+    if UnitName("focus") == "Afflicted Soul" and C_Spell.IsSpellInRange("Holy Shock","focus") then
+        if IsReady("Flash of Light") and IsKeyDown('F') and not Player:IsMoving() then
+            return S.FlashofLight:Cast()
+        end
+    
+        if IsReady("Cleanse") then
+            return S.Cleanse:Cast()
+        end
+
+        if LowestAlly("HP") >= 25 then
+            if IsReady("Word of Glory") and Player:HolyPower() >= 3 then
+                return S.WordofGlory:Cast()
+            end
+
+            if IsReady("Holy Shock") then
+                return S.HolyShock:Cast()
+            end 
+        
+            -- if S.LightoftheMartyrFocus:IsCastableQueue() and Player:HealthPercentage() > 75 then
+            --     return S.LightoftheMartyrFocus:Cast()
+            -- end 
+
+            -- if IsReady("Holy Prism") and MissingHealth(85) == 0 and S.HolyShock:CooldownRemains() > Player:GCD() then
+            --     return S.HolyPrism:Cast()
+            -- end 
+
+            -- if S.FlashofLight:IsCastableQueue() and not Player:IsMoving() then
+            --     return S.FlashofLight:Cast()
+            -- end
+        end
+    end
+
+    if not UnitExists("focus") and UnitName("mouseover") == "Afflicted Soul" and not UnitIsDeadOrGhost("mouseover") then
+        return S.SetFocus:Cast()
+    end
+
+    if UnitExists("focus") and UnitName("focus") ~= "Afflicted Soul" or (UnitIsDeadOrGhost("focus") or not C_Spell.IsSpellInRange("Cleanse","focus")) then
+        return S.ClearFocus:Cast()
+    end
+end
+--end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Out of Combat---------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -203,20 +257,20 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1)
 or (S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and (C_Spell.IsCurrentSpell(19750) or Player:IsMoving()))
-or (S.BlessingofProtection:ID() == RubimRH.queuedSpell[1]:ID() and Player:Debuff(S.Forbearance))
+or (S.BlessingofProtection:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffUp(S.Forbearance))
 or (S.HammerofJustice:ID() == RubimRH.queuedSpell[1]:ID() and not IsReady("Hammer of Justice",1,nil,1))
-or (S.DivineShield:ID() == RubimRH.queuedSpell[1]:ID() and Player:Debuff(S.Forbearance))
+or (S.DivineShield:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffUp(S.Forbearance))
 --or (S.TyrsDeliverance:ID() == RubimRH.queuedSpell[1]:ID() and (Player:IsMoving() or (not IsReady("Tyr's Deliverance",nil,nil,1) and not IsReady("Hand of Divinity",nil,nil,1))))
 or ((S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (Player:PrevGCD(1, S.Intercession) or IsKeyDown('RightButton')))) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
 -- if S.TyrsDeliverance:ID() == RubimRH.queuedSpell[1]:ID() and not Player:IsMoving() then
---     if IsReady("Tyr's Deliverance") and IsUsableSpell("Tyr's Deliverance") then
+--     if IsReady("Tyr's Deliverance") then
 -- 	    return S.TyrsDeliverance:Cast()
 --     end
 
---     -- if IsReady("Hand of Divinity") and IsUsableSpell("Hand of Divinity") then
+--     -- if IsReady("Hand of Divinity") then
 -- 	--     return S.HandofDivinityz:Cast()
 --     -- end
 -- end
@@ -228,35 +282,35 @@ end
 ---------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if RubimRH.InterruptsON() then 
-    -- if IsReady("Rebuke") and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
-    --     if C_Spell.IsSpellInRange("Rebuke","mouseover") and notInterruptibleMouseover == false then
-    --         return S.Rebuke:Cast()
-    --     end
+    if IsReady("Rebuke") and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
+        if C_Spell.IsSpellInRange("Rebuke","mouseover") and notInterruptibleMouseover == false then
+            return S.Rebuke:Cast()
+        end
 
-    --     if C_Spell.IsSpellInRange("Rebuke","target") and notInterruptibleTarget == false then
-    --         return S.Rebuke:Cast()
-    --     end
-    -- end
+        if C_Spell.IsSpellInRange("Rebuke","target") and notInterruptibleTarget == false then
+            return S.Rebuke:Cast()
+        end
+    end
     
     if IsReady("Rebuke") and TargetinRange(nil,"Rebuke") and notInterruptible == false and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
         return S.Rebuke:Cast()
     end
 
-    if IsReady("Cleanse") and IsUsableSpell("Cleanse") and UnitName("focus") ~= "Afflicted Soul" and los == false and LowestAlly("HP") > 30 then
-        if GetAppropriateCureSpellPlayer() == 'Poison' or GetAppropriateCureSpellPlayer() == 'Disease' or GetAppropriateCureSpellPlayer() == 'Magic'
+    if IsReady("Cleanse") and UnitName("focus") ~= "Afflicted Soul" and los == false and LowestAlly("HP") > 30 then
+        if GetAppropriateCureSpell('player') == 'Poison' or GetAppropriateCureSpell('player') == 'Disease' or GetAppropriateCureSpell('player') == 'Magic'
         and ((not AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") and not AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL")) or not IsReady("Blessing of Freedom")) then
             return S.Cleanse:Cast()
         end
-        if GetAppropriateCureSpellParty1() == 'Poison' or GetAppropriateCureSpellParty1() == 'Disease' or GetAppropriateCureSpellParty1() == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party1") then
+        if GetAppropriateCureSpell('party1') == 'Poison' or GetAppropriateCureSpell('party1') == 'Disease' or GetAppropriateCureSpell('party1') == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party1") then
             return S.CleanseP1:Cast()
         end
-        if GetAppropriateCureSpellParty2() == 'Poison' or GetAppropriateCureSpellParty2() == 'Disease' or GetAppropriateCureSpellParty2() == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party2") then
+        if GetAppropriateCureSpell('party2') == 'Poison' or GetAppropriateCureSpell('party2') == 'Disease' or GetAppropriateCureSpell('party2') == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party2") then
             return S.CleanseP2:Cast()
         end
-        if GetAppropriateCureSpellParty3() == 'Poison' or GetAppropriateCureSpellParty3() == 'Disease' or GetAppropriateCureSpellParty3() == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party3") then
+        if GetAppropriateCureSpell('party3') == 'Poison' or GetAppropriateCureSpell('party3') == 'Disease' or GetAppropriateCureSpell('party3') == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party3") then
             return S.CleanseP3:Cast()
         end
-        if GetAppropriateCureSpellParty4() == 'Poison' or GetAppropriateCureSpellParty4() == 'Disease' or GetAppropriateCureSpellParty4() == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party4") then
+        if GetAppropriateCureSpell('party4') == 'Poison' or GetAppropriateCureSpell('party4') == 'Disease' or GetAppropriateCureSpell('party4') == 'Magic' and C_Spell.IsSpellInRange("Holy Shock","party4") then
             return S.CleanseP4:Cast()
         end
     end
@@ -266,7 +320,7 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 --if Player:AffectingCombat() then
     if Player:AffectingCombat() then
-        if IsReady("Divine Shield") and Player:HealthPercentage() < 25 and IsUsableSpell("Divine Shield") and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Forbearance", "player", "HARMFUL") then
+        if IsReady("Divine Shield") and Player:HealthPercentage() < 25 and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Forbearance", "player", "HARMFUL") then
             return S.DivineShield:Cast()
         end
 
@@ -275,7 +329,7 @@ end
         end
     end
 
-    if IsReady("Lay on Hands") and IsUsableSpell("Lay on Hands") and los == false then
+    if IsReady("Lay on Hands") and los == false then
         if LowestAlly("HP") < 20 and (UnitAffectingCombat(LowestAlly("UnitID")) or (not IsReady("Holy Prism") and not IsReady("Holy Shock"))) then
             if C_Spell.IsSpellInRange("Holy Shock",LowestAlly("UnitID")) then
                 if LowestAlly("UnitID") == "player" and not trinket1ready and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Forbearance", "player", "HARMFUL") then
@@ -294,11 +348,11 @@ end
     end
     
     if Player:AffectingCombat() then
-        if Player:ManaPercentage() < 15 and not AuraUtil.FindAuraByName("Divine Shield", "player") and IsUsableItem(191386) and GetItemCooldown(191386) == 0 and GetItemCount(191386) >= 1 and not Player:InArena() and not Player:InBattlegrounds() then
+        if Player:ManaPercentage() < 15 and not AuraUtil.FindAuraByName("Divine Shield", "player") and C_Item.IsUsableItem(191386) and GetItemCooldown(191386) == 0 and GetItemCount(191386) >= 1 and not Player:InArena() and not Player:InBattlegrounds() then
             return S.Potion:Cast()
         end
 
-        if Player:HealthPercentage() < 30 and not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Wall of Hate", "player") and IsUsableItem(207023) and GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1 and (not Player:InArena() and not Player:InBattlegrounds()) then
+        if Player:HealthPercentage() < 30 and not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Wall of Hate", "player") and C_Item.IsUsableItem(207023) and GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1 and (not Player:InArena() and not Player:InBattlegrounds()) then
             return I.HPIcon:Cast()
         end
 
@@ -306,7 +360,7 @@ end
             return S.DivineProtection:Cast()
         end
 
-        if IsReady("Blessing of Sacrifice") and IsUsableSpell("Blessing of Sacrifice") and los == false then
+        if IsReady("Blessing of Sacrifice") and los == false then
             if LowestAlly("HP") <= 35 and Player:HealthPercentage() >= 90 then
                 if C_Spell.IsSpellInRange("Blessing of Sacrifice",LowestAlly("UnitID")) then
                     if LowestAlly("UnitID") == "party1" then
@@ -326,7 +380,7 @@ end
             end
         end
 
-        if IsReady("Blessing of Freedom") and LowestAlly("HP") > 15 and IsUsableSpell("Blessing of Freedom") and (AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL") or (AuraUtil.FindAuraByName("Entangled", "player", "HARMFUL") and LowestAlly("HP") > 50) or AuraUtil.FindAuraByName("Time Sink", "player", "HARMFUL")) then
+        if IsReady("Blessing of Freedom") and LowestAlly("HP") > 15 and (AuraUtil.FindAuraByName("Icy Bindings", "player", "HARMFUL") or AuraUtil.FindAuraByName("Deep Chill", "player", "HARMFUL") or (AuraUtil.FindAuraByName("Entangled", "player", "HARMFUL") and LowestAlly("HP") > 50) or AuraUtil.FindAuraByName("Time Sink", "player", "HARMFUL")) then
             return S.BlessingofFreedom:Cast()
         end
     end
@@ -338,7 +392,7 @@ if not C_Spell.IsCurrentSpell(6603) and TargetinRange(8) and UnitCanAttack("play
     return S.autoattack:Cast()
 end
 
-if IsReady("Divine Toll") and IsUsableSpell("Divine Toll") then
+if IsReady("Divine Toll") then
     if MissingHealth(70) >= 3 or MissingHealth(50) >= 2 then
         if IsReady("Divine Toll") then
             return S.DivineToll:Cast()
@@ -346,7 +400,7 @@ if IsReady("Divine Toll") and IsUsableSpell("Divine Toll") then
     end
 end
 
-if IsReady("Beacon of Virtue") and IsUsableSpell("Beacon of Virtue") and MissingHealth(85) >= 2 and LowestAlly("HP") >= 35 then
+if IsReady("Beacon of Virtue") and MissingHealth(85) >= 2 and LowestAlly("HP") >= 35 then
     return S.BeaconofVirtue:Cast()
 end
 
@@ -354,7 +408,7 @@ if Spender() and Player:HolyPower() >= 5 then
 	return Spender()
 end
 
-if IsReady("Holy Prism") and IsUsableSpell("Holy Prism") then
+if IsReady("Holy Prism") then
     if TargetinRange(nil,"Holy Prism") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and MissingHealth(85) >= 2 then
         return S.HolyPrism:Cast()
     end
@@ -376,15 +430,15 @@ if IsReady("Holy Prism") and IsUsableSpell("Holy Prism") then
     end
 end
 
-if IsReady("Beacon of Virtue") and IsUsableSpell("Beacon of Virtue") and MissingHealth(85) >= 2 then
+if IsReady("Beacon of Virtue") and MissingHealth(85) >= 2 then
     return S.BeaconofVirtue:Cast()
 end
 
--- if IsReady("Aura Mastery") and IsUsableSpell("Aura Mastery") and Player:AffectingCombat() and MissingHealth(50) >= 2 then
+-- if IsReady("Aura Mastery") and Player:AffectingCombat() and MissingHealth(50) >= 2 then
 --     return S.AuraMastery:Cast()
 -- end
 
-if IsReady("Holy Shock") and IsUsableSpell("Holy Shock") and (S.HolyShock:FullRechargeTime() < Player:GCD() or LowestAlly("HP") < 75) and los == false then
+if IsReady("Holy Shock") and (S.HolyShock:FullRechargeTime() < Player:GCD() or LowestAlly("HP") < 75) and los == false then
     if LowestAlly("HP") < 90 then
         if C_Spell.IsSpellInRange("Holy Shock",LowestAlly("UnitID")) then
             if LowestAlly("UnitID") == "player" then
@@ -414,15 +468,15 @@ if IsReady("Holy Shock") and IsUsableSpell("Holy Shock") and (S.HolyShock:FullRe
     end
 end
 
-if IsReady("Hammer of Wrath") and IsUsableSpell("Hammer of Wrath") and TargetinRange(nil,"Hammer of Wrath") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+if IsReady("Hammer of Wrath") and TargetinRange(nil,"Hammer of Wrath") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
     return S.HammerofWrath:Cast()
 end
 
-if IsReady("Judgment") and IsUsableSpell("Judgment") and TargetinRange(nil,"Judgment") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and Player:BuffRemains(S.InfusionofLight) < Player:GCD() then
+if IsReady("Judgment") and TargetinRange(nil,"Judgment") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and Player:BuffRemains(S.InfusionofLight) < Player:GCD() then
     return S.Judgment:Cast()
 end
 
-if IsReady("Holy Shock") and IsUsableSpell("Holy Shock") and los == false then
+if IsReady("Holy Shock") and los == false then
     if LowestAlly("HP") < 80 or (not Player:AffectingCombat() and LowestAlly("HP") < 95) then
         if C_Spell.IsSpellInRange("Holy Shock",LowestAlly("UnitID",true)) then
             if LowestAlly("UnitID") == "player" then
@@ -454,15 +508,15 @@ if Spender() and Player:HolyPower() >= 3 then
 	return Spender()
 end
 
-if IsReady("Judgment") and IsUsableSpell("Judgment") and TargetinRange(nil,"Judgment") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+if IsReady("Judgment") and TargetinRange(nil,"Judgment") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
     return S.Judgment:Cast()
 end
 
-if IsReady("Consecration") and IsUsableSpell("Consecration") and UnitCanAttack("player","target") and (TargetinRange(8) and not Player:IsMoving() or TargetinRange(5) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Consecration", "player") then
+if IsReady("Consecration") and UnitCanAttack("player","target") and (TargetinRange(8) and not Player:IsMoving() or TargetinRange(5) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Consecration", "player") then
     return S.Consecration:Cast()
 end
 
-if IsReady("Crusader Strike") and IsUsableSpell("Crusader Strike") and TargetinRange(nil,"Crusader Strike") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+if IsReady("Crusader Strike") and TargetinRange(nil,"Crusader Strike") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
     return S.CrusaderStrike:Cast()
 end  
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"

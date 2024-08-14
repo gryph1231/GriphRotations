@@ -186,7 +186,7 @@ mhweapcast = Spell(383185), --exorcism
 local S = RubimRH.Spell[70]
 local G = RubimRH.Spell[1] -- General Skills
 
-S.AvengingWrath.TextureSpellID = { 55748 }
+S.AvengingWrath.TextureSpellID = { 31884 }
 S.Crusade.TextureSpellID = { 55748 }
 S.CrusaderStrike.TextureSpellID = { 342348 }
 
@@ -310,7 +310,7 @@ end
                 return S.FinalReckoning:Cast()
             end
 
-            if I.legendary:CooldownRemains()<1.5
+            if I.legendary:CooldownRemains()<1
             and RubimRH.CDsON()
             and targetRange5 
             and (aoecds8y or target_is_dummy())
@@ -355,7 +355,7 @@ end
 
         Generators = function()
    
-                if RubimRH.AoEON() and inRange20>=5 then
+                if RubimRH.AoEON() and inRange20>=6 then
 
 
                     if IsReady("Avenging Wrath") and Player:BuffDown(S.AvengingWrath) and RubimRH.CDsON() and targetRange8 then   

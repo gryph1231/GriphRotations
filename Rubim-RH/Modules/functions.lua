@@ -443,35 +443,46 @@ function IsReady(spell,range_check,aoe_check,queue,no_power_check)
     end
 end
 
+
+function GetNumDebuffs(unit)
+    local index = 1
+    local numDebuffs = 0
+
+    while true do
+        local aura = C_UnitAuras.GetDebuffDataByIndex(unit, index)
+        if not aura then
+            break
+        end
+        numDebuffs = numDebuffs + 1
+        index = index + 1
+    end
+
+    return numDebuffs
+end
+
 function GetAppropriateCureSpell(unit)
     local debuffTypePoison = "Poison"
     local debuffTypeDisease = "Disease"
 	local debuffTypeMagic = "Magic"
-    
-    for i = 1, 40 do
-        local name, _, _, debuffType = C_UnitAuras.GetDebuffDataByIndex(tostring(unit), i)
-        if not name then break end  -- No more debuffs, exit the loop
+    local debuff_count = GetNumDebuffs(unit)
+
+    for i = 1, debuff_count do
+        local debuffType = C_UnitAuras.GetDebuffDataByIndex(tostring(unit), i).dispelName
+        --if not debuffType then break end  -- No more debuffs, exit the loop
+        local name = C_UnitAuras.GetDebuffDataByIndex(tostring(unit), i).name
+        --if not name then break end  -- No more debuffs, exit the loop
 
         if debuffType == debuffTypePoison then
             return debuffTypePoison
         elseif debuffType == debuffTypeDisease then
             return debuffTypeDisease
-		elseif debuffType == debuffTypeMagic then
-			return debuffTypeMagic
+        elseif debuffType == debuffTypeMagic then
+            return debuffTypeMagic
         end
     end
-    
+ 
     return nil  -- No poison or disease found
 end
--- function ConsecrationTime()
---     for i = 1, 5 do
---         local active, totemName, startTime, duration, textureId = GetTotemInfo(i)
---         if active == true then
---             return startTime + duration - GetTime()
---         end
---     end
---     return 0
--- end
 
 
 
