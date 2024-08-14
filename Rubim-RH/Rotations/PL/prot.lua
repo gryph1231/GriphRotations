@@ -216,8 +216,7 @@ local function APL()
   targetRange20 = C_Item.IsItemInRange(10645, "target")
   targetRange25 = C_Item.IsItemInRange(24268, "target")
   targetRange30 = C_Item.IsItemInRange(835, "target")
-
-
+    -- print(IsPlayerSpell(384392))
 
             local lostimer = GetTime() - losCheckTimer
             local los

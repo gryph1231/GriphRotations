@@ -301,23 +301,24 @@ end
             -- final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&(time>=8|!talent.vanguard_of_justice)|holy_power>=2&talent.divine_auxiliary)
             --&(cooldown.avenging_wrath.remains>10|cooldown.crusade.remains&(!buff.crusade.up|buff.crusade.stack>=10))&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)
 
-            if IsReady("Final Reckoning") and aoecds8y 
-            and targetRange8 
+            if IsReady("Final Reckoning")  
+            and targetRange5 
+            and (aoecds8y or target_is_dummy())
             and (HolyPower >= 4 and HL.CombatTime() < 8 
             or HolyPower >= 3 and (HL.CombatTime() >= 8 or not S.VanguardofJustice:IsAvailable()) or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
             and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownRemains() > 10 and (Player:BuffDown(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) then
                 return S.FinalReckoning:Cast()
             end
 
-        --     if I.legendary:CooldownRemains()<1.5
-        --     and RubimRH.CDsON()
-        --     and targetRange5 
-        --     and aoecds8y
-        --     and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or (S.AvengingWrath:CooldownRemains()>45 and S.AvengingWrath:IsAvailable() or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
-        --    and not Target:IsMoving()
-        --     then
-        --         return S.mhweapcast:Cast()
-        --     end
+            if I.legendary:CooldownRemains()<1.5
+            and RubimRH.CDsON()
+            and targetRange5 
+            and (aoecds8y or target_is_dummy())
+            and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or (S.AvengingWrath:CooldownRemains()>45 and S.AvengingWrath:IsAvailable() or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
+           and not Target:IsMoving()
+            then
+                return S.mhweapcast:Cast()
+            end
 
 
         end
@@ -547,15 +548,14 @@ local function APL()
     inRange20 = RangeCount(20)
     inRange25 = RangeCount(25)
     inRange30 = RangeCount(30)
-    targetRange5 = IsItemInRange(8149, "target")
-    targetRange8 = IsItemInRange(34368, "target")
-    targetRange10 = IsItemInRange(32321, "target")
-    targetRange15 = IsItemInRange(33069, "target")
-    targetRange20 = IsItemInRange(10645, "target")
-    targetRange25 = IsItemInRange(24268, "target")
-    targetRange30 = IsItemInRange(835, "target")
-
-
+    targetRange5 = C_Item.IsItemInRange(8149, "target")
+    targetRange8 = C_Item.IsItemInRange(34368, "target")
+    targetRange10 = C_Item.IsItemInRange(32321, "target")
+    targetRange15 = C_Item.IsItemInRange(33069, "target")
+    targetRange20 = C_Item.IsItemInRange(10645, "target")
+    targetRange25 = C_Item.IsItemInRange(24268, "target")
+    targetRange30 = C_Item.IsItemInRange(835, "target")
+  
 
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
         DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
@@ -590,10 +590,7 @@ local function APL()
         validmobsinrange8y = combatmobs40() * .6
     validmobsinrange30y = combatmobs40() * .6
 
--- print('validmobsinrange8y:',validmobsinrange8y)
--- print('inRange8:',inRange8)
 
--- print(I.legendary:CooldownRemains())
     if (inRange8 > validmobsinrange8y or instanceType=='raid') and combatmobs40() > 0 then
         aoecds8y = true
     else

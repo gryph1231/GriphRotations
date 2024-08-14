@@ -363,6 +363,7 @@ function LowestAlly(check)
 end
 
 function IsReady(spell,range_check,aoe_check,queue,no_power_check)
+
     if spell and C_Spell.IsSpellUsable(tostring(spell)) then
         local start = C_Spell.GetSpellCooldown(tostring(spell)).startTime
         local duration = C_Spell.GetSpellCooldown(tostring(spell)).duration
@@ -472,6 +473,8 @@ end
 --     return 0
 -- end
 
+
+
 function tierequipped()
     local items = {
         "Lurking Specter's Tights",
@@ -490,22 +493,45 @@ function tierequipped()
         "Lucid Shadewalker's Cuirass",
         "Lucid Shadewalker's Bladed Spaulders",
         "Lucid Shadewalker's Deathmask",
-        "Zealous Pyreknight's Ailettes",
-        "Zealous Pyreknight's Barbute",
-        "Zealous Pyreknight's Jeweled Guantlets",
-        "Zealous Pyreknight's Warplate",
-        "Zealous Pyreknight's Cuisses",
+
     }
+
     local count = 0
 
     for _, itemName in ipairs(items) do
-        if IsEquippedItem(itemName) then
+        if C_Item.IsEquippedItem(itemName) then
             count = count + 1
         end
     end
 
     return count
 end
+
+
+
+function tierequipped30()
+    local items = {
+
+        "Zealous Pyreknight's Ailettes",
+        "Zealous Pyreknight's Barbute",
+        "Zealous Pyreknight's Jeweled Guantlets",
+        "Zealous Pyreknight's Warplate",
+        "Zealous Pyreknight's Cuisses",
+
+    }
+
+    local count = 0
+
+    for _, itemName in ipairs(items) do
+        if C_Item.IsEquippedItem(itemName) then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
+
 
 function UseItems(item)
     local trinket1 = GetInventoryItemID("player", 13)

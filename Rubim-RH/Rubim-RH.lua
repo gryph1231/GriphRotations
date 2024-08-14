@@ -1043,11 +1043,11 @@ updateClassVariables:SetScript("OnEvent", function(self, event, ...)
     RubimRH.allSpells = {}
     if RubimRH.playerSpec ~= 0 then
         RubimRH.config = RubimRH.db.profile[RubimRH.playerSpec]
-        for pos, spell in pairs(RubimRH.Spell[RubimRH.playerSpec]) do
-            if spell:IsAvailable() then
-                table.insert(RubimRH.allSpells, spell)
-            end
-        end
+        -- for pos, spell in pairs(RubimRH.Spell[RubimRH.playerSpec]) do
+        --     if spell:IsAvailable() then
+        --         table.insert(RubimRH.allSpells, spell)
+        --     end
+        -- end
     end
     RubimRH.useCD = false or RubimRH.db.profile[RubimRH.playerSpec].cooldown
 end)
