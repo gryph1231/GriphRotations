@@ -780,7 +780,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                     if IsReady("Word of Glory") and GetFocusTargetHealthPercentage()<45 and (WordofGlorycast or Player:HolyPower()>=3) then
                         return S.WordofGloryFocus:Cast()
                     end
-                    if IsReady("Cleanse Toxins") and (GetAppropriateCureSpellfocus()=='Poison' or GetAppropriateCureSpellfocus()=='Disease') and Player:HealthPercentage()>80 then
+                    if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell("focus")=='Poison' or GetAppropriateCureSpell("focus")=='Disease') and Player:HealthPercentage()>80 then
                         return S.CleanseToxinsFocus:Cast()
                     end
                     
@@ -799,7 +799,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
         return S.autoattack:Cast()
         end
 
-        if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell() == "Poison" or GetAppropriateCureSpell() == "Disease") then
+        if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell("player") == "Poison" or GetAppropriateCureSpell("player") == "Disease") then
             return S.CleanseToxins:Cast()
         end
 
@@ -850,7 +850,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
   
         end
 
-                if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell()=='Poison' or GetAppropriateCureSpell()=='Disease') then
+                if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') then
                     return S.CleanseToxins:Cast()
                 end
                 if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus")  then
@@ -907,7 +907,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 end
     
 
-                if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell() == "Poison" or GetAppropriateCureSpell() == "Disease") then
+                if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell("focus") == "Poison" or GetAppropriateCureSpell("focus") == "Disease") then
                     return S.CleanseToxins:Cast()
                 end
 
