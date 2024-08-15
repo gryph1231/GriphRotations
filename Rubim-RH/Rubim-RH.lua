@@ -1110,9 +1110,9 @@ if RubimRH.playerSpec == 105 or RubimRH.playerSpec == 65 or RubimRH.playerSpec =
 	end
 end
     --endd
-    if UnitInVehicle("Player") then
-        return 0, 236254
-    end
+    -- if UnitInVehicle("Player") then
+    --     return 0, 236254
+    -- end
 
     if Player:IsDeadOrGhost() then
         return 0, 236399
@@ -1126,9 +1126,9 @@ end
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     end
 
-    if ACTIVE_CHAT_EDIT_BOX ~= nil then
-        return 0, 236254
-    end
+    -- if ACTIVE_CHAT_EDIT_BOX ~= nil then
+    --     return 0, 236254
+    -- end
 
     if SpellIsTargeting() then
         return 0, 236353
@@ -1142,13 +1142,13 @@ end
     --UpdateCleave()
     --UpdateCD()
 
-    if Rotation == "Passive" then
-        return RubimRH.Rotation.PASSIVEs[RubimRH.playerSpec]()
-    end
+    -- if Rotation == "Passive" then
+    --     return RubimRH.Rotation.PASSIVEs[RubimRH.playerSpec]()
+    -- end
 
-    if Rotation == "Defensive" then
-        return RubimRH.Rotation.DEFENSIVE[RubimRH.playerSpec]()
-    end
+    -- if Rotation == "Defensive" then
+    --     return RubimRH.Rotation.DEFENSIVE[RubimRH.playerSpec]()
+    -- end
 
     if Rotation == "SingleTarget" then
         return RubimRH.Rotation.APLs[RubimRH.playerSpec]()

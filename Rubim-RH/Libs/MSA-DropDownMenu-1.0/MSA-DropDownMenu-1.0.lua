@@ -1641,48 +1641,48 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 
 -- -- ElvUI skin
--- local function LoadSkin_ElvUI()
---     if not IsAddOnLoaded("ElvUI") then return end
---     local E = unpack(_G.ElvUI)
---     if E.private.skins.blizzard.misc ~= true then return end
---     for i = 1, MSA_DROPDOWNMENU_MAXLEVELS do
---         _G["MSA_DropDownList"..i.."MenuBackdrop"]:SetTemplate("Transparent")
---         _G["MSA_DropDownList"..i.."Backdrop"]:SetTemplate("Transparent")
---     end
--- end
+local function LoadSkin_ElvUI()
+    if not C_AddOns.IsAddOnLoaded("ElvUI") then return end
+    local E = unpack(_G.ElvUI)
+    if E.private.skins.blizzard.misc ~= true then return end
+    for i = 1, MSA_DROPDOWNMENU_MAXLEVELS do
+        _G["MSA_DropDownList"..i.."MenuBackdrop"]:SetTemplate("Transparent")
+        _G["MSA_DropDownList"..i.."Backdrop"]:SetTemplate("Transparent")
+    end
+end
 
--- -- Tukui skin
--- local function LoadSkin_Tukui()
---     if not IsAddOnLoaded("Tukui") then return end
---     local backdrop
---     for i = 1, MSA_DROPDOWNMENU_MAXLEVELS do
---         backdrop = _G["MSA_DropDownList"..i.."MenuBackdrop"]
---         backdrop:SetTemplate("Default")
---         backdrop:CreateShadow()
---         backdrop.IsSkinned = true
---         backdrop = _G["MSA_DropDownList"..i.."Backdrop"]
---         backdrop:SetTemplate("Default")
---         backdrop:CreateShadow()
---         backdrop.IsSkinned = true
---     end
--- end
+-- Tukui skin
+local function LoadSkin_Tukui()
+    if not C_AddOns.IsAddOnLoaded("Tukui") then return end
+    local backdrop
+    for i = 1, MSA_DROPDOWNMENU_MAXLEVELS do
+        backdrop = _G["MSA_DropDownList"..i.."MenuBackdrop"]
+        backdrop:SetTemplate("Default")
+        backdrop:CreateShadow()
+        backdrop.IsSkinned = true
+        backdrop = _G["MSA_DropDownList"..i.."Backdrop"]
+        backdrop:SetTemplate("Default")
+        backdrop:CreateShadow()
+        backdrop.IsSkinned = true
+    end
+end
 
--- -- Aurora skin
--- local function LoadSkin_Aurora()
---     if not IsAddOnLoaded("Aurora") then return end
---     local F = _G.Aurora[1]
---     for i = 1, MSA_DROPDOWNMENU_MAXLEVELS do
---         F.CreateBD(_G["MSA_DropDownList"..i.."MenuBackdrop"])
---         F.CreateBD(_G["MSA_DropDownList"..i.."Backdrop"])
---     end
--- end
+-- Aurora skin
+local function LoadSkin_Aurora()
+    if not C_AddOns.IsAddOnLoaded("Aurora") then return end
+    local F = _G.Aurora[1]
+    for i = 1, MSA_DROPDOWNMENU_MAXLEVELS do
+        F.CreateBD(_G["MSA_DropDownList"..i.."MenuBackdrop"])
+        F.CreateBD(_G["MSA_DropDownList"..i.."Backdrop"])
+    end
+end
 
 -- Init skins
 lib.initFrame = lib.initFrame or CreateFrame("Frame")
 lib.initFrame:SetScript("OnEvent", function(self, event)
-    --LoadSkin_ElvUI()
-    -- LoadSkin_Tukui()
-    -- LoadSkin_Aurora()
+    LoadSkin_ElvUI()
+    LoadSkin_Tukui()
+    LoadSkin_Aurora()
     self:UnregisterEvent(event)
 end)
 lib.initFrame:RegisterEvent("PLAYER_ENTERING_WORLD")

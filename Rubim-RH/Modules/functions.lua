@@ -544,25 +544,6 @@ end
 
 
 
-function UseItems(item)
-    local trinket1 = GetInventoryItemID("player", 13)
-    local trinket2 = GetInventoryItemID("player", 14)
-    local trinket1ready = C_Item.IsUsableItem(trinket1) and C_Item.IsEquippedItem(trinket1) and select(2,C_Item.GetItemCooldown(trinket1)) < 1.5
-    local trinket2ready = C_Item.IsUsableItem(trinket2) and C_Item.IsEquippedItem(trinket2) and select(2,C_Item.GetItemCooldown(trinket2)) < 1.5
-    local trinketblacklist = 202612
-
-
-    if trinket1ready and trinket1 ~= trinketblacklist then
-        return Item(118330):Cast()
-    end
-
-    if trinket2ready and trinket2ready ~= trinketblacklist then
-        return Item(114616):Cast()
-    end
-	
-	return nil
-end
-
 function mitigate()
     if Player:AffectingCombat() then
         for id = 1, 10 do
@@ -809,5 +790,26 @@ function combatmobs40()
     return totalRange40
 end
 
+
+
+
+function UseItems(item)
+    local trinket1 = GetInventoryItemID("player", 13)
+    local trinket2 = GetInventoryItemID("player", 14)
+    local trinket1ready = C_Item.IsUsableItem(trinket1) and C_Item.IsEquippedItem(trinket1) and select(2,C_Item.GetItemCooldown(trinket1)) < 1.5
+    local trinket2ready = C_Item.IsUsableItem(trinket2) and C_Item.IsEquippedItem(trinket2) and select(2,C_Item.GetItemCooldown(trinket2)) < 1.5
+    local trinketblacklist = 202612
+
+
+    if trinket1ready and trinket1 ~= trinketblacklist  then
+        return Item(118330):Cast()
+    end
+
+    if trinket2ready and trinket2ready ~= trinketblacklist then
+        return Item(114616):Cast()
+    end
+	
+	return nil
+end
 
 

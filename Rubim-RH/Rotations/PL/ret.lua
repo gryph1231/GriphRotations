@@ -67,7 +67,8 @@ CrusaderAura                          = Spell(32223),
 DevotionAura                          = Spell(465),
 RetributionAura                       = Spell(183435),
 -- Buffs
-AvengingWrathBuff                     = Spell(31884),
+
+
 BlessingofDuskBuff                    = Spell(385126),
 ConsecrationBuff                      = Spell(188370),
 DivinePurposeBuff                     = Spell(223819),
@@ -124,6 +125,8 @@ DivineResonanceBuff                   = Spell(384029),
 EmpyreanPowerBuff                     = Spell(326733),
 divineprotection = Spell(210256), -- blessing of sanctuary
 BlessingofFreedom = Spell(1044),
+BlessingofFreedomfocus = Spell(145067),-- turn evil
+
 BlindingLight = Spell(115750),
 SenseUndead = Spell(5502),
 EmpyreanLegacyBuff = Spell(387178),
@@ -253,7 +256,7 @@ end
         Ranged = function()
 
             if Player:AffectingCombat() and Target:AffectingCombat() then
-            if IsReady("Hammer of Wrath") and targetRange30 and (Player:BuffUp(S.AvengingWrath) or Player:BuffUp(S.Crusade) or Target:HealthPercentage()<=20) then
+            if IsReady("Hammer of Wrath") and targetRange30 and (awup or crusadeup or Target:HealthPercentage()<=20) then
             return S.HammerofWrath:Cast()
             end
 
@@ -263,7 +266,7 @@ end
             return S.Judgment:Cast()
             end
 
-            if IsReady("Divine Toll") and targetRange30 then
+            if IsReady("Divine Toll") and targetRange30 and RubimRH.CDsON() then
                 return S.DivineToll:Cast()
                 end
 
@@ -279,8 +282,8 @@ end
 
      -- execution_sentence,if=(!buff.crusade.up&cooldown.crusade.remains>15|buff.crusade.stack=10|cooldown.avenging_wrath.remains<0.75
      --|cooldown.avenging_wrath.remains>15)&(holy_power>=4&time<5|holy_power>=3&time>5|holy_power>=2&talent.divine_auxiliary)&(target.time_to_die>8&!talent.executioners_will|target.time_to_die>12)
-            if IsReady("Execution Sentence") and targetRange20 and ((Player:BuffDown(S.CrusadeBuff) and S.Crusade:CooldownRemains() > 10 
-            or Player:BuffStack(S.CrusadeBuff) == 10 or S.AvengingWrath:CooldownRemains() > 10) 
+            if IsReady("Execution Sentence") and targetRange20 and ((not crusadeup and S.Crusade:CooldownRemains() > 10 
+            or crusadestacks == 10 or S.AvengingWrath:CooldownRemains() > 10 or S.RadiantGlory:IsAvailable()) 
             and (HolyPower >= 3 or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) and (aoeTTD() > 8 or Target:TimeToDie()>8)) then
                 return S.ExecutionSentence:Cast()
             end
@@ -305,8 +308,9 @@ end
             and targetRange5 
             and (aoecds8y or target_is_dummy())
             and (HolyPower >= 4 and HL.CombatTime() < 8 
+            or S.RadiantGlory:IsAvailable()
             or HolyPower >= 3 and (HL.CombatTime() >= 8 or not S.VanguardofJustice:IsAvailable()) or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable()) 
-            and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownRemains() > 10 and (Player:BuffDown(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10)) then
+            and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownRemains() > 10 and (not crusadeup or  crusadestacks >= 10)) then
                 return S.FinalReckoning:Cast()
             end
 
@@ -314,7 +318,7 @@ end
             and RubimRH.CDsON()
             and targetRange5 
             and (aoecds8y or target_is_dummy())
-            and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or (S.AvengingWrath:CooldownRemains()>45 and S.AvengingWrath:IsAvailable() or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
+            and (AuraUtil.FindAuraByName("Avenging Wrath","player") or AuraUtil.FindAuraByName("Crusade","player") or  (S.AvengingWrath:CooldownRemains()>45  or S.Crusade:CooldownRemains()>45 and S.Crusade:IsAvailable()) )
            and not Target:IsMoving()
             then
                 return S.mhweapcast:Cast()
@@ -332,20 +336,20 @@ end
             -- divine_storm,if=variable.ds_castable&(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
             if IsReady("Divine Storm") 
             and VarDSCastable and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
-            or not RubimRH.CDsON() or Player:BuffUp(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) 
+            or not RubimRH.CDsON() or crusadeup and crusadestacks < 10 or S.RadiantGlory:IsAvailable()) 
             then
             return S.DivineStorm:Cast() 
             end
 
             -- justicars_vengeance,if=(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
             if IsReady("Justicar's Vengeance")  and targetRange20 and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
-            or not RubimRH.CDsON() or Player:BuffUp(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then 
+            or not RubimRH.CDsON() or crusadeup and crusadestacks < 10 or S.RadiantGlory:IsAvailable()) then 
             return S.JusticarsVengeance:Cast()
             end
 
            --templars_verdict,if=(!talent.crusade|cooldown.crusade.remains>gcd*3&rubimrhcdson|!rubimrhcdson|buff.crusade.up&buff.crusade.stack<10)
             if (IsReady("Final Verdict") or IsReady("Templar's Verdict")) and targetRange20 and (not S.Crusade:IsAvailable() or S.Crusade:CooldownRemains() > Player:GCD() * 3 and RubimRH.CDsON() 
-            or not RubimRH.CDsON() or Player:BuffUp(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then
+            or not RubimRH.CDsON() or crusadeup and crusadestacks < 10 or S.RadiantGlory:IsAvailable()) then
             return S.TemplarsVerdict:Cast()
             end
 
@@ -358,17 +362,18 @@ end
                 if RubimRH.AoEON() and inRange20>=6 then
 
 
-                    if IsReady("Avenging Wrath") and not S.RadiantGlory:IsAvailable() and Player:BuffDown(S.AvengingWrath) and RubimRH.CDsON() and targetRange8 then   
+                    if IsReady("Avenging Wrath") and not S.RadiantGlory:IsAvailable() and not awup and RubimRH.CDsON() and targetRange8 then   
                         return S.AvengingWrath:Cast()
                     end
 
-                    if IsReady("Crusade") and not S.RadiantGlory:IsAvailable() and Player:BuffDown(S.Crusade) and RubimRH.CDsON() and targetRange8 then                        
+                    if IsReady("Crusade") and not S.RadiantGlory:IsAvailable() and not crusadeup and RubimRH.CDsON() and targetRange8 then                        
                         return S.Crusade:Cast()
                     end
 
                     if IsReady("Final Reckoning") 
                     and RubimRH.CDsON() 
                     and targetRange8
+                    and (aoecds8y or target_is_dummy())
                     and inRange5>=1 then                        
                         return S.FinalReckoning:Cast()
                     end
@@ -381,19 +386,19 @@ end
 
                     if IsReady("Wake of Ashes")
                     and RubimRH.CDsON() 
-                    and HolyPower<=2
+                    and (HolyPower<=2 or S.RadiantGlory:IsAvailable() and (not crusadeup and not awup))
                     and (aoecds8y or target_is_dummy())
                     and targetRange8  
                     and inRange8 >=1
-                    and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5)
+                    and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5 )
                     then
                         return S.WakeofAshes:Cast()
                     end
 
 
-                    if IsReady("Divine Toll") and HolyPower<=2 and RubimRH.CDsON() and targetRange20 and inRange20>=1 
-                    and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5) 
-                    and (not S.WakeofAshes:IsAvailable() or S.WakeofAshes:CooldownRemains() > 5) 
+                    if IsReady("Divine Toll") and  (aoecds8y or target_is_dummy()) and HolyPower<=2 and RubimRH.CDsON() and targetRange20 and inRange20>=1 
+                    and (not S.FinalReckoning:IsAvailable() or S.FinalReckoning:CooldownRemains() > 5 ) 
+                    and (not S.WakeofAshes:IsAvailable() or S.WakeofAshes:CooldownRemains() > 5 ) 
                     then
                         return S.DivineToll:Cast()
                     end
@@ -416,8 +421,10 @@ end
 
                 --wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6)
                 --&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
-                if IsReady("Wake of Ashes") and (aoecds8y or target_is_dummy()) and RubimRH.CDsON() and targetRange8 and HolyPower <= 2 and (S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6) 
-                and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or (aoeTTD() < 8 or Target:TimeToDie()<8)) then
+                if IsReady("Wake of Ashes") and (aoecds8y or target_is_dummy()) and RubimRH.CDsON() and targetRange8 and HolyPower<=2 
+                and (HolyPower<=2 and ( S.AvengingWrath:CooldownRemains()>6 or S.Crusade:CooldownRemains()>6 ) and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or (aoeTTD() < 8 or Target:TimeToDie()<8))
+                or S.RadiantGlory:IsAvailable() and (not crusadeup and not awup) and HolyPower<=3)
+                then
                 return S.WakeofAshes:Cast()
                 end
 
@@ -429,7 +436,7 @@ end
                     end
 
                     -- divine_toll,if=holy_power<=2&(!raid_event.adds.exists|raid_event.adds.in>30|raid_event.adds.up)&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|fight_remains<8)
-                if IsReady("Divine Toll") and aoecds8y and targetRange30 and HolyPower<=2 and RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15) then
+                if IsReady("Divine Toll") and (aoecds8y or target_is_dummy()) and targetRange30 and HolyPower<=2 and RubimRH.CDsON() and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15 or S.RadiantGlory:IsAvailable()) then
                 return S.DivineToll:Cast()
                 end
 
@@ -441,7 +448,7 @@ end
 
 
                 -- call_action_list,name=finishers,if=holy_power>=3&buff.crusade.up&buff.crusade.stack<10
-                if (HolyPower >= 3 and Player:BuffUp(S.CrusadeBuff) and Player:BuffStack(S.CrusadeBuff) < 10) then
+                if (HolyPower >= 3 and crusadeup and crusadestacks < 10) then
                 if Finishers() ~= nil then
                     return Finishers()
                 end
@@ -480,7 +487,7 @@ end
                 end
 
                 -- call_action_list,name=finishers,if=(target.health.pct<=20|buff.avenging_wrath.up|buff.crusade.up|buff.empyrean_power.up)
-                if (Target:HealthPercentage() <= 20 or Player:BuffUp(S.AvengingWrathBuff) or Player:BuffUp(S.CrusadeBuff) or Player:BuffUp(S.EmpyreanPowerBuff)) then
+                if (Target:HealthPercentage() <= 20 or awup or crusadeup or Player:BuffUp(S.EmpyreanPowerBuff)) then
                     local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
                 end
 
@@ -555,7 +562,17 @@ local function APL()
     targetRange20 = C_Item.IsItemInRange(10645, "target")
     targetRange25 = C_Item.IsItemInRange(24268, "target")
     targetRange30 = C_Item.IsItemInRange(835, "target")
-  
+
+local awup = AuraUtil.FindAuraByName("Avenging Wrath","player")
+
+local crusadeup = AuraUtil.FindAuraByName("Crusade","player")
+
+if AuraUtil.FindAuraByName('Crusade','player') then
+    _, _, crusadestacks = AuraUtil.FindAuraByName('Crusade','player')
+else
+    crusadestacks = 0
+end
+
 
     if AuraUtil.FindAuraByName("Divine Arbiter","player") then
         DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
@@ -604,7 +621,13 @@ local function APL()
     else
         aoecds30y = false
     end
-
+    if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
+        targetTTD = UnitHealth('target')/getCurrentDPS()
+        else targetTTD = 8888
+        end
+        
+            local targetdying = (aoeTTD() < 5 or targetTTD<5)
+        
 
 
     if S.Intercession:Charges()== nil then
@@ -748,8 +771,8 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                     return S.HammerofWrath:Cast()
                   end
     
-                  if IsReady("Blessed Hammer") then
-                    return S.BlessedHammer:Cast()
+                  if IsReady("Blade of Justice") then
+                    return S.BladeofJustice:Cast()
                   end
                 end
               end
@@ -853,7 +876,7 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
                 if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus")  then
                              -- --Freedom
                              if IsReady("Blessing of Freedom") and (freedom() or Player:DebuffUp(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
-                             return S.BlessingofFreedomz:Cast()
+                             return S.BlessingofFreedomfocus:Cast()
                              end
                 end
 
@@ -865,8 +888,8 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
             
 
         if RubimRH.CDsON() and targetRange20
-        and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or S.AvengingWrath:CooldownRemains()>20 or S.Crusade:CooldownRemains()>20)
-        and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
+        and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or (S.AvengingWrath:CooldownRemains()>20 or S.Crusade:CooldownRemains()>20) and not S.RadiantGlory:IsAvailable())
+        and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (not targetdying or target_is_dummy()) then
         local ShouldReturn = UseItems();
         if ShouldReturn then return ShouldReturn; end
         end

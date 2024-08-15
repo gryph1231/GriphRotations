@@ -63,10 +63,10 @@ function StdUi:ResetConfig()
 		}
 	};
 
-	-- if IsAddOnLoaded('ElvUI') then
-	-- 	local eb = ElvUI[1].media.backdropfadecolor;
-	-- 	self.config.backdrop.panel = { r = eb[1],g = eb[2],b = eb[3],a = eb[4] };
-	-- end
+	if C_AddOns.IsAddOnLoaded('ElvUI') then
+		local eb = ElvUI[1].media.backdropfadecolor;
+		self.config.backdrop.panel = { r = eb[1],g = eb[2],b = eb[3],a = eb[4] };
+	end
 end
 StdUi:ResetConfig();
 

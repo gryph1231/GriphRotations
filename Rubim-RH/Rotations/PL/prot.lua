@@ -68,7 +68,7 @@ HolyAvengerBuff             = Spell(105809),
 LayonHands                  = Spell(633),
 
 -- Covenants (Shadowlands)
-BlessingofFreedomz = Spell(5502), -- turn evil focus macro kb to sense undead
+BlessingofFreedomfocus = Spell(145067),-- turn evil
 AshenHallow                 = Spell(316958),
 BlessingofAutumn            = Spell(328622),
 BlessingofSpring            = Spell(328282),
@@ -285,8 +285,19 @@ local function APL()
             rezcharges=S.Intercession:Charges()
             end
 
-
-
+            if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
+              targetTTD = UnitHealth('target')/getCurrentDPS()
+              else targetTTD = 8888
+              end
+              
+                  local targetdying = (aoeTTD() < 5 or targetTTD<5)
+              
+      
+        -- Spell Queue
+        if Player:IsChanneling() or Player:IsCasting() then
+          return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+          end
+  
 
             -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
             if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
@@ -424,7 +435,7 @@ local function APL()
             end
 
             if IsReady("Lay on Hands")  and Player:AffectingCombat() and Player:HealthPercentage() < 20 and S.DivineShield:CooldownRemains() > Player:GCD() and Player:DebuffDown(S.Forbearance)
-            and inRange30 >= 1 then
+            and inRange30 >= 1 and Player:GCDRemains()<0.5 then
             return S.LayonHands:Cast()
             end
 
@@ -591,7 +602,7 @@ local function APL()
                         return S.intercession:Cast()
                     end
 
-                    if IsReady("Lay on Hands") and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+                    if IsReady("Lay on Hands") and Player:GCDRemains()<0.5 and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
                         return S.LayonHandsFocus:Cast()
                     end
                     if IsReady("Blessing of Protection") and inRange30>2 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
@@ -619,7 +630,7 @@ local function APL()
                 if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus")  then
                              -- --Freedom
                              if IsReady("Blessing of Freedom") and (freedom() or Player:DebuffUp(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
-                             return S.BlessingofFreedomz:Cast()
+                             return S.BlessingofFreedomfocus:Cast()
                              end
                 end
 
@@ -631,12 +642,12 @@ local function APL()
                 end
                 
             if RubimRH.CDsON() and inRange8 >= 1 then
-            if RubimRH.CDsON() and targetRange8
-            and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or S.AvengingWrath:CooldownRemains()>20)
-            and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() then
-            local ShouldReturn = UseItems();
-            if ShouldReturn then return ShouldReturn; end
-            end
+              if RubimRH.CDsON() and targetRange20
+              
+              and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (targetTTD>5 or target_is_dummy()) then
+              local ShouldReturn = UseItems();
+              if ShouldReturn then return ShouldReturn; end
+              end
 
             if IsReady("Sentinel")  and not AuraUtil.FindAuraByName("Sentinel", "player") then
               return S.AvengingWrath:Cast()
@@ -665,7 +676,7 @@ local function APL()
             end
 
             -- kick on GCD
-            if IsReady("Rebuke") and kickprio() and targetRange8 then
+            if IsReady("Rebuke") and kickprio() and targetRange8 and Player:GCDRemains()<0.5 then
             return S.Rebuke:Cast()
             end
 
