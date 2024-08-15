@@ -143,7 +143,7 @@ DivineSteedBuff          = Spell(221886),
 BlessingofProtection     = Spell(1022),
 Forbearance              = Spell(25771),
 -- Racials
-
+RadiantGlory = Spell(458359),
 CrusadingStrikes = Spell(404542),
 DivinePurpose            = Spell(223817),
 -- DivineTollCov                         = Spell(304971),
@@ -287,14 +287,14 @@ end
 
             -- avenging_wrath,if=(holy_power>=4&time<5|holy_power>=3&(time>5|!talent.vanguard_of_justice)|holy_power>=2&talent.divine_auxiliary
             --&(cooldown.execution_sentence.remains=0|cooldown.final_reckoning.remains=0))&(!raid_event.adds.up|target.time_to_die>10)
-            if IsReady("Avenging Wrath")  and targetRange10 and ((HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 
+            if IsReady("Avenging Wrath") and not S.RadiantGlory:IsAvailable() and targetRange10 and ((HolyPower >= 4 and HL.CombatTime() < 5 or HolyPower >= 3 
             and (HL.CombatTime() > 5 or not S.VanguardofJustice:IsAvailable()) or HolyPower >= 2 and S.DivineAuxiliary:IsAvailable() 
             and (S.ExecutionSentence:CooldownUp() or S.FinalReckoning:CooldownUp())) or DSrange>=3) then
             return S.AvengingWrath:Cast()
             end
 
             --crusade,if=holy_power>=5&time<5|holy_power>=3&time>5
-            if IsReady("Crusade") and targetRange10 and (HolyPower >= 5 and HL.CombatTime() < 5 or HolyPower >= 3 and HL.CombatTime() > 5) then
+            if IsReady("Crusade") and not S.RadiantGlory:IsAvailable() and targetRange10 and (HolyPower >= 5 and HL.CombatTime() < 5 or HolyPower >= 3 and HL.CombatTime() > 5) then
             return S.Crusade:Cast()
             end
        
@@ -358,11 +358,11 @@ end
                 if RubimRH.AoEON() and inRange20>=6 then
 
 
-                    if IsReady("Avenging Wrath") and Player:BuffDown(S.AvengingWrath) and RubimRH.CDsON() and targetRange8 then   
+                    if IsReady("Avenging Wrath") and not S.RadiantGlory:IsAvailable() and Player:BuffDown(S.AvengingWrath) and RubimRH.CDsON() and targetRange8 then   
                         return S.AvengingWrath:Cast()
                     end
 
-                    if IsReady("Crusade") and Player:BuffDown(S.Crusade) and RubimRH.CDsON() and targetRange8 then                        
+                    if IsReady("Crusade") and not S.RadiantGlory:IsAvailable() and Player:BuffDown(S.Crusade) and RubimRH.CDsON() and targetRange8 then                        
                         return S.Crusade:Cast()
                     end
 
