@@ -343,7 +343,7 @@ local RtB_BuffsList = {
         -- # Default Roll the Bones reroll rule: reroll for any buffs that aren't Buried Treasure, excluding Grand Melee in single target
         -- actions+=/variable,name=RtB_Reroll(),value=rtb_buffs.will_lose=
         -- (rtb_buffs.will_lose.buried_treasure+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>12&raid_event.adds.count<2)
-        Cache.APLVar.RtB_Reroll = RtB_Buffs() == num(checkBuffWillLose(S.BuriedTreasure)) + (num(checkBuffWillLose(S.GrandMelee) and num(inRange8 < 2)))
+        Cache.APLVar.RtB_Reroll = RtB_Buffs() == num(checkBuffWillLose(S.BuriedTreasure)) + (num(checkBuffWillLose(S.GrandMelee) and num(inRange10 < 2)))
   
         -- # If Loaded Dice is talented, then keep any 1 buff from Roll the Bones but roll it into 2 buffs when Loaded Dice is active
         -- actions+=/variable,name=RtB_Reroll(),if=talent.loaded_dice,value=rtb_buffs.will_lose=buff.loaded_dice.up
@@ -360,9 +360,9 @@ local RtB_BuffsList = {
         -- # Avoid rerolls when we will not have time remaining on the fight or add wave to recoup the opportunity cost of the global
         -- actions+=/variable,name=RtB_Reroll(),op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up
         -- &(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|fight_remains<12
-        if Target:FilteredTimeToDie("<", 12) or HL.BossFilteredFightRemains("<", 12) then
-          Cache.APLVar.RtB_Reroll = false
-        end
+        -- if aoeTTD() < 12 then
+        --   Cache.APLVar.RtB_Reroll = false
+        -- end
       end
       return Cache.APLVar.RtB_Reroll
   end
@@ -398,8 +398,8 @@ end
   
   local function Stealth()
     if S.BladeFlurry:IsReady() then
-      if S.DeftManeuvers:IsAvailable() and not Finish_Condition() and (inRange8 >= 3
-        and ComboPointsDeficit == inRange8 + num(Player:BuffUp(S.Broadside)) or inRange8 >= 5) then
+      if S.DeftManeuvers:IsAvailable() and not Finish_Condition() and (inRange10 >= 3
+        and ComboPointsDeficit == inRange10 + num(Player:BuffUp(S.Broadside)) or inRange10 >= 5) then
 
           return S.BladeFlurry:Cast()
         end
@@ -470,7 +470,7 @@ end
     -- actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
     -- Note: Added Player:BuffRemains(S.SliceandDice) == 0 to maintain the buff while TTD is invalid (it's mainly for Solo, not an issue in raids)
     if S.SliceandDice:IsCastable() and (aoeTTD()>Player:BuffRemains(S.SliceandDice) or Player:BuffRemains(S.SliceandDice) == 0)
-      and Player:BuffRemains(S.SliceandDice) < (1 + ComboPoints) * 1.8 then
+      and Player:BuffRemains(S.SliceandDice) < (1 + Player:ComboPoints()) * 1.8 then
         return S.SliceandDice:Cast()
     end
   
@@ -568,7 +568,7 @@ local function StealthCDs ()
   
     -- # Maintain Blade Flurry on 2+ targets
     if IsReady("Blade Flurry") then
-      if inRange8 >= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD() then
+      if inRange10 >= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCD() then
         return S.BladeFlurry:Cast()
     end
     end
@@ -577,8 +577,8 @@ local function StealthCDs ()
     -- action.cds/blade_flurry,if=talent.deft_maneuvers&!variable.Finish_Condition()&(spell_targets>=3
     -- &combo_points.deficit=spell_targets+buff.broadside.up|spell_targets>=5)
     if IsReady("Blade Flurry") then
-      if S.DeftManeuvers:IsAvailable() and not Finish_Condition() and (inRange8 >= 3
-        and ComboPointsDeficit == inRange8 + num(Player:BuffUp(S.Broadside)) or inRange8 >= 5) then
+      if S.DeftManeuvers:IsAvailable() and not Finish_Condition() and (inRange10 >= 3
+        and ComboPointsDeficit == inRange10 + num(Player:BuffUp(S.Broadside)) or inRange10 >= 5) then
             return S.BladeFlurry:Cast()
         end
     end
@@ -615,12 +615,12 @@ if ShouldReturn then return ShouldReturn; end
 end
 
     -- actions.finish+=/killing_spree,if=variable.Finish_Condition()&!stealthed.all
-    if IsReady("Killing Spree") and targetRange10 and Finish_Condition() and not Player:StealthUp(true, true) then
+    if IsReady("Killing Spree") and RubimRH.CDsON() and targetRange10 and Finish_Condition() and not Player:StealthUp(true, true) and not targetdying  then
     return S.KillingSpree:Cast()
         end
   
     -- actions.cds+=/call_action_list,name=stealth_cds,if=!stealthed.all&(!talent.crackshot|cooldown.between_the_eyes.ready)
-    if not Player:StealthUp(true, true) and (not S.Crackshot:IsAvailable() or IsReady("Between the Eyes")) then
+    if RubimRH.CDsON() and not Player:StealthUp(true, true) and (not S.Crackshot:IsAvailable() or IsReady("Between the Eyes")) then
       ShouldReturn = StealthCDs()
       if ShouldReturn then return ShouldReturn end
     end
@@ -735,33 +735,14 @@ if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
     else targetTTD = 8888
     end
     
-        local targetdying = (aoeTTD() < 5 or targetTTD<5)
-    
+        local targetdying =  targetTTD<6
+        local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+
 
 if true then
     tolerance = select(4, GetNetStats())/1000 + 0.18
 
-    trinket1 = GetInventoryItemID("player", 13)
-
-    trinket2 = GetInventoryItemID("player", 14)
-    
-    start, duration, enabled = GetItemCooldown(trinket1);
-    
-    trinket1_cd = duration - (GetTime() - start)
-    
-    if trinket1_cd < 0 then trinket1_cd = 0 end
-    
-    start, duration, enabled = GetItemCooldown(trinket2);
-    
-    trinket2_cd = duration - (GetTime() - start)
-    
-    if trinket2_cd < 0 then trinket2_cd = 0 end
-    
-    trinket1ready = IsUsableItem(trinket1) and trinket1_cd <= Player:GCDRemains() + tolerance and IsEquippedItem(trinket1)
-    
-    trinket2ready = IsUsableItem(trinket2) and trinket2_cd <= Player:GCDRemains() + tolerance and IsEquippedItem(trinket2)
-
-
+  
 
 	elite = (UnitClassification("target") == "worldboss" or UnitClassification("target") == "rareelite" or UnitClassification("target") == "elite" or UnitClassification("target") == "rare" or target_is_dummy() or Target:IsAPlayer())
 
@@ -808,7 +789,7 @@ if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) and (IsResting
 			return S.SliceandDice:Cast()
 		end
 	
-		if IsReady("Roll the Bones") and RtB_Reroll() then
+		if IsReady("Roll the Bones") and (RtB_Reroll() or RtB_Buffs()==0) then
 			return S.RolltheBones:Cast()
 		end
 	end
@@ -864,13 +845,15 @@ if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() and TargetinRange(8) and Player:
     end
 end
 
+if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Feint:ID() == RubimRH.queuedSpell[1]:ID()  and Player:BuffUp(S.Feint) then
+    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
 
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
     return RubimRH.QueuedSpell():Cast()
 end
 
 if not RubimRH.queuedSpell[1]:CooldownUp() or not RubimRH.queuedSpell[1]:IsAvailable() or not Player:AffectingCombat()
-or (S.Feint:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffUp(S.Feint)) 
 or (S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind) or Target:DebuffUp(S.Gouge))) 
 or (S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind))) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
@@ -880,6 +863,13 @@ end
 
 
 
+                        if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 40 and Player:AffectingCombat()  then
+                            return S.Evasion:Cast()
+                            end
+
+                        if IsReady("Cloak of Shadows") and inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat()  then
+                        return S.CloakofShadows:Cast()
+                        end
 
             --health pot -- will need to update item ID of HPs as expansions progress
             if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and

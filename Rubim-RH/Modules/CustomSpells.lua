@@ -29,7 +29,7 @@ local function GetTexture (Object)
     if ItemID then
         if Object.TextureSpellID ~= nil then
             if #Object.TextureSpellID == 1 then
-                return GetSpellTexture(Object.TextureSpellID[1]);
+                return C_Spell.GetSpellTexture(Object.TextureSpellID[1]);
             else
                 return Object.TextureSpellID[2];
             end
@@ -151,16 +151,16 @@ function Spell:IsQueuedPowerCheck(powerEx)
 
     local powerCostQ, queuedSpellCD, queuedSpellID
     if RubimRH.queuedSpell[1] == RubimRH.Spell[1].Empty then
-        powerCostQ = GetSpellPowerCost(RubimRH.queuedSpellAuto[1]:ID())
+        powerCostQ = C_Spell.GetSpellPowerCost(RubimRH.queuedSpellAuto[1]:ID())
         queuedSpellCD = RubimRH.queuedSpellAuto[1]:CooldownRemains()
         queuedSpellID = RubimRH.queuedSpellAuto[1]:ID()
     else
-        powerCostQ = GetSpellPowerCost(RubimRH.queuedSpell[1]:ID())
+        powerCostQ = C_Spell.GetSpellPowerCost(RubimRH.queuedSpell[1]:ID())
         queuedSpellCD = RubimRH.queuedSpell[1]:CooldownRemains()
         queuedSpellID = RubimRH.queuedSpell[1]:ID()
     end
 
-    local powerCost = GetSpellPowerCost(self:ID())
+    local powerCost = C_Spell.GetSpellPowerCost(self:ID())
     local costType = nil
     local costTypeQ = nil
     local costs = 0
@@ -545,7 +545,7 @@ function RubimRH.addSpellDisabledCD(spellid)
     end
 
     if exists == false then
-        table.insert(RubimRH.db.profile.mainOption.disabledSpellsCD, { text = GetSpellInfo(spellid), value = spellid })
+        table.insert(RubimRH.db.profile.mainOption.disabledSpellsCD, { text = C_Spell.GetSpellInfo(spellid), value = spellid })
     end
 end
 
