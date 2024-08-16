@@ -871,8 +871,8 @@ end
 
 if not RubimRH.queuedSpell[1]:CooldownUp() or not RubimRH.queuedSpell[1]:IsAvailable() or not Player:AffectingCombat()
 or (S.Feint:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffUp(S.Feint)) 
-or (S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffP(S.CheapShot) or Target:DebuffP(S.KidneyShot) or Target:DebuffP(S.Blind) or Target:DebuffP(S.Gouge))) 
-or (S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffP(S.CheapShot) or Target:DebuffP(S.KidneyShot) or Target:DebuffP(S.Blind))) then
+or (S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind) or Target:DebuffUp(S.Gouge))) 
+or (S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind))) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
