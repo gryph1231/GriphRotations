@@ -845,3 +845,52 @@ do
       "SPELL_AURA_REMOVED"
     )
   end
+
+
+
+  -- cp_max_spend
+do
+    
+   local DeeperStratagem = Spell(193531)
+   local DeviousStratagem = Spell(394321)
+   local SecretStratagem = Spell(394320)
+  
+  function CPMaxSpend()
+    return 5 + (DeeperStratagem:IsAvailable() and 1 or 0) + (DeviousStratagem:IsAvailable() and 1 or 0) + (SecretStratagem:IsAvailable() and 1 or 0)
+  end
+end
+
+
+
+
+  do
+    local OpportunityBuff = Spell(195627)
+    local FanCP = 0
+    local FanStart = GetTime()
+  
+    function FantheHammerCP()
+      if (GetTime() - FanStart) < 0.5 and FanCP > 0 then
+        if FanCP > Player:ComboPoints() then
+          return FanCP
+        else
+          FanCP = 0
+        end
+      end
+  
+      return 0
+    end
+  
+    -- Reset counter on energize
+    HL:RegisterForSelfCombatEvent(
+      function(_, _, _, _, _, _, _, _, _, _, _, SpellID, _, _, Amount, Over )
+        if SpellID == 185763 then
+          if (GetTime() - FanStart) > 0.5 then
+            -- Subsequent Fan the Hammer procs are reduced by 1 CP
+            FanCP = math.min(CPMaxSpend(), Player:ComboPoints() + Amount + (math.max(0, Amount - 1) * math.min(2, Player:BuffStack(OpportunityBuff) - 1)))
+            FanStart = GetTime()
+          end
+        end
+      end,
+      "SPELL_ENERGIZE"
+    )
+  end

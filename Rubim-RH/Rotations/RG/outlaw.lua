@@ -114,6 +114,7 @@ RubimRH.Spell[260] = {
     GreenskinsWickersBuff  = Spell(394131),
     SliceandDice           = Spell(315496),
     Vigor                  = Spell(14983),
+    Ruthlessness            = Spell(14161),
     Exhaustion             = Spell(57723),
     PrecisionShot          = Spell(428377),
     Blind                  = Spell(2094),
@@ -221,18 +222,6 @@ local function StealthSpell()
   
 
 
-  -- cp_max_spend
-
-  
-    local function CPMaxSpend()
-      return 5 + (S.DeeperStratagem:IsAvailable() and 1 or 0) + (S.DeviousStratagem:IsAvailable() and 1 or 0) + (S.SecretStratagem:IsAvailable() and 1 or 0)
-    end
-  
-  
-  -- "cp_spend"
-  function CPSpend()
-    return math.min(Player:ComboPoints(), CPMaxSpend())
-  end
   
 -- Ensure that the functions are defined at the correct place
 local EchoingReprimandCP2 = Spell(323558)
@@ -405,11 +394,7 @@ end
     return not Player:IsTanking(Target)
   end
   
-  local function Vanish_Opportunity_Condition ()
-    -- actions.stealth_cds=variable,name=vanish_opportunity_condition,value=!talent.shadow_dance&talent.fan_the_hammer.rank+talent.quick_draw+talent.audacity<talent.count_the_odds+talent.keep_it_rolling
-    return not S.ShadowDanceTalent:IsAvailable()
-      and S.FantheHammer:TalentRank() + num(S.QuickDraw:IsAvailable()) + num(S.Audacity:IsAvailable()) < num(S.CountTheOdds:IsAvailable()) + num(S.KeepItRolling:IsAvailable())
-  end
+
   
   local function Stealth()
     if S.BladeFlurry:IsReady() then
@@ -622,32 +607,13 @@ local function StealthCDs ()
 return S.GhostlyStrike:Cast()
 end
   
-    -- if Settings.Commons.Enabled.Trinkets then
-    --   -- actions.cds+=/	use_item,name=manic_grieftorch,if=!stealthed.all&buff.between_the_eyes.up|fight_remains<=5
-    --   if I.ManicGrieftorch:IsEquippedAndReady() then
-    --     if (not Player:StealthUp(true, true) and Player:BuffUp(S.BetweentheEyes) or
-    --       HL.BossFilteredFightRemains("<=", 5)) then
-    --       if Cast(I.ManicGrieftorch, nil, Settings.CommonsDS.DisplayStyle.Trinkets, not Target:IsItemInRange(I.ManicGrieftorch)) then return "Manic Grieftorch"; end
-    --     end
-    --   end
-  
-    --   -- actions.cds+=/use_item,name=beacon_to_the_beyond,if=!stealthed.all&buff.between_the_eyes.up|fight_remains<=5
-    --   if I.BeaconToTheBeyond:IsEquippedAndReady() then
-    --     if not Player:StealthUp(true, true) and Player:BuffUp(S.BetweentheEyes)
-    --       or HL.BossFilteredFightRemains("<", 5) then
-    -- return I.BeaconToTheBeyond:Cast()
-    --   end
-    -- end
 
-  
-    --   -- actions.cds+=/use_item,name=imperfect_ascendancy_serum,if=!stealthed.all|fight_remains<=22
-    --   if I.ImperfectAscendancySerum:IsEquippedAndReady() then
-    --     if not Player:StealthUp(true, true) or HL.BossFilteredFightRemains("<=", 22) then
-    --       return S.ImperfectAscendancySerum:Cast()
-    --     end
-    --   end
-    -- end
-  
+if RubimRH.CDsON() and targetRange20 and not Player:StealthUp(true, true) and AuraUtil.FindAuraByName("Between the Eyes", "player")
+and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (not targetdying or target_is_dummy()) then
+local ShouldReturn = UseItems();
+if ShouldReturn then return ShouldReturn; end
+end
+
     -- actions.finish+=/killing_spree,if=variable.Finish_Condition()&!stealthed.all
     if IsReady("Killing Spree") and targetRange10 and Finish_Condition() and not Player:StealthUp(true, true) then
     return S.KillingSpree:Cast()
@@ -671,62 +637,9 @@ return S.ThistleTea:Cast()
 return S.BladeRush:Cast()
 end
   
-    -- -- actions.cds+=/potion,if=buff.bloodlust.react|fight_remains<30|buff.adrenaline_rush.up
-    -- if Settings.Commons.Enabled.Potions then
-    --   local PotionSelected = Everyone.PotionSelected()
-    --   if PotionSelected and PotionSelected:IsReady() and (Player:BloodlustUp() or HL.BossFilteredFightRemains("<", 30) or Player:BuffUp(S.AdrenalineRush)) then
-    --     if Cast(PotionSelected, nil, Settings.CommonsDS.DisplayStyle.Potions) then return "Cast Potion"; end
-    --   end
-    -- end
   
 
   
-    -- if Settings.Commons.Enabled.Trinkets then
-    --   -- actions.cds+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=gcd.remains<=action.sinister_strike.gcd%2
-    --   -- &((!trinket.1.is.dragonfire_bomb_dispenser&trinket.1.cooldown.remains>10|trinket.2.cooldown.remains>10)
-    --   -- |cooldown.dragonfire_bomb_dispenser.charges>2|fight_remains<20|!trinket.2.has_cooldown|!trinket.1.has_cooldown)
-    --   if I.DragonfireBombDispenser:IsEquippedAndReady() then
-    --     if ((trinket1:ID() ~= I.DragonfireBombDispenser:ID() and trinket1:CooldownRemains() > 10 or
-    --       trinket2:CooldownRemains() > 10) or I.DragonfireBombDispenser:OnUseSpell():Charges() > 2 or HL.BossFilteredFightRemains("<", 20) or not trinket2:HasCooldown() or not trinket1:HasCooldown()) then
-    --       if Cast(I.DragonfireBombDispenser, nil, Settings.CommonsDS.DisplayStyle.Trinkets, not Target:IsItemInRange(I.DragonfireBombDispenser)) then return "Dragonfire Bomb Dispenser"; end
-    --     end
-    --   end
-  
-    --   -- actions.cds+=/use_item,name=stormeaters_boon,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|fight_remains<10
-    --   if I.StormEatersBoon:IsEquippedAndReady() then
-    --     if inRange8 > 2 or HL.BossFilteredFightRemains("<", 10) then
-    --       if Cast(I.StormEatersBoon, nil, Settings.CommonsDS.DisplayStyle.Trinkets) then return "Storm Eaters Boon"; end
-    --     end
-    --   end
-  
-    --   -- actions.cds+=/use_item,name=enduring_dreadplate,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|raid_event.adds.count<2|fight_remains<16
-    --   if I.EnduringDreadplate:IsEquippedAndReady() then
-    --     if inRange8 > 2 or HL.BossFilteredFightRemains("<", 16) then
-    --       if Cast(I.EnduringDreadplate, nil, Settings.CommonsDS.DisplayStyle.Trinkets) then return "Enduring Dreadplate"; end
-    --     end
-    --   end
-  
-    --   -- actions.cds+=/use_item,name=windscar_whetstone,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|fight_remains<7
-    --   if I.WindscarWhetstone:IsEquippedAndReady() then
-    --     if inRange8 > 2 or HL.BossFilteredFightRemains("<", 7) then
-    --       if Cast(I.WindscarWhetstone, nil, Settings.CommonsDS.DisplayStyle.Trinkets) then return "Windscar Whetstone"; end
-    --     end
-    --   end
-  
-    --   -- # Default conditions for usable items.
-    --   -- actions.cds+=/use_items,slots=trinket1,if=debuff.between_the_eyes.up|trinket.1.has_stat.any_dps|fight_remains<=20
-    --   -- actions.cds+=/use_items,slots=trinket2,if=debuff.between_the_eyes.up|trinket.2.has_stat.any_dps|fight_remains<=20
-    --   local TrinketToUse = Player:GetUseableItems(OnUseExcludes, 13) or Player:GetUseableItems(OnUseExcludes, 14)
-    --   local TrinketSpell
-    --   local TrinketRange = 100
-    --   if TrinketToUse then
-    --     TrinketSpell = TrinketToUse:OnUseSpell()
-    --     TrinketRange = (TrinketSpell and TrinketSpell.MaximumRange > 0 and TrinketSpell.MaximumRange <= 100) and TrinketSpell.MaximumRange or 100
-    --   end
-    --   if TrinketToUse and (Player:BuffUp(S.BetweentheEyes) or HL.BossFilteredFightRemains("<", 20) or TrinketToUse:HasStatAnyDps()) then
-    --     if Cast(TrinketToUse, nil, Settings.CommonsDS.DisplayStyle.Trinkets, not Target:IsInRange(TrinketRange)) then return "Generic use_items for " .. TrinketToUse:Name() end
-    --   end
-    -- end
   end
 
 
@@ -808,15 +721,22 @@ local function APL()
 
 
 
-
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
+
+if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
+    targetTTD = UnitHealth('target')/getCurrentDPS()
+    else targetTTD = 8888
+    end
+    
+        local targetdying = (aoeTTD() < 5 or targetTTD<5)
+    
 
 if true then
     tolerance = select(4, GetNetStats())/1000 + 0.18
@@ -942,7 +862,7 @@ if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() and TargetinRange(8) and Player:
     if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
-
+end
 
 
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
@@ -958,7 +878,16 @@ end
 
 
 
-end
+
+
+
+            --health pot -- will need to update item ID of HPs as expansions progress
+            if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
+            GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(207023) == true and
+            GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1)
+            and (not Player:InArena() and not Player:InBattlegrounds()) then
+            return I.HPIcon:Cast()
+            end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Interrupts & Tranq--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
@@ -982,9 +911,11 @@ if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:Affecting
 		return S.autoattack:Cast()
 	end
 
-	if trinket1ready and TargetinRange(15) and RubimRH.CDsON() and not Player:StealthUp(true, true) and UnitHealth('target') > (UnitHealth('player') * (1 + (GetNumGroupMembers() * 0.5))) and not RtB_Reroll()  then
-		return I.tx1:Cast()
-    end
+  -- Fan the Hammer Combo Point Prediction
+  if S.FantheHammer:IsAvailable() and S.PistolShot:TimeSinceLastCast() < Player:GCDRemains() then
+    ComboPoints = math.max(ComboPoints, FantheHammerCP())
+    ComboPointsDeficit = Player:ComboPointsDeficit()
+  end
 
 	-- actions+=/call_action_list,name=cds
 	if CDs() then
@@ -1019,7 +950,7 @@ end
         end
     end
 
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
 RubimRH.Rotation.SetAPL(260, APL);
