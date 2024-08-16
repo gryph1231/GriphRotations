@@ -596,7 +596,7 @@ end
      
 
         TimeToHPG = ComputeTimeToHPG()
-        -- Spell Queue
+
         if Player:IsChanneling() or Player:IsCasting() then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
         end

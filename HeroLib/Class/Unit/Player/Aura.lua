@@ -48,25 +48,29 @@ do
     }
   }
 
+
+  local ShadowDance = Spell(185422)
+  local Shadowmeld = Spell(58984)
+  local Vanish = Spell(11327)
+  local Vanish2 = Spell(115193)
+  local Incarnation = Spell(102543)
+
   function Player:StealthRemains(CheckCombat, CheckSpecial, BypassRecovery)
     -- Considering there is a small delay between the ability cast and the buff trigger we also look at the time since last cast.
-    if Spell.Rogue then
-      if (CheckCombat and (Spell.Rogue.Commons.ShadowDance:TimeSinceLastCast() < 0.3 or Spell.Rogue.Commons.Vanish:TimeSinceLastCast() < 0.3))
-        or (CheckSpecial and Spell.Rogue.Commons.Shadowmeld:TimeSinceLastCast() < 0.3) then
+    
+      if (CheckCombat and (ShadowDance:TimeSinceLastCast() < 0.3 or Vanish:TimeSinceLastCast() < 0.3 or Vanish2:TimeSinceLastCast() < 0.3))
+        or (CheckSpecial and Shadowmeld:TimeSinceLastCast() < 0.3) then
           return 1
-      end
+      
     end
 
-    if Spell.Druid then
-      local Feral = Spell.Druid.Feral
-
-      if Feral then
-        if (CheckCombat and Feral.Incarnation:TimeSinceLastCast() < 0.3)
-          or (CheckSpecial and Feral.Shadowmeld:TimeSinceLastCast() < 0.3) then
+ 
+        if (CheckCombat and Incarnation:TimeSinceLastCast() < 0.3)
+          or (CheckSpecial and Shadowmeld:TimeSinceLastCast() < 0.3) then
           return 1
         end
-      end
-    end
+      
+    
 
     for i = 1, #StealthSpellsByType do
       if i == 1 or (i == 2 and CheckCombat) or (i == 3 and CheckSpecial) then
