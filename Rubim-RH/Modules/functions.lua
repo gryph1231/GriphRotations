@@ -982,3 +982,20 @@ function GetMobsInCombat()
 
     return numMobsInCombat
 end
+
+
+
+function MissingHealth(healthPercent,without_virtue)
+    if healthPercent then
+        check = 
+        num(C_Spell.IsSpellInRange("Flash of Light","player") and ((UnitHealth("player") / UnitHealthMax("player")) * 100) <= healthPercent and (not AuraUtil.FindAuraByName("Beacon of Virtue", "player") or not without_virtue)) +
+        num(C_Spell.IsSpellInRange("Flash of Light","party1") and ((UnitHealth("party1") / UnitHealthMax("party1")) * 100) <= healthPercent and (not AuraUtil.FindAuraByName("Beacon of Virtue", "party1") or not without_virtue)) +
+        num(C_Spell.IsSpellInRange("Flash of Light","party2") and ((UnitHealth("party2") / UnitHealthMax("party2")) * 100) <= healthPercent and (not AuraUtil.FindAuraByName("Beacon of Virtue", "party2") or not without_virtue)) +
+        num(C_Spell.IsSpellInRange("Flash of Light","party3") and ((UnitHealth("party3") / UnitHealthMax("party3")) * 100) <= healthPercent and (not AuraUtil.FindAuraByName("Beacon of Virtue", "party3") or not without_virtue)) +
+        num(C_Spell.IsSpellInRange("Flash of Light","party4") and ((UnitHealth("party4") / UnitHealthMax("party4")) * 100) <= healthPercent and (not AuraUtil.FindAuraByName("Beacon of Virtue", "party4") or not without_virtue))
+    else
+        check = 0
+    end
+    
+    return check
+end
