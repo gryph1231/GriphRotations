@@ -30,12 +30,15 @@ Modules\functions.lua
 Modules\MiniMap.lua
 Rotations\Shared.lua
 
+Rotations\WR\prot.lua
+Rotations\WR\fury.lua
 Rotations\RG\outlaw.lua
 Rotations\RG\sub.lua
 Rotations\HR\bm.lua
 Rotations\HR\mm.lua
 Rotations\HR\survival.lua
 Rotations\SM\enha.lua
+Rotations\SM\eleme.lua
 Rotations\DK\frost.lua
 Rotations\DK\blood.lua
 Rotations\DH\havoc.lua
