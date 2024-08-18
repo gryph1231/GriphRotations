@@ -30,7 +30,7 @@ RubimRH.Spell[65] = {
     Consecration = Spell(26573),
     Judgment = Spell(275773),
     CrusaderStrike = Spell(35395),
-    --AvengingWrath = Spell(31884),
+    AvengingWrath = Spell(31884),
     FlashofLight = Spell(19750),
     BlessingofFreedom = Spell(1044),
     ShieldoftheRighteous = Spell(415091),
@@ -42,7 +42,7 @@ RubimRH.Spell[65] = {
     DivineShield = Spell(642),
     LayonHands = Spell(633),
     LayonHandsP1 = Spell(32223), --crusader aura
-    LayonHandsP2 = Spell(62121), --hand of reckoning
+    LayonHandsP2 = Spell(62124), --hand of reckoning
     LayonHandsP3 = Spell(317920), --concentration aura
     LayonHandsP4 = Spell(105809), --holy avenger
     BlessingofSacrificeP1 = Spell(6940),
@@ -65,16 +65,17 @@ RubimRH.Spell[65] = {
     CleanseP3 = Spell(148039), --barrier of faith
     CleanseP4 = Spell(155145), --arcane torrent
     HolyPrism = Spell(114165),
-    HolyPrismP = Spell(183435), --retribution aura
-    HolyPrismP1 = Spell(82326), --holy light
-    HolyPrismP2 = Spell(388007), --blessing of summer
-    HolyPrismP3 = Spell(183998), --lotm
-    HolyPrismP4 = Spell(59752), --human racial
+    -- HolyPrismP = Spell(183435), --retribution aura
+    -- HolyPrismP1 = Spell(414176), --daybreak
+    -- HolyPrismP2 = Spell(),
+    -- HolyPrismP3 = Spell(183998), --lotm
+    -- HolyPrismP4 = Spell(59752), --human racial
+    BlessingofSummer = Spell(388007),
     Potion = Spell(176108),
     SetFocus = Spell(31884), --avenging wrath
     ClearFocus = Spell(200652), --tyrs deliverance
 };
---unused icons: daybreak, hand of div, trink2, avenging wrath
+--unused icons: hand of div, holy light, trink2,
 local S = RubimRH.Spell[65]
 
 if not Item.Paladin then
@@ -126,6 +127,53 @@ local function Spender()
     if IsReady("Shield of the Righteous") and TargetinRange(5) and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
         return S.ShieldoftheRighteous:Cast()
     end  
+
+    return nil
+end
+
+local function BlessingReady(blessing)
+    if blessing then
+        if blessing == "Summer" and C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636845 then
+            return true
+        elseif blessing == "Autumn" and C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636843 then
+            return true
+        elseif blessing == "Winter" and C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636846 then
+            return true
+        elseif blessing == "Spring" and C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636844 then
+            return true
+        else
+            return false
+        end
+    else
+        return false
+    end
+
+    return false
+end
+
+local function BlessingofSummer()
+    -- C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636845 --summer
+    -- C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636843 --autumn
+    -- C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636846 --winter
+    -- C_Spell.GetSpellInfo("Blessing of Summer").iconID == 3636844 --spring
+
+    if Player:AffectingCombat() then
+        if IsReady("Blessing of Summer") and BlessingReady("Summer") and AuraUtil.FindAuraByName("Avenging Wrath", "player") then
+            return Item(178675):Cast()
+        end
+
+        if IsReady("Blessing of Autumn") and BlessingReady("Autumn") and (S.DivineToll:CooldownDown() or S.HolyPrism:CooldownDown() or S.AvengingWrath:CooldownDown() or S.HolyPrism:CooldownDown()) then
+            return Item(178675):Cast()
+        end
+
+        if IsReady("Blessing of Spring") and BlessingReady("Spring") and ((MissingHealth(85) >= 3 or MissingHealth(75) >= 2) or Player:HealthPercentage() < 65) then
+            return Item(178675):Cast()
+        end
+    end
+
+    if IsReady("Blessing of Winter") and BlessingReady("Winter") and (Player:ManaPercentage() < 80 or (Player:ManaPercentage() < 90 and Player:AffectingCombat())) then
+        return Item(178675):Cast()
+    end
 
     return nil
 end
@@ -275,6 +323,14 @@ end
 --     -- end
 -- end
 
+if S.DivineToll:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Divine Toll") and IsReady("Blessing of Summer") and BlessingReady("Summer") then
+    return Item(178675):Cast()
+end
+
+if S.BeaconofVirtue:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Beacon of Virtue") and IsReady("Blessing of Summer") and BlessingReady("Summer") then
+    return Item(178675):Cast()
+end
+
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
     return RubimRH.QueuedSpell():Cast()
 end
@@ -282,15 +338,15 @@ end
 ---------------------------------------------------------Interrupts & Tranq-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if RubimRH.InterruptsON() then 
-    if IsReady("Rebuke") and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
-        if C_Spell.IsSpellInRange("Rebuke","mouseover") and notInterruptibleMouseover == false then
-            return S.Rebuke:Cast()
-        end
+    -- if IsReady("Rebuke") and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
+    --     if C_Spell.IsSpellInRange("Rebuke","mouseover") and notInterruptibleMouseover == false then
+    --         return S.Rebuke:Cast()
+    --     end
 
-        if C_Spell.IsSpellInRange("Rebuke","target") and notInterruptibleTarget == false then
-            return S.Rebuke:Cast()
-        end
-    end
+    --     if C_Spell.IsSpellInRange("Rebuke","target") and notInterruptibleTarget == false then
+    --         return S.Rebuke:Cast()
+    --     end
+    -- end
     
     if IsReady("Rebuke") and TargetinRange(nil,"Rebuke") and notInterruptible == false and (cast_time > Player:GCDRemains() + 0.47 or channel_time > Player:GCDRemains() + 0.47) then
         return S.Rebuke:Cast()
@@ -324,13 +380,13 @@ end
             return S.DivineShield:Cast()
         end
 
-        if trinket1ready and Player:HealthPercentage() < 40 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70) >= 3 or Player:HealthPercentage() < 30) and not AuraUtil.FindAuraByName("Divine Shield", "player") then
+        if trinket1ready and Player:HealthPercentage() < 40 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 30) and not AuraUtil.FindAuraByName("Divine Shield", "player") then
             return I.tx1:Cast()
         end
     end
 
-    if IsReady("Lay on Hands") and los == false then
-        if LowestAlly("HP") < 20 and (UnitAffectingCombat(LowestAlly("UnitID")) or (not IsReady("Holy Prism") and not IsReady("Holy Shock"))) then
+    if IsReady("Lay on Hands") and los == false and Player:GCDRemains() < 0.5 then
+        if LowestAlly("HP") < 20 and UnitAffectingCombat(LowestAlly("UnitID")) and ((not Spender() and not IsReady("Holy Shock")) or MissingHealth(35,1) >= 2) then
             if C_Spell.IsSpellInRange("Holy Shock",LowestAlly("UnitID")) then
                 if LowestAlly("UnitID") == "player" and not trinket1ready and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Forbearance", "player", "HARMFUL") then
                     return S.LayonHands:Cast()
@@ -356,13 +412,13 @@ end
             return I.HPIcon:Cast()
         end
 
-        if IsReady("Divine Protection") and Player:HealthPercentage() < 70 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70) >= 3 or Player:HealthPercentage() < 20) and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Divine Shield", "player") then
+        if IsReady("Divine Protection") and Player:HealthPercentage() < 70 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 20) and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Divine Shield", "player") then
             return S.DivineProtection:Cast()
         end
 
         if IsReady("Blessing of Sacrifice") and los == false then
             if LowestAlly("HP") <= 35 and Player:HealthPercentage() >= 90 then
-                if C_Spell.IsSpellInRange("Blessing of Sacrifice",LowestAlly("UnitID")) then
+                if C_Spell.IsSpellInRange("Blessing of Sacrifice",LowestAlly("UnitID")) and UnitAffectingCombat(LowestAlly("UnitID")) then
                     if LowestAlly("UnitID") == "party1" then
                     --and (UnitGroupRolesAssigned("party1") == "DAMAGER" or UnitGroupRolesAssigned("party1") == "HEALER") then
                         return S.BlessingofSacrificeP1:Cast()
@@ -392,15 +448,27 @@ if not C_Spell.IsCurrentSpell(6603) and TargetinRange(8) and UnitCanAttack("play
     return S.autoattack:Cast()
 end
 
-if IsReady("Divine Toll") then
-    if MissingHealth(70) >= 3 or MissingHealth(50) >= 2 then
+if BlessingofSummer() and RubimRH.CDsON() then
+	return BlessingofSummer()
+end
+
+if IsReady("Divine Toll") and RubimRH.CDsON() then
+    if (MissingHealth(70,1) >= 3 or MissingHealth(50,1) >= 2) or MissingHealth(40) >= 2 then
+        if IsReady("Blessing of Summer") and BlessingReady("Summer") then
+            return Item(178675):Cast()
+        end
+
         if IsReady("Divine Toll") then
             return S.DivineToll:Cast()
         end
     end
 end
 
-if IsReady("Beacon of Virtue") and MissingHealth(85) >= 2 and LowestAlly("HP") >= 35 then
+if IsReady("Beacon of Virtue") and LowestAlly("HP") >= 35 and (MissingHealth(85) >= 3 or MissingHealth(75) >= 2) then
+    if IsReady("Blessing of Summer") and BlessingReady("Summer") then
+        return Item(178675):Cast()
+    end
+
     return S.BeaconofVirtue:Cast()
 end
 
@@ -413,24 +481,24 @@ if IsReady("Holy Prism") then
         return S.HolyPrism:Cast()
     end
 
-    if MissingHealth(85) <= 1 and (LowestAlly("HP") <= 40 or (not Player:AffectingCombat() and LowestAlly("HP") <= 80 and (not Spender() or Player:HolyPower() < 3) and not IsReady("Holy Shock"))) then
-        if C_Spell.IsSpellInRange("Holy Prism",LowestAlly("UnitID")) then
-            if LowestAlly("UnitID") == "player" then
-                return S.HolyPrismP:Cast()
-            elseif LowestAlly("UnitID") == "party1" then
-                return S.HolyPrismP1:Cast()
-            elseif LowestAlly("UnitID") == "party2" then
-                return S.HolyPrismP2:Cast()
-            elseif LowestAlly("UnitID") == "party3" then
-                return S.HolyPrismP3:Cast()
-            elseif LowestAlly("UnitID") == "party4" then
-                return S.HolyPrismP4:Cast()
-            end
-        end
-    end
+    -- if MissingHealth(85) <= 1 and (LowestAlly("HP") <= 40 or (not Player:AffectingCombat() and LowestAlly("HP") <= 80 and (not Spender() or Player:HolyPower() < 3) and not IsReady("Holy Shock"))) then
+    --     if C_Spell.IsSpellInRange("Holy Prism",LowestAlly("UnitID")) then
+    --         if LowestAlly("UnitID") == "player" then
+    --             return S.HolyPrismP:Cast()
+    --         elseif LowestAlly("UnitID") == "party1" then
+    --             return S.HolyPrismP1:Cast()
+    --         elseif LowestAlly("UnitID") == "party2" then
+    --             return S.HolyPrismP2:Cast()
+    --         elseif LowestAlly("UnitID") == "party3" then
+    --             return S.HolyPrismP3:Cast()
+    --         elseif LowestAlly("UnitID") == "party4" then
+    --             return S.HolyPrismP4:Cast()
+    --         end
+    --     end
+    -- end
 end
 
-if IsReady("Beacon of Virtue") and MissingHealth(85) >= 2 then
+if IsReady("Beacon of Virtue") and (MissingHealth(85) >= 3 or MissingHealth(75) >= 2) then
     return S.BeaconofVirtue:Cast()
 end
 
@@ -512,13 +580,14 @@ if IsReady("Judgment") and TargetinRange(nil,"Judgment") and UnitCanAttack("play
     return S.Judgment:Cast()
 end
 
-if IsReady("Consecration") and UnitCanAttack("player","target") and (TargetinRange(8) and not Player:IsMoving() or TargetinRange(5) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Consecration", "player") then
+if IsReady("Crusader Strike") and TargetinRange(nil,"Crusader Strike") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+    return S.CrusaderStrike:Cast()
+end 
+
+if IsReady("Consecration") and UnitCanAttack("player","target") and not AuraUtil.FindAuraByName("Consecration", "player") and ((TargetinRange(8) and not Player:IsMoving()) or (TargetinRange(5) and Player:IsMoving())) then
     return S.Consecration:Cast()
 end
 
-if IsReady("Crusader Strike") and TargetinRange(nil,"Crusader Strike") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
-    return S.CrusaderStrike:Cast()
-end  
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end
 
