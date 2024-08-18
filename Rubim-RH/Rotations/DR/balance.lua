@@ -337,7 +337,7 @@ local function EvaluateCycleSunfireST(Target)
         return S.StellarFlare:Cast()
     end
     -- starfire,if=!talent.stellar_flare
-    if S.Starfire:IsCastable() and not Player:IsMoving() and (not S.StellarFlare:IsAvailable()) then
+    if S.Starfire:IsCastable() and starfirecastmoving and (not S.StellarFlare:IsAvailable()) then
         return S.Starfire:Cast()
     end
   end
@@ -368,19 +368,19 @@ local function EvaluateCycleSunfireST(Target)
   local function St()
 
 
-    if S.Starfire:TimeSinceLastCast()>C_Spell.GetSpellInfo("Starfire").castTime*.001  and (S.Starfire:Count()==2 or S.Starfire:Count() ==1 and not Player:IsCasting(S.Starfire)) then
+    if S.Starfire:TimeSinceLastCast()>C_Spell.GetSpellInfo("Starfire").castTime*.001-0.1 and (S.Starfire:Count()==2 or S.Starfire:Count() ==1 and not Player:IsCasting(S.Starfire)) then
         caststarfire = true
     else
         caststarfire = false
     end
-
+    if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() then
+      return S.Moonfire:Cast()
+  end
     if IsReady("Sunfire") and  Sunfiredebuff< 18*0.3 + Player:GCDRemains() then
         return S.Sunfire:Cast()
     end
     
-    if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() then
-        return S.Moonfire:Cast()
-    end
+
     
     if IsReady("Stellar Flare") and  StellarFlareDebuff < 24*0.3 + Player:GCDRemains()  then
         return S.StellarFlare:Cast()
@@ -406,7 +406,7 @@ local function EvaluateCycleSunfireST(Target)
     -- end
     -- starfire,if=variable.enter_eclipse&(variable.solar_eclipse_st|buff.eclipse_solar.up)
 
-    if IsReady("Starfire") and not Player:IsMoving() and (S.Starfire:Count() == 2 or S.Starfire:Count() == 1 and not Player:IsCasting(S.Starfire) and caststarfire ) and not AuraUtil.FindAuraByName("Eclipse (Solar)", "player") then
+    if IsReady("Starfire") and starfirecastmoving and (S.Starfire:Count() == 2 or S.Starfire:Count() == 1 and not Player:IsCasting(S.Starfire) and caststarfire ) and not AuraUtil.FindAuraByName("Eclipse (Solar)", "player") then
         return S.Starfire:Cast()
     end
 
@@ -415,13 +415,19 @@ local function EvaluateCycleSunfireST(Target)
         return S.Starsurge:Cast()
     end
     
-    if IsReady("Wrath") and AuraUtil.FindAuraByName("Eclipse (Solar)", "player") then
+    if IsReady("Wrath") then
         return S.Wrath:Cast()
     end
     
     
 
 
+    if IsReady("Moonfire") and S.Moonfire:TimeSinceLastCast()>S.Sunfire:TimeSinceLastCast() then
+      return S.Moonfire:Cast()
+    end
+    if IsReady("Sunfire") and S.Sunfire:TimeSinceLastCast()>S.Moonfire:TimeSinceLastCast() then
+      return S.Sunfire:Cast()
+    end
 
 
 
@@ -560,19 +566,21 @@ local function EvaluateCycleSunfireST(Target)
   
   local function AoE()
 
-if S.Wrath:TimeSinceLastCast()>C_Spell.GetSpellInfo("Wrath").castTime*.001 and (S.Wrath:Count()==2  or S.Wrath:Count() ==1 and not Player:IsCasting(S.Wrath)) then
+if S.Wrath:TimeSinceLastCast()>C_Spell.GetSpellInfo("Wrath").castTime*.001-0.1 and (S.Wrath:Count()==2  or S.Wrath:Count() ==1 and not Player:IsCasting(S.Wrath)) then
     castwrath = true
 else
     castwrath = false
+end
+
+
+if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() then
+  return S.Moonfire:Cast()
 end
 
 if IsReady("Sunfire") and  Sunfiredebuff< 18*0.3 + Player:GCDRemains()  then
     return S.Sunfire:Cast()
 end
 
-if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() then
-    return S.Moonfire:Cast()
-end
 
 if IsReady("Stellar Flare") and StellarFlareDebuff < 24*0.3 + Player:GCDRemains()   then
     return S.StellarFlare:Cast()
@@ -603,13 +611,17 @@ if IsReady("Starfall") then
     return S.Starfall:Cast()
 end
 
-if IsReady("Starfire") and AuraUtil.FindAuraByName("Eclipse (Lunar)", "player") then
+if IsReady("Starfire") and starfirecastmoving then
     return S.Starfire:Cast()
 end
 
 
-
-
+if IsReady("Moonfire") and S.Moonfire:TimeSinceLastCast()>S.Sunfire:TimeSinceLastCast() then
+  return S.Moonfire:Cast()
+end
+if IsReady("Sunfire") and S.Sunfire:TimeSinceLastCast()>S.Moonfire:TimeSinceLastCast() then
+  return S.Sunfire:Cast()
+end
 
 
 
@@ -807,7 +819,7 @@ end)
     local highkey = 4
 
 
-
+starfirecastmoving = (AuraUtil.FindAuraByName("Owlkin Frenzy","player") or not Player:IsMoving())
 -- print(C_Spell.GetSpellInfo("Wrath").castTime)
 
     HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
@@ -1035,13 +1047,12 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 
 
 -- print(OrbitBreakerStacks)
-    -- Moonkin Form OOC, if setting is true
-    if S.MoonkinForm:IsCastable() and (not AuraUtil.FindAuraByName("Cat Form","player") and not AuraUtil.FindAuraByName("Travel Form","player") or Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange30) and not AuraUtil.FindAuraByName("Moonkin Form","player") and Player:IsMoving() then
+    if IsReady("Moonkin Form") and (not AuraUtil.FindAuraByName("Cat Form","player") and not AuraUtil.FindAuraByName("Travel Form","player") or Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange30) and not AuraUtil.FindAuraByName("Moonkin Form","player") and Player:IsMoving() then
         return S.MoonkinForm:Cast()
       end
   
 
-    if S.MarkoftheWild:IsCastable() and motwremains <300 and not Player:AffectingCombat()  and Player:CanAttack(Target) and Player:IsMoving() then
+    if IsReady("Mark of the Wild") and motwremains <300 and not Player:AffectingCombat()  and Player:IsMoving() then
         return S.MarkoftheWild:Cast()
       end
 
