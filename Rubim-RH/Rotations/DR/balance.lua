@@ -272,7 +272,7 @@ local function EvaluateCycleSunfireST(TargetUnit)
   
   local function InitVars()
     -- variable,name=no_cd_talent,value=!talent.celestial_alignment&!talent.incarnation_chosen_of_elune|druid.no_cds
-    VarNoCDTalent = not S.CelestialAlignment:IsAvailable() and not S.IncarnationTalent:IsAvailable() or not CDsON()
+    VarNoCDTalent = not S.CelestialAlignment:IsAvailable() and not S.IncarnationTalent:IsAvailable() or not RubimRH.CDsON()
     -- variable,name=on_use_trinket,value=0
     VarOnUseTrinket = 0
     -- variable,name=on_use_trinket,op=add,value=trinket.1.has_proc.any&trinket.1.cooldown.duration|trinket.1.is.spoils_of_neltharus|trinket.1.is.mirror_of_fractured_tomorrows
@@ -346,7 +346,7 @@ local function EvaluateCycleSunfireST(TargetUnit)
         return S.Sunfire:Cast()
     end
     -- variable,name=cd_condition_st,value=!druid.no_cds&(cooldown.ca_inc.remains<5&!buff.ca_inc.up&(target.time_to_die>15&buff.primordial_arcanic_pulsar.value<480|fight_remains<25+10*talent.incarnation_chosen_of_elune))
-    VarCDConditionST = CDsON() and (CaInc:CooldownRemains() < 5 and not CAIncBuffUp and (Target:TimeToDie() > 15 and PAPValue < 480 or FightRemains < 25 + 10 * num(S.Incarnation:IsAvailable())))
+    VarCDConditionST = RubimRH.CDsON() and (CaInc:CooldownRemains() < 5 and not CAIncBuffUp and (Target:TimeToDie() > 15 and PAPValue < 480 or FightRemains < 25 + 10 * num(S.Incarnation:IsAvailable())))
     -- moonfire,target_if=refreshable&remains<2&(target.time_to_die-remains)>6
     if S.Moonfire:IsCastable() and EvaluateCycleMoonfireST then
         return S.Moonfire:Cast()
@@ -412,7 +412,7 @@ local function EvaluateCycleSunfireST(TargetUnit)
         return S.Starsurge:Cast()
     end
     -- convoke_the_spirits,if=variable.convoke_condition
-    if S.ConvoketheSpirits:IsCastable() and CDsON() and (VarConvokeCondition) then
+    if S.ConvoketheSpirits:IsCastable() and RubimRH.CDsON() and (VarConvokeCondition) then
         return S.ConvoketheSpirits:Cast()
     end
     -- astral_communion,if=astral_power.deficit>variable.passive_asp+energize_amount
@@ -420,7 +420,7 @@ local function EvaluateCycleSunfireST(TargetUnit)
         return S.AstralCommunion:Cast()
     end
     -- force_of_nature,if=astral_power.deficit>variable.passive_asp+energize_amount
-    if S.ForceofNature:IsCastable() and CDsON() and (Player:AstralPowerDeficit() > VarPassiveAsp + S.ForceofNature:EnergizeAmount()) then
+    if S.ForceofNature:IsCastable() and RubimRH.CDsON() and (Player:AstralPowerDeficit() > VarPassiveAsp + S.ForceofNature:EnergizeAmount()) then
         return S.ForceofNature:Cast()
     end
     -- fury_of_elune,if=target.time_to_die>2&(buff.ca_inc.remains>3|cooldown.ca_inc.remains>30&buff.primordial_arcanic_pulsar.value<=280|buff.primordial_arcanic_pulsar.value>=560&astral_power>50)|fight_remains<10
@@ -495,7 +495,7 @@ local function EvaluateCycleSunfireST(TargetUnit)
         return S.Moonfire:Cast()
     end
     -- variable,name=cd_condition_aoe,value=!druid.no_cds&(cooldown.ca_inc.remains<5&!buff.ca_inc.up&(target.time_to_die>10&buff.primordial_arcanic_pulsar.value<500|fight_remains<25+10*talent.incarnation_chosen_of_elune))
-    VarCDConditionAoE = CDsON() and (CaInc:CooldownRemains() < 5 and not CAIncBuffUp and (Target:TimeToDie() > 10 and PAPValue < 500 or FightRemains < 25 + 10 * num(S.Incarnation:IsAvailable())))
+    VarCDConditionAoE =  RubimRH.CDsON() and (CaInc:CooldownRemains() < 5 and not CAIncBuffUp and (Target:TimeToDie() > 10 and PAPValue < 500 or FightRemains < 25 + 10 * num(S.Incarnation:IsAvailable())))
     -- sunfire,target_if=refreshable&(target.time_to_die-remains)>6-(spell_targets%2)&astral_power.deficit>variable.passive_asp+energize_amount
     if S.Sunfire:IsCastable() and EvaluateCycleSunfireAoE then
         return S.Sunfire:Cast()
@@ -581,7 +581,7 @@ local function EvaluateCycleSunfireST(TargetUnit)
       return S.AstralCommunion:Cast()
     end
     -- convoke_the_spirits,if=astral_power<50&spell_targets.starfall<3+talent.elunes_guidance&(buff.eclipse_lunar.remains>4|buff.eclipse_solar.remains>4)
-    if S.ConvoketheSpirits:IsCastable() and CDsON() and (Player:AstralPowerP() < 50 and EnemiesCount10ySplash < 3 + num(S.ElunesGuidance:IsAvailable()) and (Player:BuffRemains(S.EclipseLunar) > 4 or Player:BuffRemains(S.EclipseSolar) > 4)) then
+    if S.ConvoketheSpirits:IsCastable() and  RubimRH.CDsON() and (Player:AstralPowerP() < 50 and EnemiesCount10ySplash < 3 + num(S.ElunesGuidance:IsAvailable()) and (Player:BuffRemains(S.EclipseLunar) > 4 or Player:BuffRemains(S.EclipseSolar) > 4)) then
         return S.ConvoketheSpirits:Cast()
     end
     -- new_moon,if=astral_power.deficit>variable.passive_asp+energize_amount
