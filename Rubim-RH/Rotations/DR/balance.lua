@@ -24,6 +24,13 @@ end
 
 RubimRH.Spell[102] = {
  -- Racials
+ UrsolsVortex = Spell(102793),
+ Soothe = Spell(2908),
+ Typhoon = Spell(132469),
+ StampedingRoar = Spell(106898),
+ SolarBeam = Spell(78675),
+ Rebirth = Spell(20484),
+ IncapacitatingRoar = Spell(99),
 Berserking                            = Spell(26297),
 Shadowmeld                            = Spell(58984),
 -- Abilities
@@ -161,7 +168,15 @@ local S = RubimRH.Spell[102]
 
 if not Item.Druid then Item.Druid = {}; end
 Item.Druid.Balance = {
+    trink = Item(178751, { 13, 14 }),
 
+    bracer = Item(168978),
+    rez = Item(158379),
+    drums = Item(193470),
+    
+    HPIcon = Item(169451),
+    tx1 = Item(118330),
+    tx2 = Item(114616),
 
 	
 };
@@ -635,6 +650,23 @@ local function EvaluateCycleSunfireST(Target)
     -- if HR.CastAnnotated(S.Pool, false, "MOVING") then return "Pool AoE due to movement and no fallthru"; end
   end
   
+
+
+
+  if not loscheck then
+    loscheck = CreateFrame("Frame")
+end
+
+local losCheckTimer = 0
+
+local frame = loscheck
+frame:RegisterEvent("UI_ERROR_MESSAGE")
+frame:SetScript("OnEvent", function(self,event,errorType,message)
+	if message == 'Target not in line of sight' then
+		losCheckTimer = GetTime()
+	end	
+end)
+
   --- ======= MAIN =======
   local function APL()
 
@@ -811,30 +843,11 @@ else
 
         
         isEnraged = AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target")
-        
-    
-        channeling = select(1,UnitChannelInfo('target'))
-        
-        casting = select(1, UnitCastingInfo('target'))
+
     
         name, realm = UnitName('target')
     
-        _,_,_,_,_,_,_,notInterruptible,_ = UnitCastingInfo("target")
-        
-        start_time_cast_ms = select(4, UnitCastingInfo('target')) or 0
-        
-        current_time_ms = GetTime() * 1000
-        
-        elapsed_time_cast_ca = (start_time_cast_ms > 0) and (current_time_ms - start_time_cast_ms) or 0
-        
-        cast_time = elapsed_time_cast_ca / 1000
-    
-        start_time_channel_ms = select(4, UnitChannelInfo('target')) or 0
-        
-        elapsed_time_channel_ch = (start_time_channel_ms > 0) and (current_time_ms - start_time_channel_ms) or 0
-        
-        channel_time = elapsed_time_channel_ch / 1000
-    
+
         motw = select(1,AuraUtil.FindAuraByName("Mark of the Wild", "player"))
     
         if AuraUtil.FindAuraByName("Mark of the Wild","player") then
@@ -844,7 +857,21 @@ else
         end
     end
   
+    if S.Rebirth:Charges()== nil then
+        rezcharges = 0
+        else
+        rezcharges=S.Rebirth:Charges()
+        end
+    local castchannelTime = math.random(250, 500) / 1000
 
+    local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+    local currentTimeMS = GetTime() * 1000
+    local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+    local castTime = elapsedTimeca / 1000
+    local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+    local currentTimeMS = GetTime() * 1000
+    local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+    local channelTime = elapsedTimech / 1000
     
                                 --health pot -- will need to update item ID of HPs as expansions progress
                                 if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
@@ -864,7 +891,7 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
   end
   
-  if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+  if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) then
     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
   
@@ -873,11 +900,29 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
   end
   
 
+  if S.Barkskin:IsCastable() and (inRange30>=1 and Player:HealthPercentage()<45) then
+    return S.Barkskin:Cast()
+    end
+    if S.Renewal:IsCastable() and (inRange30>=1 and Player:HealthPercentage()<35) then
+        return S.Renewal:Cast()
+        end
+
+
   
+
+            -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
+            if IsReady("Rebirth",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
+                if IsReady("Rebirth") then
+                  return S.Rebirth:Cast()
+               
+                end
+              end
+              
+
 
 -- print(OrbitBreakerStacks)
     -- Moonkin Form OOC, if setting is true
-    if S.MoonkinForm:IsCastable() and (not AuraUtil.FindAuraByName("Travel Form","player") or Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange30) and not AuraUtil.FindAuraByName("Moonkin Form","player") and Player:IsMoving() then
+    if S.MoonkinForm:IsCastable() and (not AuraUtil.FindAuraByName("Cat Form","player") and not AuraUtil.FindAuraByName("Travel Form","player") or Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange30) and not AuraUtil.FindAuraByName("Moonkin Form","player") and Player:IsMoving() then
         return S.MoonkinForm:Cast()
       end
   
@@ -885,6 +930,22 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
     if S.MarkoftheWild:IsCastable() and motwremains <300 and not Player:AffectingCombat()  and Player:CanAttack(Target) and Player:IsMoving() then
         return S.MarkoftheWild:Cast()
       end
+
+
+      if (castTime > 0.1 or channelTime > 0.1) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and not isEnraged then
+
+
+        -- kick on GCD
+        if IsReady("Solar Beam") and kickprio() and targetRange30 and Player:GCDRemains()<0.5 then
+        return S.SolarBeam:Cast()
+        end
+
+      end
+	--Shiv
+	if IsReady("Soothe") and targetRange30 and isEnraged and Player:AffectingCombat() and targetTTD > 8 then
+		return S.Soothe:Cast()
+	end
+
 
       if RubimRH.CDsON() and targetRange20
               

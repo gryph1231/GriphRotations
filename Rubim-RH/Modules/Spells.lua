@@ -318,6 +318,14 @@ RubimRH.Spell[1] = {
 
 
 RubimRH.Spell[102] = {
+ -- Racials
+ UrsolsVortex = Spell(102793),
+ Soothe = Spell(2908),
+ Typhoon = Spell(132469),
+ StampedingRoar = Spell(106898),
+ SolarBeam = Spell(78675),
+ Rebirth = Spell(20484),
+ IncapacitatingRoar = Spell(99),
 -- Racials
 Berserking                            = Spell(26297),
 Shadowmeld                            = Spell(58984),
