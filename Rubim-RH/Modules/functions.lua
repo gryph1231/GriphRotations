@@ -999,3 +999,11 @@ function MissingHealth(healthPercent,without_virtue)
     
     return check
 end
+
+
+
+
+
+
+
+
