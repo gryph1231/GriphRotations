@@ -217,81 +217,124 @@ RubimRH.Spell[255] = {
  
 
 RubimRH.Spell[72] = {
-	
-	 ColdSteelHotBlood = Spell(288080), -- update
-	
-	
-	IntimidatingShout = Spell(5246),
-    ArcaneTorrent = Spell(80483),
-    AncestralCall = Spell(274738),
-    Berserking = Spell(26297),
-    BloodFury = Spell(20572),
-    Fireblood = Spell(265221),
-    GiftoftheNaaru = Spell(59547),
-    LightsJudgment = Spell(255647),
-    -- Abilities
-    BattleShout = Spell(6673),
-    BerserkerRage = Spell(18499),
-    Bloodthirst = Spell(23881),
-    Charge = Spell(100),
-    Execute = Spell(5308),
-    HeroicLeap = Spell(6544),
-    HeroicThrow = Spell(57755),
-	
-	CrushingBlow = Spell(335097),
-	BloodBath = Spell(335096),
-    RagingBlow = Spell(85288),
-    Rampage = Spell(184367),
-    Recklessness = Spell(1719),
-    VictoryRush = Spell(34428),
-    Whirlwind = Spell(190411),
-    WhirlwindPassive = Spell(12950),
-    WhirlwindBuff = Spell(85739),
-    EnragedRegeneration = Spell(184364),
-    Enrage = Spell(184362),
-    -- Talents
-    WarMachine = Spell(262231),
-    EndlessRage = Spell(202296),
-    FreshMeat = Spell(215568),
-    DoubleTime = Spell(103827),
-    ImpendingVictory = Spell(202168),
-    StormBolt = Spell(107570),
-    InnerRage = Spell(215573),
-    FuriousSlash = Spell(100130),
-    FuriousSlashBuff = Spell(202539),
-    Carnage = Spell(202922),
-    Massacre = Spell(206315),
+    autoattack = Spell(274738), --ancestral call
+    lust1 = Spell(57724),
+    lust2 = Spell(57723),
+    lust3 = Spell(80354),
+    lust4 = Spell(95809),
+    lust5 = Spell(264689),
+    lustAT = Spell(28730), -- arcane turrent
     
-    MeatCleaver = Spell(280392),
-    MeatCleaverBuff = Spell(280392),
-    DragonRoar = Spell(118000),
-    Bladestorm = Spell(46924),
-    RecklessAbandon = Spell(202751),
-    AngerManagement = Spell(152278),
-    SiegeBreaker = Spell(280772),
-    SiegeBreakerTalent = Spell(16037),
-    SiegeBreakerDebuff = Spell(280773),
-    SuddenDeath = Spell(280721),
-    SuddenDeathBuff = Spell(280776),
-    SuddenDeathBuffLeg = Spell(225947),
-    Victorious = Spell(32216),
-    VictoryRush = Spell(34428),
-    -- Defensive
-    RallyingCry = Spell(97462),
-    -- Utility
-    Pummel = Spell(6552),
-    PiercingHowl = Spell(12323),
-    -- Legendaries
-    FujiedasFury = Spell(207776),
-    StoneHeart = Spell(225947),
-    -- Misc
-    UmbralMoonglaives = Spell(242553),
-    SpellReflection = Spell(216890),
-    -- Azerite
-    AzeriteColdSteelHotBlood = Spell(288080),
-	
-			  --8.2 Essences
- }
+    --Fireblood                             = Spell(265221), used for bloodthirst and bloodbath until ggl fixed pixels
+    
+    -- Racials
+    AncestralCall                         = Spell(274738),
+    ArcaneTorrent                         = Spell(50613),
+    BagofTricks                           = Spell(312411),
+    Berserking                            = Spell(26297),
+    BloodFury                             = Spell(20572),
+    LightsJudgment                        = Spell(255647),
+    -- Abilities
+    BattleShout                           = Spell(6673),
+    BattleStance                          = Spell(386164),
+    Charge                                = Spell(100),
+    HeroicThrow                           = Spell(57755),
+    Pummel                                = Spell(6552),
+    Slam                                  = Spell(1464),
+    VictoryRush                           = Spell(34428),
+    EnragedRegeneration = Spell(184364),
+    DefensiveStance                       = Spell(386208),
+    -- Talents
+    Avatar                                = Spell(107574),
+    BerserkerRage                         = Spell(18499),
+    BerserkersTorment                     = Spell(390123),
+    Bladestorm                            = MultiSpell(227847, 389774),
+    BloodandThunder                       = Spell(384277),
+    ChampionsSpear                        = Spell(376079),
+    DoubleTime                            = Spell(103827),
+    CrushingForce                         = Spell(382764),
+    FrothingBerserker                     = Spell(215571),
+    Hurricane                             = Spell(390563),
+    ImmovableObject                       = Spell(394307),
+    IntimidatingShout                     = Spell(5246),
+    HeroicLeap                            = Spell(6544),
+    ImpendingVictory                      = Spell(202168),
+    OverwhelmingRage                      = Spell(382767),
+    RallyingCry                           = Spell(97462),
+    Ravager                               = Spell(228920),
+    RumblingEarth                         = Spell(275339),
+    Shockwave                             = Spell(46968),
+    SonicBoom                             = Spell(390725),
+    SpellReflection                       = Spell(23920),
+    StormBolt                             = Spell(107570),
+    ThunderClap                           = Spell(6343),
+    ThunderousRoar                        = Spell(384318),
+    TitanicThrow                          = Spell(384090),
+    WreckingThrow                         = Spell(384110),
+    -- Buffs
+    AvatarBuff                            = Spell(107574),
+    BattleShoutBuff                       = Spell(6673),
+    ChampionsMightBuff                    = Spell(386286),
+    HurricaneBuff                         = Spell(390581),
+    WarMachineBuff                        = Spell(262232),
+    -- Debuffs
+    ChampionsMightDebuff                  = Spell(376080),
+    MarkofFyralathDebuff                  = Spell(414532),
+    ThunderousRoarDebuff                  = Spell(397364),
+    -- Pool
+    Pool                                  = Spell(999910),
+    
+    
+    
+    -- Abilities
+    BerserkerStance                       = Spell(386196),
+    Bloodbath                             = Spell(335096),
+    CrushingBlow                          = Spell(335097),
+    Execute                               = MultiSpell(5308, 280735),
+    Whirlwind                             = Spell(190411),
+    -- Talents
+    AngerManagement                       = Spell(152278),
+    AshenJuggernaut                       = Spell(392536),
+    Bloodthirst                           = Spell(23881),
+    DancingBlades                         = Spell(391683),
+    ImprovedWhilwind                      = Spell(12950),
+    Massacre                              = Spell(206315),
+    OdynsFury                             = Spell(385059),
+    Onslaught                             = Spell(315720),
+    RagingBlow                            = Spell(85288),
+    Rampage                               = Spell(184367),
+    RecklessAbandon                       = Spell(396749),
+    Recklessness                          = Spell(1719),
+    Tenderize                             = Spell(388933),
+    TitanicRage                           = Spell(394329),
+    TitansTorment                         = Spell(390135),
+    WrathandFury                          = Spell(392936),
+    -- Buffs
+    AshenJuggernautBuff                   = Spell(392537),
+    BloodcrazeBuff                        = Spell(393951),
+    DancingBladesBuff                     = Spell(391688),
+    EnrageBuff                            = Spell(184362),
+    FuriousBloodthirstBuff                = Spell(423211), -- T31 2pc
+    MeatCleaverBuff                       = Spell(85739),
+    MercilessAssaultBuff                  = Spell(409983),
+    RecklessnessBuff                      = Spell(1719),
+    SuddenDeathBuff                       = Spell(280776),
+    -- Debuffs
+    GushingWoundDebuff                    = Spell(385042),
+    OdynsFuryDebuff                       = Spell(385060),
+    
+    
+    
+    -- Abilities
+    ThunderBlastAbility                   = Spell(435222),
+    -- Talents
+    CrashingThunder                       = Spell(436707),
+    ThunderBlast                          = Spell(435607),
+    -- Buffs
+    BurstofPowerBuff                      = Spell(437121),
+    ThunderBlastBuff                      = Spell(435615),
+    
+}    
 -- General Spells / Potion Icon
 RubimRH.Spell[1] = {
     Empty = Spell(1),

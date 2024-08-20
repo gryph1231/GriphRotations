@@ -373,16 +373,16 @@ local function EvaluateCycleSunfireST(Target)
     else
         caststarfire = false
     end
-    if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() then
+    if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() and targetTTD>5 then
       return S.Moonfire:Cast()
   end
-    if IsReady("Sunfire") and  Sunfiredebuff< 18*0.3 + Player:GCDRemains() then
+    if IsReady("Sunfire") and  Sunfiredebuff< 18*0.3 + Player:GCDRemains()  and targetTTD>5  then
         return S.Sunfire:Cast()
     end
     
 
     
-    if IsReady("Stellar Flare") and  StellarFlareDebuff < 24*0.3 + Player:GCDRemains()  then
+    if IsReady("Stellar Flare") and  StellarFlareDebuff < 24*0.3 + Player:GCDRemains() and targetTTD>5  then
         return S.StellarFlare:Cast()
     end
     if IsReady("Berserking") and RubimRH.CDsON() and AuraUtil.FindAuraByName("Incarnation: Chosen of Elune", "player") then
@@ -572,17 +572,16 @@ else
     castwrath = false
 end
 
-
-if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() then
+if IsReady("Moonfire") and  Moonfiredebuff < 22*0.3 + Player:GCDRemains() and targetTTD>5 then
   return S.Moonfire:Cast()
 end
-
-if IsReady("Sunfire") and  Sunfiredebuff< 18*0.3 + Player:GCDRemains()  then
+if IsReady("Sunfire") and  Sunfiredebuff< 18*0.3 + Player:GCDRemains()  and targetTTD>5  then
     return S.Sunfire:Cast()
 end
 
 
-if IsReady("Stellar Flare") and StellarFlareDebuff < 24*0.3 + Player:GCDRemains()   then
+
+if IsReady("Stellar Flare") and  StellarFlareDebuff < 24*0.3 + Player:GCDRemains() and targetTTD>5  then
     return S.StellarFlare:Cast()
 end
 if IsReady("Berserking") and RubimRH.CDsON() and AuraUtil.FindAuraByName("Incarnation: Chosen of Elune", "player") then
