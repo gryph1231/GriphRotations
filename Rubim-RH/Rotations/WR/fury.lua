@@ -282,15 +282,15 @@ Player:DebuffUp(S.lust5)) then
 RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-
+if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0 or not Target:Exists()) then
+  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+  end
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 return RubimRH.QueuedSpell():Cast()
 end
 
 
-if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) then
-RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-end
+
 
 -- print('aoecds10y:',aoecds10y)
 -- print('bs is ready:',S.Bladestorm:IsCastable())
