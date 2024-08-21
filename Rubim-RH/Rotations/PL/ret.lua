@@ -314,7 +314,7 @@ and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownRemains() > 10 
 return S.FinalReckoning:Cast()
 end
 
-if I.legendary:CooldownRemains()<1
+if I.legendary:CooldownRemains()<1 and C_Item.IsEquippedItem(206448)
 and RubimRH.CDsON()
 and targetRange5 
 and (aoecds8y or target_is_dummy())
