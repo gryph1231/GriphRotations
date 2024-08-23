@@ -64,6 +64,7 @@ WordofGlory                 = Spell(85673),
 AvengingWrath               = Spell(31884),
 HammerofWrath               = Spell(24275),
 HolyAvenger                 = Spell(105809),
+HoL = Spell(427445),
 HolyAvengerBuff             = Spell(105809),
 LayonHands                  = Spell(633),
 
@@ -159,12 +160,13 @@ BastionofLight = Spell(378974),
 
 
 };
-
-
-
-
 local S = RubimRH.Spell[66];
-local G = RubimRH.Spell[1]; -- General Skills
+
+S.EyeofTyr.TextureSpellID = { 209202 }
+
+
+
+
 
 -- Items
 if not Item.Paladin then
@@ -176,7 +178,6 @@ trink = Item(178751, { 13, 14 }),
 bracer = Item(168978),
 rez = Item(158379),
 drums = Item(193470),
-
 HPIcon = Item(169451),
 tx1 = Item(118330),
 tx2 = Item(114616),
@@ -216,6 +217,23 @@ local function APL()
   targetRange20 = C_Item.IsItemInRange(10645, "target")
   targetRange25 = C_Item.IsItemInRange(24268, "target")
   targetRange30 = C_Item.IsItemInRange(835, "target")
+
+
+  local iconEoT = C_Spell.GetSpellInfo(387174).iconID
+
+  if AuraUtil.FindAuraByName("Light's Deliverance",'player') then
+    _, _, LDstacks = AuraUtil.FindAuraByName("Light's Deliverance",'player')
+    else
+      LDstacks = 0
+    end
+
+  if (iconEoT == 5342121 or LDstacks>=60) then
+      canCastHoL = true
+  else
+      canCastHoL = false
+  end
+  
+
 
             local lostimer = GetTime() - losCheckTimer
             local los
@@ -414,11 +432,7 @@ local function APL()
               end
 
 
-            if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
-            and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
-            return S.autoattack:Cast()
-            end
-
+  
 
             --health pot -- will need to update item ID of HPs as expansions progress
             if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
@@ -463,7 +477,7 @@ local function APL()
 
 
             if IsReady("Eye of Tyr") and HPpercentloss > 5 
-            and (inRange8>= 1 or targetRange8) and useEoT then
+            and (inRange8>= 1 or targetRange5) and useEoT then
             return S.EyeofTyr:Cast()
             end
             end
@@ -506,7 +520,7 @@ local function APL()
 
 
                 if IsReady("Eye of Tyr") and HPpercentloss > 5 and Player:HealthPercentage() < 70
-                and (inRange8>= 1 or targetRange8) and useEoT then
+                and (inRange8>= 1 or targetRange5) and useEoT then
                 return S.EyeofTyr:Cast()
                 end
                 
@@ -523,6 +537,18 @@ local function APL()
             -------------DEFENSIVES_-------------
             if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
 
+              if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
+              and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
+              return S.autoattack:Cast()
+              end
+  
+                        
+          if canCastHoL and Player:HolyPower()>=5 and S.HoL:IsAvailable()
+          then
+          return S.EyeofTyr:Cast() 
+          end
+            
+
 
               if IsReady("Hand of Reckoning") and targetRange30 and isTanking==false then
               return S.HandofReckoning:Cast()
@@ -530,19 +556,19 @@ local function APL()
                 -- heals/active mitigation
                 -- cast word of glory on us if it's a) free or b) probably not going to drop sotr
                 if IsReady("Word of Glory")  and not Player:HealingAbsorbed() and Player:HealthPercentage() <= 65
-                and (WordofGlorycast and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= Player:GCD() * 3 ) then
+                and (WordofGlorycast and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= Player:GCD() * 3 ) and not canCastHoL then
                 return S.WordofGlory:Cast()
                 end
 
                 if IsReady("Word of Glory") and not Player:HealingAbsorbed() and Player:HealthPercentage() <= 45
-                and WordofGlorycast and Player:BuffStack(S.ShiningLightBuffStack)<2 and Player:BuffRemains(S.ShieldoftheRighteousBuff)>2  then
+                and WordofGlorycast and Player:BuffStack(S.ShiningLightBuffStack)<2 and Player:BuffRemains(S.ShieldoftheRighteousBuff)>2 and not canCastHoL then
                 return S.WordofGlory:Cast()
                 end
 
 
                 if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
                   if IsReady("Shield of the Righteous") and (targetRange8 or inRange8 >= 1)
-                  and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2
+                  and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2 and not canCastHoL
                   then
                   return S.ShieldoftheRighteous:Cast()
                   end
@@ -552,14 +578,14 @@ local function APL()
                 -- no enemies/out of target range heal/HP == 5 or if about to die and shield up
                 if IsReady("Word of Glory") and not Player:HealingAbsorbed() and (Player:HealthPercentage() < 55
                 and inRange30 == 0 and Player:HolyPower() == 5
-                or Player:HealthPercentage() < 45 and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 3
+                or Player:HealthPercentage() < 45 and Player:BuffRemains(S.ShieldoftheRighteousBuff) >= 3 and not canCastHoL
                 and WordofGlorycast )
                 then
                 return S.WordofGlory:Cast()
                 end
             
             if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
-              if IsReady("Shield of the Righteous") and (targetRange8 or inRange8>=1) and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2 and (Player:ActiveMitigationNeeded() or Player:HealthPercentage() <= 80)) then
+              if IsReady("Shield of the Righteous") and (targetRange8 or inRange8>=1) and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2 and (Player:ActiveMitigationNeeded() or Player:HealthPercentage() <= 80)) and not canCastHoL then
                 return S.ShieldoftheRighteous:Cast()
               end
             end
@@ -572,13 +598,13 @@ local function APL()
 
 
             if IsReady("Word of Glory") and not Player:HealingAbsorbed() and Player:HealthPercentage() < 65  and (Player:HolyPower()>=3 or WordofGlorycast) and 
-            Player:BuffRemains(S.ShieldoftheRighteousBuff) > 5 then
+            Player:BuffRemains(S.ShieldoftheRighteousBuff) > 5 and not canCastHoL then
             return S.WordofGlory:Cast()
             end
 
 
             if IsReady("Word of Glory") and not Player:HealingAbsorbed() and WordofGlorycast and 
-            (Player:HealthPercentage() < 70  and inRange30 == 0) then
+            (Player:HealthPercentage() < 70  and inRange30 == 0) and not canCastHoL then
             return S.WordofGlory:Cast()
             end
 
@@ -708,7 +734,7 @@ end
   -- TODO: Find a way to track RighteousProtector ICD.
   if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
 
-    if IsReady("Shield of the Righteous") and targetRange8 and ((Player:HolyPower() > 2 or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and (Player:BuffDown(S.SanctificationBuff) or Player:BuffStack(S.SanctificationBuff) < 5)) then
+    if IsReady("Shield of the Righteous") and not canCastHoL and targetRange8 and ((Player:HolyPower() > 2 or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and (Player:BuffDown(S.SanctificationBuff) or Player:BuffStack(S.SanctificationBuff) < 5)) then
       return S.ShieldoftheRighteous:Cast()
   end
 end
@@ -747,7 +773,7 @@ end
     return S.Consecration:Cast()
 end
   -- eye_of_tyr,if=talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3
-  if RubimRH.CDsON() and targetRange8 and IsReady("Eye of Tyr") and (S.InmostLight:IsAvailable() or inRange8 >= 3) then
+  if RubimRH.CDsON() and targetRange5 and IsReady("Eye of Tyr") and S.InmostLight:IsAvailable() then
     return S.EyeofTyr:Cast()
 end
   -- blessed_hammer
@@ -763,11 +789,11 @@ end
     return S.CrusaderStrike:Cast()
 end
   -- eye_of_tyr,if=!talent.inmost_light.enabled&raid_event.adds.in>=60|spell_targets.shield_of_the_righteous>=3
-  if RubimRH.CDsON() and targetRange8 and IsReady("Eye of Tyr") and (not S.InmostLight:IsAvailable() or inRange8 >= 3) then
+  if RubimRH.CDsON() and targetRange5 and IsReady("Eye of Tyr") and (not S.InmostLight:IsAvailable() or inRange8 >= 3) then
     return S.EyeofTyr:Cast()
 end
   -- word_of_glory,if=buff.shining_light_free.up
-  if IsReady("Word of Glory")  and (Player:BuffUp(S.ShiningLightFreeBuff)) and  Player:HealthPercentage() <= 80 then
+  if IsReady("Word of Glory")  and (Player:BuffUp(S.ShiningLightFreeBuff)) and  Player:HealthPercentage() <= 80 and not canCastHoL then
             return S.WordofGlory:Cast()
             end
 

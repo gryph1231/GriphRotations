@@ -164,7 +164,7 @@ VengefulShockDebuff      = Spell(340007),
 VolatileSolvent          = Spell(323074),
 VolatileSolventHumanBuff = Spell(323491),
 -- Auras
-
+HoL = Spell(427445),
 -- Buffs
 Intercession             = Spell(391054),
 intercession           = Spell(105809), --holy avenger
@@ -187,11 +187,11 @@ mhweapcast = Spell(383185), --exorcism
 }
 
 local S = RubimRH.Spell[70]
-local G = RubimRH.Spell[1] -- General Skills
 
 S.AvengingWrath.TextureSpellID = { 31884 }
 S.Crusade.TextureSpellID = { 55748 }
 S.CrusaderStrike.TextureSpellID = { 342348 }
+S.WakeofAshes.TextureSpellID = { 403695 }
 
 -- Items
 if not Item.Paladin then Item.Paladin = {} end
@@ -314,7 +314,7 @@ and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownRemains() > 10 
 return S.FinalReckoning:Cast()
 end
 
-if I.legendary:CooldownRemains()<1 and C_Item.IsEquippedItem(206448)
+if I.legendary:CooldownRemains()<1 and C_Item.IsEquippedItem(206448) and not targetdying
 and RubimRH.CDsON()
 and targetRange5 
 and (aoecds8y or target_is_dummy())
@@ -575,6 +575,19 @@ targetRange20 = C_Item.IsItemInRange(10645, "target")
 targetRange25 = C_Item.IsItemInRange(24268, "target")
 targetRange30 = C_Item.IsItemInRange(835, "target")
 
+local iconWoA = C_Spell.GetSpellInfo(255937).iconID
+if AuraUtil.FindAuraByName("Light's Deliverance",'player') then
+    _, _, LDstacks = AuraUtil.FindAuraByName("Light's Deliverance",'player')
+    else
+      LDstacks = 0
+    end
+
+if (iconWoA == 5342121 or LDstacks>=60) then
+    canCastHoL = true
+else
+    canCastHoL = false
+end
+
 
 local awup = AuraUtil.FindAuraByName("Avenging Wrath","player")
 
@@ -592,6 +605,12 @@ DAstack = select(3,AuraUtil.FindAuraByName("Divine Arbiter","player"))
 else
 DAstack = 0
 end
+
+
+  
+
+
+
 
 if true then
 -- variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
@@ -638,7 +657,7 @@ targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
 
-local targetdying = (aoeTTD() < 5 or targetTTD<5)
+local targetdying = (targetTTD<5)
 
 
 
@@ -831,6 +850,13 @@ if Target:AffectingCombat() or Player:AffectingCombat() and Player:CanAttack(Tar
 if not C_Spell.IsCurrentSpell(6603) and targetRange20 then
 return S.autoattack:Cast()
 end
+
+
+if canCastHoL and HolyPower>=5 and S.HoL:IsAvailable()
+then
+return S.WakeofAshes:Cast() 
+end
+
 
 if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell("player") == "Poison" or GetAppropriateCureSpell("player") == "Disease") then
 return S.CleanseToxins:Cast()
