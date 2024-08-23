@@ -576,17 +576,23 @@ targetRange20 = C_Item.IsItemInRange(10645, "target")
 targetRange25 = C_Item.IsItemInRange(24268, "target")
 targetRange30 = C_Item.IsItemInRange(835, "target")
 
+if Player:IsChanneling() or Player:IsCasting() then
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+    end
+    
 
 local costTable = S.HammerofLight:CostTable()
 local minCostValue = costTable[1].minCost 
 
 local iconWoA = C_Spell.GetSpellInfo(255937).iconID
 
-if (iconWoA == 5342121 or minCostValue == 0) then
+if iconWoA == 5342121 then
     canCastHoL = true
 else
     canCastHoL = false
 end
+
+
 
 
 local awup = AuraUtil.FindAuraByName("Avenging Wrath","player")
@@ -612,6 +618,7 @@ end
 
 
 
+
 if true then
 -- variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
 if S.TotLB:IsAvailable() then
@@ -627,10 +634,6 @@ local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
 
 TimeToHPG = ComputeTimeToHPG()
-
-if Player:IsChanneling() or Player:IsCasting() then
-return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
-end
 
 
 HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
@@ -852,7 +855,7 @@ return S.autoattack:Cast()
 end
 
 
-if canCastHoL and HolyPower>=5 and S.HoL:IsAvailable()
+if canCastHoL and (HolyPower>=5 or minCostValue == 0) and S.HoL:IsAvailable()
 then
 return S.WakeofAshes:Cast() 
 end

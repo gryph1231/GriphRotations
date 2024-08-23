@@ -219,13 +219,20 @@ local function APL()
   targetRange25 = C_Item.IsItemInRange(24268, "target")
   targetRange30 = C_Item.IsItemInRange(835, "target")
 
+
+
+  if Player:IsChanneling() or Player:IsCasting() then
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
+    end
+
+
   local costTable = S.HammerofLight:CostTable()
   local minCostValue = costTable[1].minCost 
   
   local iconEoT = C_Spell.GetSpellInfo(387174).iconID
 
 
-  if (iconEoT == 5342121 or minCostValue == 0) then
+  if iconEoT == 5342121 then
       canCastHoL = true
   else
       canCastHoL = false
@@ -307,11 +314,7 @@ local function APL()
               
                   local targetdying = (aoeTTD() < 5 or targetTTD<5)
               
-      
-        -- Spell Queue
-        if Player:IsChanneling() or Player:IsCasting() then
-          return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
-          end
+
   
 
             -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
@@ -541,7 +544,7 @@ local function APL()
               end
   
                         
-          if canCastHoL and Player:HolyPower()>=5 and S.HoL:IsAvailable()
+          if canCastHoL and (Player:HolyPower()>=5 or minCostValue == 0) and S.HoL:IsAvailable()
           then
           return S.EyeofTyr:Cast() 
           end
