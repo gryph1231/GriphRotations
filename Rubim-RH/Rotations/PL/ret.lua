@@ -157,6 +157,7 @@ SummonSteward            = Spell(324739),
 VanquishersHammer        = Spell(328204),
 VanquishersHammerBuff    = Spell(328204),
 -- Soulbinds/Conduits (Shadowlands)
+HammerofLight = Spell(427453),
 
 PustuleEruption          = Spell(351094),
 VengefulShock            = Spell(340006),
@@ -575,14 +576,13 @@ targetRange20 = C_Item.IsItemInRange(10645, "target")
 targetRange25 = C_Item.IsItemInRange(24268, "target")
 targetRange30 = C_Item.IsItemInRange(835, "target")
 
-local iconWoA = C_Spell.GetSpellInfo(255937).iconID
-if AuraUtil.FindAuraByName("Light's Deliverance",'player') then
-    _, _, LDstacks = AuraUtil.FindAuraByName("Light's Deliverance",'player')
-    else
-      LDstacks = 0
-    end
 
-if (iconWoA == 5342121 or LDstacks>=60) then
+local costTable = S.HammerofLight:CostTable()
+local minCostValue = costTable[1].minCost 
+
+local iconWoA = C_Spell.GetSpellInfo(255937).iconID
+
+if (iconWoA == 5342121 or minCostValue == 0) then
     canCastHoL = true
 else
     canCastHoL = false
@@ -957,6 +957,11 @@ end
 if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) then
 RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
+
+
+if IsReady("Devotion Aura") and not AuraUtil.FindAuraByName("Devotion Aura", "player") then
+    return S.DevotionAura:Cast()
+    end
 
 if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast()>2 and (GetAppropriateCureSpell("focus") == "Poison" or GetAppropriateCureSpell("focus") == "Disease") then
 return S.CleanseToxins:Cast()

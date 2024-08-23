@@ -64,6 +64,7 @@ WordofGlory                 = Spell(85673),
 AvengingWrath               = Spell(31884),
 HammerofWrath               = Spell(24275),
 HolyAvenger                 = Spell(105809),
+HammerofLight = Spell(427453),
 HoL = Spell(427445),
 HolyAvengerBuff             = Spell(105809),
 LayonHands                  = Spell(633),
@@ -218,16 +219,13 @@ local function APL()
   targetRange25 = C_Item.IsItemInRange(24268, "target")
   targetRange30 = C_Item.IsItemInRange(835, "target")
 
-
+  local costTable = S.HammerofLight:CostTable()
+  local minCostValue = costTable[1].minCost 
+  
   local iconEoT = C_Spell.GetSpellInfo(387174).iconID
 
-  if AuraUtil.FindAuraByName("Light's Deliverance",'player') then
-    _, _, LDstacks = AuraUtil.FindAuraByName("Light's Deliverance",'player')
-    else
-      LDstacks = 0
-    end
 
-  if (iconEoT == 5342121 or LDstacks>=60) then
+  if (iconEoT == 5342121 or minCostValue == 0) then
       canCastHoL = true
   else
       canCastHoL = false
