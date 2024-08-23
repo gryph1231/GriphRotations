@@ -149,6 +149,12 @@ RubimRH.Spell[260] = {
     SepsisBuff             = Spell(375939),
     shadetarget            = Spell(350209),
     Potion                 = Spell(176108),
+
+    lust1                    = Spell(57724),
+lust2                    = Spell(57723),
+lust3                    = Spell(80354),
+lust4                    = Spell(95809),
+lust5                    = Spell(264689),
 }
 
 local S = RubimRH.Spell[260]
@@ -526,8 +532,8 @@ local function StealthCDs ()
     -- |buff.fatebound_coin_heads.stack>=5)|buff.fatebound_lucky_coin.up&!cooldown.between_the_eyes.ready)
     if IsReady("Vanish") and Vanish_DPS_Condition() then
       if not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity():IsAvailable()
-        and not S.FatefulEnding:IsAvailable() and (Player:BuffDown(S.FateboundLuckyCoin) and (Player:BuffStack(S.FateboundCoinTails) >= 5
-        or Player:BuffStack(S.FateboundCoinHeads) >=5) or Player:BuffUp(S.FateboundLuckyCoin and not S.BetweentheEyes:IsReady())) then
+        and not S.FatefulEnding:IsAvailable() and (not FBcoinbuff and (FBcoinTailsstacks >= 5
+        or FBcoinHeadsstacks >=5) or FBcoinbuff and not S.BetweentheEyes:IsReady()) then
             return S.Vanish:Cast()
         end
     end
@@ -720,6 +726,20 @@ local function APL()
     EnergyDeficit = Player:EnergyDeficitPredicted(nil, EnergyMaxOffset) -- energy.base_deficit
 
 
+    if AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player') then
+      _, _, FBcoinHeadsstacks = AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player')
+      else
+      FBcoinHeadsstacks = 0
+      end
+      if AuraUtil.FindAuraByName('Fatebound Coin (Tails)','player') then
+        _, _, FBcoinTailsstacks = AuraUtil.FindAuraByName('Fatebound Coin (Tails)','player')
+        else
+          FBcoinTailsstacks = 0
+        end
+        local FBcoinbuff = (AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player') or AuraUtil.FindAuraByName('Fatebound Coin (Tails)','player'))
+
+        -- print(FBcoinHeadsstacks)
+        -- print(FBcoinTailsstacks)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -840,9 +860,32 @@ if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() and TargetinRange(8) and Player:
         return S.Ambush:Cast()
     end
 
+
+
     if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() then
         RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
+end
+
+
+
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and
+Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) and Player:CanAttack(Target) then
+return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+end
+
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+(
+Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or
+Player:DebuffUp(S.lust5)) then
+RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+
+if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Blind:ID() == RubimRH.queuedSpell[1]:ID() and not Target:Exists() then
+  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
+if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and Target:DebuffUp(S.CheapShot) then
+  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Feint:ID() == RubimRH.queuedSpell[1]:ID()  and Player:BuffUp(S.Feint) then
@@ -872,9 +915,9 @@ end
                         end
 
             --health pot -- will need to update item ID of HPs as expansions progress
-            if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
-            GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(207023) == true and
-            GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1)
+            if inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
+            GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(211878) == true and
+            GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1)
             and (not Player:InArena() and not Player:InBattlegrounds()) then
             return I.HPIcon:Cast()
             end

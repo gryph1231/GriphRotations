@@ -410,11 +410,11 @@ end
 
 
 -- call_action_list,name=finishers,if=holy_power=5|buff.echoes_of_wrath.up&set_bonus.tier31_4pc&talent.crusading_strikes|(debuff.judgment.up|holy_power=4)&buff.divine_resonance.up&!set_bonus.tier31_2pc          
-if (HolyPower ==5 or AuraUtil.FindAuraByName("Echoes of Wrath", "player") 
+if not canCastHoL and ((HolyPower ==5 or AuraUtil.FindAuraByName("Echoes of Wrath", "player") 
 and tierequipped()>=4 and S.CrusadingStrikes:IsAvailable()
 or (AuraUtil.FindAuraByName("Judgment","target","PLAYER|HARMFUL") 
 or HolyPower==4) and  AuraUtil.FindAuraByName("Divine Resonance", "player")
-and tierequipped()<2) then
+and tierequipped()<2)) then
 if Finishers() ~= nil then
 return Finishers()
 end
@@ -449,7 +449,7 @@ end
 
 
 -- call_action_list,name=finishers,if=holy_power>=3&buff.crusade.up&buff.crusade.stack<10
-if (HolyPower >= 3 and crusadeup and crusadestacks < 10) then
+if not canCastHoL and (HolyPower >= 3 and crusadeup and crusadestacks < 10) then
 if Finishers() ~= nil then
 return Finishers()
 end
@@ -488,7 +488,7 @@ return S.BladeofJustice:Cast()
 end
 
 -- call_action_list,name=finishers,if=(target.health.pct<=20|buff.avenging_wrath.up|buff.crusade.up|buff.empyrean_power.up)
-if (Target:HealthPercentage() <= 20 or awup or crusadeup or Player:BuffUp(S.EmpyreanPowerBuff)) then
+if (Target:HealthPercentage() <= 20 or awup or crusadeup or Player:BuffUp(S.EmpyreanPowerBuff)) and not canCastHoL  then
 local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
 end
 
@@ -509,7 +509,9 @@ return S.CrusaderStrike:Cast()
 end
 
 -- call_action_list,name=finishers
+if not canCastHoL then
 local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
+end
 -- templar_slash
 if IsReady("Templar Slash") and targetRange10 and not S.CrusadingStrikes:IsAvailable() then
 return S.CrusaderStrike:Cast()
@@ -579,19 +581,18 @@ targetRange30 = C_Item.IsItemInRange(835, "target")
 if Player:IsChanneling() or Player:IsCasting() then
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     end
+
+
     
 
-local costTable = S.HammerofLight:CostTable()
-local minCostValue = costTable[1].minCost 
 
-local iconWoA = C_Spell.GetSpellInfo(255937).iconID
 
-if iconWoA == 5342121 then
+
+if IsReady(427453,1) and C_Spell.GetSpellInfo(255937).iconID == 5342121 then
     canCastHoL = true
 else
     canCastHoL = false
 end
-
 
 
 
@@ -855,7 +856,7 @@ return S.autoattack:Cast()
 end
 
 
-if canCastHoL and (HolyPower>=5 or minCostValue == 0) and S.HoL:IsAvailable()
+if IsReady(427453,1) 
 then
 return S.WakeofAshes:Cast() 
 end

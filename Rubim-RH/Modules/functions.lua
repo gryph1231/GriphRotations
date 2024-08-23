@@ -801,7 +801,7 @@ function UseItems(item)
     local trinketblacklist = 202612
 
 
-    if trinket1ready and trinket1 ~= trinketblacklist  then
+    if trinket1ready and trinket1 ~= trinketblacklist then
         return Item(118330):Cast()
     end
 

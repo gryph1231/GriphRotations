@@ -226,18 +226,16 @@ local function APL()
     end
 
 
-  local costTable = S.HammerofLight:CostTable()
-  local minCostValue = costTable[1].minCost 
-  
-  local iconEoT = C_Spell.GetSpellInfo(387174).iconID
 
 
-  if iconEoT == 5342121 then
-      canCastHoL = true
-  else
-      canCastHoL = false
-  end
-  
+
+  if IsReady(427453,1) and C_Spell.GetSpellInfo(387174).iconID == 5342121 then
+    canCastHoL = true
+else
+    canCastHoL = false
+end
+
+
 
 
             local lostimer = GetTime() - losCheckTimer
@@ -536,7 +534,7 @@ local function APL()
 
 
             -------------DEFENSIVES_-------------
-            if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
+            if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat()) and not Target:IsDeadOrGhost() then
 
               if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
               and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
@@ -544,7 +542,7 @@ local function APL()
               end
   
                         
-          if canCastHoL and (Player:HolyPower()>=5 or minCostValue == 0) and S.HoL:IsAvailable()
+          if canCastHoL and (Player:HolyPower()>=5 or costValueHoL == 0) and S.HoL:IsAvailable()
           then
           return S.EyeofTyr:Cast() 
           end
@@ -668,7 +666,7 @@ local function APL()
                 end
                 
             if RubimRH.CDsON() and inRange8 >= 1 then
-              if RubimRH.CDsON() and targetRange20
+              if RubimRH.CDsON() and targetRange20 
               
               and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (targetTTD>5 or target_is_dummy()) then
               local ShouldReturn = UseItems();
