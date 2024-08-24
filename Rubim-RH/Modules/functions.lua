@@ -1002,6 +1002,64 @@ end
 
 
 
+-- Create a table to hold the spell cast tracking data and functions
+SpellCastTracker = {}
+local spellStartTime = {}
+
+local previousTarget = nil
+
+-- Function to check if the spell can be cast considering the tolerance
+function SpellCastTracker.CanCastSpellWithTolerance(spellName, tolerance)
+    local currentTime = GetTime()
+    if spellStartTime[spellName] then
+        local timeSinceLastCast = currentTime - spellStartTime[spellName]
+        -- print("Time since last cast of " .. spellName .. ": " .. timeSinceLastCast) -- Debug print
+        if timeSinceLastCast > tolerance then
+            return true
+        else
+            return false
+        end
+    else
+        return true -- Allow casting if the spell has never been cast
+    end
+end
+
+-- Event handler function
+local function OnEvent(self, event, unit, _, spellID)
+    if unit == "player" then
+        local spellName = C_Spell.GetSpellInfo(spellID).name
+        if event == "UNIT_SPELLCAST_START" then
+            spellStartTime[spellName] = GetTime()
+            -- print("Spell started: " .. spellName .. " at " .. spellStartTime[spellName]) -- Debug print
+        elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
+            spellStartTime[spellName] = nil -- Reset the start time when the spell cast is interrupted
+            -- print("Spell interrupted: " .. spellName) -- Debug print
+        end
+    end
+    
+
+end
+
+-- Create a frame to listen for relevant events
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("UNIT_SPELLCAST_START")
+frame:RegisterEvent("PLAYER_TARGET_CHANGED")
+frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+frame:SetScript("OnEvent", OnEvent)
+
+-- Global function to check if a spell can be cast with tolerance
+function CanCastWithTolerance(spellName)
+    local castTime = (C_Spell.GetSpellInfo(spellName).castTime) * 0.001 -- Convert from milliseconds to seconds
+    return SpellCastTracker.CanCastSpellWithTolerance(spellName, castTime + 0.5)
+end
+
+
+
+
+
+
+
+
 
 
 

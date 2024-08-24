@@ -88,6 +88,7 @@ Stealth                = Spell(1784),
 Stealth2               = Spell(115191),
 FindWeakness           = Spell(91023),
 FindWeaknessDebuff     = Spell(316220),
+KillingSpreeDamageDebuff = Spell(424564),
 Vanish                 = Spell(1856),
 VanishBuff             = Spell(11327),
 VanishBuff2            = Spell(115193),
@@ -371,7 +372,7 @@ local function Finish_Condition()
   -- Determine if we are allowed to use Vanish offensively in the current situation
   local function Vanish_DPS_Condition ()
   -- You can vanish if we've set the UseDPSVanish setting, and we're either not tanking or we're solo but the DPS vanish while solo flag is set).
-    return not Player:IsTanking(Target)
+    return not Player:IsTanking(Target) and not Target:IsAPlayer()
 end
   
 local function Stealth()
@@ -456,7 +457,7 @@ local function Finish()
   end
 end
   
-local function StealthCDs ()
+local function StealthCDs()
   -- # Stealth Cooldowns Builds with Underhanded Upper Hand and Subterfuge (and Without a Trace for Crackshot) must use Vanish while Adrenaline Rush is active
   -- actions.stealth_cds+=/vanish,if=talent.underhanded_upper_hand&talent.subterfuge&
   -- (buff.adrenaline_rush.up|!talent.without_a_trace&talent.crackshot)&(variable.finish_condition|!talent.crackshot&(variable.ambush_condition|!talent.hidden_opportunity))
@@ -511,7 +512,7 @@ local function CDs()
   -- # Cooldowns Use Adrenaline Rush if it is not active and the finisher condition is not met, but Crackshot builds can refresh it with 2cp or lower inside stealth
   -- actions.cds=adrenaline_rush,if=!buff.adrenaline_rush.up&(!variable.Finish_Condition()|!talent.improved_adrenaline_rush)
   -- |stealthed.all&talent.crackshot&talent.improved_adrenaline_rush&combo_points<=2
-  if RubimRH.CDsON() and IsReady("Adrenaline Rush") and (not Player:BuffUp(S.AdrenalineRush) and (not Finish_Condition() or not S.ImprovedAdrenalineRush:IsAvailable()) or (Player:StealthUp(true, true) and S.Crackshot:IsAvailable() and S.ImprovedAdrenalineRush:IsAvailable() and ComboPoints <= 2)) then
+  if RubimRH.CDsON() and IsReady("Adrenaline Rush") and (not Player:BuffUp(S.AdrenalineRush) and (not Finish_Condition() or not S.ImprovedAdrenalineRush:IsAvailable()) or Player:StealthUp(true, true) and S.Crackshot:IsAvailable() and S.ImprovedAdrenalineRush:IsAvailable() and ComboPoints <= 2) then
     return S.AdrenalineRush:Cast() 
   end
 
@@ -546,7 +547,7 @@ local function CDs()
   end
 
   --actions.cds+=/ghostly_strike,if=effective_combo_points<cp_max_spend
-  if IsReady("Ghostly Strike") and EffectiveComboPoints() < 7 then
+  if IsReady("Ghostly Strike") and EffectiveComboPoints() < 7 and targetRange8 then
     return S.GhostlyStrike:Cast()
   end
 
@@ -560,20 +561,24 @@ local function CDs()
     return S.KillingSpree:Cast()
   end
 
+  if IsReady("Slice and Dice") and not AuraUtil.FindAuraByName('Slice and Dice','player') and Player:ComboPoints()>=3 then
+    return S.SliceandDice:Cast()
+  end
+
   -- actions.cds+=/call_action_list,name=stealth_cds,if=!stealthed.all&(!talent.crackshot|cooldown.between_the_eyes.ready)
-  if RubimRH.CDsON() and not Player:StealthUp(true, true) and (not S.Crackshot:IsAvailable() or IsReady("Between the Eyes")) then
+  if RubimRH.CDsON() and not Player:StealthUp(true, true) and (not S.Crackshot:IsAvailable() or IsReady("Between the Eyes"))  then
     ShouldReturn = StealthCDs()
     if ShouldReturn then return ShouldReturn end
   end
 
   -- actions.cds+=/thistle_tea,if=!buff.thistle_tea.up&(energy.base_deficit>=100|fight_remains<charges*6)
-  if RubimRH.CDsON() and IsReady("Thistle Tea") and not Player:BuffUp(S.ThistleTea) and (EnergyDeficit >= 150 or HL.BossFilteredFightRemains("<", S.ThistleTea:Charges()*6)) then
+  if RubimRH.CDsON() and inRange30>=1 and IsReady("Thistle Tea") and not Player:BuffUp(S.ThistleTea) and (EnergyDeficit >= 150 or HL.BossFilteredFightRemains("<", S.ThistleTea:Charges()*6)) then
     return S.ThistleTea:Cast()
   end
 
   -- # Use Blade Rush at minimal energy outside of stealth
   -- actions.cds+=/blade_rush,if=energy.base_time_to_max>4&!stealthed.all
-  if IsReady("Blade Rush") and EnergyTimeToMax > 4 and not Player:StealthUp(true, true) then
+  if IsReady("Blade Rush") and EnergyTimeToMax > 4 and not Player:StealthUp(true, true) and targetRange20 then
     return S.BladeRush:Cast()
   end
 end
@@ -615,6 +620,13 @@ local function Build()
     return S.PistolShot:Cast()
   end
 
+  if S.Ambush:IsCastable() and Player:Energy()<50 and S.HiddenOpportunity:IsAvailable() then
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
+    -- actions.build+=/ambush,if=talent.hidden_opportunity&buff.audacity.up
+  elseif IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and targetRange8 then
+    return S.Ambush:Cast()
+  end
+
   -- actions.build+=/sinister_strike
   if IsReady("Sinister Strike") and targetRange8 then
       return S.SinisterStrike:Cast()
@@ -645,7 +657,6 @@ EnergyRegen = Player:EnergyRegen()
 EnergyTimeToMax = EnergyTimeToMaxStable(EnergyMaxOffset) -- energy.base_time_to_max
 EnergyDeficit = Player:EnergyDeficitPredicted(nil, EnergyMaxOffset) -- energy.base_deficit
 
-
 if AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player') then
   _, _, FBcoinHeadsstacks = AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player')
 else
@@ -659,13 +670,15 @@ else
 end
 
 local FBcoinbuff = (AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player') or AuraUtil.FindAuraByName('Fatebound Coin (Tails)','player'))
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
@@ -705,21 +718,21 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
-if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) and (IsResting("player") == false or Player:CanAttack(Target)) then
+if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff)  then
     -- if IsReady("Blade Flurry") and RangeCount(15) == 0 and (RangeCount(40) >= 1 or Player:CanAttack(Target)) and Player:BuffUp(S.AdrenalineRush) and S.UnderhandedUpperhand:IsAvailable() then
     --     return S.BladeFlurry:Cast()
     -- end
     
-	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") then
+	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:DebuffUp(S.KillingSpreeDamageDebuff) then
 		return S.Stealth:Cast()
 	end
 
-  if RangeCount(30) >= 1 and (not TargetinRange(8) or not Player:CanAttack(Target)) and (Player:IsMoving() or Player:CanAttack(Target)) and (IsInInstance() or Player:CanAttack(Target)) then
+  if inRange30 >= 1 and not targetRange8 and Player:IsMoving() then
     if IsReady("Adrenaline Rush") and RubimRH.CDsON() and not Finish_Condition() and S.UnderhandedUpperhand:IsAvailable() and Player:BuffDown(S.AdrenalineRush) and Player:StealthUp(true, true) and Player:BuffDown(S.VanishBuff) then
       return S.AdrenalineRush:Cast()
     end
 
-    if IsReady("Slice and Dice") and Finish_Condition() and Player:BuffRemains(S.SliceandDice) < 8 then
+    if IsReady("Slice and Dice") and Finish_Condition() and Player:BuffRemains(S.SliceandDice) < 8 and (not AuraUtil.FindAuraByName("Stealth", "player") or not Target:Exists()) then
       return S.SliceandDice:Cast()
     end
 
@@ -728,24 +741,24 @@ if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) and (IsResting
     end
   end
 
-	if IsReady("Crimson Vial") and RangeCount(20) == 0 and Player:HealthPercentage() < 75 and Player:EnergyDeficit() == 0 then
+	if IsReady("Crimson Vial") and inRange20 == 0 and Player:HealthPercentage() < 75 and Player:EnergyDeficit() == 0 then
 		return S.CrimsonVial:Cast()
 	end
 
   if not Player:IsMoving() then 
-    if IsReady("Instant Poison") and S.InstantPoison:TimeSinceLastCast() > 2 and Player:BuffDown(S.WoundPoison) and Player:BuffRemains(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) then
+    if IsReady("Instant Poison") and CanCastWithTolerance("Instant Poison") and S.InstantPoison:TimeSinceLastCast() > 2 and Player:BuffDown(S.WoundPoison) and Player:BuffRemains(S.InstantPoison) < 300 and not Player:IsCasting(S.InstantPoison) then
       return S.InstantPoison:Cast()
     end
 
-    if IsReady("Crippling Poison") and S.CripplingPoison:TimeSinceLastCast() > 2 and not S.NumbingPoison:IsAvailable() and not S.AtrophicPoison:IsAvailable() and Player:BuffDown(S.NumbingPoison) and Player:BuffDown(S.AtrophicPoison) and Player:BuffRemains(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) then
+    if IsReady("Crippling Poison") and CanCastWithTolerance("Crippling Poison") and S.CripplingPoison:TimeSinceLastCast() > 2 and not S.NumbingPoison:IsAvailable() and not S.AtrophicPoison:IsAvailable() and Player:BuffDown(S.NumbingPoison) and Player:BuffDown(S.AtrophicPoison) and Player:BuffRemains(S.CripplingPoison) < 300 and not Player:IsCasting(S.CripplingPoison) then
       return S.CripplingPoison:Cast()
     end
 
-    if IsReady("Atrophic Poison") and S.AtrophicPoison:TimeSinceLastCast() > 2 and Player:BuffRemains(S.AtrophicPoison) < 300 and not Player:IsCasting(S.AtrophicPoison) then
+    if IsReady("Atrophic Poison") and CanCastWithTolerance("Atrophic Poison") and S.AtrophicPoison:TimeSinceLastCast() > 2 and Player:BuffRemains(S.AtrophicPoison) < 300 and not Player:IsCasting(S.AtrophicPoison) then
       return S.AtrophicPoison:Cast()
     end
 
-    if IsReady("Numbing Poison") and S.NumbingPoison:TimeSinceLastCast() > 2 and Player:BuffRemains(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) then
+    if IsReady("Numbing Poison") and CanCastWithTolerance("Numbing Poison") and S.NumbingPoison:TimeSinceLastCast() > 2 and Player:BuffRemains(S.NumbingPoison) < 300 and not Player:IsCasting(S.NumbingPoison) then
       return S.NumbingPoison:Cast()
     end
   end
@@ -753,31 +766,6 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Spell Queue---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
-if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() and TargetinRange(8) and Player:CanAttack(Target) and AuraUtil.FindAuraByName("Stealth", "player") then
-  if S.BladeFlurry:CooldownUp() and IsUsableSpell("Blade Flurry") and S.Subterfuge:IsAvailable() and S.HiddenOpportunity:IsAvailable() and RangeCount(8) >= 2 and Player:BuffRemains(S.BladeFlurry) < Player:GCDRemains() then
-    return S.BladeFlurry:Cast()
-  end
-
-  if S.BetweentheEyes:CooldownUp() and IsUsableSpell("Between the Eyes") and Finish_Condition() and S.Crackshot:IsAvailable() then
-    return S.BetweentheEyes:Cast()
-  end
-
-  if S.Dispatch:CooldownUp() and IsUsableSpell("Dispatch") and Finish_Condition() then
-    return S.Dispatch:Cast()    
-  end
-
-  if S.PistolShot:CooldownUp() and IsUsableSpell("Pistol Shot") and S.Crackshot:IsAvailable() and S.FantheHammer:TalentRank() >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:BuffUp(S.Broadside) and Player:ComboPoints() <= 1 or Player:BuffUp(S.GreenskinsWickersBuff)) then
-    return S.PistolShot:Cast()    
-  end       
-
-  if S.Ambush:CooldownUp() and IsUsableSpell("Ambush") then
-    return S.Ambush:Cast()
-  end
-
-  if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() then
-    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-  end
-end
 
 if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and
 Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) and Player:CanAttack(Target) then
@@ -794,16 +782,12 @@ end
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Blind:ID() == RubimRH.queuedSpell[1]:ID() and not Target:Exists() then
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
-if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and Target:DebuffUp(S.CheapShot) then
+if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or not targetRange20) then
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Feint:ID() == RubimRH.queuedSpell[1]:ID()  and Player:BuffUp(S.Feint) then
+if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Feint:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffUp(S.Feint) then
     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-end
-
-if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
-    return RubimRH.QueuedSpell():Cast()
 end
 
 if not RubimRH.queuedSpell[1]:CooldownUp() or not RubimRH.queuedSpell[1]:IsAvailable() or not Player:AffectingCombat()
@@ -811,6 +795,10 @@ or (S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.Chea
 or (S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind))) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
+if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
+    return RubimRH.QueuedSpell():Cast()
+end
+
 
 if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 40 and Player:AffectingCombat()  then
   return S.Evasion:Cast()
@@ -829,12 +817,12 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and Player:AffectingCombat() then
 	--Kick
-	if IsReady("Kick") and TargetinRange(8) and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged then
+	if IsReady("Kick") and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged then
 		return S.Kick:Cast()
 	end
 
 	--Shiv
-	if IsReady("Shiv") and TargetinRange(8) and isEnraged then
+	if IsReady("Shiv") and targetRange8 and isEnraged then
 		return S.Shiv:Cast()
 	end
 end
@@ -842,12 +830,12 @@ end
 --Rotation------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:AffectingCombat() or Player:BuffUp(S.VanishBuff)) then
-	if not C_Spell.IsCurrentSpell(6603) and TargetinRange(20) and Player:BuffDown(S.VanishBuff) and Player:BuffDown(S.Stealth) then
+	if not C_Spell.IsCurrentSpell(6603) and targetRange20 and Player:BuffDown(S.VanishBuff) and Player:BuffDown(S.Stealth) then
 		return S.autoattack:Cast()
 	end
 
   -- Fan the Hammer Combo Point Prediction
-  if S.FantheHammer:IsAvailable() and S.PistolShot:TimeSinceLastCast() < Player:GCDRemains() then
+  if S.FantheHammer:IsAvailable() and S.PistolShot:TimeSinceLastCast() <= Player:GCDRemains() then
     ComboPoints = math.max(ComboPoints, FantheHammerCP())
     ComboPointsDeficit = Player:ComboPointsDeficit()
   end
@@ -876,16 +864,16 @@ end
 --Out of Range--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
     if not TargetinRange(10) and Target:DebuffDown(S.Blind) and Player:CanAttack(Target) and not AuraUtil.FindAuraByName("Stealth", "player") and Player:BuffDown(S.VanishBuff) and Player:AffectingCombat() then
-        if IsReady("Between the Eyes") and TargetinRange(30) and EnergyTimeToMaxRounded() <= Player:GCD() and Finish_Condition() and S.Crackshot:IsAvailable() and (S.Vanish:CooldownRemains() > 45 and S.ShadowDance:CooldownRemains() > 15) then
+        if IsReady("Between the Eyes") and targetRange30 and EnergyTimeToMaxRounded() <= Player:GCD() and Finish_Condition() and S.Crackshot:IsAvailable() and (S.Vanish:CooldownRemains() > 45 and S.ShadowDance:CooldownRemains() > 15) then
             return S.BetweentheEyes:Cast()
         end
 
-        if IsReady("Pistol Shot") and S.Ambush:TimeSinceLastCast()>0.5 and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and TargetinRange(30) and Player:EnergyDeficitPredicted() < 25 and (Player:ComboPointsDeficit() >= 1 or EnergyTimeToMaxRounded() <= Player:GCD()) then
+        if IsReady("Pistol Shot") and S.Ambush:TimeSinceLastCast()>0.5 and S.PistolShot:TimeSinceLastCast()>0.5 and S.BladeFlurry:TimeSinceLastCast()>0.5 and targetRange30 and Player:EnergyDeficitPredicted() < 25 and (Player:ComboPointsDeficit() >= 1 or EnergyTimeToMaxRounded() <= Player:GCD()) then
             return S.PistolShot:Cast()
         end
     end
 
-    return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
+    return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
 RubimRH.Rotation.SetAPL(260, APL);
