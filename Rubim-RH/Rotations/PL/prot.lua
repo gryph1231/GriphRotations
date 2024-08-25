@@ -226,16 +226,15 @@ local function APL()
     end
 
 
+  local iconEoT = C_Spell.GetSpellInfo(387174).iconID
 
 
-
-  if IsReady(427453,1) and C_Spell.GetSpellInfo(387174).iconID == 5342121 then
-    canCastHoL = true
-else
-    canCastHoL = false
-end
-
-
+  if iconEoT == 5342121 then
+      canCastHoL = true
+  else
+      canCastHoL = false
+  end
+  
 
 
             local lostimer = GetTime() - losCheckTimer
@@ -276,7 +275,6 @@ end
             else
             elite = false
             end
-
             local incorporeal = UnitName('target') == 'Incorporeal Being' and not AuraUtil.FindAuraByName("Imprison","target","HARMFUL") and not AuraUtil.FindAuraByName("Freezing Trap","target","HARMFUL")  
             and not AuraUtil.FindAuraByName("Blind","target","HARMFUL")  and not AuraUtil.FindAuraByName("Turn Evil","target","HARMFUL")  and not AuraUtil.FindAuraByName("Repentance","target","HARMFUL")  
             -- Define a list of dungeon boss encounter IDs
@@ -304,6 +302,7 @@ end
             else
             rezcharges=S.Intercession:Charges()
             end
+            local rezcheck = (rezcharges >=1 or level ==0 or IsInInstance() and level ~=0)
 
             if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
               targetTTD = UnitHealth('target')/getCurrentDPS()
@@ -316,7 +315,7 @@ end
   
 
             -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
-            if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
+            if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcheck and los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus") then
               if IsReady("Intercession") then
                 return S.intercession:Cast()
               elseif Player:HolyPower() < 3 then
@@ -345,7 +344,7 @@ end
 
 
             if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and S.Intercession:CooldownUp() 
-            and Player:HolyPower() < 3 and partyOrRaidDead() >= 1 and (rezcharges>=1 or level == 0) then
+            and Player:HolyPower() < 3 and partyOrRaidDead() >= 1 and rezcheck then
             if IsReady("Judgment") and targetRange30 then
             return S.Judgment:Cast()
             end
@@ -355,13 +354,13 @@ end
             end
             end
 
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Intercession") and (rezcharges>=1 or level == 0)
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Intercession") and rezcheck
             and Player:HolyPower() >= 3 then
             return S.intercession:Cast() 
             end
 
 
-            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0 or rezcharges>=1) then
+            if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0 or rezcharges==0) then
             RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
             end
 
@@ -433,14 +432,10 @@ end
 
   
 
-            --health pot -- will need to update item ID of HPs as expansions progress
-            if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
-            GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(207023) == true and
-            GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1)
-            and (not Player:InArena() and not Player:InBattlegrounds()) then
-            return I.HPIcon:Cast()
-            end
-
+--health pot -- will need to update item ID of HPs as expansions progress
+if inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(191380) == true and GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+  return I.HPIcon:Cast()
+end
             --abnout to die need heals or immunity
             if IsReady("Divine Shield") and inRange30 >= 1 and Player:HealthPercentage() < 20  and Player:AffectingCombat() then
             return S.DivineShield:Cast()
@@ -534,15 +529,14 @@ end
 
 
             -------------DEFENSIVES_-------------
-            if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat()) and not Target:IsDeadOrGhost() then
+            if Target:Exists() and Player:CanAttack(Target) and (inRange30>=1 or Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
 
               if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
               and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
               return S.autoattack:Cast()
               end
-  
                         
-          if canCastHoL and (Player:HolyPower()>=5 or costValueHoL == 0) and S.HoL:IsAvailable()
+          if IsReady(427453,1) and S.HoL:IsAvailable()
           then
           return S.EyeofTyr:Cast() 
           end
@@ -565,7 +559,7 @@ end
                 end
 
 
-                if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
+                if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not rezcheck then
                   if IsReady("Shield of the Righteous") and (targetRange8 or inRange8 >= 1)
                   and Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2 and not canCastHoL
                   then
@@ -583,7 +577,7 @@ end
                 return S.WordofGlory:Cast()
                 end
             
-            if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
+            if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not rezcheck then
               if IsReady("Shield of the Righteous") and (targetRange8 or inRange8>=1) and (Player:BuffRemains(S.ShieldoftheRighteousBuff) < 2 and (Player:ActiveMitigationNeeded() or Player:HealthPercentage() <= 80)) and not canCastHoL then
                 return S.ShieldoftheRighteous:Cast()
               end
@@ -622,7 +616,7 @@ end
             ------princess function for focus------------------------------------------------------------------------------------------------------------------------------------------------
 
                 if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus") then 
-                    if IsReady("Intercession") and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and (rezcharges>=1 or level ==0) then
+                    if IsReady("Intercession") and Player:HolyPower()>=3 and UnitIsDeadOrGhost("focus") and rezcheck then
                         return S.intercession:Cast()
                     end
 
@@ -666,7 +660,7 @@ end
                 end
                 
             if RubimRH.CDsON() and inRange8 >= 1 then
-              if RubimRH.CDsON() and targetRange20 
+              if RubimRH.CDsON() and targetRange20
               
               and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (targetTTD>5 or target_is_dummy()) then
               local ShouldReturn = UseItems();
@@ -731,7 +725,7 @@ end
 end
   -- shield_of_the_righteous,if=(((!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up)&(!buff.sanctification.up|buff.sanctification.stack<buff.sanctification.max_stack)
   -- TODO: Find a way to track RighteousProtector ICD.
-  if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not (rezcharges>=1 or level ==0) then
+  if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or not rezcheck then
 
     if IsReady("Shield of the Righteous") and not canCastHoL and targetRange8 and ((Player:HolyPower() > 2 or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and (Player:BuffDown(S.SanctificationBuff) or Player:BuffStack(S.SanctificationBuff) < 5)) then
       return S.ShieldoftheRighteous:Cast()
@@ -772,7 +766,7 @@ end
     return S.Consecration:Cast()
 end
   -- eye_of_tyr,if=talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3
-  if RubimRH.CDsON() and targetRange5 and IsReady("Eye of Tyr") and S.InmostLight:IsAvailable() then
+  if RubimRH.CDsON() and targetRange5 and IsReady("Eye of Tyr") and S.InmostLight:IsAvailable()  then
     return S.EyeofTyr:Cast()
 end
   -- blessed_hammer

@@ -75,7 +75,7 @@ RubimRH.Spell[65] = {
     SetFocus = Spell(31884), --avenging wrath
     ClearFocus = Spell(200652), --tyrs deliverance
 };
---unused icons: hand of div, holy light, trink2,
+--unused icons: hand of div, holy light, trink2, --divine steed(curr aa)?, avenging wrath(after affix), tyrs deliverance(after affix)
 local S = RubimRH.Spell[65]
 
 if not Item.Paladin then
@@ -101,7 +101,8 @@ local function Spender()
     if IsReady("Word of Glory") and los == false then
         if C_Spell.IsSpellInRange("Word of Glory",LowestAlly("UnitID")) and (LowestAlly("HP") < 90 or (not Player:AffectingCombat() and LowestAlly("HP") < 95)) then
             if LowestAlly("UnitID") == "player" then
-                return S.WordofGlory:Cast()
+                --return S.WordofGlory:Cast()
+                return Item(23323):Cast()
             elseif LowestAlly("UnitID") == "party1" then
                 return S.WordofGloryP1:Cast()
             elseif LowestAlly("UnitID") == "party2" then
@@ -112,7 +113,8 @@ local function Spender()
                 return S.WordofGloryP4:Cast()
             end
         elseif UnitGetTotalHealAbsorbs("player") > UnitHealthMax("player") / 5 and C_Spell.IsSpellInRange("Holy Shock","player") then
-            return S.WordofGlory:Cast()
+            --return S.WordofGlory:Cast()
+            return Item(23323):Cast()
         elseif UnitGetTotalHealAbsorbs("party1") > UnitHealthMax("player") / 5 and C_Spell.IsSpellInRange("Holy Shock","party1") then
             return S.WordofGloryP1:Cast()
         elseif UnitGetTotalHealAbsorbs("party2") > UnitHealthMax("player") / 5 and C_Spell.IsSpellInRange("Holy Shock","party2") then
@@ -166,7 +168,7 @@ local function BlessingofSummer()
             return Item(178675):Cast()
         end
 
-        if IsReady("Blessing of Spring") and BlessingReady("Spring") and ((MissingHealth(85) >= 3 or MissingHealth(75) >= 2) or Player:HealthPercentage() < 65) then
+        if IsReady("Blessing of Spring") and BlessingReady("Spring") and (MissingHealth(85) >= 3 or MissingHealth(75) >= 2 or Player:HealthPercentage() < 65) then
             return Item(178675):Cast()
         end
     end
@@ -200,7 +202,7 @@ local function APL()
 if Player:IsCasting() or Player:IsChanneling() then
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 elseif 
---(IsResting("player") == true and not Player:CanAttack(Target)) or Player:IsDeadOrGhost() or 
+(IsResting("player") == true and not Player:CanAttack(Target)) or Player:IsDeadOrGhost() or 
 AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\mount2.tga"
 end
@@ -213,6 +215,8 @@ if true then
     else
         los = false
     end
+
+    no_spot_heal_available = not IsReady('Holy Shock') and Player:HolyPower() < 3
 
     inInstance, instanceType = IsInInstance()
 
@@ -248,49 +252,50 @@ if true then
 	
 	channel_time = elapsed_time_channel_ch / 1000
 end
---Afflicted Soul
---if instanceType == "dungeon" then
-if UnitName("mouseover") == "Afflicted Soul" or UnitExists("focus") then
-    if UnitName("focus") == "Afflicted Soul" and C_Spell.IsSpellInRange("Holy Shock","focus") then
-        if IsReady("Flash of Light") and IsKeyDown('F') and not Player:IsMoving() then
-            return S.FlashofLight:Cast()
-        end
+-- --Afflicted Soul
+-- --if instanceType == "dungeon" then
+-- if UnitName("mouseover") == "Afflicted Soul" or UnitExists("focus") then
+--     if UnitName("focus") == "Afflicted Soul" and C_Spell.IsSpellInRange("Holy Shock","focus") then
+--         if IsReady("Flash of Light") and IsKeyDown('F') and not Player:IsMoving() then
+--             return S.FlashofLight:Cast()
+--         end
     
-        if IsReady("Cleanse") then
-            return S.Cleanse:Cast()
-        end
+--         if IsReady("Cleanse") then
+--             return S.Cleanse:Cast()
+--         end
 
-        if LowestAlly("HP") >= 25 then
-            if IsReady("Word of Glory") and Player:HolyPower() >= 3 then
-                return S.WordofGlory:Cast()
-            end
-
-            if IsReady("Holy Shock") then
-                return S.HolyShock:Cast()
-            end 
-        
-            -- if S.LightoftheMartyrFocus:IsCastableQueue() and Player:HealthPercentage() > 75 then
-            --     return S.LightoftheMartyrFocus:Cast()
-            -- end 
-
-            -- if IsReady("Holy Prism") and MissingHealth(85) == 0 and S.HolyShock:CooldownRemains() > Player:GCD() then
-            --     return S.HolyPrism:Cast()
-            -- end 
-
-            -- if S.FlashofLight:IsCastableQueue() and not Player:IsMoving() then
-            --     return S.FlashofLight:Cast()
+--         if LowestAlly("HP") >= 25 then
+            -- if IsReady("Word of Glory") and Player:HolyPower() >= 3 then
+            --        return Item(23323):Cast()
+            --     --return S.WordofGlory:Cast()
             -- end
-        end
-    end
 
-    if not UnitExists("focus") and UnitName("mouseover") == "Afflicted Soul" and not UnitIsDeadOrGhost("mouseover") then
-        return S.SetFocus:Cast()
-    end
+--             if IsReady("Holy Shock") then
+--                 return S.HolyShock:Cast()
+--             end 
+        
+--             -- if S.LightoftheMartyrFocus:IsCastableQueue() and Player:HealthPercentage() > 75 then
+--             --     return S.LightoftheMartyrFocus:Cast()
+--             -- end 
 
-    if UnitExists("focus") and UnitName("focus") ~= "Afflicted Soul" or (UnitIsDeadOrGhost("focus") or not C_Spell.IsSpellInRange("Cleanse","focus")) then
-        return S.ClearFocus:Cast()
-    end
-end
+--             -- if IsReady("Holy Prism") and MissingHealth(85) == 0 and S.HolyShock:CooldownRemains() > Player:GCD() then
+--             --     return S.HolyPrism:Cast()
+--             -- end 
+
+--             -- if S.FlashofLight:IsCastableQueue() and not Player:IsMoving() then
+--             --     return S.FlashofLight:Cast()
+--             -- end
+--         end
+--     end
+
+--     if not UnitExists("focus") and UnitName("mouseover") == "Afflicted Soul" and not UnitIsDeadOrGhost("mouseover") then
+--         return S.SetFocus:Cast()
+--     end
+
+--     if UnitExists("focus") and UnitName("focus") ~= "Afflicted Soul" or (UnitIsDeadOrGhost("focus") or not C_Spell.IsSpellInRange("Cleanse","focus")) then
+--         return S.ClearFocus:Cast()
+--     end
+-- end
 --end
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Out of Combat---------------------------------------------------------------------
@@ -376,9 +381,9 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 --if Player:AffectingCombat() then
     if Player:AffectingCombat() then
-        if IsReady("Divine Shield") and Player:HealthPercentage() < 25 and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Forbearance", "player", "HARMFUL") then
-            return S.DivineShield:Cast()
-        end
+        -- if IsReady("Divine Shield") and Player:HealthPercentage() < 25 and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Forbearance", "player", "HARMFUL") then
+        --     return S.DivineShield:Cast()
+        -- end
 
         if trinket1ready and Player:HealthPercentage() < 40 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 30) and not AuraUtil.FindAuraByName("Divine Shield", "player") then
             return I.tx1:Cast()
@@ -448,12 +453,12 @@ if not C_Spell.IsCurrentSpell(6603) and TargetinRange(8) and UnitCanAttack("play
     return S.autoattack:Cast()
 end
 
-if BlessingofSummer() and RubimRH.CDsON() then
+if BlessingofSummer() then
 	return BlessingofSummer()
 end
 
-if IsReady("Divine Toll") and RubimRH.CDsON() then
-    if (MissingHealth(70,1) >= 3 or MissingHealth(50,1) >= 2) or MissingHealth(40) >= 2 then
+if IsReady("Divine Toll") and Player:AffectingCombat() then
+    if (MissingHealth(50) >= 2 or MissingHealth(55) >= 3 or MissingHealth(60) >= 4 or MissingHealth(65) >= 5) or ((no_spot_heal_available or (S.BeaconofVirtue:CooldownDown() and not AuraUtil.FindAuraByName("Beacon of Virtue", "player"))) and ((MissingHealth(65) >= 2 or MissingHealth(70) >= 3 or MissingHealth(75) >= 4 or MissingHealth(80) >= 5))) then
         if IsReady("Blessing of Summer") and BlessingReady("Summer") then
             return Item(178675):Cast()
         end
@@ -464,20 +469,8 @@ if IsReady("Divine Toll") and RubimRH.CDsON() then
     end
 end
 
-if IsReady("Beacon of Virtue") and LowestAlly("HP") >= 35 and (MissingHealth(85) >= 3 or MissingHealth(75) >= 2) then
-    if IsReady("Blessing of Summer") and BlessingReady("Summer") then
-        return Item(178675):Cast()
-    end
-
-    return S.BeaconofVirtue:Cast()
-end
-
-if Spender() and Player:HolyPower() >= 5 then
-	return Spender()
-end
-
-if IsReady("Holy Prism") then
-    if TargetinRange(nil,"Holy Prism") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and MissingHealth(85) >= 2 then
+if IsReady("Holy Prism") and Player:AffectingCombat() then
+    if TargetinRange(nil,"Holy Prism") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and ((MissingHealth(65) >= 2 or MissingHealth(70) >= 3 or MissingHealth(75) >= 4 or MissingHealth(80) >= 5) or ((no_spot_heal_available or (S.BeaconofVirtue:CooldownDown() and not AuraUtil.FindAuraByName("Beacon of Virtue", "player"))) and ((MissingHealth(80) >= 2 or MissingHealth(85) >= 3 or MissingHealth(90) >= 4 or MissingHealth(95) >= 5)))) then
         return S.HolyPrism:Cast()
     end
 
@@ -498,8 +491,18 @@ if IsReady("Holy Prism") then
     -- end
 end
 
-if IsReady("Beacon of Virtue") and (MissingHealth(85) >= 3 or MissingHealth(75) >= 2) then
-    return S.BeaconofVirtue:Cast()
+if IsReady("Beacon of Virtue") then
+    if (LowestAlly("HP") >= 25 or no_spot_heal_available) and (MissingHealth(80) >= 2 or MissingHealth(85) >= 3 or MissingHealth(90) >= 4 or MissingHealth(95) >= 5) then
+        if IsReady("Blessing of Summer") and BlessingReady("Summer") then
+            return Item(178675):Cast()
+        end
+
+        return S.BeaconofVirtue:Cast()
+    end
+end
+
+if Spender() and Player:HolyPower() >= 5 then
+	return Spender()
 end
 
 -- if IsReady("Aura Mastery") and Player:AffectingCombat() and MissingHealth(50) >= 2 then
@@ -533,6 +536,20 @@ if IsReady("Holy Shock") and (S.HolyShock:FullRechargeTime() < Player:GCD() or L
         return S.HolyShockP4:Cast()
     elseif UnitCanAttack("player","target") and TargetinRange(nil,"Holy Shock") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and Player:ManaPercentage() > 35 then
         return S.HolyShockTarget:Cast()
+    end
+end
+
+if Spender() and Player:HolyPower() >= 3 and LowestAlly("HP") < 75 then
+	return Spender()
+end
+
+if IsReady("Beacon of Virtue") then
+    if MissingHealth(75) >= 2 or MissingHealth(80) >= 3 or MissingHealth(85) >= 4 or MissingHealth(90) >= 5 then
+        if IsReady("Blessing of Summer") and BlessingReady("Summer") then
+            return Item(178675):Cast()
+        end
+
+        return S.BeaconofVirtue:Cast()
     end
 end
 
@@ -584,7 +601,7 @@ if IsReady("Crusader Strike") and TargetinRange(nil,"Crusader Strike") and UnitC
     return S.CrusaderStrike:Cast()
 end 
 
-if IsReady("Consecration") and UnitCanAttack("player","target") and not AuraUtil.FindAuraByName("Consecration", "player") and ((TargetinRange(8) and not Player:IsMoving()) or (TargetinRange(5) and Player:IsMoving())) then
+if IsReady("Consecration") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and not AuraUtil.FindAuraByName("Consecration", "player") and ((TargetinRange(8) and not Player:IsMoving()) or (TargetinRange(5) and Player:IsMoving())) then
     return S.Consecration:Cast()
 end
 
