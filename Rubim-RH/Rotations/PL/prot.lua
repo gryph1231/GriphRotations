@@ -543,7 +543,7 @@ end
             
 
 
-              if IsReady("Hand of Reckoning") and targetRange30 and isTanking==false then
+              if IsReady("Hand of Reckoning") and targetRange30 and isTanking==false and not Target:IsAPlayer() then
               return S.HandofReckoning:Cast()
               end
                 -- heals/active mitigation
@@ -689,22 +689,22 @@ end
            if (castTime > 0.1 or channelTime > 0.1) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and not isEnraged then
 
             -- kick on GCD
-            if IsReady("Avenging's Shield") and targetRange30 and kickprio() and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
+            if IsReady("Avenging's Shield") and targetRange30 and (kickprio() or Target:IsAPlayer()) and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
             return S.AvengersShield:Cast()
             end
 
             -- kick on GCD
-            if IsReady("Rebuke") and kickprio() and targetRange8 and Player:GCDRemains()<0.5 then
+            if IsReady("Rebuke") and (kickprio() or Target:IsAPlayer()) and targetRange8 and Player:GCDRemains()<0.5 then
             return S.Rebuke:Cast()
             end
 
             --Stun
-            if IsReady("Hammer of Justice") and targetRange10 and stunprio() then
+            if IsReady("Hammer of Justice") and targetRange10 and (stunprio() or Target:IsAPlayer()) then
             return S.HammerofJustice:Cast()
             end
 
             --Blind
-            if targetRange10 and IsReady("Blinding Light")  and inRange8 >= 1 and blindprio() then
+            if targetRange10 and IsReady("Blinding Light")  and inRange8 >= 1 and (blindprio() or Target:IsAPlayer()) then
             return S.BlindingLight:Cast()
             end
           end

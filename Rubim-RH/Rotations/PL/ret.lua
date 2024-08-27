@@ -877,19 +877,19 @@ end
 if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
 --Kick
 if IsReady("Rebuke") 
-and kickprio() 
+and (kickprio() or Target:IsAPlayer())
 and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
 return S.Rebuke:Cast()
 end
 
 -- --Stun
-if IsReady("Hammer of Justice") and stunprio() 
+if IsReady("Hammer of Justice") and (stunprio() or Target:IsAPlayer())
 and targetRange10 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
 return S.HammerofJustice:Cast()
 end
 
 -- --blind
-if IsReady("Blinding Light") and blindprio()
+if IsReady("Blinding Light") and (blindprio() or Target:IsAPlayer())
 and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
 return S.BlindingLight:Cast()
 end
