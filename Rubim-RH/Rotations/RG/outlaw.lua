@@ -372,7 +372,7 @@ local function Finish_Condition()
   -- Determine if we are allowed to use Vanish offensively in the current situation
   local function Vanish_DPS_Condition ()
   -- You can vanish if we've set the UseDPSVanish setting, and we're either not tanking or we're solo but the DPS vanish while solo flag is set).
-    return not Player:IsTanking(Target) and not Target:IsAPlayer()
+    return (not Player:IsTanking(Target) or Target:IsAPlayer() or IsInInstance())
 end
   
 local function Stealth()
