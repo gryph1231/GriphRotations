@@ -572,7 +572,7 @@ local function CDs()
   end
 
   -- actions.cds+=/thistle_tea,if=!buff.thistle_tea.up&(energy.base_deficit>=100|fight_remains<charges*6)
-  if RubimRH.CDsON() and inRange30>=1 and IsReady("Thistle Tea") and not Player:BuffUp(S.ThistleTea) and (EnergyDeficit >= 150 or HL.BossFilteredFightRemains("<", S.ThistleTea:Charges()*6)) then
+  if RubimRH.CDsON() and inRange30>=1 and IsReady("Thistle Tea") and not Player:BuffUp(S.ThistleTea) and (EnergyDeficit >= 90 or HL.BossFilteredFightRemains("<", S.ThistleTea:Charges()*6)) then
     return S.ThistleTea:Cast()
   end
 
