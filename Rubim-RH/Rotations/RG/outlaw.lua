@@ -92,6 +92,7 @@ KillingSpreeDamageDebuff = Spell(424564),
 Vanish                 = Spell(1856),
 VanishBuff             = Spell(11327),
 VanishBuff2            = Spell(115193),
+LuckyCoin = Spell(461818),
 Shiv                   = Spell(5938),
 WilloftheForsaken      = Spell(7744),
 CloakofShadows         = Spell(31224),
@@ -487,7 +488,7 @@ local function StealthCDs()
   -- &talent.fateful_ending&(!buff.fatebound_lucky_coin.up&(buff.fatebound_coin_tails.stack>=5
   -- |buff.fatebound_coin_heads.stack>=5)|buff.fatebound_lucky_coin.up&!cooldown.between_the_eyes.ready)
   if IsReady("Vanish") and Vanish_DPS_Condition() then
-    if not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity():IsAvailable() and not S.FatefulEnding:IsAvailable() and (not FBcoinbuff and (FBcoinTailsstacks >= 5 or FBcoinHeadsstacks >=5) or FBcoinbuff and not S.BetweentheEyes:IsReady()) then
+    if not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity():IsAvailable() and not S.FatefulEnding:IsAvailable() and (Player:BuffDown(S.LuckyCoin) and (FBcoinTailsstacks >= 5 or FBcoinHeadsstacks >=5) or Player:BuffUp(S.LuckyCoin) and not IsReady("Between the Eyes")) then
       return S.Vanish:Cast()
     end
   end
@@ -669,8 +670,8 @@ else
   FBcoinTailsstacks = 0
 end
 
-local FBcoinbuff = (AuraUtil.FindAuraByName('Fatebound Coin (Heads)','player') or AuraUtil.FindAuraByName('Fatebound Coin (Tails)','player'))
 
+--  print(S.Vanish:CooldownRemains())
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

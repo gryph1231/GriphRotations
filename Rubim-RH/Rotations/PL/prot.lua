@@ -302,7 +302,7 @@ local function APL()
             else
             rezcharges=S.Intercession:Charges()
             end
-            local rezcheck = (rezcharges >=1 or level ==0 or IsInInstance() and level ~=0)
+            local rezcheck = (rezcharges >=1 or level ==0)
 
             if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
               targetTTD = UnitHealth('target')/getCurrentDPS()
@@ -310,9 +310,8 @@ local function APL()
               end
               
                   local targetdying = (aoeTTD() < 5 or targetTTD<5)
-              
+              -- print(level)
 
-  
 
             -- print(IsReady("Intercession",nil,nil,1,1) , UnitIsDeadOrGhost("focus") , (rezcharges>=1 or level ==0) , los == false , UnitExists('focus') , C_Spell.IsSpellInRange("Flash of Light", "focus"))
             if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcheck and los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Flash of Light", "focus") then

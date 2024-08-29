@@ -1058,6 +1058,26 @@ end
 
 
 
+-- -- Function to check if the player is interacting with something
+-- function Interacting()
+--     -- Check if the player is currently looting
+--     local isLooting = UnitIsLooting("player")
+
+--     -- Check if the player is interacting with an NPC or object (e.g., vendor, quest NPC)
+--     local isInteracting = C_GossipInfo.GetOptions() or C_QuestLog.GetNumQuestLogEntries() > 0
+
+--     -- Check if a vendor window is open
+--     local isVendorOpen = MerchantFrame and MerchantFrame:IsShown()
+
+--     -- Check if the auction house is open
+--     local isAuctionHouseOpen = AuctionFrame and AuctionFrame:IsShown()
+
+--     -- Check if the player is interacting with a mailbox
+--     local isMailboxOpen = MailFrame and MailFrame:IsShown()
+
+--     -- Return true if any of the interaction conditions are met
+--     return isLooting or isInteracting or isVendorOpen or isAuctionHouseOpen or isMailboxOpen
+-- end
 
 
 
