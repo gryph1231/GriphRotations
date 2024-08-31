@@ -163,6 +163,7 @@ local G = RubimRH.Spell[1] -- General Skills
 S.AvengingWrath.TextureSpellID = { 55748 }
 S.Crusade.TextureSpellID = { 55748 }
 S.CrusaderStrike.TextureSpellID = { 342348 }
+S.WakeofAshes.TextureSpellID = { 403695 }
 
 -- Items
 if not Item.Paladin then Item.Paladin = {} end
@@ -276,7 +277,7 @@ end
 local function Finishers()
 --hammer_of_light
     if IsReady(427453) and TargetinRange(10) and hol_ready then
-        return S.HammerofLightz:Cast() 
+        return S.WakeofAshes:Cast() 
     end
 
 --divine_hammer,if=holy_power=5
@@ -476,9 +477,9 @@ if not Player:AffectingCombat() then
     --     return S.RetributionAura:Cast()
     -- end
 
-    -- if IsReady("Divine Shield") and Player:DebuffUp(S.Burst) and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 40 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage() <= 20) then
-    --     return S.DivineShield:Cast()
-    -- end
+    if IsReady("Divine Shield") and Player:DebuffUp(S.Burst) and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 40 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage() <= 20) then
+        return S.DivineShield:Cast()
+    end
             
     if IsReady("Lay on Hands") and Player:DebuffUp(S.Burst) and Player:HealthPercentage() <= 20 and not Player:DebuffUp(S.Forbearance) and S.DivineShield:CooldownRemains() > Player:GCD() then
         return S.LayonHands:Cast()
@@ -533,9 +534,9 @@ if Player:AffectingCombat() then
         end
     end
 
-    -- if IsReady("Divine Shield") and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 40 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage()<=25) then
-    --     return S.DivineShield:Cast()
-    -- end
+    if IsReady("Divine Shield") and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 40 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage()<=25) then
+        return S.DivineShield:Cast()
+    end
 
     if IsReady("Lay on Hands") and Player:HealthPercentage() <= 25 and not Player:DebuffUp(S.Forbearance) and S.DivineShield:CooldownRemains() > Player:GCD() then
         return S.LayonHands:Cast()
@@ -568,13 +569,26 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --interrupts----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-if RubimRH.InterruptsON() then
-    if (castTime > castchannelTime + 0.5 or channelTime > castchannelTime + 0.5) and not isEnraged then
-        if IsReady("Rebuke") and TargetinRange(5) and kickprio() and select(8, UnitCastingInfo("target")) == false then
-            return S.Rebuke:Cast()
-        end
+if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
+    --Kick
+    if IsReady("Rebuke") 
+    and (kickprio() or Target:IsAPlayer())
+    and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
+    return S.Rebuke:Cast()
     end
-end 
+    
+    -- --Stun
+    if IsReady("Hammer of Justice") and (stunprio() or Target:IsAPlayer())
+    and targetRange10 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
+    return S.HammerofJustice:Cast()
+    end
+    
+    -- --blind
+    if IsReady("Blinding Light") and (blindprio() or Target:IsAPlayer())
+    and targetRange8 and (castTime>castchannelTime+0.5 or channelTime>castchannelTime+0.5) and not isEnraged then
+    return S.BlindingLight:Cast()
+    end
+end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --rotation------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
