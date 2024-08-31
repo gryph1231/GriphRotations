@@ -208,26 +208,25 @@ local EnrageUp = AuraUtil.FindAuraByName("Enrage","player")
 
 HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
--- validmobsinrange8y = combatmobs40() * .6
--- validmobsinrange30y = combatmobs40() * .6
--- validmobsinrange10y = combatmobs40() * .6
+validmobsinrange8y = combatmobs40() * .6
+validmobsinrange30y = combatmobs40() * .6
+validmobsinrange10y = combatmobs40() * .6
 
--- if (inRange10 > validmobsinrange10y or instanceType=='raid') and combatmobs40() > 0 then
---   aoecds10y = true
---   else
---     aoecds10y = false
---   end
+if (inRange10 > validmobsinrange10y or instanceType=='raid') and combatmobs40() > 0 then
+  aoecds10y = true
+  else
+    aoecds10y = false
+  end
   
 
 
--- -- print(IsReady("Execute") and S.Execute:CooldownRemains()<0.55)
+-- print(IsReady("Execute") and S.Execute:CooldownRemains()<0.55)
 
--- if (inRange30 > validmobsinrange30y or instanceType=='raid') and combatmobs40() > 0 then
--- aoecds30y = true
--- else
--- aoecds30y = false
--- end
-
+if (inRange30 > validmobsinrange30y or instanceType=='raid') and combatmobs40() > 0 then
+aoecds30y = true
+else
+aoecds30y = false
+end
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -355,15 +354,15 @@ if inRange10>=2 and RubimRH.AoEON() then
       return S.Whirlwind:Cast()
     end
   -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
-  if RubimRH.CDsON() and Player:PrevGCD(1, S.Rampage) and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+  if RubimRH.CDsON() and Player:PrevGCD(1, S.Rampage)   and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
     return S.Recklessness:Cast()
   end
   -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment
-  if RubimRH.CDsON() and S.Recklessness:CooldownDown() and IsReady("Avatar") and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
+  if RubimRH.CDsON() and S.Recklessness:CooldownDown()   and IsReady("Avatar") and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
     return S.Avatar:Cast()
   end
   -- thunderous_roar,if=buff.enrage.up
-  if RubimRH.CDsON() and S.OdynsFury:CooldownDown() and IsReady("Thunderous Roar") and (EnrageUp) then
+  if RubimRH.CDsON() and S.OdynsFury:CooldownDown()   and IsReady("Thunderous Roar") and (EnrageUp) then
     return S.ThunderousRoar:Cast()
   end
   -- champions_spear,if=buff.enrage.up
@@ -371,7 +370,7 @@ if inRange10>=2 and RubimRH.AoEON() then
     return S.ChampionsSpear:Cast()
   end
   -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
-  if RubimRH.CDsON() and S.Recklessness:CooldownDown() and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
+  if RubimRH.CDsON() and S.Recklessness:CooldownDown()   and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
     return S.OdynsFury:Cast()
   end
 
@@ -384,7 +383,7 @@ if inRange10>=2 and RubimRH.AoEON() then
     return S.Rampage:Cast()
   end
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON() and S.ThunderousRoar:CooldownDown() and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) and S.OdynsFury:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains()>Player:GCD() then
+  if RubimRH.CDsON() and S.ThunderousRoar:CooldownDown()   and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) and S.OdynsFury:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains()>Player:GCD() then
     return S.Bladestorm:Cast()
   end
   -- ravager,if=buff.enrage.up
