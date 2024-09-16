@@ -394,7 +394,8 @@ end
 -------------------------------------------------------------Spell Queue--------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or RangeCount(30)==0)
-or (S.GhostWolf:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player")) then
+or (S.GhostWolf:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
+or (S.FeralLunge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:IsInRange(8) or not Target:IsInRange(25))) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
