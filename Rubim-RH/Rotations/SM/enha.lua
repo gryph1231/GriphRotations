@@ -108,11 +108,13 @@ OverflowingMaelstrom = Spell(384149),
 FeralSpiritBuff = Spell(333957),
 WindRushTotem = Spell(192077),
 ElementalSpirits = Spell(242624),
+Skyfury = Spell(462854),
 }
 
 local S = RubimRH.Spell[263]
 local G = RubimRH.Spell[1] -- General Skills
-S.StoneBulwarkTotem.TextureSpellID = { 255654 }
+S.StoneBulwarkTotem.TextureSpellID = { 255654 } --bullrush
+S.Skyfury.TextureSpellID = { 8512 } --windfurry totem
 
 -- start, duration, enabled = GetSpellCooldown(115356);
 -- WindstrikeCooldown = duration - (GetTime() - start)
@@ -149,6 +151,23 @@ end
 local function bool(val)
     return val ~= 0
 end
+
+--LOS CHECK
+if not loscheck then
+    loscheck = CreateFrame("Frame")
+end
+
+local losCheckTimer = 0
+
+local frame = loscheck
+frame:RegisterEvent("UI_ERROR_MESSAGE")
+frame:SetScript("OnEvent", function(self,event,errorType,message)
+    if message == 'Target not in line of sight' then
+        losCheckTimer = GetTime()
+    end
+end)
+
+
 
 local function FSTargets()
 local inRange15 = 0
@@ -303,6 +322,22 @@ local function ST()
 end
 
 local function APL()
+
+	if UnitExists('focus') and AuraUtil.FindAuraByName('Earth Shield','focus') then
+        _, _, earthshieldstack = AuraUtil.FindAuraByName('Earth Shield','focus')
+    else
+        earthshieldstack = 0
+    end
+
+
+	local lostimer = GetTime() - losCheckTimer
+	local los
+	
+	if lostimer < Player:GCD() then
+		los = true
+	else
+		los = false
+	end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------Functions/Top priorities-------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -340,14 +375,25 @@ if not Player:AffectingCombat() then
 		return S.FlametongueWeapon:Cast()
 	end
 
-	-- if IsReady("Earth Shield") and (not Player:BuffUp(S.EarthShield) or Player:BuffStack(S.EarthShield) < 7)  then
-	-- 	return S.EarthShield:Cast()
-	-- end
+	if IsReady("Lightning Shield") and not Player:BuffUp(S.LightningShield) then
+		return S.LightningShield:Cast()
+	end
+
+	if IsReady("Skyfury") and not Player:BuffUp(S.Skyfury) then
+		return S.Skyfury:Cast()
+	end
+	
+	if 	los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Earth Shield", "focus") then 
+		if IsReady("Earth Shield") and earthshieldstack<7 then
+			return S.EarthShield:Cast()
+		end
+	end
+
 end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Spell Queue--------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat())
+if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or RangeCount(30)==0)
 or (S.GhostWolf:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player")) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
