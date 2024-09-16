@@ -526,13 +526,9 @@ end
 --defensives----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() then 
-    if RangeCount(30) >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (not Player:InArena() and not Player:InBattlegrounds()) then
-        if (IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1) 
-        or (IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1)
-        or (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1) then
-            return I.HPIcon:Cast()
-        end
-    end
+    if inRange30 >= 1 and Player:HealthPercentage() <= 20 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
+      end
 
     if IsReady("Divine Shield") and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 40 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage()<=25) then
         return S.DivineShield:Cast()
@@ -542,11 +538,11 @@ if Player:AffectingCombat() then
         return S.LayonHands:Cast()
     end
 
-    if IsReady("Divine Protection") and Player:AffectingCombat() and not Player:BuffUp(S.ShieldofVengeance) and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and RangeCount(20) >= 1 then
+    if IsReady("Divine Protection") and not Player:BuffUp(S.ShieldofVengeance) and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and RangeCount(20) >= 1 then
       return S.divineprotection:Cast()
     end
 
-    if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and Player:AffectingCombat() and not Player:BuffUp(S.DivineProtection) and not Player:BuffUp(S.DivineShield) and RangeCount(20) >= 1 then
+    if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and not Player:BuffUp(S.DivineProtection) and not Player:BuffUp(S.DivineShield) and RangeCount(20) >= 1 then
         return S.ShieldofVengeance:Cast()
     end
 

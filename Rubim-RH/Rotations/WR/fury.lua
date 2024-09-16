@@ -354,7 +354,7 @@ if inRange10>=2 and RubimRH.AoEON() then
       return S.Whirlwind:Cast()
     end
   -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
-  if RubimRH.CDsON() and Player:PrevGCD(1, S.Rampage)   and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+  if RubimRH.CDsON() and HL.CombatTime()>3 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
     return S.Recklessness:Cast()
   end
   -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment

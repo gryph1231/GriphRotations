@@ -719,12 +719,12 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Out of Combat-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
-if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff)  then
+if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) and not AuraUtil.FindAuraByName("Stealth", "player")  then
     -- if IsReady("Blade Flurry") and RangeCount(15) == 0 and (RangeCount(40) >= 1 or Player:CanAttack(Target)) and Player:BuffUp(S.AdrenalineRush) and S.UnderhandedUpperhand:IsAvailable() then
     --     return S.BladeFlurry:Cast()
     -- end
     
-	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:DebuffUp(S.KillingSpreeDamageDebuff) then
+	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:DebuffUp(S.KillingSpreeDamageDebuff) and not IsResting() then
 		return S.Stealth:Cast()
 	end
 
@@ -810,9 +810,9 @@ return S.CloakofShadows:Cast()
 end
 
 --health pot -- will need to update item ID of HPs as expansions progress
-if inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(191380) == true and GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
-  return I.HPIcon:Cast()
-end
+if inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+	return I.HPIcon:Cast()
+  end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Interrupts & Tranq--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
@@ -830,7 +830,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Rotation------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
-if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:AffectingCombat() or Player:BuffUp(S.VanishBuff)) then
+if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:AffectingCombat() or Player:BuffUp(S.VanishBuff))  and not AuraUtil.FindAuraByName("Stealth", "player") then
 	if not C_Spell.IsCurrentSpell(6603) and targetRange20 and Player:BuffDown(S.VanishBuff) and Player:BuffDown(S.Stealth) then
 		return S.autoattack:Cast()
 	end

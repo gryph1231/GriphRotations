@@ -413,7 +413,7 @@ end
             return S.Potion:Cast()
         end
 
-        if Player:HealthPercentage() < 30 and not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Wall of Hate", "player") and C_Item.IsUsableItem(207023) and GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1 and (not Player:InArena() and not Player:InBattlegrounds()) then
+        if Player:HealthPercentage() < 30 and not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Wall of Hate", "player") and C_Item.IsUsableItem(211880) and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 and (not Player:InArena() and not Player:InBattlegrounds()) then
             return I.HPIcon:Cast()
         end
 
