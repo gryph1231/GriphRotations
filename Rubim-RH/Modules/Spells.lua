@@ -181,7 +181,7 @@ RubimRH.Spell[263] = {
     SwirlingMaelstrom = Spell(384359),
     OverflowingMaelstrom = Spell(384149),
     StoneBulwarkTotem = Spell(108270),
-    WindrushTotem = Spell(192077),
+    WindRushTotem = Spell(192077),
 
     FeralSpiritBuff = Spell(333957),
     ElementalSpirits = Spell(242624),

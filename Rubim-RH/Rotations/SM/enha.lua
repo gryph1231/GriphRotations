@@ -106,13 +106,13 @@ Shamanism = Spell(193876),
 SwirlingMaelstrom = Spell(384359),
 OverflowingMaelstrom = Spell(384149),
 FeralSpiritBuff = Spell(333957),
-WindrushTotem = Spell(192077),
+WindRushTotem = Spell(192077),
 ElementalSpirits = Spell(242624),
 }
 
 local S = RubimRH.Spell[263]
 local G = RubimRH.Spell[1] -- General Skills
-S.StoneBulwarkTotem.TextureSpellID = { 136098 }
+S.StoneBulwarkTotem.TextureSpellID = { 255654 }
 
 -- start, duration, enabled = GetSpellCooldown(115356);
 -- WindstrikeCooldown = duration - (GetTime() - start)
