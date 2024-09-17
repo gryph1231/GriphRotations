@@ -818,7 +818,7 @@ if inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and Player:AffectingCombat() then
 	--Kick
-	if IsReady("Kick") and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged then
+	if IsReady("Kick") and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged and (Target:IsAPlayer() or kickprio()) then
 		return S.Kick:Cast()
 	end
 

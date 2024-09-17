@@ -630,16 +630,12 @@ end
 
 function kickprio()
     local KickSpells = {
-        'Hideous Cackle','Decay Surge','Withering Burst','Earth Bolt','Infuse Corruption','Decaying Roots','Burst of Decay','Screech','Decay Surge', --BRH
-        'Molten Core','Burning Roar','Mending Clay','Melt','Mote of Combustion','Lava Bolt','Molten Army', -- Neltharus
-        'Expulse','Demoralizing Shout','Elemental Focus','Dazzle','Pyretic Burst','Cauterize','Refreshing Tide','Boiling Rage','Tidal Divergence','Water Bolt','Aqueous Barrier', -- HoI
-        'Spiked Carapace','Stone Spike','Chain Lightning','Stone Bolt','Earthen Ward','Curse of Stone','Sonic Burst','Hasten', -- Uldaman
-        'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
-        'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
-        'Call of the Flock','Mana Void','Monotonous Lecture', 'Arcane Missiles','Astral Bomb',  -- AA
-        'Icebolt','Ice Shield','Cold Claws','Cinderbolt','Lightning Bolt','Crackling Detonation','Thunder Bolt','Flashfire','Shock Blast',       --RLP
-        'Mystic Vapors','Erratic Growth','Waking Bane','Condensed Frost','Icy Bindings', --AV
-        'Storm Bolt','Disruptive Shout','Disruptive Shout','Stormbolt','Surge','Tempest','Summon Squall','Stormbolt','Thunderstrike','Death Bolt Volley','Death Bolt','Rotting Wind','Swift Wind','Bloodcurdling Shout','Deadly Thunder','Bloodcurdling Shout', -- NO
+"Resonant Barrage",	"Web Bolt",	"Resonant Barrage",	"Horrifying Shrill",	"Poison Bolt",	"Revolting Volley",	"Venom Volley",	"Bloodstained Webmage",	"Web Bolt",	"Silk Binding",	"Twist Thoughts",	"Grimweave Blast",	
+"Mending Web",	"Void Wave",	"Void Bolt",	"Night Bolt",	"Ensnaring Shadows",	"Abyssal Howl",	"Tormenting Beam",	"Umbral Barrier",	"Congealed Shadow",	"Silken Shell",	"Night Bolt",	"Shadow Bolt",	"Animate Shadows",	
+"Acidic Eruption",	"Arcing Void",	"Howling Fear",	"Alloy Bolt",	"Restoring Metals",	"Piercing Wail",	"Censoring Gear",	"Stone Bolt",	"Molten Metal",	"Spirit Bolt",	"Harvest Essence",	"Bramblethorn Coat",	"Nourish the Forest",	
+"Stimulate Resistance",	"Stimulate Regeneration",	"Spirit Bolt",	"Patty Cake",	"Consumption",	"Drain Fluids",	"Necrotic Bolt",	"Necrotic Bolt",	"Necrotic Bolt",	"Frostbolt",	"Bonemend",	"Rasping Scream",	"Necrotic Bolt",	
+"Drain Fluids",	"Goresplatter",	"Drain Fluids",	"Necrotic Bolt",	"Enfeeble",	"Watertight Shell",	"Brackish Bolt",	"Bolstering Shout",	"Stinky Vomit",	"Water Bolt",	"Choking Waters",	"Earth Bolt",	"Mass Tremor",	"Shadowflame Bolt",	"Sear Mind",	
+"Shadowflame Bolt",	"Shadowflame Bolt",										
     }
     local currentspellchannel = select(1,UnitChannelInfo('target'))
     local currentspellcast = select(1, UnitCastingInfo('target'))
