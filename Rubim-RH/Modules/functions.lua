@@ -544,17 +544,11 @@ end
 
 
 
-function mitigate()
+function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {
-                'Explosive Brand',--AV
-                'Static Surge', 'Hailstorm', "Tempest's Fury", 'Deep Chill', 'Overpowering Croak', 'Inundate',--halls of infusion
-                'Magma Eruption', 'Might of the Forge', 'Volatile Mutation', 'Candescent Tempest', -- neltharus
-                'Shocking Quake', 'Crushing Stomp', 'Thunderous Clap', 'Wing Buffet',              -- Uldaman
-                'Infinite Fury', 'Stonecracker Barrage',--DotI                                                                      
-                'Volatile Mutation','Might of the Forge', -- Neltharus
-                'Inferno', --RLP
+-- "Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Shadow Bolt",	"Obsidian Beam",	"Terrifying Slam",	"Seismic Smash",	"Igneous Hammer",	"Crystalline Smash",	"Patty Cake",	"Crunch",	"Sever Flesh",	"Icy Shard",	"Shoot",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -724,18 +718,13 @@ function GetFocusTargetHealthPercentage()
     end
 end
 
-function mitigatedng()
+function mitigateboss()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-            'Steel Barrage','Thunder Jaw','Fire Maw','Searing Blows', 'Stormslam',-- RLP boss
-            'Savage Peck', 'Barkbreaker', --Academy boss
-            'Erupting Fissure','Ice Cutter', 'Arcane Cleave','Dragon Strike',-- Azure vault boss
-            'Brutalize','Rending Strike','Conductive Strike', -- NO boss
-            'Decaystrike', -- BHH boss
-            'Fiery Focus','Heated Swings',--neltharus boss
-            'Wild Cleave', 'Sand Breath', --uldaman boss
-            'Squall Buffet', --HoI
+"Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Shadow Bolt",	"Obsidian Beam",	"Terrifying Slam",	"Seismic Smash",
+	"Igneous Hammer",	"Crystalline Smash",	"Patty Cake",	"Crunch",	"Sever Flesh",	"Shoot",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush",
+
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
@@ -1076,8 +1065,62 @@ end
 -- end
 
 
+local HPGCount = 0
+
+-- Initialize event tracking for Holy Power Gains (HPG)
+function InitializeHPGTracking()
+    local Spec = Cache.Persistent.Player.Spec[1]  -- Spec ID for Paladin spec, 66 is Protection
+    HPGCount = 0
+    
+    -- Register event to track Holy Power gains
+    HL:RegisterForSelfCombatEvent(
+        function(...)
+            if Spec == 66 then  -- Protection Paladin specialization
+                HPGCount = HPGCount + 1
+            end
+        end,
+        "SPELL_ENERGIZE"
+    )
+    
+    -- Reset Holy Power when specific buffs are applied (e.g., Divine Purpose)
+    HL:RegisterForSelfCombatEvent(
+        function(...)
+            local SpellID = select(12, ...)
+            if SpellID == 385127 then  -- Example SpellID for Divine Purpose or similar
+                HPGCount = 0
+             
+            end
+        end,
+        "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE"
+    )
+end
+
+-- Function to retrieve the current Holy Power count
+function GetCurrentHPGCount()
+    
+    return HPGCount
+end
+
+-- Initialize event tracking at the start
+InitializeHPGTracking()
+
+function TWWS1AffixMobsInRange()
+	local range_counter = 0
+		
 
 
+			for i=1,10 do
+				local unitID = "nameplate" .. i
+				if UnitExists("nameplate"..i) then           
+					local nameplate_guid = UnitGUID("nameplate"..i) 
+				
+						if UnitCanAttack("player",unitID) and C_Item.IsItemInRange(32321, unitID) and UnitName(unitID) == "Orb of Ascendance" then
+							range_counter = range_counter + 1
+						                    
+					end
+         			end
+			end
+	
 
-
-
+	return range_counter
+end
