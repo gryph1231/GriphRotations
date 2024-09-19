@@ -728,10 +728,10 @@ function mitigateboss()
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
-            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+            -- local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
     
             for idx = 1, #spell do
-                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                if UnitCanAttack("player", unitID) and name == spell[idx] then
                     return true
                 end
             end
@@ -1114,7 +1114,7 @@ function TWWS1AffixMobsInRange()
 				if UnitExists("nameplate"..i) then           
 					local nameplate_guid = UnitGUID("nameplate"..i) 
 				
-						if UnitCanAttack("player",unitID) and C_Item.IsItemInRange(32321, unitID) and UnitName(unitID) == "Orb of Ascendance" then
+						if UnitCanAttack("player",unitID) and C_Item.IsItemInRange(34368, unitID) and UnitName(unitID) == "Orb of Ascendance" then
 							range_counter = range_counter + 1
 						                    
 					end
