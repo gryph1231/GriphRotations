@@ -708,7 +708,7 @@ if RubimRH.CDsON() then
     return S.BastionofLight:Cast()
   end
 
-  if Player:Buff(S.AvengingWrath) or Player:Buff(S.Sentinel) then
+  if Player:BuffUp(S.AvengingWrath) or Player:BuffUp(S.Sentinel) then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
   end
