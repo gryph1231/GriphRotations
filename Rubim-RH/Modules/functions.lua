@@ -1043,67 +1043,6 @@ end
 
 
 
--- -- Function to check if the player is interacting with something
--- function Interacting()
---     -- Check if the player is currently looting
---     local isLooting = UnitIsLooting("player")
-
---     -- Check if the player is interacting with an NPC or object (e.g., vendor, quest NPC)
---     local isInteracting = C_GossipInfo.GetOptions() or C_QuestLog.GetNumQuestLogEntries() > 0
-
---     -- Check if a vendor window is open
---     local isVendorOpen = MerchantFrame and MerchantFrame:IsShown()
-
---     -- Check if the auction house is open
---     local isAuctionHouseOpen = AuctionFrame and AuctionFrame:IsShown()
-
---     -- Check if the player is interacting with a mailbox
---     local isMailboxOpen = MailFrame and MailFrame:IsShown()
-
---     -- Return true if any of the interaction conditions are met
---     return isLooting or isInteracting or isVendorOpen or isAuctionHouseOpen or isMailboxOpen
--- end
-
-
-local HPGCount = 0
-
--- Initialize event tracking for Holy Power Gains (HPG)
-function InitializeHPGTracking()
-    local Spec = Cache.Persistent.Player.Spec[1]  -- Spec ID for Paladin spec, 66 is Protection
-    HPGCount = 0
-    
-    -- Register event to track Holy Power gains
-    HL:RegisterForSelfCombatEvent(
-        function(...)
-            if Spec == 66 then  -- Protection Paladin specialization
-                HPGCount = HPGCount + 1
-            end
-        end,
-        "SPELL_ENERGIZE"
-    )
-    
-    -- Reset Holy Power when specific buffs are applied (e.g., Divine Purpose)
-    HL:RegisterForSelfCombatEvent(
-        function(...)
-            local SpellID = select(12, ...)
-            if SpellID == 385127 then  -- Example SpellID for Divine Purpose or similar
-                HPGCount = 0
-             
-            end
-        end,
-        "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE"
-    )
-end
-
--- Function to retrieve the current Holy Power count
-function GetCurrentHPGCount()
-    
-    return HPGCount
-end
-
--- Initialize event tracking at the start
-InitializeHPGTracking()
-
 function TWWS1AffixMobsInRange()
 	local range_counter = 0
 		
@@ -1114,7 +1053,7 @@ function TWWS1AffixMobsInRange()
 				if UnitExists("nameplate"..i) then           
 					local nameplate_guid = UnitGUID("nameplate"..i) 
 				
-						if UnitCanAttack("player",unitID) and C_Item.IsItemInRange(34368, unitID) and UnitName(unitID) == "Orb of Ascendance" then
+						if UnitCanAttack("player",unitID) and C_Item.IsItemInRange(32321, unitID) and UnitName(unitID) == "Orb of Ascendance" then
 							range_counter = range_counter + 1
 						                    
 					end
@@ -1124,3 +1063,58 @@ function TWWS1AffixMobsInRange()
 
 	return range_counter
 end
+
+
+
+
+
+
+
+
+
+
+local HPGCount = 0
+
+-- Table to store Holy Power-generating spells with their respective Holy Power gains
+local HolyPowerSpells = {
+    [387174] = 3,  -- Eye of Tyr generates 3 Holy Power
+    [275779] = 1,  -- Judgment generates 1 Holy Power
+    [24275]  = 1,  -- Hammer of Wrath generates 1 Holy Power
+    [204019] = 1,  -- Blessed Hammer generates 1 Holy Power
+}
+
+-- Function to initialize the tracking of Holy Power generation
+function InitializeHPGTracking()
+    -- Reset Holy Power count
+    HPGCount = 0
+
+    -- Register event to track Holy Power gains from spell casts
+    HL:RegisterForSelfCombatEvent(
+        function(...)
+            local SpellID = select(12, ...)  -- Get the SpellID from the event
+            if HolyPowerSpells[SpellID] then
+                HPGCount = HPGCount + HolyPowerSpells[SpellID]
+            end
+        end,
+        "SPELL_CAST_SUCCESS"
+    )
+
+    -- Register event to reset Holy Power if needed (e.g., when a specific buff is applied)
+    HL:RegisterForSelfCombatEvent(
+        function(...)
+            local SpellID = select(12, ...)
+            if SpellID == 385127 then  -- Example: Reset Holy Power on specific SpellID (if needed)
+                HPGCount = 0
+            end
+        end,
+        "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE"
+    )
+end
+
+-- Function to get the current Holy Power count
+function GetCurrentHPGCount()
+    return HPGCount
+end
+
+-- Initialize the event tracking at the start
+InitializeHPGTracking()

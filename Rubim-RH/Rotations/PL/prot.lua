@@ -218,7 +218,7 @@ end)
 
 local function HPGTo2Dawn()
   if not S.OfDuskandDawn:IsAvailable() then return -1 end
-  return 6 - Player:HolyPower() - (Player:BuffStack(S.BlessingofDawnBuff) * 3)
+  return 6 - GetCurrentHPGCount() - (Player:BuffStack(S.BlessingofDawnBuff) * 3)
 end
 
 
@@ -230,21 +230,25 @@ local function HammerofLight()
     end
   end
   -- eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and (targetRange10 and not Player:IsMoving() or Player:IsMoving() and targetRange8) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and (targetRange8 and not Player:IsMoving() or Player:IsMoving() and targetRange5) then
     return S.EyeofTyr:Cast() 
     end
 
 if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 then
   -- shield_of_the_righteous,if=hpg_to_2dawn=4
-  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and (targetRange10 and not Player:IsMoving() or Player:IsMoving() and targetRange8) then
+  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and (targetRange8 and not Player:IsMoving() or Player:IsMoving() and targetRange5) then
     return S.ShieldoftheRighteous:Cast() 
     end
   end
 
   -- eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and (targetRange10 and not Player:IsMoving() or Player:IsMoving() and targetRange8) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and (targetRange8 and not Player:IsMoving() or Player:IsMoving() and targetRange5) then
     return S.EyeofTyr:Cast() 
     end
+  --testing this
+  if IsReady("Avenger's Shield") and inRange30 >= 3 and targetRange30 then
+    return S.AvengersShield:Cast()
+  end
   -- hammer_of_wrath
   if IsReady("Hammer of Wrath") and targetRange30 then
     return S.HammerofWrath:Cast() 
@@ -291,7 +295,6 @@ targetRange30 = C_Item.IsItemInRange(835, "target")
 if Player:IsChanneling() or Player:IsCasting() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 end
-
 
 
 local iconEoT = C_Spell.GetSpellInfo(387174).iconID
@@ -342,10 +345,18 @@ elite = false
 end
 
 local Boss = {
-"Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	"Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"Dread Captain Lockwood",	"General Umbriss",	"Forgemaster Throngus",	"Drahga Shadowburner",	"Erudax, the Duke of Below",
+"Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	
+"Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"Dread Captain Lockwood",	"General Umbriss",	
+"Forgemaster Throngus",	"Drahga Shadowburner",	"Erudax, the Duke of Below",
 
 
 }
+local spellname, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
+if spellname == "Icy Shard" and IsEncounterInProgress("Nalthor the Rimebinder") and Player:HealthPercentage()<70 and level>=4 then
+  mitigateNWBoss = true
+else
+  mitigateNWBoss = false
+end
 
 
 HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
@@ -364,26 +375,25 @@ targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
 
+
 local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
+local _, runSpeed, _, _ = GetUnitSpeed("player")
+local percentSpeed = runSpeed/7*100
+
+if percentSpeed>=200 then
+consecrationdrop = (targetRange10 and not Player:IsMoving() or targetRange8 and  Player:IsMoving())
+else
+consecrationdrop = (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving())
+end
 
 
--- print('intercession ready:',IsReady("Intercession"))
-
--- print('UnitIsDeadOrGhost("focus"):',UnitIsDeadOrGhost("focus"))
-
--- print('rezcharges>=1:',rezcharges>=1)
--- print('los == false:',los == false)
--- print("UnitExists('focus'):",UnitExists('focus'))
--- print('C_Spell.IsSpellInRange("Flash of Light", "focus")',C_Spell.IsSpellInRange("Flash of Light", "focus") )
 
 
 local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
 local useDS = not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
 local useGoAK = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Ardent Defender", "player")
 local useEoT = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
-
-
 
 
 if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (not S.Intercession:CooldownUp() or partyOrRaidDead() == 0 or rezcharges==0) then
@@ -436,7 +446,7 @@ if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 return RubimRH.QueuedSpell():Cast()
 end
 
-if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or inRange30 == 0) then
+if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or inRange30 == 0 or not Target:Exists()) then
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
   end
 
@@ -457,7 +467,7 @@ if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or inRange30 == 0) then
 if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and not isEnraged and UnitExists("target") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
 
   -- kick on GCD
-  if IsReady("Avenging's Shield") and targetRange30 and (kickprio() or Target:IsAPlayer()) and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
+  if IsReady("Avenger's Shield") and targetRange30 and (kickprio() or Target:IsAPlayer()) and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
   return S.AvengersShield:Cast()
   end
   
@@ -510,7 +520,7 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Lay on Hands") and not UnitIsDeadOrGhost("focus") and Player:GCDRemains()<0.5 and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.LayonHandsFocus:Cast()
     end
-    if IsReady("Blessing of Protection") and not UnitIsDeadOrGhost("focus") and inRange30>2 and GetFocusTargetHealthPercentage()<40 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+    if IsReady("Blessing of Protection") and not UnitIsDeadOrGhost("focus") and inRange30>2 and (GetFocusTargetHealthPercentage()<40 or  AuraUtil.FindAuraByName("Morbid Fixation", "focus", "HARMFUL")) and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.BlessingofProtectionFocus:Cast()
     end
     if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (GetFocusTargetHealthPercentage()<60 or mitigatedng()) then
@@ -519,7 +529,7 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<45 and (WordofGlorycast or Player:HolyPower()>=3) then
     return S.WordofGloryFocus:Cast()
     end
-    if IsReady("Cleanse Toxins") and not UnitIsDeadOrGhost("focus") and (GetAppropriateCureSpell("focus")=='Poison' or GetAppropriateCureSpell("focus")=='Disease') and Player:HealthPercentage()>80 then
+    if IsReady("Cleanse Toxins") and RubimRH.InterruptsON() and not UnitIsDeadOrGhost("focus") and (GetAppropriateCureSpell("focus")=='Poison' or GetAppropriateCureSpell("focus")=='Disease') and Player:HealthPercentage()>80 then
     return S.CleanseToxinsFocus:Cast()
     end
 
@@ -551,7 +561,7 @@ if Player:AffectingCombat() and inRange30>=1 then
   return S.LayonHands:Cast()
   end
   
-  if IsEncounterInProgress(Boss) and mitigateboss() then 
+  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss) then 
   
   if IsReady("Guardian of Ancient Kings") and S.ArdentDefender:TimeSinceLastCast() > 0.5 and useGoAK then
   return S.GuardianofAncientKings:Cast()
@@ -566,7 +576,7 @@ if Player:AffectingCombat() and inRange30>=1 then
   return S.ArdentDefender:Cast()
   end
   
-  if IsReady("Eye of Tyr") and (inRange8>= 1 or targetRange5) and useEoT then
+  if IsReady("Eye of Tyr") and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and (inRange8>= 1 or targetRange8) and useEoT then
   return S.EyeofTyr:Cast()
   end
   
@@ -595,7 +605,7 @@ if Player:AffectingCombat() and inRange30>=1 then
   return S.ArdentDefender:Cast()
   end
   
-  if IsReady("Eye of Tyr") and (inRange8>= 1 or targetRange5) and useEoT and HPpercentloss > 5 then
+  if IsReady("Eye of Tyr") and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and (inRange8>= 1 or targetRange8) and useEoT and HPpercentloss > 5 and Player:HealthPercentage()<80 then
     return S.EyeofTyr:Cast()
     end
   end
@@ -622,7 +632,7 @@ if Player:AffectingCombat() and inRange30>=1 then
 ------ROTATION START------------------------------------------------------------------------------------------------------------------------------------------------
 ------ROTATION START------------------------------------------------------------------------------------------------------------------------------------------------
  
-      if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:AffectingCombat() or Target:AffectingCombat()) then
+      if Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:AffectingCombat() or Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
 
         if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
         and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
@@ -630,12 +640,12 @@ if Player:AffectingCombat() and inRange30>=1 then
         end 
 
         --hold aggro
-        if targetRange30 and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() then 
-            if IsReady("Hand of Reckoning") then
+        if targetRange30 and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
+            if IsReady("Hand of Reckoning") and S.AvengersShield:TimeSinceLastCast()>0.5 and S.Judgment:TimeSinceLastCast()>0.5 then
             return S.HandofReckoning:Cast()
             end
             --aoe pull aggro 
-            if IsReady("Avenger's Shield") and inRange20>=3  and S.HandofReckoning:TimeSinceLastCast()>1 then
+            if IsReady("Avenger's Shield") and inRange30>=3  and S.HandofReckoning:TimeSinceLastCast()>1 then
             return S.AvengersShield:Cast()
             end
             --judgment pull aggro if judgment debuff not up
@@ -643,7 +653,7 @@ if Player:AffectingCombat() and inRange30>=1 then
             return S.Judgment:Cast()
             end
             --AS pull aggro if judgment debuff up
-            if IsReady("Avenger's Shield") and inRange20>=1  and S.HandofReckoning:TimeSinceLastCast()>1 then
+            if IsReady("Avenger's Shield") and inRange30>=1  and S.HandofReckoning:TimeSinceLastCast()>1 then
             return S.AvengersShield:Cast()
             end
             --pull aggro if AS down even if target has judgment debuff
@@ -663,11 +673,11 @@ if Player:AffectingCombat() and inRange30>=1 then
 
 
 
-        if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') then
+        if IsReady("Cleanse Toxins") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') and RubimRH.InterruptsON() then
           return S.CleanseToxins:Cast()
           end
 
-          if IsReady("Consecration") and (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving()) and (not AuraUtil.FindAuraByName("Consecration", "player") or Player:BuffRemains(S.ConsecrationBuff)<2) then
+          if IsReady("Consecration") and consecrationdrop and (not AuraUtil.FindAuraByName("Consecration", "player") or Player:BuffRemains(S.ConsecrationBuff)<2 or not AuraUtil.FindAuraByName("Consecration", "target","HARMFUL|PLAYER")) then
             return S.Consecration:Cast()
             end
 
@@ -698,11 +708,10 @@ if RubimRH.CDsON() then
     return S.BastionofLight:Cast()
   end
 
-
-  if Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (targetTTD>5 or target_is_dummy()) then
+  if Player:Buff(S.AvengingWrath) or Player:Buff(S.Sentinel) then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
-    end
+  end
 
 end
 
@@ -781,7 +790,7 @@ end
     return S.AvengersShield:Cast()
   end
   -- consecration,if=!consecration.up
-  if IsReady("Consecration") and (Player:BuffDown(S.ConsecrationBuff)) and (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving()) then
+  if IsReady("Consecration") and (Player:BuffDown(S.ConsecrationBuff)) and consecrationdrop then
     return S.Consecration:Cast()
   end
   -- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
@@ -825,7 +834,7 @@ return S.WordofGlory:Cast()
 end
 
   -- consecration,if=!buff.sanctification_empower.up
-  if IsReady("Consecration") and Player:BuffDown(S.SanctificationEmpowerBuff) and (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving()) then
+  if IsReady("Consecration") and Player:BuffDown(S.SanctificationEmpowerBuff) and consecrationdrop then
 return S.Consecration:Cast()
 end
 
