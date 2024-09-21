@@ -677,7 +677,7 @@ if Player:AffectingCombat() and inRange30>=1 then
           return S.CleanseToxins:Cast()
           end
 
-          if IsReady("Consecration") and consecrationdrop and (not AuraUtil.FindAuraByName("Consecration", "player") or Player:BuffRemains(S.ConsecrationBuff)<2 or not AuraUtil.FindAuraByName("Consecration", "target","HARMFUL|PLAYER")) then
+          if IsReady("Consecration") and inRange8>=3 and consecrationdrop and (not AuraUtil.FindAuraByName("Consecration", "player") or Player:BuffRemains(S.ConsecrationBuff)<2 or not AuraUtil.FindAuraByName("Consecration", "target","HARMFUL|PLAYER")) then
             return S.Consecration:Cast()
             end
 

@@ -269,6 +269,11 @@ local function Cooldowns()
         if IsReady("Final Reckoning") and ((Player:HolyPower() >= 4 and HL.CombatTime() < 8 or Player:HolyPower() >= 3 and HL.CombatTime() >= 8 or Player:HolyPower() >= 2 and (S.DivineAuxiliary:IsAvailable() or S.RadiantGlory:IsAvailable())) and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownDown() and (not Player:BuffUp(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10) and (not Player:BuffUp(S.CrusadeBuffRG) or Player:BuffStack(S.CrusadeBuffRG) >= 10) or S.RadiantGlory:IsAvailable() and (Player:BuffUp(S.AvengingWrathBuff) or S.Crusade:IsAvailable() and S.WakeofAshes:CooldownRemains() < Player:GCD()))) then
             return S.FinalReckoning:Cast()
         end    
+        if Player:BuffUp(S.CrusadeBuff) or Player:BuffUp(S.AvengingWrathBuff) then
+        local ShouldReturn = UseItems();
+        if ShouldReturn then return ShouldReturn; end
+        end
+        
     end
       
     return nil
