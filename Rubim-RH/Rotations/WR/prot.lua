@@ -60,7 +60,7 @@ SonicBoom                             = Spell(390725),
 ChampionsSpear                        = Spell(376079),
 SpellReflection                       = Spell(23920),
 StormBolt                             = Spell(107570),
-ThunderClap                           = MultiSpell(6343, 396719),
+ThunderClap                           = MultiSpell(6343),
 ThunderousRoar                        = Spell(384318),
 TitanicThrow                          = Spell(384090),
 WreckingThrow                         = Spell(384110),
@@ -149,7 +149,7 @@ end
 
 
 local function IgnorePainWillNotCap()
-	if Player:Buff(S.IgnorePain) then
+	if Player:BuffUp(S.IgnorePain) then
 	local NewAbsorb = Player:AttackPowerDamageMod() * 4.375 * (1 + Player:VersatilityDmgPct() / 100)
 	local IPBuffTable = Player:AuraInfo(S.IgnorePain, nil, true)
 	local OldAbsorb = IPBuffTable.points[1]
@@ -173,7 +173,7 @@ local function IgnorePainWillNotCap()
 end
 
 local function IgnorePainValue()
-	if Player:Buff(S.IgnorePain) then
+	if Player:BuffUp(S.IgnorePain) then
 	local IPBuffInfo = Player:BuffInfo(S.IgnorePain, nil, true)
 	return IPBuffInfo.points[1]
 	else
@@ -214,11 +214,11 @@ local function AoE()
 	end
 	-- shield_slam,if=(set_bonus.tier30_2pc|set_bonus.tier30_4pc)&spell_targets.thunder_clap<=7|buff.earthen_tenacity.up
 	-- Note: If set_bonus.tier30_2pc is true, then tier30_4pc would be true also, so just checking for 2pc.
-	if S.ShieldSlam:IsCastable() and (tierequipped()>1 and inRange8 <= 7 or Player:Buff(S.EarthenTenacityBuff)) and targetRange8 then
+	if S.ShieldSlam:IsCastable() and (tierequipped()>1 and inRange8 <= 7 or Player:BuffUp(S.EarthenTenacityBuff)) and targetRange8 then
 	return S.ShieldSlam:Cast()
 	end
 	-- thunder_clap,if=buff.violent_outburst.up&spell_targets.thunderclap>6&buff.avatar.up&talent.unstoppable_force.enabled
-	if S.ThunderClap:IsCastable() and targetRange8 and (Player:Buff(S.ViolentOutburstBuff) and inRange8 > 6 and Player:Buff(S.AvatarBuff) and S.UnstoppableForce:IsAvailable()) then
+	if S.ThunderClap:IsCastable() and targetRange8 and (Player:BuffUp(S.ViolentOutburstBuff) and inRange8 > 6 and Player:BuffUp(S.AvatarBuff) and S.UnstoppableForce:IsAvailable()) then
 	SuggestRageDump(5)
 	return S.ThunderClap:Cast()
 	end
@@ -227,7 +227,7 @@ local function AoE()
 	return S.Revenge:Cast()
 	end
 	--shield_slam,if=rage<=60|buff.violent_outburst.up&spell_targets.thunderclap<=7
-	if S.ShieldSlam:IsCastable() and (Player:Rage() <= 60 or Player:Buff(S.ViolentOutburstBuff) and inRange8 <= 7) and targetRange8 then
+	if S.ShieldSlam:IsCastable() and (Player:Rage() <= 60 or Player:BuffUp(S.ViolentOutburstBuff) and inRange8 <= 7) and targetRange8 then
 	SuggestRageDump(20)
 	return S.ShieldSlam:Cast()
 	end
@@ -251,12 +251,12 @@ local function Generic()
 	return S.ShieldSlam:Cast()
 	end
 	-- thunder_clap,if=dot.rend.remains<=2&buff.violent_outburst.down
-	if S.ThunderClap:IsCastable() and targetRange8 and (Target:DebuffRemains(S.RendDebuff) <= 2 and not Player:Buff(S.ViolentOutburstBuff)) then
+	if S.ThunderClap:IsCastable() and targetRange8 and (Target:DebuffRemains(S.RendDebuff) <= 2 and Player:BuffDown(S.ViolentOutburstBuff)) then
 	SuggestRageDump(5)
 	return S.ThunderClap:Cast()
 	end
 	-- execute,if=buff.sudden_death.up&talent.sudden_death.enabled
-	if S.Execute:IsReady() and (Player:Buff(S.SuddenDeathBuff) and S.SuddenDeath:IsAvailable()) and targetRange8 then
+	if S.Execute:IsReady() and (Player:BuffUp(S.SuddenDeathBuff) and S.SuddenDeath:IsAvailable()) and targetRange8 then
 	return S.Execute:Cast()
 	end
 	-- execute
@@ -264,7 +264,7 @@ local function Generic()
 	return S.Execute:Cast()
 	end
 	-- thunder_clap,if=(spell_targets.thunder_clap>1|cooldown.shield_slam.remains&!buff.violent_outburst.up)
-	if S.ThunderClap:IsCastable() and (inRange8 > 1 or S.ShieldSlam:CooldownDown() and not Player:Buff(S.ViolentOutburstBuff)) and targetRange8 then
+	if S.ThunderClap:IsCastable() and (inRange8 > 1 or S.ShieldSlam:CooldownDown() and Player:BuffDown(S.ViolentOutburstBuff)) and targetRange8 then
 	SuggestRageDump(5)
 	return S.ThunderClap:Cast()
 	end
@@ -273,8 +273,8 @@ local function Generic()
 	--|(rage>=80&target.health.pct>35|buff.revenge.up&target.health.pct<=35&rage<=18&cooldown.shield_slam.remains|buff.revenge.up&target.health.pct>35)
 	--&talent.massacre.enabled
 	if S.Revenge:IsReady() and targetRange8 
-	and ((Player:Rage() >= 80 and Target:HealthPercentage() > 20 or Player:Buff(S.RevengeBuff) and Target:HealthPercentage() <= 20 and Player:Rage() <= 18 and S.ShieldSlam:CooldownDown() or Player:Buff(S.RevengeBuff) and Target:HealthPercentage() > 20) 
-	or (Player:Rage() >= 80 and Target:HealthPercentage() > 35 or Player:Buff(S.RevengeBuff) and Target:HealthPercentage() <= 35 and Player:Rage() <= 18 and S.ShieldSlam:CooldownDown() or Player:Buff(S.RevengeBuff) and Target:HealthPercentage() > 35) 
+	and ((Player:Rage() >= 80 and Target:HealthPercentage() > 20 or Player:BuffUp(S.RevengeBuff) and Target:HealthPercentage() <= 20 and Player:Rage() <= 18 and S.ShieldSlam:CooldownDown() or Player:BuffUp(S.RevengeBuff) and Target:HealthPercentage() > 20) 
+	or (Player:Rage() >= 80 and Target:HealthPercentage() > 35 or Player:BuffUp(S.RevengeBuff) and Target:HealthPercentage() <= 35 and Player:Rage() <= 18 and S.ShieldSlam:CooldownDown() or Player:BuffUp(S.RevengeBuff) and Target:HealthPercentage() > 35) 
 	and S.Massacre:IsAvailable()) then
 	return S.Revenge:Cast()
 	end
@@ -287,7 +287,7 @@ local function Generic()
 	return S.Revenge:Cast()
 	end
 	-- thunder_clap,if=(spell_targets.thunder_clap>=1|cooldown.shield_slam.remains&buff.violent_outburst.up)
-	if S.ThunderClap:IsCastable() and (inRange8 >= 1 or S.ShieldSlam:CooldownDown() and Player:Buff(S.ViolentOutburstBuff)) and targetRange8 then
+	if S.ThunderClap:IsCastable() and (inRange8 >= 1 or S.ShieldSlam:CooldownDown() and Player:BuffUp(S.ViolentOutburstBuff)) and targetRange8 then
 	SuggestRageDump(5)
 	return S.ThunderClap:Cast()
 	end
@@ -327,11 +327,11 @@ local function APL()
 		local isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
 		local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
-		local pressshieldblock = isTanking ==true and S.ShieldBlock:IsReady() and ((not Player:Buff(S.ShieldBlockBuff)  or Player:BuffRemains(S.ShieldBlockBuff) < S.ShieldSlam:CooldownRemains()) and not Player:Buff(S.LastStandBuff) and Target:HealthPercentage() > 20)
+		local pressshieldblock = isTanking ==true and S.ShieldBlock:IsReady() and ((Player:BuffDown(S.ShieldBlockBuff)  or Player:BuffRemains(S.ShieldBlockBuff) < S.ShieldSlam:CooldownRemains()) and Player:BuffDown(S.LastStandBuff) and Target:HealthPercentage() > 20)
 		local useDefensive =   not AuraUtil.FindAuraByName("Demoralizing Shout","target","PLAYER|HARMFUL") and  (not AuraUtil.FindAuraByName("Avatar", "player") and S.ImmovableObject:IsAvailable() or not S.ImmovableObject:IsAvailable()) and not AuraUtil.FindAuraByName("Shield Wall", "player") and not AuraUtil.FindAuraByName("Last Stand", "player")
 
-		HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
 
+		HPpercentloss = GetHealthLossPerSecond()
 
 		inInstance, instanceType = IsInInstance()
 
@@ -380,7 +380,7 @@ local function APL()
 		return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 		end 
 
-		-- if Player:Buff(S.IgnorePain) then
+		-- if Player:BuffUp(S.IgnorePain) then
 		-- 	local IPBuffInfo = Player:BuffInfo(S.IgnorePain, nil, true)
 		-- 	return IPBuffInfo.points[1]
 		-- 	else
@@ -402,8 +402,8 @@ local function APL()
 		-- end
 
 		if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
-		and not Player:Debuff(S.lust1) and not Player:Debuff(S.lust2) and Player:CanAttack(Target) and 
-		not Player:Debuff(S.lust3) and not Player:Debuff(S.lust4) and not Player:Debuff(S.lust5) and (I.drums:IsReady()) then
+		and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and Player:CanAttack(Target) and 
+		Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) then
 		return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
 		end
 
@@ -429,10 +429,13 @@ local function APL()
 
 		if Target:Exists() and Player:CanAttack(Target) and (Player:AffectingCombat() or Target:AffectingCombat() and not Target:IsDeadOrGhost()) then
 
-			if not IsCurrentSpell(6603) and Player:CanAttack(Target)
+
+
+
+			if not C_Spell.IsCurrentSpell(6603) and Player:CanAttack(Target)
 			and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
 			return S.autoattack:Cast()
-			end
+			end 
 
 			--health pot -- will need to update item ID of HPs as expansions progress
 			if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
@@ -469,15 +472,15 @@ local function APL()
 					end
 
 			if S.ShieldBlock:IsCastable() and Player:Rage() >= 30 and (isTanking or target_is_dummy()) and Player:AffectingCombat() and inRange10 >= 1
-			and (not Player:Buff(S.ShieldBlockBuff) or S.ShieldBlock:Charges() == 2)  then
+			and (Player:BuffDown(S.ShieldBlockBuff) or S.ShieldBlock:Charges() == 2)  then
 			return S.ShieldBlock:Cast()
 			end
 	
 	
-			if S.IgnorePain:IsReady() and IgnorePainWillNotCap() and (Target:HealthPercentage() >= 20 and (Player:Rage() >= 85 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ShieldBlockBuff) or Player:Rage() >= 60 
+			if S.IgnorePain:IsReady() and IgnorePainWillNotCap() and (Target:HealthPercentage() >= 20 and (Player:Rage() >= 85 and S.ShieldSlam:CooldownUp() and Player:BuffUp(S.ShieldBlockBuff) or Player:Rage() >= 60 
 			and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() or Player:Rage() >= 70 and S.Avatar:CooldownUp() or Player:Rage() >= 40 and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() 
-			and Player:Buff(S.LastStandBuff) or Player:Rage() >= 55 and S.Avatar:CooldownUp() and Player:Buff(S.LastStandBuff) or Player:Rage() >= 80 or Player:Rage() >= 55 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ViolentOutburstBuff) 
-			and Player:Buff(S.ShieldBlockBuff) or Player:Rage() >= 30 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ViolentOutburstBuff) and Player:Buff(S.LastStandBuff) and Player:Buff(S.ShieldBlockBuff))) then
+			and Player:BuffUp(S.LastStandBuff) or Player:Rage() >= 55 and S.Avatar:CooldownUp() and Player:BuffUp(S.LastStandBuff) or Player:Rage() >= 80 or Player:Rage() >= 55 and S.ShieldSlam:CooldownUp() and Player:BuffUp(S.ViolentOutburstBuff) 
+			and Player:BuffUp(S.ShieldBlockBuff) or Player:Rage() >= 30 and S.ShieldSlam:CooldownUp() and Player:BuffUp(S.ViolentOutburstBuff) and Player:BuffUp(S.LastStandBuff) and Player:BuffUp(S.ShieldBlockBuff))) then
 			return S.IgnorePain:Cast()
 			end
 	
@@ -571,11 +574,11 @@ local function APL()
 			or Player:RageDeficit() <= 20 and S.ShieldCharge:CooldownUp() 
 			or Player:RageDeficit() <= 30 and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() 
 			or Player:RageDeficit() <= 20 and S.Avatar:CooldownUp() 
-			or Player:RageDeficit() <= 45 and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() and Player:Buff(S.LastStandBuff) and S.UnnervingFocus:IsAvailable() 
-			or Player:RageDeficit() <= 30 and S.Avatar:CooldownUp() and Player:Buff(S.LastStandBuff) and S.UnnervingFocus:IsAvailable()
+			or Player:RageDeficit() <= 45 and S.DemoralizingShout:CooldownUp() and S.BoomingVoice:IsAvailable() and Player:BuffUp(S.LastStandBuff) and S.UnnervingFocus:IsAvailable() 
+			or Player:RageDeficit() <= 30 and S.Avatar:CooldownUp() and Player:BuffUp(S.LastStandBuff) and S.UnnervingFocus:IsAvailable()
 			or Player:RageDeficit() <= 20
-			or Player:RageDeficit() <= 40 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ViolentOutburstBuff) and S.HeavyRepercussions:IsAvailable() and S.ImpenetrableWall:IsAvailable() 
-			or Player:RageDeficit() <= 55 and S.ShieldSlam:CooldownUp() and Player:Buff(S.ViolentOutburstBuff) and Player:Buff(S.LastStandBuff) and S.UnnervingFocus:IsAvailable() and S.HeavyRepercussions:IsAvailable() and S.ImpenetrableWall:IsAvailable()
+			or Player:RageDeficit() <= 40 and S.ShieldSlam:CooldownUp() and Player:BuffUp(S.ViolentOutburstBuff) and S.HeavyRepercussions:IsAvailable() and S.ImpenetrableWall:IsAvailable() 
+			or Player:RageDeficit() <= 55 and S.ShieldSlam:CooldownUp() and Player:BuffUp(S.ViolentOutburstBuff) and Player:BuffUp(S.LastStandBuff) and S.UnnervingFocus:IsAvailable() and S.HeavyRepercussions:IsAvailable() and S.ImpenetrableWall:IsAvailable()
 			or Player:RageDeficit() <= 17 and S.ShieldSlam:CooldownUp() and S.HeavyRepercussions:IsAvailable()
 			or Player:RageDeficit() <= 18 and S.ShieldSlam:CooldownUp() and S.ImpenetrableWall:IsAvailable())
 			or (Player:Rage() >= 70
@@ -592,7 +595,7 @@ local function APL()
 
 			-- last_stand,if=(target.health.pct>=90&talent.unnerving_focus.enabled|target.health.pct<=20&talent.unnerving_focus.enabled)|talent.bolster.enabled|set_bonus.tier30_2pc|set_bonus.tier30_4pc
 			-- Note: If set_bonus.qtier30_4pc is true, then tier30_2pc would be true as well, so just check for 2pc
-			if isTanking == true and targetRange15 and S.LastStand:IsCastable() and not Player:Buff(S.ShieldWallBuff) and ((Target:HealthPercentage() >= 90 and S.UnnervingFocus:IsAvailable() or Target:HealthPercentage() <= 20 and S.UnnervingFocus:IsAvailable()) or S.Bolster:IsAvailable() or tierequipped()>1) then
+			if isTanking == true and targetRange15 and S.LastStand:IsCastable() and Player:BuffDown(S.ShieldWallBuff) and ((Target:HealthPercentage() >= 90 and S.UnnervingFocus:IsAvailable() or Target:HealthPercentage() <= 20 and S.UnnervingFocus:IsAvailable()) or S.Bolster:IsAvailable() or tierequipped()>1) then
 			return S.LastStand:Cast()
 			end
 			-- ravager
@@ -615,12 +618,12 @@ local function APL()
 			return S.ThunderousRoar:Cast()
 			end
 			-- shield_slam,if=buff.fervid.up
-			if S.ShieldSlam:IsReady() and (Player:Buff(S.FervidBuff)) and targetRange8 then
+			if S.ShieldSlam:IsReady() and (Player:BuffUp(S.FervidBuff)) and targetRange8 then
 			SuggestRageDump(18)
 			return S.ShieldSlam:Cast()
 			end
 			--   -- shockwave,if=talent.sonic_boom.enabled&buff.avatar.up&talent.unstoppable_force.enabled&!talent.rumbling_earth.enabled|talent.sonic_boom.enabled&talent.rumbling_earth.enabled&spell_targets.shockwave>=3
-			--   if S.Shockwave:IsCastable() and targetRange5 and (S.SonicBoom:IsAvailable() and Player:Buff(S.AvatarBuff) and S.UnstoppableForce:IsAvailable() and not S.RumblingEarth:IsAvailable() or S.SonicBoom:IsAvailable() and S.RumblingEarth:IsAvailable() and inRange8 >= 3) then
+			--   if S.Shockwave:IsCastable() and targetRange5 and (S.SonicBoom:IsAvailable() and Player:BuffUp(S.AvatarBuff) and S.UnstoppableForce:IsAvailable() and not S.RumblingEarth:IsAvailable() or S.SonicBoom:IsAvailable() and S.RumblingEarth:IsAvailable() and inRange8 >= 3) then
 			-- 	SuggestRageDump(10)
 			-- 	return S.Shockwave:Cast()
 			-- end
@@ -652,7 +655,7 @@ local function APL()
 
 	if not Player:AffectingCombat() then
 
-			if S.BattleShout:IsCastable() and not Player:Buff(S.BattleShoutBuff) then
+			if S.BattleShout:IsCastable() and Player:BuffDown(S.BattleShoutBuff) then
 			return S.BattleShout:Cast()
 			end
 

@@ -206,7 +206,7 @@ local bloodbath = AuraUtil.FindAuraByName("Bloodbath","player")
 local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 local EnrageUp = AuraUtil.FindAuraByName("Enrage","player")
 
-HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
+HPpercentloss = GetHealthLossPerSecond()
 
 validmobsinrange8y = combatmobs40() * .6
 validmobsinrange30y = combatmobs40() * .6
