@@ -109,6 +109,7 @@ FeralSpiritBuff = Spell(333957),
 WindRushTotem = Spell(192077),
 ElementalSpirits = Spell(242624),
 Skyfury = Spell(462854),
+PoisonCleansingTotem = Spell(383013),
 }
 
 local S = RubimRH.Spell[263]
@@ -191,33 +192,43 @@ local FSAoe = 0
 end
 
 local function AOE()
-	if IsReady("Tempest",1) and Player:BuffStack(S.MaelstromWeapon) >= 10 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653 then
+	if IsReady("Tempest") and TargetinRange(30) and Player:BuffStack(S.MaelstromWeapon) >= 10 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653 then
 		return S.Tempestz:Cast()
 	end
 
-	if IsReady("Windstrike",1) and Player:BuffUp(S.Ascendance) then
+	if IsReady("Windstrike") and TargetinRange(30) and Player:BuffUp(S.Ascendance) then
 		return S.Windstrike:Cast()
 	end
 
-	if IsReady("Primordial Wave",1) and IsReady("Tempest") and RubimRH.CDsON() then
+	if IsReady("Primordial Wave") and TargetinRange(30) and IsReady("Tempest") and RubimRH.CDsON() then
 		return S.PrimordialWave:Cast()
 	end
+ 
+	if IsReady("Ascendance") and TargetinRange(8) and RubimRH.CDsON() then
+		return S.Ascendance:Cast()
+	end
 
-	if IsReady("Lava Lash",1) and AuraUtil.FindAuraByName("Flame Shock", "target", "HARMFUL") and (FSTargets() < RangeCount(10)) and FSTargets() < 6 then
+	if IsReady("Lava Lash") and TargetinRange(8) and AuraUtil.FindAuraByName("Flame Shock", "target", "HARMFUL") and (FSTargets() < RangeCount(10)) and FSTargets() < 6 then
 		return S.LavaLash:Cast()
 	end
 
-	if IsReady("Feral Spirit") and RubimRH.CDsON() then
+	if IsReady("Feral Spirit") and TargetinRange(20) and RubimRH.CDsON() then
 		return S.FeralSpirit:Cast()
 	end
 
-	if IsReady("Lightning Bolt",1) and Player:BuffStack(S.MaelstromWeapon) >= 5 and (AuraUtil.FindAuraByName("Primordial Wave", "player") and Player:BuffRemains(S.PrimordialWaveBuff) < 3) and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 then
-		return S.LightningBolt:Cast()
+	if TargetinRange(30) and Player:BuffStack(S.MaelstromWeapon) >= 5 and (AuraUtil.FindAuraByName("Primordial Wave", "player") and Player:BuffRemains(S.PrimordialWaveBuff) < 3) then
+		if IsReady("Lightning Bolt") and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 then
+			return S.LightningBolt:Cast()
+		end
+
+		if IsReady("Tempest") and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653 then
+			return S.Tempestz:Cast()
+		end
 	end
 		
 	if C_Spell.GetSpellInfo("Lightning Bolt").iconID ~= 5927653 then
 		--review this line
-		if IsReady("Chain Lightning",1) and ((Player:BuffStack(S.MaelstromWeapon) >= 5 and AuraUtil.FindAuraByName("Arc Discharge", "player")) or Player:BuffStack(S.MaelstromWeapon) >= 8) then
+		if IsReady("Chain Lightning") and TargetinRange(30) and ((Player:BuffStack(S.MaelstromWeapon) >= 5 and AuraUtil.FindAuraByName("Arc Discharge", "player")) or Player:BuffStack(S.MaelstromWeapon) >= 8) then
 			return S.ChainLightning:Cast()
 		end
 	end
@@ -238,23 +249,27 @@ local function AOE()
 		return S.Sundering:Cast()
 	end
 
-	if IsReady("Stormstrike",1) then
+	if IsReady("Stormstrike") and TargetinRange(8) then
 		return S.Stormstrike:Cast()
 	end
 
-	if IsReady("Flame Shock",1) and not AuraUtil.FindAuraByName("Flame Shock", "target", "HARMFUL") then
+	if IsReady("Flame Shock") and TargetinRange(30) and not AuraUtil.FindAuraByName("Flame Shock", "target", "HARMFUL") then
 		return S.FlameShock:Cast()
 	end
 
-	if IsReady("Lava Lash",1) then
+	if IsReady("Lava Lash") and TargetinRange(8) then
 		return S.LavaLash:Cast()
 	end
 
 	if IsReady("Crash Lightning") and TargetinRange(8) then
 		return S.CrashLightning:Cast()
 	end
+	
+	if IsReady("Ice Strike") and TargetinRange(8) then
+		return S.IceStrike:Cast()
+	end
 
-	if IsReady("Frost Shock",1) then
+	if IsReady("Frost Shock") and TargetinRange(30) then
 		return S.FrostShock:Cast()
 	end
 
@@ -262,11 +277,11 @@ local function AOE()
 end
 
 local function ST()
-	if IsReady("Tempest",1) and Player:BuffStack(S.MaelstromWeapon) >= 10 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653 then
+	if IsReady("Tempest") and TargetinRange(30) and Player:BuffStack(S.MaelstromWeapon) >= 10 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653 then
 		return S.Tempestz:Cast()
 	end
 
-	if IsReady("Windstrike",1) and Player:BuffUp(S.Ascendance) then
+	if IsReady("Windstrike") and TargetinRange(30) and Player:BuffUp(S.Ascendance) then
 		return S.Windstrike:Cast()
 	end
 
@@ -274,23 +289,33 @@ local function ST()
 		return S.FeralSpirit:Cast()
 	end
 
-	if IsReady("Primordial Wave",1) and IsReady("Tempest") and RubimRH.CDsON() then
+	if IsReady("Primordial Wave") and TargetinRange(30) and IsReady("Tempest") and RubimRH.CDsON() then
 		return S.PrimordialWave:Cast()
 	end
 
-	if IsReady("Lightning Bolt",1) and Player:BuffStack(S.MaelstromWeapon) >= 10 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 then
-		return S.LightningBolt:Cast()
+	if IsReady("Ascendance") and TargetinRange(8) and RubimRH.CDsON() then
+		return S.Ascendance:Cast()
 	end
 
-	if IsReady("Doom Winds",1) and RubimRH.CDsON() then
+	if TargetinRange(30) and Player:BuffStack(S.MaelstromWeapon) >= 5 and (AuraUtil.FindAuraByName("Primordial Wave", "player") and Player:BuffRemains(S.PrimordialWaveBuff) < 3) then
+		if IsReady("Lightning Bolt") and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 then
+			return S.LightningBolt:Cast()
+		end
+
+		if IsReady("Tempest") and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653 then
+			return S.Tempestz:Cast()
+		end
+	end
+
+	if IsReady("Doom Winds") and TargetinRange(8) and RubimRH.CDsON() then
 		return S.DoomWinds:Cast()
 	end
 
-	if IsReady("Stormstrike",1) then
+	if IsReady("Stormstrike") and TargetinRange(8) then
 		return S.Stormstrike:Cast()
 	end
 
-	if IsReady("Lightning Bolt",1) and Player:BuffStack(S.MaelstromWeapon) >= 5 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 then
+	if IsReady("Lightning Bolt") and TargetinRange(30) and Player:BuffStack(S.MaelstromWeapon) >= 5 and C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 then
 		return S.LightningBolt:Cast()
 	end
 
@@ -298,11 +323,11 @@ local function ST()
 		return S.Sundering:Cast()
 	end
 
-	if IsReady("Flame Shock",1) and not Target:DebuffUp(S.FlameShock) then
+	if IsReady("Flame Shock") and TargetinRange(30) and not Target:DebuffUp(S.FlameShock) then
 		return S.FlameShock:Cast()
 	end
 
-	if IsReady("Lava Lash",1) then
+	if IsReady("Lava Lash") and TargetinRange(8) then
 		return S.LavaLash:Cast()
 	end
 
@@ -314,7 +339,7 @@ local function ST()
 		return S.FireNova:Cast()
 	end
 
-	if IsReady("Frost Shock",1) then
+	if IsReady("Frost Shock") and TargetinRange(30) then
 		return S.FrostShock:Cast()
 	end
 	
@@ -330,14 +355,15 @@ local function APL()
     end
 
 
-	local lostimer = GetTime() - losCheckTimer
-	local los
-	
-	if lostimer < Player:GCD() then
-		los = true
-	else
-		los = false
-	end
+    local lostimer = GetTime() - losCheckTimer
+    local los
+
+    if lostimer < Player:GCD() then
+        los = true
+    else
+        los = false
+    end
+
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------Functions/Top priorities-------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -382,13 +408,12 @@ if not Player:AffectingCombat() then
 	if IsReady("Skyfury") and not Player:BuffUp(S.Skyfury) then
 		return S.Skyfury:Cast()
 	end
-	
-	if 	los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Earth Shield", "focus") then 
-		if IsReady("Earth Shield") and earthshieldstack<7 then
-			return S.EarthShield:Cast()
-		end
-	end
 
+	if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Earth Shield", "focus") then 
+        if IsReady("Earth Shield") and earthshieldstack<7 then
+            return S.EarthShield:Cast()
+        end
+    end
 end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Spell Queue--------------------------------------------------------------------
@@ -396,7 +421,7 @@ end
 if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or RangeCount(30)==0)
 or (S.GhostWolf:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
 or (S.FeralLunge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:IsInRange(8) or not Target:IsInRange(25))) then
-	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.DoomWinds:ID() ~= RubimRH.queuedSpell[1]:ID() then
@@ -411,16 +436,24 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Cooldowns----------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
+if IsReady("Healing Surge") and Player:BuffStack(S.MaelstromWeapon) >= 5 and Player:HealthPercentage() < 75 and RangeCount(20) == 0 then
+	return S.HealingSurge:Cast()
+end
+
+if IsReady("Healing Surge") and Player:BuffStack(S.MaelstromWeapon) >= 5 and Player:HealthPercentage() < 55 then
+	return S.HealingSurge:Cast()
+end
+
 if RangeCount(30) >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
 	return I.HPIcon:Cast()
-  end
+end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Rotation-----------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if RubimRH.CDsON() and Target:IsInRange(20) and not Target:IsDeadOrGhost() and Player:CanAttack(Target) and Player:AffectingCombat() and (not targetdying or target_is_dummy()) then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
-  end
+end
 
 if IsReady("Windfury Weapon") and mhenchantremains < 10 then
 	return S.WindfuryWeapon:Cast()
@@ -466,9 +499,6 @@ end
 
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
-
-
-
 
 RubimRH.Rotation.SetAPL(263, APL);
 

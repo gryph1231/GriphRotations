@@ -233,11 +233,11 @@ local I = Item.Paladin.Retribution;
 
 local function Cooldowns()
 --potion,if=buff.avenging_wrath.up|buff.crusade.up|debuff.execution_sentence.up|fight_remains<30
-	if TargetinRange(10) and RubimRH.CDsON() and not Player:InArena() and not Player:InBattlegrounds() and (Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.Crusade) >= 17 or Target:DebuffUp(S.ExecutionSentence)) then
-        if potion_ready then
-		    return S.Potion:Cast()
-        end
-	end            
+	-- if TargetinRange(10) and RubimRH.CDsON() and not Player:InArena() and not Player:InBattlegrounds() and (Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.Crusade) >= 17 or Target:DebuffUp(S.ExecutionSentence)) then
+    --     if potion_ready then
+	-- 	    return S.Potion:Cast()
+    --     end
+	-- end            
     
     if RubimRH.CDsON() and TargetinRange(20) and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or S.AvengingWrath:CooldownRemains() > 17 or S.Crusade:CooldownRemains() > 17) then
         if trinket1ready and trinket1 ~= 202612 and trinket1 ~= 203729 and (trinket1 ~= 203963 or trinket1 ~= 193701 or not Player:IsMoving()) and (trinket1 ~= 207167 or Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.CrusadeBuff) >= 17 or Player:BuffRemains(S.CrusadeBuffRG) >= 17 or (S.RadiantGlory:IsAvailable() and Player:BuffRemains(S.CrusadeBuffRG) >= 8)) then
@@ -531,7 +531,7 @@ end
 --defensives----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() then 
-    if inRange30 >= 1 and Player:HealthPercentage() <= 20 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+    if RangeCount(30) >= 1 and Player:HealthPercentage() <= 20 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
         return I.HPIcon:Cast()
       end
 
@@ -564,7 +564,7 @@ end
 --     return S.BlessingofFreedom:Cast()
 -- end
 
-if IsReady("Cleanse Toxins") and S.CleanseToxins:TimeSinceLastCast() > 2 and (GetAppropriateCureSpell('player') == "Poison" or GetAppropriateCureSpell('player') == "Disease") then
+if IsReady("Cleanse Toxins") and RubimRH.InterruptsON() and S.CleanseToxins:TimeSinceLastCast() > 2 and (GetAppropriateCureSpell('player') == "Poison" or GetAppropriateCureSpell('player') == "Disease") then
     return S.CleanseToxins:Cast()
 end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

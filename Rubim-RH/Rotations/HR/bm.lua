@@ -175,9 +175,9 @@ local function APL()
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Focus:Exists() and not FocusinRange(38) then
-	return S.ClearFocus:Cast()
-end
+-- if Focus:Exists() and not FocusinRange(38) then
+-- 	return S.ClearFocus:Cast()
+-- end
 
 if Player:IsCasting() or Player:IsChanneling() or (IsCurrentAction(13) or IsCurrentAction(14)) then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"

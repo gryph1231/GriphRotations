@@ -723,7 +723,7 @@ function mitigateboss()
         for id = 1, 40 do
             local spell = {
 "Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Shadow Bolt",	"Obsidian Beam",	"Terrifying Slam",	"Seismic Smash",
-	"Igneous Hammer",	"Crystalline Smash",	"Patty Cake",	"Crunch",	"Sever Flesh",	"Shoot",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush",
+	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush",
 
             }
             local unitID = "nameplate" .. id
@@ -1118,3 +1118,72 @@ end
 
 -- Initialize the event tracking at the start
 InitializeHPGTracking()
+
+
+
+-- -- Define the function globally
+--     function TrackHealthLossPerSecond()
+--         local previousHealth = UnitHealth("player")
+--         local previousTime = GetTime()
+    
+--         C_Timer.NewTicker(1, function()
+--             local currentHealth = UnitHealth("player")
+--             local currentTime = GetTime()
+    
+--             -- Calculate the health loss per second
+--             local healthLost = previousHealth - currentHealth
+--             local timeElapsed = currentTime - previousTime
+--             local healthLossPerSecond = (healthLost / UnitHealthMax("player")) * 100 / timeElapsed
+    
+--             -- Update the previous values for the next tick
+--             previousHealth = currentHealth
+--             previousTime = currentTime
+    
+--             -- Return the value or use it as needed
+--             print("Health Loss Per Second: ", healthLossPerSecond)
+--         end)
+--     end
+
+
+
+-- function GetHealthLossPerSecond()
+-- if healthLossPerSecond~=nil then
+--         return healthLossPerSecond
+-- else
+--     return 0
+-- end
+-- end
+
+
+
+
+-- Define the function globally
+    local healthLossPerSecond = 0 -- Global variable to store the health loss per second
+
+    function TrackHealthLossPerSecond()
+        local previousHealth = UnitHealth("player")
+        local previousTime = GetTime()
+    
+        C_Timer.NewTicker(1, function()
+            local currentHealth = UnitHealth("player")
+            local currentTime = GetTime()
+    
+            -- Calculate the health loss per second
+            local healthLost = previousHealth - currentHealth
+            local timeElapsed = currentTime - previousTime
+    
+            if timeElapsed > 0 then
+                healthLossPerSecond = (healthLost / UnitHealthMax("player")) * 100 / timeElapsed
+            end
+    
+            -- Update the previous values for the next tick
+            previousHealth = currentHealth
+            previousTime = currentTime
+        end)
+    end
+    
+    -- Function to get the health loss per second at any time
+    function GetHealthLossPerSecond()
+        return healthLossPerSecond
+    end
+    
