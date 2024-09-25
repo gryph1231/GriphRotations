@@ -429,7 +429,7 @@ if true then
 
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
-    HPpercentloss = MyHealthTracker.GetPredictedHealthLoss() * 3
+    HPpercentloss = GetHealthLossPerSecond()
 
     -- if (RangeCount(8,nil,1) > RangeCount(30,nil,1) * .6 or instanceType == 'raid' or Player:InArena() or Player:InBattlegrounds() or Target:IsAPlayer()) and RangeCount(30,nil,1) > 0 then
     --     aoecds8y = true
