@@ -1121,41 +1121,6 @@ InitializeHPGTracking()
 
 
 
--- -- Define the function globally
---     function TrackHealthLossPerSecond()
---         local previousHealth = UnitHealth("player")
---         local previousTime = GetTime()
-    
---         C_Timer.NewTicker(1, function()
---             local currentHealth = UnitHealth("player")
---             local currentTime = GetTime()
-    
---             -- Calculate the health loss per second
---             local healthLost = previousHealth - currentHealth
---             local timeElapsed = currentTime - previousTime
---             local healthLossPerSecond = (healthLost / UnitHealthMax("player")) * 100 / timeElapsed
-    
---             -- Update the previous values for the next tick
---             previousHealth = currentHealth
---             previousTime = currentTime
-    
---             -- Return the value or use it as needed
---             print("Health Loss Per Second: ", healthLossPerSecond)
---         end)
---     end
-
-
-
--- function GetHealthLossPerSecond()
--- if healthLossPerSecond~=nil then
---         return healthLossPerSecond
--- else
---     return 0
--- end
--- end
-
-
-
 
 -- Define the function globally
     local healthLossPerSecond = 0 -- Global variable to store the health loss per second
@@ -1187,3 +1152,9 @@ InitializeHPGTracking()
         return healthLossPerSecond
     end
     
+
+
+
+
+
+

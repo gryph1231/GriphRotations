@@ -248,12 +248,9 @@ isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("tar
 
 --health pot -- will need to update item ID of HPs as expansions progress
 if inRange30 >= 1 and Player:AffectingCombat() then
-if Player:HealthPercentage()<=30 and  (IsUsableItem(191380) == true and
-GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(207023) == true and
-GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1)
-and (not Player:InArena() and not Player:InBattlegrounds()) then
-return I.HPIcon:Cast()
-end
+  if RangeCount(30) >= 1 and Player:HealthPercentage() <= 20 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+    return I.HPIcon:Cast()
+  end
 
 
 if IsReady("Rallying Cry") and Player:HealthPercentage()<50 then
@@ -354,15 +351,15 @@ if inRange10>=2 and RubimRH.AoEON() then
       return S.Whirlwind:Cast()
     end
   -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
-  if RubimRH.CDsON() and HL.CombatTime()>3 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+  if RubimRH.CDsON() and HL.CombatTime()>Player:GCD() and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
     return S.Recklessness:Cast()
   end
   -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment
-  if RubimRH.CDsON() and S.Recklessness:CooldownDown()   and IsReady("Avatar") and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
+  if RubimRH.CDsON() and IsReady("Avatar") and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
     return S.Avatar:Cast()
   end
   -- thunderous_roar,if=buff.enrage.up
-  if RubimRH.CDsON() and S.OdynsFury:CooldownDown()   and IsReady("Thunderous Roar") and (EnrageUp) then
+  if RubimRH.CDsON() and IsReady("Thunderous Roar") and (EnrageUp) then
     return S.ThunderousRoar:Cast()
   end
   -- champions_spear,if=buff.enrage.up

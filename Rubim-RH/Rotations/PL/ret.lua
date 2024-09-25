@@ -110,7 +110,7 @@ RubimRH.Spell[70] = {
     DivineArbiterBuff = Spell(406975),
     DivineResonanceBuff = Spell(384029),
     EmpyreanPowerBuff = Spell(326733),
-    divineprotection = Spell(210256), -- blessing of sanctuary
+    -- divineprotection = Spell(210256), -- blessing of sanctuary
     BlessingofFreedom = Spell(1044),
     BlessingofFreedomz = Spell(145067), --turn evil
     BlindingLight = Spell(115750),
@@ -264,9 +264,10 @@ local function Cooldowns()
         if IsReady("Crusade") and not S.RadiantGlory:IsAvailable() and ((Player:HolyPower() >= 5 and HL.CombatTime() < 5) or (Player:HolyPower() >= 3 and HL.CombatTime() > 5)) then
             return S.Crusade:Cast()
         end
+        
 
 --final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&time>=8|holy_power>=2&(talent.divine_auxiliary|talent.radiant_glory))&(cooldown.avenging_wrath.remains>10|cooldown.crusade.remains&(!buff.crusade.up|buff.crusade.stack>=10)|talent.radiant_glory&(buff.avenging_wrath.up|talent.crusade&cooldown.wake_of_ashes.remains<gcd))&(!raid_event.adds.exists|raid_event.adds.up|raid_event.adds.in>40)
-        if IsReady("Final Reckoning") and ((Player:HolyPower() >= 4 and HL.CombatTime() < 8 or Player:HolyPower() >= 3 and HL.CombatTime() >= 8 or Player:HolyPower() >= 2 and (S.DivineAuxiliary:IsAvailable() or S.RadiantGlory:IsAvailable())) and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownDown() and (not Player:BuffUp(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10) and (not Player:BuffUp(S.CrusadeBuffRG) or Player:BuffStack(S.CrusadeBuffRG) >= 10) or S.RadiantGlory:IsAvailable() and (Player:BuffUp(S.AvengingWrathBuff) or S.Crusade:IsAvailable() and S.WakeofAshes:CooldownRemains() < Player:GCD()))) then
+        if IsReady("Final Reckoning") and finalreckoningdrop and ((Player:HolyPower() >= 4 and HL.CombatTime() < 8 or Player:HolyPower() >= 3 and HL.CombatTime() >= 8 or Player:HolyPower() >= 2 and (S.DivineAuxiliary:IsAvailable() or S.RadiantGlory:IsAvailable())) and (S.AvengingWrath:CooldownRemains() > 10 or S.Crusade:CooldownDown() and (not Player:BuffUp(S.CrusadeBuff) or Player:BuffStack(S.CrusadeBuff) >= 10) and (not Player:BuffUp(S.CrusadeBuffRG) or Player:BuffStack(S.CrusadeBuffRG) >= 10) or S.RadiantGlory:IsAvailable() and (Player:BuffUp(S.AvengingWrathBuff) or S.Crusade:IsAvailable() and S.WakeofAshes:CooldownRemains() < Player:GCD()))) then
             return S.FinalReckoning:Cast()
         end    
         if Player:BuffUp(S.CrusadeBuff) or Player:BuffUp(S.AvengingWrathBuff) then
@@ -404,6 +405,24 @@ local function Generators()
 end
 
 local function APL()
+    TrackHealthLossPerSecond()
+    inRange5 = RangeCount(5)
+    inRange8 = RangeCount(8)
+    inRange10 = RangeCount(10)
+    inRange15 = RangeCount(15)
+    inRange20 = RangeCount(20)
+    inRange25 = RangeCount(25)
+    inRange30 = RangeCount(30)
+    targetRange5 = C_Item.IsItemInRange(8149, "target")
+    targetRange8 = C_Item.IsItemInRange(34368, "target")
+    targetRange10 = C_Item.IsItemInRange(32321, "target")
+    targetRange15 = C_Item.IsItemInRange(33069, "target")
+    targetRange20 = C_Item.IsItemInRange(10645, "target")
+    targetRange25 = C_Item.IsItemInRange(24268, "target")
+    targetRange30 = C_Item.IsItemInRange(835, "target")
+
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --vars/top prio-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -412,6 +431,16 @@ if Player:IsCasting() or Player:IsChanneling() then
 elseif AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\prot.tga"
 end
+
+local _, runSpeed, _, _ = GetUnitSpeed("player")
+local percentSpeed = runSpeed/7*100
+
+if percentSpeed>=200 then
+fianlreckoningdrop = (targetRange10 and not Player:IsMoving() or targetRange8 and  Player:IsMoving())
+else
+ finalreckoningdrop = (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving())
+end
+
 
 if true then
     local _,instanceType = IsInInstance()
@@ -430,12 +459,6 @@ if true then
     local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
     HPpercentloss = GetHealthLossPerSecond()
-
-    -- if (RangeCount(8,nil,1) > RangeCount(30,nil,1) * .6 or instanceType == 'raid' or Player:InArena() or Player:InBattlegrounds() or Target:IsAPlayer()) and RangeCount(30,nil,1) > 0 then
-    --     aoecds8y = true
-    -- else
-    --     aoecds8y = false
-    -- end
 
     potion_ready = (IsUsableItem(191382) and GetItemCooldown(191382) == 0 and GetItemCount(191382) >= 1) or (IsUsableItem(212265) and GetItemCooldown(212265) == 0 and GetItemCount(212265) >= 1) or (IsUsableItem(212264) and GetItemCooldown(212264) == 0 and GetItemCount(212264) >= 1) or (IsUsableItem(212263) and GetItemCooldown(212263) == 0 and GetItemCount(212263) >= 1)
 
@@ -535,7 +558,7 @@ if Player:AffectingCombat() then
         return I.HPIcon:Cast()
       end
 
-    if IsReady("Divine Shield") and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 40 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage()<=25) then
+    if IsReady("Divine Shield") and not Player:DebuffUp(S.Forbearance) and ((Player:HealthPercentage() <= 35 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection)) or Player:HealthPercentage()<=25) then
         return S.DivineShield:Cast()
     end
 
@@ -543,11 +566,11 @@ if Player:AffectingCombat() then
         return S.LayonHands:Cast()
     end
 
-    if IsReady("Divine Protection") and not Player:BuffUp(S.ShieldofVengeance) and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and RangeCount(20) >= 1 then
-      return S.divineprotection:Cast()
+    if IsReady("Divine Protection") and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineShield) and (Player:HealthPercentage() <= 50 or HPpercentloss>10 and Player:HealthPercentage()<60) and RangeCount(20) >= 1 then
+      return S.DivineProtection:Cast()
     end
 
-    if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 65 or HPpercentloss>10) and not Player:BuffUp(S.DivineProtection) and not Player:BuffUp(S.DivineShield) and RangeCount(20) >= 1 then
+    if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 50 or HPpercentloss>10 and Player:HealthPercentage()<60) and not Player:BuffUp(S.DivineProtection) and not Player:BuffUp(S.DivineShield) and RangeCount(20) >= 1 then
         return S.ShieldofVengeance:Cast()
     end
 
