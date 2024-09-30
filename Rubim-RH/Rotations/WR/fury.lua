@@ -324,8 +324,8 @@ end
 -- --------------------------------------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------Rotation--------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------------------------------------------------------------------
-if (Target:AffectingCombat() or Player:AffectingCombat()) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange10 then 
-if not C_Spell.IsCurrentSpell(6603) and targetRange20 then
+if (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and inRange10 >=1 then 
+if not C_Spell.IsCurrentSpell(6603) and targetRange10 then
 return S.autoattack:Cast()
 end
 
@@ -430,7 +430,7 @@ if inRange10>=2 and RubimRH.AoEON() then
     return S.RagingBlow:Cast()
   end
   -- execute
-  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  then
+  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6 then
     return S.Execute:Cast()
   end
   -- whirlwind

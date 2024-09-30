@@ -347,7 +347,7 @@ end
 local Boss = {
 "Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	
 "Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"General Umbriss",	"Drahga Shadowburner",	"Erudax, the Duke of Below",
-"Ki'katal the Harvester",
+"Ki'katal the Harvester", 
 
 
 }
@@ -361,7 +361,7 @@ else
 end
 
 
-if IsEncounterInProgress(Boss) and (spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption") then
+if (IsEncounterInProgress(Boss) or  IsEncounterInProgress("Void Speaker Eirich")) and (spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption") then
   MagicTankBuster = true
 else
   MagicTankBuster = false
