@@ -345,12 +345,12 @@ if ShouldReturn then return ShouldReturn; end
 
 end
 
--- whirlwind,if=buff.meat_cleaver.stack=0&talent.improved_whirlwind
-if IsReady("Whirlwind") and inRange12>=2 and RubimRH.AoEON() and (Player:BuffDown(S.MeatCleaverBuff) and S.ImprovedWhilwind:IsAvailable()) then
-  return S.Whirlwind:Cast()
-end
-
 if inRange10>=2 and RubimRH.AoEON() then
+  -- whirlwind,if=buff.meat_cleaver.stack=0&talent.improved_whirlwind
+  if IsReady("Whirlwind") and (Player:BuffDown(S.MeatCleaverBuff) and S.ImprovedWhilwind:IsAvailable()) then
+    return S.Whirlwind:Cast()
+  end
+
   if Player:BuffUp(S.MeatCleaverBuff) then
     -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
     if RubimRH.CDsON() and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 2 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
@@ -433,10 +433,10 @@ if inRange10>=2 and RubimRH.AoEON() then
   if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  then
     return S.Execute:Cast()
   end
-end
--- whirlwind
-if IsReady("Whirlwind") and inRange12>=2 then
-  return S.Whirlwind:Cast()
+  -- whirlwind
+  if IsReady("Whirlwind") then
+    return S.Whirlwind:Cast()
+  end
 end
 
 if inRange10<2 or not RubimRH.AoEON() then
