@@ -353,7 +353,7 @@ if inRange10>=2 and RubimRH.AoEON() then
 
   if Player:BuffUp(S.MeatCleaverBuff) then
     -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
-    if RubimRH.CDsON() and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 2 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+    if RubimRH.CDsON() and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and (S.Avatar:CooldownRemains() < 2 or Player:BuffUp(S.Avatar)) and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
       return S.Recklessness:Cast()
     end
     -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment
@@ -445,7 +445,7 @@ if inRange10<2 or not RubimRH.AoEON() then
     return S.Ravager:Cast()
   end
   -- recklessness,if=!talent.anger_management|(talent.anger_management&cooldown.avatar.ready|cooldown.avatar.remains<gcd|cooldown.avatar.remains>30)
-  if RubimRH.CDsON() and Player:PrevGCD(1, S.Rampage) and IsReady("Recklessness") and (not S.AngerManagement:IsAvailable() or (S.AngerManagement:IsAvailable() and S.Avatar:CooldownUp() or S.Avatar:CooldownRemains() < Player:GCD() or S.Avatar:CooldownRemains() > 30)) then
+  if RubimRH.CDsON() and IsReady("Recklessness") and Player:PrevGCD(1, S.Rampage) and (not S.AngerManagement:IsAvailable() or (Player:BuffUp(S.Avatar) or S.AngerManagement:IsAvailable() and S.Avatar:CooldownUp() or S.Avatar:CooldownRemains() < Player:GCD() or S.Avatar:CooldownRemains() > 30)) then
     return S.Recklessness:Cast()
   end
   -- avatar,if=!talent.titans_torment|(talent.titans_torment&(buff.enrage.up|talent.titanic_rage))
