@@ -317,11 +317,11 @@ local function Generators()
         end
     end
 
--- wake_of_ashes,if=(holy_power<=2&!talent.lights_guidance|holy_power>=2&talent.lights_guidance)&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6|talent.radiant_glory)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>10|raid_event.adds.up)
-    if IsReady("Wake of Ashes") and TargetinRange(8) and (((Player:HolyPower() <= 2 and Player:HeroTreeID() ~= 48) or (Player:HolyPower() >= 2 and Player:HeroTreeID() == 48)) and (S.AvengingWrath:CooldownRemains() > 6 or S.Crusade:CooldownRemains() > 6 or S.RadiantGlory:IsAvailable()) and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4)) then
-        return S.WakeofAshes:Cast()
-    end
-    
+--wake_of_ashes,if=(holy_power<=2&!talent.lights_guidance|holy_power>=2&talent.lights_guidance)&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6|talent.radiant_glory)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>10|raid_event.adds.up)
+if IsReady("Wake of Ashes") and RubimRH.CDsON() and TargetinRange(8) and (((Player:HolyPower() <= 2 and Player:HeroTreeID() ~= 48) or (Player:HolyPower() >= 2 and Player:HeroTreeID() == 48) or (Player:HolyPower() <= 3 and DSrange > 1)) and (S.AvengingWrath:CooldownRemains() > 6 or S.Crusade:CooldownRemains() > 6 or S.RadiantGlory:IsAvailable()) and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or DSrange > 1)) then
+    return S.WakeofAshes:Cast()
+end
+
 --divine_toll,if=holy_power<=2&(!raid_event.adds.exists|raid_event.adds.in>10|raid_event.adds.up)&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|talent.radiant_glory|fight_remains<8)
     if IsReady("Divine Toll") and TargetinRange(8) and RubimRH.CDsON() and Player:HolyPower() <= 2 and (S.AvengingWrath:CooldownRemains() > 15 or S.Crusade:CooldownRemains() > 15 or S.RadiantGlory:IsAvailable()) then
         return S.DivineToll:Cast()
