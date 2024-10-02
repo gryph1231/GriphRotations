@@ -511,7 +511,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     end
 
   
-  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss) then 
+  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss) or mitigatedng() then 
   
   if IsReady("Guardian of Ancient Kings") and S.ArdentDefender:TimeSinceLastCast() > 0.5 and useGoAK then
   return S.GuardianofAncientKings:Cast()
