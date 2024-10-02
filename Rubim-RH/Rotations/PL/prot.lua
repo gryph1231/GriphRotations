@@ -360,13 +360,13 @@ end
 local Boss = {
 "Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	
 "Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"General Umbriss",	"Drahga Shadowburner",	
-"Erudax, the Duke of Below", "Ki'katal the Harvester", 
+"Erudax, the Duke of Below", "Ki'katal the Harvester", "Forgemaster Throngus",
 
 
 }
 
 
-local spellname, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
+local spellname, _, _, _, _, _, _, _, _ = UnitCastingInfo("target")
 if spellname == "Icy Shard" and IsEncounterInProgress("Nalthor the Rimebinder") and Player:HealthPercentage()<70 and level>=highkey then
   mitigateNWBoss = true
 else
@@ -374,12 +374,17 @@ else
 end
 
 
-if (IsEncounterInProgress(Boss) or  IsEncounterInProgress("Void Speaker Eirich")) and (spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption") then
+if (IsEncounterInProgress(Boss) or IsEncounterInProgress("Void Speaker Eirich")) and (spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption") then
   MagicTankBuster = true
 else
   MagicTankBuster = false
 end
 
+if select(1,UnitChannelInfo('target')) == "Molten Flurry" and IsEncounterInProgress("Forgemaster Throngus") then
+  mitigateGBBoss = true
+else
+  mitigateGBBoss = false
+end
 
 
 
@@ -511,7 +516,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     end
 
   
-  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss) or mitigatedng() and Player:HealthPercentage()<80 then 
+  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
   
   if IsReady("Guardian of Ancient Kings") and S.ArdentDefender:TimeSinceLastCast() > 0.5 and useGoAK then
   return S.GuardianofAncientKings:Cast()
@@ -575,7 +580,7 @@ if Player:AffectingCombat() and inRange30>=1 then
   if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 then
   
   --  if about to die and shield up
-  if IsReady("Word of Glory") and not IsReady(427453,1) and Player:HealthPercentage()<60 and (Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff) or Player:BuffRemains(S.ShieldoftheRighteousBuff)>4 or Player:BuffRemains(S.DivineShield)>4 or inRange8 == 0 and Player:IsMoving()) then
+  if IsReady("Word of Glory") and not IsReady(427453,1) and Player:HealthPercentage()<60 and (Player:HealthPercentage()<30 or Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff) or Player:BuffRemains(S.ShieldoftheRighteousBuff)>4 or Player:BuffRemains(S.DivineShield)>4 or inRange8 == 0 and Player:IsMoving()) then
     return S.WordofGlory:Cast() 
     end
   

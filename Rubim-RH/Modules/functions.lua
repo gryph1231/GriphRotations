@@ -548,10 +548,10 @@ function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {
-"Venom Strike","Rigorous Jab","Brutal Jab","Bleeding Jab", "Poison Bolt","Extraction Strike","Grasping Slash","Darkblade","Tainted Slash",
-"Web Bolt","Umbral Rush","Terrifying Slam","Dark Fervor","Concussive Smash","Fracturing Blows", "Shadow Claw", "Stonebreaker Strike", "Stone Bolt",
+"Rigorous Jab","Brutal Jab","Bleeding Jab","Extraction Strike","Grasping Slash","Darkblade","Tainted Slash",
+"Umbral Rush","Terrifying Slam","Dark Fervor","Concussive Smash","Fracturing Blows", "Shadow Claw", "Stonebreaker Strike", 
 "Hand of Thros","Soul Split","Anima Slash","Shred Armor","Triple Bite","Gruesome Cleave","Tenderize","Mutilate","Tooth Breaker",
-"Singing Steel","Cursed Slash","Crimson Swipe","Rotting Wounds","Stinging Venom","Brutal Strike","Rive","Lava Fist","Shadowflame Slash",
+"Singing Steel","Cursed Slash","Crimson Swipe","Stinging Venom","Brutal Strike","Lava Fist","Shadowflame Slash",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
