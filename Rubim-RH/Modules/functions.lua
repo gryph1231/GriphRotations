@@ -723,7 +723,7 @@ function mitigateboss()
         for id = 1, 40 do
             local spell = {
 "Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Shadow Bolt",	"Obsidian Beam",	"Terrifying Slam",	"Seismic Smash",
-	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush",
+	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush", "Mutilate",
 
             }
             local unitID = "nameplate" .. id
@@ -1122,39 +1122,94 @@ InitializeHPGTracking()
 
 
 
--- Define the function globally
-    local healthLossPerSecond = 0 -- Global variable to store the health loss per second
+-- -- Define the function globally
+--     local healthLossPerSecond = 0 -- Global variable to store the health loss per second
 
-    function TrackHealthLossPerSecond()
-        local previousHealth = UnitHealth("player")
-        local previousTime = GetTime()
+--     function TrackHealthLossPerSecond()
+--         local previousHealth = UnitHealth("player")
+--         local previousTime = GetTime()
     
-        C_Timer.NewTicker(1, function()
-            local currentHealth = UnitHealth("player")
-            local currentTime = GetTime()
+--         C_Timer.NewTicker(1, function()
+--             local currentHealth = UnitHealth("player")
+--             local currentTime = GetTime()
     
-            -- Calculate the health loss per second
-            local healthLost = previousHealth - currentHealth
-            local timeElapsed = currentTime - previousTime
+--             -- Calculate the health loss per second
+--             local healthLost = previousHealth - currentHealth
+--             local timeElapsed = currentTime - previousTime
     
+--             if timeElapsed > 0 then
+--                 healthLossPerSecond = (healthLost / UnitHealthMax("player")) * 100 / timeElapsed
+--             end
+    
+--             -- Update the previous values for the next tick
+--             previousHealth = currentHealth
+--             previousTime = currentTime
+--         end)
+--     end
+    
+--     -- Function to get the health loss per second at any time
+--     function GetHealthLossPerSecond()
+--         return healthLossPerSecond
+--     end
+    
+
+
+-- Global variables to store the health loss per second and the ticker reference
+local healthLossPerSecond = 0 
+local healthLossTicker = nil -- Stores the ticker reference
+
+-- Function to start tracking health loss per second
+function TrackHealthLossPerSecond()
+    -- If a ticker already exists, don't create another one
+    if healthLossTicker then
+        return
+    end
+
+    local previousHealth = UnitHealth("player")
+    local previousTime = GetTime()
+
+    healthLossTicker = C_Timer.NewTicker(1, function(ticker)
+        -- Cancel the ticker if the player is not in combat
+        if not UnitAffectingCombat("player") then
+            ticker:Cancel()
+            healthLossTicker = nil -- Release the reference to the ticker
+            healthLossPerSecond = 0 -- Reset the health loss to 0
+            return
+        end
+
+        local currentHealth = UnitHealth("player")
+        local currentTime = GetTime()
+
+        -- Calculate time elapsed since last tick
+        local timeElapsed = currentTime - previousTime
+        local healthLost = previousHealth - currentHealth
+
+        -- If no damage is taken, reset the health loss per second to 0
+        if healthLost <= 0 then
+            healthLossPerSecond = 0
+        else
+            -- Only calculate health loss if health has actually reduced
             if timeElapsed > 0 then
                 healthLossPerSecond = (healthLost / UnitHealthMax("player")) * 100 / timeElapsed
             end
-    
-            -- Update the previous values for the next tick
-            previousHealth = currentHealth
-            previousTime = currentTime
-        end)
+        end
+
+        -- Update previous values for the next tick
+        previousHealth = currentHealth
+        previousTime = currentTime
+    end)
+end
+
+-- Function to stop tracking health loss manually, if needed
+function StopHealthLossTracking()
+    if healthLossTicker then
+        healthLossTicker:Cancel()
+        healthLossTicker = nil -- Ensure the reference is cleared to prevent leaks
+        healthLossPerSecond = 0 -- Reset health loss when stopped
     end
-    
-    -- Function to get the health loss per second at any time
-    function GetHealthLossPerSecond()
-        return healthLossPerSecond
-    end
-    
+end
 
-
-
-
-
-
+-- Function to get the health loss per second at any time
+function GetHealthLossPerSecond()
+    return healthLossPerSecond
+end
