@@ -247,7 +247,7 @@ if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or 
 
       -- shield_of_the_righteous,if=hpg_to_2dawn=4
 
-  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and targetRange8 then
+  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and targetRange8 and useSoTR then
     return S.ShieldoftheRighteous:Cast() 
     end
   end
@@ -306,7 +306,6 @@ targetRange30 = C_Item.IsItemInRange(835, "target")
 if Player:IsChanneling() or Player:IsCasting() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 end
-
 
 
 
@@ -389,8 +388,6 @@ end
 
 
 HPpercentloss = GetHealthLossPerSecond()
--- print("HPpercentLoss:",HPpercentloss)
--- print("Player:HealthPercentage():",Player:HealthPercentage())
 
 
 
@@ -418,6 +415,12 @@ if percentSpeed>=200 then
 consecrationdrop = (targetRange10 and not Player:IsMoving() or targetRange8 and  Player:IsMoving())
 else
 consecrationdrop = (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving())
+end
+
+if (Player:HolyPower()>=3 or Player:BuffUp(S.ShiningLightFreeBuff) or Player:BuffUp(S.DivinePurposeBuff)) and Player:BuffRemains(S.ShieldoftheRighteousBuff)>3 and Player:HealthPercentage()<40 then
+  useSoTR = false
+else
+  useSoTR = true
 end
 
 
@@ -502,11 +505,11 @@ if Player:AffectingCombat() and inRange30>=1 then
   end
   
   --abnout to die need heals or immunity
-  if IsReady("Divine Shield") and Player:HealthPercentage() < 20 and S.ArdentDefender:TimeSinceLastCast() > 0.5 then
+  if IsReady("Divine Shield") and Player:HealthPercentage() < 20 then
   return S.DivineShield:Cast()
   end
   
-  if IsReady("Lay on Hands") and Player:HealthPercentage() < 20 and S.DivineShield:CooldownRemains() > Player:GCD() then
+  if IsReady("Lay on Hands") and Player:HealthPercentage() < 20 and S.DivineShield:CooldownDown() then
   return S.LayonHands:Cast()
   end
 
@@ -516,7 +519,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     end
 
   
-  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
+  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() and (Player:HealthPercentage()<85 or not Player:BuffUp(S.ShieldoftheRighteousBuff)) then 
   
   if IsReady("Guardian of Ancient Kings") and S.ArdentDefender:TimeSinceLastCast() > 0.5 and useGoAK then
   return S.GuardianofAncientKings:Cast()
@@ -580,11 +583,11 @@ if Player:AffectingCombat() and inRange30>=1 then
   if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 then
   
   --  if about to die and shield up
-  if IsReady("Word of Glory") and not IsReady(427453,1) and Player:HealthPercentage()<60 and (Player:HealthPercentage()<30 or Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff) or Player:BuffRemains(S.ShieldoftheRighteousBuff)>4 or Player:BuffRemains(S.DivineShield)>4 or inRange8 == 0 and Player:IsMoving()) then
+  if IsReady("Word of Glory") and not IsReady(427453,1) and Player:HealthPercentage()<60 and (Player:HealthPercentage()<40 or Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff) or Player:BuffRemains(S.ShieldoftheRighteousBuff)>4 or Player:BuffRemains(S.DivineShield)>4 or inRange8 == 0 and Player:IsMoving()) then
     return S.WordofGlory:Cast() 
     end
   
-    if IsReady("Shield of the Righteous") and targetRange8 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 and Player:HealthPercentage() <= 85 then
+    if IsReady("Shield of the Righteous") and targetRange8 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 and Player:HealthPercentage() <= 85 and useSoTR then
     return S.ShieldoftheRighteous:Cast()
     end
   end
@@ -605,7 +608,7 @@ if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")
   end
   
   -- kick on GCD
-  if IsReady("Rebuke") and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and targetRange8 and Player:GCDRemains()<0.5 then
+  if IsReady("Rebuke") and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and targetRange5 and Player:GCDRemains()<0.5 then
   return S.Rebuke:Cast()
   end
   
@@ -781,7 +784,7 @@ end
   end
   if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 then
 
-  if IsReady("Shield of the Righteous") and targetRange8 and ((((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and Player:HolyPower() > 2) or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and not (S.HammerofLight:IsLearned())) then
+  if IsReady("Shield of the Righteous") and useSoTR and targetRange8 and ((((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and Player:HolyPower() > 2) or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and not (S.HammerofLight:IsLearned())) then
 return S.ShieldoftheRighteous:Cast()
 end
 end
@@ -881,7 +884,7 @@ end
     return S.EyeofTyr:Cast()
   end
 
-  if IsReady("Word of Glory") and (Player:BuffUp(S.ShiningLightFreeBuff) and Player:HealthPercentage() <= 65 or Player:BuffRemains(S.ShiningLightFreeBuff)<3) then
+  if IsReady("Word of Glory")  and Player:HealthPercentage() <= 65 and (Player:BuffUp(S.ShiningLightFreeBuff) ) then
 return S.WordofGlory:Cast()
 end
 

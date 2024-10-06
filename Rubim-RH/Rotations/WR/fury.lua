@@ -151,10 +151,10 @@ ThunderBlastBuff                      = Spell(435615),
 local S = RubimRH.Spell[72]
 
 
-S.Bloodbath.TextureSpellID = { 265221 }
-S.Bloodthirst.TextureSpellID = { 265221 }
-S.Ravager.TextureSpellID = { 228920 }
-S.Bladestorm.TextureSpellID = { 228920 }
+-- S.Bloodbath.TextureSpellID = { 265221 }
+-- S.Bloodthirst.TextureSpellID = { 265221 }
+-- S.Ravager.TextureSpellID = { 228920 }
+-- S.Bladestorm.TextureSpellID = { 228920 }
 
 if not Item.Warrior then Item.Warrior = {}; end
 
@@ -346,20 +346,13 @@ if ShouldReturn then return ShouldReturn; end
 end
 
 if inRange10>=2 and RubimRH.AoEON() then
-  -- whirlwind,if=buff.meat_cleaver.stack=0&talent.improved_whirlwind
-  if IsReady("Whirlwind") and (Player:BuffDown(S.MeatCleaverBuff) and S.ImprovedWhilwind:IsAvailable()) then
-    return S.Whirlwind:Cast()
+  -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
+  if RubimRH.CDsON() and S.Recklessness:CooldownRemains() == 0 and ((not S.AngerManagement:IsAvailable() and (S.Avatar:CooldownRemains() < 2 or Player:BuffUp(S.Avatar)) and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+    return S.Recklessness:Cast()
   end
-
-  if Player:BuffUp(S.MeatCleaverBuff) then
-    -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
-    if RubimRH.CDsON() and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and (S.Avatar:CooldownRemains() < 2 or Player:BuffUp(S.Avatar)) and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
-      return S.Recklessness:Cast()
-    end
-    -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment
-    if RubimRH.CDsON() and IsReady("Avatar") and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
-      return S.Avatar:Cast()
-    end
+  -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment
+  if RubimRH.CDsON() and S.Avatar:CooldownRemains() == 0 and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
+    return S.Avatar:Cast()
   end
   -- thunderous_roar,if=buff.enrage.up
   if RubimRH.CDsON() and IsReady("Thunderous Roar") and (EnrageUp) then
@@ -372,6 +365,10 @@ if inRange10>=2 and RubimRH.AoEON() then
   -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
   if RubimRH.CDsON() and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
     return S.OdynsFury:Cast()
+  end
+    --whirlwind,if=buff.meat_cleaver.stack=0&talent.improved_whirlwind
+  if IsReady("Whirlwind") and (Player:BuffDown(S.MeatCleaverBuff) and S.ImprovedWhilwind:IsAvailable()) then
+    return S.Whirlwind:Cast()
   end
   -- execute,if=buff.enrage.up&buff.ashen_juggernaut.remains<=gcd&talent.ashen_juggernaut
   if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  and (EnrageUp and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and S.AshenJuggernaut:IsAvailable()) then
@@ -445,11 +442,11 @@ if inRange10<2 or not RubimRH.AoEON() then
     return S.Ravager:Cast()
   end
   -- recklessness,if=!talent.anger_management|(talent.anger_management&cooldown.avatar.ready|cooldown.avatar.remains<gcd|cooldown.avatar.remains>30)
-  if RubimRH.CDsON() and IsReady("Recklessness") and Player:PrevGCD(1, S.Rampage) and (not S.AngerManagement:IsAvailable() or (Player:BuffUp(S.Avatar) or S.AngerManagement:IsAvailable() and S.Avatar:CooldownUp() or S.Avatar:CooldownRemains() < Player:GCD() or S.Avatar:CooldownRemains() > 30)) then
+  if RubimRH.CDsON() and S.Recklessness:CooldownRemains() == 0 and (not S.AngerManagement:IsAvailable() or (Player:BuffUp(S.Avatar) or S.AngerManagement:IsAvailable() and S.Avatar:CooldownUp() or S.Avatar:CooldownRemains() < Player:GCD() or S.Avatar:CooldownRemains() > 30)) then
     return S.Recklessness:Cast()
   end
   -- avatar,if=!talent.titans_torment|(talent.titans_torment&(buff.enrage.up|talent.titanic_rage))
-  if RubimRH.CDsON() and IsReady("Avatar") and (not S.TitansTorment:IsAvailable() or (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()))) then
+  if RubimRH.CDsON() and S.Avatar:CooldownRemains() == 0 and (not S.TitansTorment:IsAvailable() or (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()))) then
     return S.Avatar:Cast()
   end
   -- champions_spear,if=buff.enrage.up&((buff.furious_bloodthirst.up&talent.titans_torment)|!talent.titans_torment|target.time_to_die<20|active_enemies>1|!set_bonus.tier31_2pc)&raid_event.adds.in>15
