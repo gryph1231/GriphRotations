@@ -179,7 +179,7 @@ end
 
 local function APL()
 
-
+  TrackHealthLossPerSecond()
 local _,instanceType = IsInInstance()
 
 inRange5 = RangeCount(5)

@@ -247,7 +247,7 @@ if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or 
 
       -- shield_of_the_righteous,if=hpg_to_2dawn=4
 
-  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and targetRange8 and useSoTR then
+  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and targetRange8 and useSoTR and maintainactiveSoTR then
     return S.ShieldoftheRighteous:Cast() 
     end
   end
@@ -306,7 +306,6 @@ targetRange30 = C_Item.IsItemInRange(835, "target")
 if Player:IsChanneling() or Player:IsCasting() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 end
-
 
 
 local iconEoT = C_Spell.GetSpellInfo(387174).iconID
@@ -422,6 +421,13 @@ if (Player:HolyPower()>=3 or Player:BuffUp(S.ShiningLightFreeBuff) or Player:Buf
 else
   useSoTR = true
 end
+
+if Player:BuffRemains(S.ShieldoftheRighteousBuff) < 13.5-Player:GCD()*2 or Player:HolyPower()>=5 then
+  maintainactiveSoTR = true
+else
+  maintainactiveSoTR = false
+end
+
 
 
 local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player")
@@ -587,7 +593,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     return S.WordofGlory:Cast() 
     end
   
-    if IsReady("Shield of the Righteous") and targetRange8 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 and Player:HealthPercentage() <= 85 and useSoTR then
+    if IsReady("Shield of the Righteous") and targetRange8 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 and Player:HealthPercentage() <= 85 and useSoTR and maintainactiveSoTR then
     return S.ShieldoftheRighteous:Cast()
     end
   end
@@ -784,7 +790,7 @@ end
   end
   if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 then
 
-  if IsReady("Shield of the Righteous") and useSoTR and targetRange8 and ((((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and Player:HolyPower() > 2) or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and not (S.HammerofLight:IsLearned())) then
+  if IsReady("Shield of the Righteous") and maintainactiveSoTR and useSoTR and targetRange8 and ((((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and Player:HolyPower() > 2) or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and not (S.HammerofLight:IsLearned())) then
 return S.ShieldoftheRighteous:Cast()
 end
 end
