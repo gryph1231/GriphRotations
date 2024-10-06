@@ -111,13 +111,13 @@ RetributionAura             = Spell(183435),
 -- Buffs
 BlessingofSpellwarding = Spell(204018),
 Intercession                = Spell(391054),
-intercession                = Spell(105809),
-trinket                     = Spell(59547), -- gift of narru
+intercession                = Spell(59752),--will to survive human racial
+-- trinket                     = Spell(59547), -- gift of narru
 CleanseToxinsFocus = Spell(20594), --stone form
 WordofGloryFocus = Spell(215652), --shield of virtue
 BlessingofProtectionFocus = Spell(5502),-- sense undead
 BlessingofSacrifice = Spell(6940),
-LayonHandsFocus = Spell(172321),--seraphim
+LayonHandsFocus = Spell(317920),--concentrationaura
 BastionofLightBuff                    = Spell(378974),
 BlessingofDawnBuff                    = Spell(385127),
 BlessingofDuskBuff                    = Spell(385126),
