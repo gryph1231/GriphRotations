@@ -108,7 +108,7 @@ UIDropDownMenu_Initialize(dropDown, function(self, level, menuList)
     elseif menuList == "Spells" then
         --SKILL 1
         for i = 1, #RubimRH.config.Spells do
-            info.text = GetSpellInfo(RubimRH.config.Spells[i].spellID)
+            info.text = C_Spell.GetSpellInfo(RubimRH.config.Spells[i].spellID)
             info.checked = RubimRH.config.Spells[i].isActive
             info.func = function(self)
                 RubimRH.playSoundR(891);
