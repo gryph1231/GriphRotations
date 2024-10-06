@@ -549,8 +549,8 @@ function mitigatedng()
         for id = 1, 10 do
             local spell = {
 "Rigorous Jab","Brutal Jab","Bleeding Jab","Extraction Strike","Grasping Slash",
-"Terrifying Slam","Anima Slash","Shred Armor","Triple Bite","Gruesome Cleave","Tenderize","Mutilate","Tooth Breaker",
-"Singing Steel","Cursed Slash","Crimson Swipe","Brutal Strike","Lava Fist","Shadowflame Slash",
+"Terrifying Slam","Anima Slash","Shred Armor","Triple Bite","Tenderize","Mutilate",
+"Brutal Strike","Lava Fist","Shadowflame Slash",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -724,8 +724,10 @@ function mitigateboss()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-"Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Obsidian Beam",	"Terrifying Slam",	"Seismic Smash",
-	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Molten Mace",	"Shadowflame Bolt",	"Crush", "Mutilate",
+"Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Obsidian Beam",	
+"Terrifying Slam",	"Seismic Smash",
+	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Shadowflame Bolt",	
+    "Crush", "Mutilate",
 
             }
             local unitID = "nameplate" .. id

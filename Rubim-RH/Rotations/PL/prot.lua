@@ -117,7 +117,7 @@ CleanseToxinsFocus = Spell(20594), --stone form
 WordofGloryFocus = Spell(215652), --shield of virtue
 BlessingofProtectionFocus = Spell(5502),-- sense undead
 BlessingofSacrifice = Spell(6940),
-LayonHandsFocus = Spell(317920),--concentrationaura
+LayonHandsFocus = Spell(32223),--crusader aura
 BastionofLightBuff                    = Spell(378974),
 BlessingofDawnBuff                    = Spell(385127),
 BlessingofDuskBuff                    = Spell(385126),
@@ -247,7 +247,7 @@ if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or 
 
       -- shield_of_the_righteous,if=hpg_to_2dawn=4
 
-  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and targetRange8 and useSoTR and maintainactiveSoTR then
+  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and targetRange10 and useSoTR and maintainactiveSoTR then
     return S.ShieldoftheRighteous:Cast() 
     end
   end
@@ -342,8 +342,7 @@ local currentTimeMS = GetTime() * 1000
 local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
 local channelTime = elapsedTimech / 1000
 
-WordofGlorycast = (
-AuraUtil.FindAuraByName("Divine Purpose", "player") or Player:BuffUp(S.ShiningLightFreeBuff) or AuraUtil.FindAuraByName("Bastion of Light", "player"))
+WordofGlorycast = (AuraUtil.FindAuraByName("Divine Purpose", "player") or Player:BuffUp(S.ShiningLightFreeBuff) or AuraUtil.FindAuraByName("Bastion of Light", "player"))
 
 if UnitClassification("target") == "worldboss"
 or UnitClassification("target") == "rareelite"
@@ -525,7 +524,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     end
 
   
-  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() and (Player:HealthPercentage()<85 or not Player:BuffUp(S.ShieldoftheRighteousBuff)) then 
+  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() and (HPpercentloss>20 or Player:HealthPercentage()<85 or not Player:BuffUp(S.ShieldoftheRighteousBuff)) then 
   
   if IsReady("Guardian of Ancient Kings") and S.ArdentDefender:TimeSinceLastCast() > 0.5 and useGoAK then
   return S.GuardianofAncientKings:Cast()
@@ -593,7 +592,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     return S.WordofGlory:Cast() 
     end
   
-    if IsReady("Shield of the Righteous") and targetRange8 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 and Player:HealthPercentage() <= 85 and useSoTR and maintainactiveSoTR then
+    if IsReady("Shield of the Righteous") and targetRange10 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 and Player:HealthPercentage() <= 85 and useSoTR and maintainactiveSoTR then
     return S.ShieldoftheRighteous:Cast()
     end
   end
@@ -668,9 +667,9 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (GetFocusTargetHealthPercentage()<60 or mitigatedng()) then
     return S.BlessingofSacrifice:Cast()
     end
-    -- if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<45 and (WordofGlorycast or Player:HolyPower()>=3) then
-    -- return S.WordofGloryFocus:Cast()
-    -- end
+    if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<30 and (WordofGlorycast or Player:HolyPower()>=3) then
+    return S.WordofGloryFocus:Cast()
+    end
     if IsReady("Cleanse Toxins") and RubimRH.InterruptsON() and not UnitIsDeadOrGhost("focus") and (GetAppropriateCureSpell("focus")=='Poison' or GetAppropriateCureSpell("focus")=='Disease') and Player:HealthPercentage()>80 then
     return S.CleanseToxinsFocus:Cast()
     end
@@ -794,6 +793,10 @@ end
 return S.ShieldoftheRighteous:Cast()
 end
 end
+
+if IsReady("Shield of the Righteous") and Player:HolyPower()>=5 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<11 and not IsReady(427453,1) then
+  return S.ShieldoftheRighteous:Cast()
+  end
 
   -- holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
   if IsReady("Sacred Weapon") and (Player:BuffDown(S.SacredWeaponBuff) or (Player:BuffRemains(S.SacredWeaponBuff) < 6 and Player:BuffDown(S.AvengingWrathBuff) and S.AvengingWrath:CooldownRemains() <= 30)) then
