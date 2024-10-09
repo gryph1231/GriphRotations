@@ -116,8 +116,11 @@ Whirlwind                             = Spell(190411),
 AngerManagement                       = Spell(152278),
 AshenJuggernaut                       = Spell(392536),
 Bloodthirst                           = Spell(23881),
+
 DancingBlades                         = Spell(391683),
 ImprovedWhilwind                      = Spell(12950),
+ViciousContempt                       = Spell(383885),
+
 Massacre                              = Spell(206315),
 OdynsFury                             = Spell(385059),
 Onslaught                             = Spell(315720),

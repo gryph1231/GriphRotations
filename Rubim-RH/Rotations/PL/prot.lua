@@ -390,8 +390,6 @@ HPpercentloss = GetHealthLossPerSecond()
 
 
 
-validmobsinrange10y = combatmobs40() * .7
-validmobsinrange30y = combatmobs40() * .7
 
 if S.Intercession:Charges()== nil or S.Intercession:CooldownRemains()>Player:GCD() then
 rezcharges = 0
@@ -601,7 +599,7 @@ if Player:AffectingCombat() and inRange30>=1 then
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and not isEnraged and UnitExists("target") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
   -- kick on GCD
-  if IsReady("Divine Toll") and targetRange30 and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and (S.AvengersShield:CooldownRemains() > Player:GCD() or inRange20>=3 or not IsReady("Rebuke",1)) then
+  if IsReady("Divine Toll") and targetRange30 and RubimRH.CDsON() and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and (S.AvengersShield:CooldownRemains() > Player:GCD() or inRange20>=3) then
     return S.DivineToll:Cast()
     end
   -- kick on GCD
