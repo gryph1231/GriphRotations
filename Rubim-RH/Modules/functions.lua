@@ -810,19 +810,19 @@ end
 
 
 
-function combatmobs40()
-    local totalRange40 = 0
+-- function combatmobs40()
+--     local totalRange40 = 0
    
-    for id = 1, 10 do
-        local unitID = "nameplate" .. id
-        if UnitCanAttack("player", unitID) and C_Item.IsItemInRange(28767, unitID)
-            and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
-            totalRange40 = totalRange40 + 1
-        end
-    end
+--     for id = 1, 10 do
+--         local unitID = "nameplate" .. id
+--         if UnitCanAttack("player", unitID) and C_Item.IsItemInRange(28767, unitID)
+--             and UnitHealthMax(unitID) > 5 and UnitAffectingCombat(unitID) then
+--             totalRange40 = totalRange40 + 1
+--         end
+--     end
 
-    return totalRange40
-end
+--     return totalRange40
+-- end
 
 
 
@@ -1132,6 +1132,8 @@ local HolyPowerSpells = {
     [204019] = 1,  -- Blessed Hammer generates 1 Holy Power
 }
 
+
+
 -- Function to initialize the tracking of Holy Power generation
 function InitializeHPGTracking()
     -- Reset Holy Power count
@@ -1168,39 +1170,6 @@ end
 -- Initialize the event tracking at the start
 InitializeHPGTracking()
 
-
-
-
--- -- Define the function globally
---     local healthLossPerSecond = 0 -- Global variable to store the health loss per second
-
---     function TrackHealthLossPerSecond()
---         local previousHealth = UnitHealth("player")
---         local previousTime = GetTime()
-    
---         C_Timer.NewTicker(1, function()
---             local currentHealth = UnitHealth("player")
---             local currentTime = GetTime()
-    
---             -- Calculate the health loss per second
---             local healthLost = previousHealth - currentHealth
---             local timeElapsed = currentTime - previousTime
-    
---             if timeElapsed > 0 then
---                 healthLossPerSecond = (healthLost / UnitHealthMax("player")) * 100 / timeElapsed
---             end
-    
---             -- Update the previous values for the next tick
---             previousHealth = currentHealth
---             previousTime = currentTime
---         end)
---     end
-    
---     -- Function to get the health loss per second at any time
---     function GetHealthLossPerSecond()
---         return healthLossPerSecond
---     end
-    
 
 
 -- Global variables to store the health loss per second and the ticker reference

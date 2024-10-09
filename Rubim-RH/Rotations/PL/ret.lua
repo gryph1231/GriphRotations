@@ -118,11 +118,11 @@ RubimRH.Spell[70] = {
     EmpyreanLegacyBuff = Spell(387178),
     Entangling = Spell(408556),
     deepchill = Spell(391634),
-    lust1 = Spell(57724),
-    lust2 = Spell(57723),
-    lust3 = Spell(80354),
-    lust4 = Spell(95809),
-    lust5 = Spell(264689),
+    lust1    = Spell(57724),
+    lust2    = Spell(57723),
+    lust3    = Spell(80354),
+    lust4    = Spell(95809),
+    lust5    = Spell(264689),
     lustAT = Spell(255647), -- war stomp
     IcyBindings = Spell(377488),
     FrostShock = Spell(385963),
@@ -526,18 +526,29 @@ or (S.BlessingofProtection:ID() == RubimRH.queuedSpell[1]:ID() and Player:Debuff
 or (S.HammerofJustice:ID() == RubimRH.queuedSpell[1]:ID() and (not IsReady("Hammer of Justice",nil,nil,1) or not TargetinRange(10)))
 or (S.DivineShield:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffUp(S.Forbearance))
 or ((S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and (Player:PrevGCD(1, S.Intercession) or IsKeyDown('RightButton') or Player:IsMoving() or not UnitIsDeadOrGhost('mouseover')))) 
-or (S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and (Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or Player:DebuffUp(S.lust5)))
 or (S.LayonHands:ID() == RubimRH.queuedSpell[1]:ID() and (Player:DebuffUpP(S.Forbearance) or Player:InArena())) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end   
+
+
+
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
+and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and Player:CanAttack(Target) and GetItemCount(219905) >= 1 and 
+Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) then
+return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+end
+
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
+(
+Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or
+Player:DebuffUp(S.lust5)) then
+RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+end
 
 if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Intercession") then
     return S.intercession:Cast() 
 end
 
-if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and not Player:DebuffUp(S.lust1) and not Player:DebuffUp(S.lust2) and not Player:DebuffUp(S.lust3) and not Player:DebuffUp(S.lust4) and not Player:DebuffUp(S.lust5) and (I.drums:IsReady()) and Player:CanAttack(Target) then
-    return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
-end
 
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
     return RubimRH.QueuedSpell():Cast()

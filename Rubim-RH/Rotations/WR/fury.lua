@@ -34,7 +34,14 @@ lust5 = Spell(264689),
 lustAT = Spell(28730), -- arcane turrent
 
 --Fireblood                             = Spell(265221), used for bloodthirst and bloodbath until ggl fixed pixels
-
+  -- Talents
+  SlayersDominance                      = Spell(444767),
+  -- Buffs
+  BrutalFinishBuff                      = Spell(446918),
+  ImminentDemiseBuff                    = Spell(445606),
+  OpportunistBuff                       = Spell(456120),
+  -- Debuffs
+  MarkedforExecutionDebuff              = Spell(445584),
 -- Racials
 AncestralCall                         = Spell(274738),
 ArcaneTorrent                         = Spell(50613),
@@ -43,6 +50,7 @@ Berserking                            = Spell(26297),
 BloodFury                             = Spell(20572),
 LightsJudgment                        = Spell(255647),
 -- Abilities
+
 BattleShout                           = Spell(6673),
 BattleStance                          = Spell(386164),
 Charge                                = Spell(100),
@@ -52,6 +60,8 @@ Slam                                  = Spell(1464),
 VictoryRush                           = Spell(34428),
 EnragedRegeneration = Spell(184364),
 DefensiveStance                       = Spell(386208),
+LightningStrikes                      = Spell(434969),
+
 -- Talents
 Avatar                                = Spell(107574),
 BerserkerRage                         = Spell(18499),
@@ -94,7 +104,7 @@ ThunderousRoarDebuff                  = Spell(397364),
 -- Pool
 Pool                                  = Spell(999910),
 
-
+ChampionsMight = Spell(386284),
 
 -- Abilities
 BerserkerStance                       = Spell(386196),
@@ -114,6 +124,8 @@ Onslaught                             = Spell(315720),
 RagingBlow                            = Spell(85288),
 Rampage                               = Spell(184367),
 RecklessAbandon                       = Spell(396749),
+SlaughteringStrikes                   = Spell(388004),
+
 Recklessness                          = Spell(1719),
 Tenderize                             = Spell(388933),
 TitanicRage                           = Spell(394329),
@@ -125,6 +137,10 @@ BloodcrazeBuff                        = Spell(393951),
 DancingBladesBuff                     = Spell(391688),
 EnrageBuff                            = Spell(184362),
 FuriousBloodthirstBuff                = Spell(423211), -- T31 2pc
+Unhinged                              = Spell(386628),
+
+MeatCleaver                       = Spell(280392),
+
 MeatCleaverBuff                       = Spell(85739),
 MercilessAssaultBuff                  = Spell(409983),
 RecklessnessBuff                      = Spell(1719),
@@ -179,6 +195,428 @@ end
 
 
 
+
+
+
+
+
+local function SlayerST()
+  -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
+  if RubimRH.CDsON() and targetRange10 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+  return S.Recklessness:Cast()
+    end
+  -- avatar,if=(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(debuff.champions_might.up|!talent.champions_might))|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Avatar") and ((S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) and (Target:DebuffUp(S.ChampionsMightDebuff) or not S.ChampionsMight:IsAvailable())) or not S.TitansTorment:IsAvailable()) then
+    return S.Avatar:Cast()
+  end
+  -- thunderous_roar,if=buff.enrage.up
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Thunderous Roar") and (EnrageUp) then
+    return S.ThunderousRoar:Cast()
+  end
+  -- champions_spear,if=(buff.enrage.up&talent.titans_torment&cooldown.avatar.remains<gcd)|(buff.enrage.up&!talent.titans_torment)
+  if RubimRH.CDsON() and targetRange10  and IsReady("Champion's Spear") and ((EnrageUp and S.TitansTorment:IsAvailable() and S.Avatar:CooldownRemains() < Player:GCD()) or (EnrageUp and not S.TitansTorment:IsAvailable())) then
+    return S.ChampionsSpear:Cast()
+  end
+  -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
+    return S.OdynsFury:Cast()
+  end
+  -- execute,if=debuff.marked_for_execution.stack=3|(talent.ashen_juggernaut&buff.ashen_juggernaut.remains<=gcd&buff.enrage.up)
+  if IsReady("Execute")  and targetRange8 and (Target:DebuffStack(S.MarkedforExecutionDebuff) == 3 or (S.AshenJuggernaut:IsAvailable() and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and EnrageUp)) then
+    return S.Execute:Cast()
+  end
+  -- rampage,if=talent.bladestorm&cooldown.bladestorm.remains<=gcd&!debuff.champions_might.up
+  if IsReady("Rampage")  and targetRange8 and (S.Bladestorm:IsLearned() and S.Bladestorm:CooldownRemains() <= Player:GCD() and Target:DebuffDown(S.ChampionsMightDebuff)) then
+    return S.Rampage:Cast()
+  end
+  -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
+    return S.Bladestorm:Cast()
+  end
+  -- onslaught,if=talent.tenderize&buff.brutal_finish.up
+  if IsReady("Onslaught")  and targetRange10 and (S.Tenderize:IsAvailable() or Player:BuffUp(S.BrutalFinishBuff)) then
+    return S.Onslaught:Cast()
+  end
+  -- rampage,if=talent.anger_management
+  if IsReady("Rampage")  and targetRange8 and (S.AngerManagement:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- crushing_blow
+  if IsReady("Crushing Blow")  and targetRange8 then
+    return S.CrushingBlow:Cast()
+  end
+  -- onslaught,if=talent.tenderize
+  if IsReady("Onslaught")  and targetRange8 and (S.Tenderize:IsAvailable()) then
+    return S.Onslaught:Cast()
+  end
+  -- bloodbath,if=rage<100|target.health.pct<35&talent.vicious_contempt
+  if IsReady("Bloodbath")  and targetRange8 and (Player:Rage() < 100 or Target:HealthPercentage() < 35 and S.ViciousContempt:IsAvailable()) then
+    return S.Bloodbath:Cast()
+  end
+  -- raging_blow,if=rage<100&!buff.opportunist.up
+  if IsReady("Raging Blow")  and targetRange8 and (Player:Rage() < 100 and Player:BuffDown(S.OpportunistBuff)) then
+    return S.RagingBlow:Cast()
+  end
+  -- rampage,if=talent.reckless_abandon
+  if IsReady("Rampage")  and targetRange8 and (S.RecklessAbandon:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- execute,if=buff.enrage.up&debuff.marked_for_execution.up
+  if IsReady("Execute")  and targetRange8 and (EnrageUp and Target:DebuffUp(S.MarkedforExecutionDebuff)) then
+    return S.Execute:Cast()
+  end
+  -- bloodthirst,if=!talent.reckless_abandon&buff.enrage.up
+  if IsReady("Bloodthirst")  and targetRange8 and (not S.RecklessAbandon:IsAvailable() and EnrageUp) then
+    return S.Bloodthirst:Cast()
+  end
+  -- raging_blow
+  if IsReady("Raging Blow") and targetRange8  then
+    return S.RagingBlow:Cast()
+  end
+  -- onslaught
+  if IsReady("Onslaught") and targetRange8  then
+    return S.Onslaught:Cast()
+  end
+  -- execute
+  if IsReady("Execute")  and targetRange8 then
+    return S.Execute:Cast()
+  end
+  -- bloodthirst
+  if IsReady("Bloodthirst")  and targetRange8 then
+    return S.Bloodthirst:Cast()
+  end
+  -- whirlwind,if=talent.meat_cleaver
+  if IsReady("Whirlwind")  and targetRange8 and (S.MeatCleaver:IsAvailable()) then
+    return S.Whirlwind:Cast()
+  end
+  -- slam
+  if IsReady("Slam")  and targetRange8 then
+    return S.Slam:Cast()
+  end
+  -- storm_bolt,if=buff.bladestorm.up
+  if IsReady("Storm Bolt")  and targetRange20 and (Player:BuffUp(S.Bladestorm)) then
+    return S.StormBolt:Cast()
+  end
+end
+
+local function SlayerMT()
+  
+  -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+    return S.Recklessness:Cast()
+  end
+  -- avatar,if=(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(debuff.champions_might.up|!talent.champions_might))|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Avatar") and ((S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) and (Target:DebuffUp(S.ChampionsMightDebuff) or not S.ChampionsMight:IsAvailable())) or not S.TitansTorment:IsAvailable()) then
+    return S.Avatar:Cast()
+  end
+
+
+  -- thunderous_roar,if=buff.enrage.up
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Thunderous Roar") and (EnrageUp) then
+    return S.ThunderousRoar:Cast()
+  end
+
+
+  -- champions_spear,if=(buff.enrage.up&talent.titans_torment&cooldown.avatar.remains<gcd)|(buff.enrage.up&!talent.titans_torment)
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Champion's Spear") and ((EnrageUp and S.TitansTorment:IsAvailable() and S.Avatar:CooldownRemains() < Player:GCD()) or (EnrageUp and not S.TitansTorment:IsAvailable())) then
+    return S.ChampionsSpear:Cast()
+  end
+
+  -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
+    return S.OdynsFury:Cast()
+  end
+
+  -- whirlwind,if=buff.meat_cleaver.stack=0&talent.meat_cleaver
+  if IsReady("Whirlwind")  and targetRange8 and (Player:BuffDown(S.MeatCleaverBuff) and S.MeatCleaver:IsAvailable()) then
+    return S.Whirlwind:Cast()
+  end
+
+
+  -- execute,if=talent.ashen_juggernaut&buff.ashen_juggernaut.remains<=gcd&buff.enrage.up
+  if IsReady("Execute")  and targetRange8 and (S.AshenJuggernaut:IsAvailable() and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and EnrageUp) then
+    return S.Execute:Cast()
+  end
+
+  -- rampage,if=talent.bladestorm&cooldown.bladestorm.remains<=gcd&!debuff.champions_might.up
+  if IsReady("Rampage")  and targetRange8 and (S.Bladestorm:IsLearned() and S.Bladestorm:CooldownRemains() <= Player:GCD() and Target:DebuffDown(S.ChampionsMightDebuff)) then
+    return S.Rampage:Cast()
+  end
+
+  -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
+    return S.Bladestorm:Cast()
+  end
+  -- onslaught,if=talent.tenderize&buff.brutal_finish.up
+  if IsReady("Onslaught")  and targetRange8 and (S.Tenderize:IsAvailable() or Player:BuffUp(S.BrutalFinishBuff)) then
+    return S.Onslaught:Cast()
+  end
+  -- rampage,if=talent.anger_management
+  if IsReady("Rampage")  and targetRange8 and (S.AngerManagement:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- crushing_blow
+  if IsReady("Crushing Blow")  and targetRange8 then
+    return S.CrushingBlow:Cast()
+  end
+  -- onslaught,if=talent.tenderize
+  if IsReady("Onslaught")  and targetRange8 and (S.Tenderize:IsAvailable()) then
+    return S.Onslaught:Cast()
+  end
+  -- bloodbath,if=buff.enrage.up
+  if IsReady("Bloodbath")  and targetRange8 and (EnrageUp) then
+    return S.Bloodbath:Cast()
+  end
+  -- rampage,if=talent.reckless_abandon
+  if IsReady("Rampage")  and targetRange8 and (S.RecklessAbandon:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- execute,if=buff.enrage.up&debuff.marked_for_execution.up
+  if IsReady("Execute")  and targetRange8 and (EnrageUp and Target:DebuffUp(S.MarkedforExecutionDebuff)) then
+    return S.Execute:Cast()
+  end
+  -- bloodbath
+  if IsReady("Bloodbath")  and targetRange8 then
+    return S.Bloodbath:Cast()
+  end
+  -- raging_blow,if=talent.slaughtering_strikes
+  if IsReady("Raging Blow")  and targetRange8 and (S.SlaughteringStrikes:IsAvailable()) then
+    return S.RagingBlow:Cast()
+  end
+  -- onslaught
+  if IsReady("Onslaught")  and targetRange8 then
+    return S.Onslaught:Cast()
+  end
+  -- execute
+  if IsReady("Execute")  and targetRange8 then
+    return S.Execute:Cast()
+  end
+  -- bloodthirst
+  if IsReady("Bloodthirst")  and targetRange8 then
+    return S.Bloodthirst:Cast()
+  end
+  -- raging_blow
+  if IsReady("Raging Blow")  and targetRange8 then
+    return S.RagingBlow:Cast()
+  end
+  -- whirlwind
+  if IsReady("Whirlwind") then
+    return S.Whirlwind:Cast()
+  end
+  -- storm_bolt,if=buff.bladestorm.up
+  if IsReady("Storm Bolt")  and targetRange20 and (Player:BuffUp(S.Bladestorm)) then
+    return S.StormBolt:Cast()
+  end
+end
+
+local function ThaneST()
+  -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+    return S.Recklessness:Cast()
+  end
+  -- thunder_blast,if=buff.enrage.up
+  if IsReady("Thunder Blast")  and targetRange10 and (EnrageUp) then
+    return S.ThunderBlastAbility:Cast()
+  end
+  -- avatar,if=(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(debuff.champions_might.up|!talent.champions_might))|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Avatar") and ((S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) and (Target:DebuffUp(S.ChampionsMightDebuff) or not S.ChampionsMight:IsAvailable())) or not S.TitansTorment:IsAvailable()) then
+    return S.Avatar:Cast()
+  end
+  -- ravager
+  if RubimRH.CDsON() and IsReady("Ravager")  and targetRange8 then
+    return S.Ravager:Cast()
+  end
+  -- thunderous_roar,if=buff.enrage.up
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Thunderous Roar") and (EnrageUp) then
+    return S.ThunderousRoar:Cast()
+  end
+  -- champions_spear,if=buff.enrage.up&(cooldown.avatar.remains<gcd|!talent.titans_torment)
+  if RubimRH.CDsON() and targetRange8  and IsReady("Champion's Spear") and (EnrageUp and (S.Avatar:CooldownRemains() < Player:GCD() or not S.TitansTorment:IsAvailable())) then
+    return S.ChampionsSpear:Cast()
+  end
+  -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
+    return S.OdynsFury:Cast()
+  end
+  -- execute,if=talent.ashen_juggernaut&buff.ashen_juggernaut.remains<=gcd&buff.enrage.up
+  if IsReady("Execute")  and targetRange8 and (S.AshenJuggernaut:IsAvailable() and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and EnrageUp) then
+    return S.Execute:Cast()
+  end
+  -- rampage,if=talent.bladestorm&cooldown.bladestorm.remains<=gcd&!debuff.champions_might.up
+  if IsReady("Rampage") and targetRange8  and (S.Bladestorm:IsLearned() and S.Bladestorm:CooldownRemains() <= Player:GCD() and Target:DebuffDown(S.ChampionsMightDebuff)) then
+    return S.Rampage:Cast()
+  end
+  -- bladestorm,if=buff.enrage.up&talent.unhinged
+  if RubimRH.CDsON() and targetRange8  and IsReady("Bladestorm") and (EnrageUp and S.Unhinged:IsAvailable()) then
+    return S.Bladestorm:Cast()
+  end
+  -- rampage,if=talent.anger_management
+  if IsReady("Rampage")  and targetRange8 and (S.AngerManagement:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- crushing_blow
+  if IsReady("Crushing Blow")  and targetRange8 then
+    return S.CrushingBlow:Cast()
+  end
+  -- onslaught,if=talent.tenderize
+  if IsReady("Onslaught") and targetRange8  and (S.Tenderize:IsAvailable()) then
+    return S.Onslaught:Cast()
+  end
+  -- bloodbath
+  if IsReady("Bloodbath") and targetRange8  then
+    return S.Bloodbath:Cast()
+  end
+  -- rampage,if=talent.reckless_abandon
+  if IsReady("Rampage") and targetRange8  and (S.RecklessAbandon:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- raging_blow
+  if IsReady("Raging Blow")  and targetRange8 then
+    return S.RagingBlow:Cast()
+  end
+  -- execute
+  if IsReady("Execute") and targetRange8  then
+    return S.Execute:Cast()
+  end
+  -- bloodthirst,if=buff.enrage.up&(!buff.burst_of_power.up|!talent.reckless_abandon)
+  if IsReady("Bloodthirst")  and targetRange8 and (EnrageUp and (Player:BuffDown(S.BurstofPowerBuff) or not S.RecklessAbandon:IsAvailable())) then
+    return S.Bloodthirst:Cast()
+  end
+  -- onslaught
+  if IsReady("Onslaught") and targetRange8  then
+    return S.Onslaught:Cast()
+  end
+  -- bloodthirst
+  if IsReady("Bloodthirst") and targetRange8  then
+    return S.Bloodthirst:Cast()
+  end
+  -- thunder_clap
+  if IsReady("Thunder Clap") and targetRange8  then
+    return S.ThunderClap:Cast()
+  end
+  -- whirlwind,if=talent.meat_cleaver
+  if IsReady("Whirlwind") and (S.MeatCleaver:IsAvailable()) then
+    return S.Whirlwind:Cast()
+  end
+  -- slam
+  if IsReady("Slam")  and targetRange8 then
+    return S.Slam:Cast()
+  end
+end
+
+local function ThaneMT()
+  -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
+    return S.Recklessness:Cast()
+  end
+  -- thunder_blast,if=buff.enrage.up
+  if IsReady("Thunder Blast")  and targetRange8 and (EnrageUp) then
+    return S.ThunderBlastAbility:Cast()
+  end
+  -- avatar,if=(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(debuff.champions_might.up|!talent.champions_might))|!talent.titans_torment
+  if RubimRH.CDsON()  and targetRange10 and IsReady("Avatar") and ((S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) and (Target:DebuffUp(S.ChampionsMightDebuff) or not S.ChampionsMight:IsAvailable())) or not S.TitansTorment:IsAvailable()) then
+    return S.Avatar:Cast()
+  end
+  -- thunder_clap,if=buff.meat_cleaver.stack=0&talent.meat_cleaver
+  if IsReady("Thunder Clap")  and targetRange8 and (Player:BuffDown(S.MeatCleaverBuff) and S.MeatCleaver:IsAvailable()) then
+    return S.ThunderClap:Cast()
+  end
+  -- thunderous_roar,if=buff.enrage.up
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Thunderous Roar") and (EnrageUp) then
+    return S.ThunderousRoar:Cast()
+  end
+  -- ravager
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Ravager") then
+    return S.Ravager:Cast()
+  end
+  -- champions_spear,if=buff.enrage.up
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Champion's Spear") and (EnrageUp) then
+    return S.ChampionsSpear:Cast()
+  end
+  -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
+    return S.OdynsFury:Cast()
+  end
+  -- execute,if=talent.ashen_juggernaut&buff.ashen_juggernaut.remains<=gcd&buff.enrage.up
+  if IsReady("Execute")  and targetRange8 and (S.AshenJuggernaut:IsAvailable() and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and EnrageUp) then
+    return S.Execute:Cast()
+  end
+  -- rampage,if=talent.bladestorm&cooldown.bladestorm.remains<=gcd&!debuff.champions_might.up
+  if IsReady("Rampage")  and targetRange8 and (S.Bladestorm:IsLearned() and S.Bladestorm:CooldownRemains() <= Player:GCD() and Target:DebuffDown(S.ChampionsMightDebuff)) then
+    return S.Rampage:Cast()
+  end
+  -- bladestorm,if=buff.enrage.up
+  if RubimRH.CDsON()  and targetRange8 and IsReady("Bladestorm") and (EnrageUp) then
+    return S.Bladestorm:Cast()
+  end
+  -- rampage,if=talent.anger_management
+  if IsReady("Rampage")  and targetRange8 and (S.AngerManagement:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- crushing_blow,if=buff.enrage.up
+  if IsReady("Crushing Blow")  and targetRange8 and (EnrageUp) then
+    return S.CrushingBlow:Cast()
+  end
+  -- onslaught,if=talent.tenderize
+  if IsReady("Onslaught")  and targetRange8 and (S.Tenderize:IsAvailable()) then
+    return S.Onslaught:Cast()
+  end
+  -- bloodbath
+  if IsReady("Bloodbath")  and targetRange8 then
+    return S.Bloodbath:Cast()
+  end
+  -- rampage,if=talent.reckless_abandon
+  if IsReady("Rampage")  and targetRange8 and (S.RecklessAbandon:IsAvailable()) then
+    return S.Rampage:Cast()
+  end
+  -- bloodthirst
+  if IsReady("Bloodthirst") and targetRange8  then
+    return S.Bloodthirst:Cast()
+  end
+  -- thunder_clap
+  if IsReady("Thunder Clap") and targetRange8  then
+    return S.ThunderClap:Cast()
+  end
+  -- onslaught
+  if IsReady("Onslaught") and targetRange8  then
+    return S.Onslaught:Cast()
+  end
+  -- execute
+  if IsReady("Execute") and targetRange8  then
+    return S.Execute:Cast()
+  end
+  -- raging_blow
+  if IsReady("Raging Blow") and targetRange8  then
+    return S.RagingBlow:Cast()
+  end
+  -- whirlwind
+  if IsReady("Whirlwind") then
+    return S.Whirlwind:Cast()
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function APL()
 
   TrackHealthLossPerSecond()
@@ -207,29 +645,12 @@ battleshoutremains = 0
 end
 local bloodbath = AuraUtil.FindAuraByName("Bloodbath","player") 
 local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-local EnrageUp = AuraUtil.FindAuraByName("Enrage","player")
+ EnrageUp = AuraUtil.FindAuraByName("Enrage","player")
 
 HPpercentloss = GetHealthLossPerSecond()
 
-validmobsinrange8y = combatmobs40() * .6
-validmobsinrange30y = combatmobs40() * .6
-validmobsinrange10y = combatmobs40() * .6
-
-if (inRange10 > validmobsinrange10y or instanceType=='raid') and combatmobs40() > 0 then
-  aoecds10y = true
-  else
-    aoecds10y = false
-  end
-  
 
 
--- print(IsReady("Execute") and S.Execute:CooldownRemains()<0.55)
-
-if (inRange30 > validmobsinrange30y or instanceType=='raid') and combatmobs40() > 0 then
-aoecds30y = true
-else
-aoecds30y = false
-end
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -255,7 +676,6 @@ if inRange30 >= 1 and Player:AffectingCombat() then
     return I.HPIcon:Cast()
   end
 
-
 if IsReady("Rallying Cry") and Player:HealthPercentage()<50 then
   return S.RallyingCry:Cast()
 end
@@ -270,8 +690,10 @@ end
 
 end
 
-if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and
-Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) and Player:CanAttack(Target) then
+
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
+and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and Player:CanAttack(Target) and GetItemCount(219905) >= 1 and 
+Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) then
 return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
 end
 
@@ -282,19 +704,19 @@ Player:DebuffUp(S.lust5)) then
 RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
+if S.HeroicThrow:ID() == RubimRH.queuedSpell[1]:ID() and (targetRange8 or not targetRange30) then
+  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+  end
+
 if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0 or not Target:Exists()) then
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
   end
+
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 return RubimRH.QueuedSpell():Cast()
 end
 
 
-
-
--- print('aoecds10y:',aoecds10y)
--- print('bs is ready:',S.Bladestorm:IsCastable())
--- print('avatar cd remains>9:',S.Avatar:CooldownRemains() >= 9)
 
 
 if Player:IsCasting() or Player:IsChanneling() then
@@ -318,7 +740,7 @@ if RubimRH.InterruptsON() then
   end
 end
 
-if RubimRH.InterruptsON() and Player:AffectingCombat() and RangeCount(10) >= 1 then
+if RubimRH.InterruptsON() and Player:AffectingCombat() and inRange30 >= 1 then
   if IsReady("Bitter Immunity") and Player:DebuffUp(S.VoidRift) then
     return S.BitterImmunity:Cast()
   end
@@ -361,237 +783,30 @@ if ShouldReturn then return ShouldReturn; end
 
 end
 
-if inRange10>=2 and RubimRH.AoEON() then
-  -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
-  if RubimRH.CDsON() and S.Recklessness:CooldownRemains() == 0 and ((not S.AngerManagement:IsAvailable() and (S.Avatar:CooldownRemains() < 2 or Player:BuffUp(S.Avatar)) and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
-    return S.Recklessness:Cast()
-  end
-  -- avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment
-  if RubimRH.CDsON() and S.Avatar:CooldownRemains() == 0 and (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) or not S.TitansTorment:IsAvailable()) then
-    return S.Avatar:Cast()
-  end
-  -- thunderous_roar,if=buff.enrage.up
-  if RubimRH.CDsON() and IsReady("Thunderous Roar") and (EnrageUp) then
-    return S.ThunderousRoar:Cast()
-  end
-  -- champions_spear,if=buff.enrage.up
-  if IsReady("Champion's Spear") and (EnrageUp) then
-    return S.ChampionsSpear:Cast()
-  end
-  -- odyns_fury,if=dot.odyns_fury_torment_mh.remains<1&(buff.enrage.up|talent.titanic_rage)&cooldown.avatar.remains
-  if RubimRH.CDsON() and IsReady("Odyn's Fury") and (Target:DebuffRemains(S.OdynsFuryDebuff) < 1 and (EnrageUp or S.TitanicRage:IsAvailable()) and S.Avatar:CooldownDown()) then
-    return S.OdynsFury:Cast()
-  end
-    --whirlwind,if=buff.meat_cleaver.stack=0&talent.improved_whirlwind
-  if IsReady("Whirlwind") and (Player:BuffDown(S.MeatCleaverBuff) and S.ImprovedWhilwind:IsAvailable()) then
-    return S.Whirlwind:Cast()
-  end
-  -- execute,if=buff.enrage.up&buff.ashen_juggernaut.remains<=gcd&talent.ashen_juggernaut
-  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  and (EnrageUp and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and S.AshenJuggernaut:IsAvailable()) then
-    return S.Execute:Cast()
-  end
-  -- rampage,if=rage.pct>85&cooldown.bladestorm.remains<=gcd&!debuff.champions_might.up
-  if IsReady("Rampage") and (Player:RagePercentage() > 85 and S.Bladestorm:CooldownRemains() <= Player:GCD() and Target:DebuffDown(S.ChampionsMightDebuff)) then
-    return S.Rampage:Cast()
-  end
-  -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON() and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) and S.OdynsFury:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains() > 3 then
-    return S.Bladestorm:Cast()
-  end
-  -- ravager,if=buff.enrage.up
-  if IsReady("Ravager") and (EnrageUp) then
-    return S.Ravager:Cast()
-  end
-  -- rampage,if=talent.anger_management
-  if IsReady("Rampage") and (S.AngerManagement:IsAvailable()) then
-    return S.Rampage:Cast()
-  end
-  -- bloodbath,if=buff.furious_bloodthirst.up
-  if IsReady("Bloodbath") and bloodbath and (Player:BuffUp(S.FuriousBloodthirstBuff)) then
-    return S.Bloodbath:Cast()
-  end
-  -- crushing_blow
-  if IsReady("Crushing Blow") then
-    return S.CrushingBlow:Cast()
-  end
-  -- onslaught,if=talent.tenderize|buff.enrage.up
-  if IsReady("Onslaught") and (S.Tenderize:IsAvailable() or EnrageUp) then
-    return S.Onslaught:Cast()
-  end
-  -- bloodbath,if=!dot.gushing_wound.remains
-  if IsReady("Bloodbath") and bloodbath and (Player:BuffUp(S.FuriousBloodthirstBuff)) then
-    return S.Bloodbath:Cast()
-  end
-  -- rampage,if=talent.reckless_abandon
-  if IsReady("Rampage") and (S.RecklessAbandon:IsAvailable()) then
-    return S.Rampage:Cast()
-  end
-  -- execute,if=buff.enrage.up&((target.health.pct>35&talent.massacre|target.health.pct>20)&buff.sudden_death.remains<=gcd)
-  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  and (EnrageUp and ((Target:HealthPercentage() > 35 and S.Massacre:IsAvailable() or Target:HealthPercentage() > 20) and Player:BuffRemains(S.SuddenDeathBuff) <= Player:GCD())) then
-    return S.Execute:Cast()
-  end
-  -- bloodbath
-  if IsReady("Bloodbath") and bloodbath then
-    return S.Bloodbath:Cast()
-  end
-  -- bloodthirst
-  if IsReady("Bloodthirst") then
-    return S.Bloodthirst:Cast()
-  end
-  -- raging_blow
-  if IsReady("Raging Blow") then
-    return S.RagingBlow:Cast()
-  end
-  -- execute
-  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6 then
-    return S.Execute:Cast()
-  end
-  -- whirlwind
-  if IsReady("Whirlwind") then
-    return S.Whirlwind:Cast()
-  end
-end
 
-if inRange10<2 or not RubimRH.AoEON() then
-  -- ravager,if=cooldown.recklessness.remains<gcd|buff.recklessness.up
-  if IsReady("Ravager") and (S.Recklessness:CooldownRemains() < Player:GCD() or Player:BuffUp(S.RecklessnessBuff)) then
-    return S.Ravager:Cast()
-  end
-  -- recklessness,if=!talent.anger_management|(talent.anger_management&cooldown.avatar.ready|cooldown.avatar.remains<gcd|cooldown.avatar.remains>30)
-  if RubimRH.CDsON() and S.Recklessness:CooldownRemains() == 0 and (not S.AngerManagement:IsAvailable() or (Player:BuffUp(S.Avatar) or S.AngerManagement:IsAvailable() and S.Avatar:CooldownUp() or S.Avatar:CooldownRemains() < Player:GCD() or S.Avatar:CooldownRemains() > 30)) then
-    return S.Recklessness:Cast()
-  end
-  -- avatar,if=!talent.titans_torment|(talent.titans_torment&(buff.enrage.up|talent.titanic_rage))
-  if RubimRH.CDsON() and S.Avatar:CooldownRemains() == 0 and (not S.TitansTorment:IsAvailable() or (S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()))) then
-    return S.Avatar:Cast()
-  end
-  -- champions_spear,if=buff.enrage.up&((buff.furious_bloodthirst.up&talent.titans_torment)|!talent.titans_torment|target.time_to_die<20|active_enemies>1|!set_bonus.tier31_2pc)&raid_event.adds.in>15
-  if IsReady("Champion's Spear") and (EnrageUp and ((Player:BuffUp(S.FuriousBloodthirstBuff) and S.TitansTorment:IsAvailable()) or not S.TitansTorment:IsAvailable() or FightRemains < 20 or inRange8 > 1 or not Player:HasTier(31, 2))) then
-    return S.ChampionsSpear:Cast()
-  end
-  -- whirlwind,if=spell_targets.whirlwind>1&talent.improved_whirlwind&!buff.meat_cleaver.up|raid_event.adds.in<2&talent.improved_whirlwind&!buff.meat_cleaver.up
-  if IsReady("Whirlwind") and (inRange8 > 1 and S.ImprovedWhilwind:IsAvailable() and Player:BuffDown(S.MeatCleaverBuff)) then
-    return S.Whirlwind:Cast()
-  end
-  -- execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd
-  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  and (Player:BuffUp(S.AshenJuggernautBuff) and Player:BuffRemains(S.AshenJuggernautBuff) < Player:GCD()) then
-    return S.Execute:Cast()
-  end
-  -- bladestorm,if=buff.enrage.up&(buff.avatar.up|buff.recklessness.up&talent.anger_management)
-  if RubimRH.CDsON() and IsReady("Bladestorm") and (EnrageUp and (Player:BuffUp(S.AvatarBuff) or Player:BuffUp(S.RecklessnessBuff) and S.AngerManagement:IsAvailable())) then
-    return S.Bladestorm:Cast()
-  end
-  -- odyns_fury,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)&(talent.dancing_blades&buff.dancing_blades.remains<5|!talent.dancing_blades)
-  if RubimRH.CDsON() and IsReady("Odyn's Fury") and (EnrageUp and (S.DancingBlades:IsAvailable() and Player:BuffRemains(S.DancingBladesBuff) < 5 or not S.DancingBlades:IsAvailable())) then
-    return S.OdynsFury:Cast()
-  end
-  -- rampage,if=talent.anger_management&(buff.recklessness.up|buff.enrage.remains<gcd|rage.pct>85)
-  if IsReady("Rampage") and (S.AngerManagement:IsAvailable() and (Player:BuffUp(S.RecklessnessBuff) or Player:BuffRemains(S.EnrageBuff) < Player:GCD() or Player:RagePercentage() > 85)) then
-    return S.Rampage:Cast()
-  end
-  local BTCritChance = Player:CritChancePct() + num(Player:BuffUp(S.RecklessnessBuff)) * 20 + Player:BuffStack(S.MercilessAssaultBuff) * 10 + Player:BuffStack(S.BloodcrazeBuff) * 15
-  -- bloodbath,if=set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95
-  if IsReady("Bloodbath") and bloodbath and (Player:HasTier(30, 4) and BTCritChance >= 95) then
-    return S.Bloodbath:Cast()
-  end
-  -- bloodthirst,if=(set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95)|(!talent.reckless_abandon&buff.furious_bloodthirst.up&buff.enrage.up&(!dot.gushing_wound.remains|buff.champions_might.up))
-  if IsReady("Bloodthirst") and ((Player:HasTier(30, 4) and BTCritChance >= 95) or (not S.RecklessAbandon:IsAvailable() and Player:BuffUp(S.FuriousBloodthirstBuff) and EnrageUp and (Target:DebuffDown(S.GushingWoundDebuff) or Player:DebuffUp(S.ChampionsMightDebuff)))) then
-    return S.Bloodthirst:Cast()
-  end
-  -- bloodbath,if=buff.furious_bloodthirst.up
-  if IsReady("Bloodbath") and  bloodbath and (Player:BuffUp(S.FuriousBloodthirstBuff)) then
-    return S.Bloodbath:Cast()
-  end
-  -- thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
-  if RubimRH.CDsON() and IsReady("Thunderous Roar") and (EnrageUp) then
-    return S.ThunderousRoar:Cast()
-  end
-  -- onslaught,if=buff.enrage.up|talent.tenderize
-  if IsReady("Onslaught") and (EnrageUp or S.Tenderize:IsAvailable()) then
-    return S.Onslaught:Cast()
-  end
-  -- crushing_blow,if=buff.enrage.up
-  if IsReady("Crushing Blow") and (EnrageUp) then
-    return S.CrushingBlow:Cast()
-  end
-  -- rampage,if=talent.reckless_abandon&(buff.recklessness.up|buff.enrage.remains<gcd|rage.pct>85)
-  if IsReady("Rampage") and (S.RecklessAbandon:IsAvailable() and (Player:BuffUp(S.RecklessnessBuff) or Player:BuffRemains(S.EnrageBuff) < Player:GCD() or Player:RagePercentage() > 85)) then
-    return S.Rampage:Cast()
-  end
-  -- execute,if=buff.enrage.up&!buff.furious_bloodthirst.up&buff.ashen_juggernaut.up|buff.sudden_death.remains<=gcd&(target.health.pct>35&talent.massacre|target.health.pct>20)
-  if IsReady("Execute")  and S.Execute:CooldownRemains()<0.6  and (EnrageUp and Player:BuffDown(S.FuriousBloodthirstBuff) and Player:BuffUp(S.AshenJuggernautBuff) or Player:BuffRemains(S.SuddenDeathBuff) <= Player:GCD() and (Target:HealthPercentage() > 35 and S.Massacre:IsAvailable() or Target:HealthPercentage() > 20)) then
-    return S.Execute:Cast()
-  end
-  -- execute,if=buff.enrage.up
-  if IsReady("Execute") and S.Execute:CooldownRemains()<0.6 and (EnrageUp) then
-    return S.Execute:Cast()
-  end
-  -- rampage,if=talent.anger_management
-  if IsReady("Rampage") and (S.AngerManagement:IsAvailable()) then
-    return S.Rampage:Cast()
-  end
-  -- bloodbath,if=buff.enrage.up&talent.reckless_abandon&!talent.wrath_and_fury
-  if IsReady("Bloodbath") and bloodbath and (EnrageUp and S.RecklessAbandon:IsAvailable() and not S.WrathandFury:IsAvailable()) then
-    return S.Bloodbath:Cast()
-  end
-  -- rampage,if=target.health.pct<35&talent.massacre.enabled
-  if IsReady("Rampage") and (Target:HealthPercentage() < 35 and S.Massacre:IsAvailable()) then
-    return S.Rampage:Cast()
-  end
-  -- bloodthirst,if=buff.enrage.down|!buff.furious_bloodthirst.up
-  if IsReady("Bloodthirst") and (not EnrageUp or Player:BuffDown(S.FuriousBloodthirstBuff)) then
-    return S.Bloodthirst:Cast()
-  end
-  -- raging_blow,if=charges>1
-  if IsReady("Raging Blow") and (S.RagingBlow:Charges() > 1) then
-    return S.RagingBlow:Cast()
-  end
-  -- crushing_blow,if=charges>1
-  if IsReady("Crushing Blow") and (S.CrushingBlow:Charges() > 1) then
-    return S.CrushingBlow:Cast()
-  end
-  -- bloodbath,if=buff.enrage.down
-  if IsReady("Bloodbath") and bloodbath and (not EnrageUp) then
-    return S.Bloodbath:Cast()
-  end
-  -- crushing_blow,if=buff.enrage.up&talent.reckless_abandon
-  if IsReady("Crushing Blow") and (EnrageUp and S.RecklessAbandon:IsAvailable()) then
-    return S.CrushingBlow:Cast()
-  end
-  -- bloodthirst,if=!buff.furious_bloodthirst.up
-  if IsReady("Bloodthirst") and (Player:BuffDown(S.FuriousBloodthirstBuff)) then
-    return S.Bloodthirst:Cast()
-  end
-  -- raging_blow,if=charges>1
-  if IsReady("Raging Blow") and (S.RagingBlow:Charges() > 1) then
-    return S.RagingBlow:Cast()
-  end
-  -- rampage
-  if IsReady("Rampage") then
-    return S.Rampage:Cast()
-  end
-  -- bloodbath
-  if IsReady("Bloodbath") and bloodbath then
-    return S.Bloodbath:Cast()
-  end
-  -- raging_blow
-  if IsReady("Raging Blow") then
-    return S.RagingBlow:Cast()
-  end
-  -- crushing_blow
-  if IsReady("Crushing Blow") then
-    return S.CrushingBlow:Cast()
-  end
-  -- bloodthirst
-  if IsReady("Bloodthirst")  then
-    return S.Bloodthirst:Cast()
-  end
-  -- slam
-  if IsReady("Slam") then
-    return S.Slam:Cast()
-  end
-end
 
+
+ -- Note: For below lines, using <2 instead of =1 to avoid losing suggestions when moving slightly out of range.
+ -- run_action_list,name=slayer_st,if=talent.slayers_dominance&active_enemies=1
+ if (S.SlayersDominance:IsAvailable() or Player:Level() < 71) and (inRange10 < 2 or not RubimRH.AoEON()) then
+   local ShouldReturn = SlayerST(); if ShouldReturn then return ShouldReturn; end
+ end
+
+ -- run_action_list,name=slayer_mt,if=talent.slayers_dominance&active_enemies>1 
+ if (S.SlayersDominance:IsAvailable() or Player:Level() < 71) and RubimRH.AoEON() and inRange10 > 1 then
+   local ShouldReturn = SlayerMT(); if ShouldReturn then return ShouldReturn; end
+ end
+
+ -- run_action_list,name=thane_st,if=talent.lightning_strikes&active_enemies=1
+ if S.LightningStrikes:IsAvailable() and (inRange10 < 2 or not RubimRH.AoEON()) then
+   local ShouldReturn = ThaneST(); if ShouldReturn then return ShouldReturn; end
+ end
+
+
+ -- run_action_list,name=thane_mt,if=talent.lightning_strikes&active_enemies>1
+ if S.LightningStrikes:IsAvailable() and RubimRH.AoEON() and inRange10 > 1 then
+   local ShouldReturn = ThaneMT(); if ShouldReturn then return ShouldReturn; end
+ end
 
 
 end

@@ -67,6 +67,11 @@ Deadshot               = Spell(272935),
 Berserking             = Spell(26297),
 Darkflight             = Spell(68992),
 Distract               = Spell(1725),
+lust1    = Spell(57724),
+lust2    = Spell(57723),
+lust3    = Spell(80354),
+lust4    = Spell(95809),
+lust5    = Spell(264689),
 lustAT                 = Spell(155145), --arcane torrent
 WaterStrider           = Spell(118089),
 BugMount               = Spell(243795),
@@ -150,11 +155,7 @@ UnderhandedUpperhand   = Spell(424044),
 SepsisBuff             = Spell(375939),
 shadetarget            = Spell(350209),
 Potion                 = Spell(176108),
-lust1                  = Spell(57724),
-lust2                  = Spell(57723),
-lust3                  = Spell(80354),
-lust4                  = Spell(95809),
-lust5                  = Spell(264689),
+
 }
 
 local S = RubimRH.Spell[260]
@@ -164,7 +165,7 @@ if not Item.Rogue then Item.Rogue = {}; end
 Item.Rogue.Outlaw = {
     tx1 = Item(118330),
     tx2 = Item(114616),
-    drums = Item(193470),
+    drums = Item(219905),
     HPIcon = Item(169451),
     HPpotID = Item(207023),
 };
@@ -724,7 +725,7 @@ if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff)  then
     --     return S.BladeFlurry:Cast()
     -- end
     
-	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:DebuffUp(S.KillingSpreeDamageDebuff) and not IsResting() then
+	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:DebuffUp(S.KillingSpreeDamageDebuff) and (not IsResting() or target_is_dummy()) then
 		return S.Stealth:Cast()
 	end
 
@@ -768,15 +769,13 @@ end
 --Spell Queue---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 
-if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and
-Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) and (I.drums:IsReady()) and Player:CanAttack(Target) then
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID()
+and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and Player:CanAttack(Target) and GetItemCount(219905) >= 1 and 
+Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5)  then
 return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
 end
 
-if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and
-(
-Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or
-Player:DebuffUp(S.lust5)) then
+if S.lustAT:ID() == RubimRH.queuedSpell[1]:ID() and (Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or Player:DebuffUp(S.lust5)) then
 RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
@@ -801,11 +800,13 @@ if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 end
 
 
-if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 40 and Player:AffectingCombat()  then
+if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 40 and Player:AffectingCombat() then
   return S.Evasion:Cast()
   end
-
-if IsReady("Cloak of Shadows") and inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat()  then
+  if IsReady("Crimson Vial") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
+    return S.CrimsonVial:Cast()
+    end
+if IsReady("Cloak of Shadows") and inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() then
 return S.CloakofShadows:Cast()
 end
 
