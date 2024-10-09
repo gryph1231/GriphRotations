@@ -548,8 +548,8 @@ function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {
-"Rigorous Jab","Brutal Jab","Bleeding Jab","Extraction Strike","Grasping Slash",
-"Terrifying Slam","Anima Slash","Shred Armor","Triple Bite","Tenderize","Mutilate",
+"Rigorous Jab","Brutal Jab", 
+"Terrifying Slam","Anima Slash","Shred Armor","Triple Bite","Mutilate",
 "Brutal Strike","Lava Fist","Shadowflame Slash",
             }
             local unitID = "nameplate" .. id
@@ -568,9 +568,54 @@ function mitigatedng()
 end
 
 
+
+function blessingofsacrificefocus()
+    if Player:AffectingCombat() then
+        for id = 1, 10 do
+            local spell = {"Putrid Waters", "Fiery Ricochet",
+
+            }
+            local unitID = "nameplate" .. id
+            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+                UnitCastingInfo(unitID)
+            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+            for idx = 1, #spell do
+                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+
+
+function spellwardingcast()
+    if Player:AffectingCombat() then
+        for id = 1, 10 do
+            local spell = {spellname =="Terrifying Roar" or spellname =="Cosmic Singularity" or spellname =="Obsidian Beam" or spellname =="Repulsive Visage" or spellname =="Process of Elimination"
+
+            }
+            local unitID = "nameplate" .. id
+            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+                UnitCastingInfo(unitID)
+            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+            for idx = 1, #spell do
+                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
 function stunprio()
     local stunspells = {
-        'Crushing Smash','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH
+        'Alarm Shrill','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH
         'Spiked Carapace','Chain Lightning','Earthen Ward','Curse of Stone','Sonic Burst','Hasten','Throw Rock','Cleave','Hail of Stone','Time Blade',--Uldaman
         'Seismic Slam','Expulse','Demoralizing Shout','Spear Flurry','Elemental Focus','Dazzle','Ice Shard','Refreshing Tide','Thunderstrike','Boiling Rage','Tidal Divergence', --HoI
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
@@ -598,7 +643,7 @@ end
 
 function blindprio()
     local blindspells = {
-        'Crushing Smash','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH
+        'Alarm Shrill','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH
         'Spiked Carapace','Chain Lightning','Earthen Ward','Curse of Stone','Sonic Burst','Hasten','Throw Rock','Cleave','Hail of Stone','Time Blade',--Uldaman
         'Seismic Slam','Expulse','Demoralizing Shout','Spear Flurry','Elemental Focus','Dazzle','Ice Shard','Refreshing Tide','Thunderstrike','Boiling Rage','Tidal Divergence', --HoI
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
@@ -626,7 +671,7 @@ end
 
 function kickprio()
     local KickSpells = {
-"Resonant Barrage",	"Web Bolt",	"Resonant Barrage",	"Horrifying Shrill",	"Poison Bolt",	"Revolting Volley",	"Venom Volley",	"Bloodstained Webmage",	"Web Bolt",	"Silk Binding",	"Twist Thoughts",	"Grimweave Blast",	
+"Resonant Barrage",	"Web Bolt",	"Horrifying Shrill",	"Poison Bolt", "Silken Restraints",	"Revolting Volley",	"Venom Volley",	"Bloodstained Webmage",	"Web Bolt",	"Silk Binding",	"Twist Thoughts",	"Grimweave Blast",	
 "Mending Web",	"Void Wave",	"Void Bolt",	"Night Bolt",	"Ensnaring Shadows",	"Abyssal Howl",	"Tormenting Beam",	"Umbral Barrier",	"Congealed Shadow",	"Silken Shell",	"Night Bolt",	"Shadow Bolt",	"Animate Shadows",	
 "Acidic Eruption",	"Arcing Void",	"Howling Fear",	"Alloy Bolt",	"Restoring Metals",	"Piercing Wail",	"Censoring Gear",	"Stone Bolt",	"Molten Metal",	"Spirit Bolt",	"Harvest Essence",	"Bramblethorn Coat",	"Nourish the Forest",	
 "Stimulate Resistance",	"Stimulate Regeneration",	"Spirit Bolt",	"Patty Cake",	"Consumption",	"Drain Fluids",	"Necrotic Bolt",	"Necrotic Bolt",	"Necrotic Bolt",	"Frostbolt",	"Bonemend",	"Rasping Scream",	"Necrotic Bolt",	
@@ -725,7 +770,7 @@ function mitigateboss()
         for id = 1, 40 do
             local spell = {
 "Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Obsidian Beam",	
-"Terrifying Slam",	"Seismic Smash",
+"Terrifying Slam",	"Seismic Smash", "Slam",
 	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Shadowflame Bolt",	
     "Crush", "Mutilate",
 
@@ -747,7 +792,7 @@ end
 function freedom()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = { 'Crystalline Rupture','Arcane Lockdown', }
+            local spell = { "Grasping Slash","Silk Binding", }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
             local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)

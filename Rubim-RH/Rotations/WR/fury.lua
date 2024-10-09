@@ -79,12 +79,14 @@ ThunderClap                           = Spell(6343),
 ThunderousRoar                        = Spell(384318),
 TitanicThrow                          = Spell(384090),
 WreckingThrow                         = Spell(384110),
+VoidRift                              = Spell(440313),
 -- Buffs
 AvatarBuff                            = Spell(107574),
 BattleShoutBuff                       = Spell(6673),
 ChampionsMightBuff                    = Spell(386286),
 HurricaneBuff                         = Spell(390581),
 WarMachineBuff                        = Spell(262232),
+BitterImmunity                        = Spell(383762),
 -- Debuffs
 ChampionsMightDebuff                  = Spell(376080),
 MarkofFyralathDebuff                  = Spell(414532),
@@ -306,7 +308,21 @@ end
 -- --------------------------------------------------------------------------------------------------------------------------------------------
 -- ----------------------------------------------------------Interrupts------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------------------------------------------------------------------
-if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingCombat()  then
+if RubimRH.InterruptsON() then
+  if IsReady("Defensive Stance") and Player:HealthPercentage() < 35 and not Player:BuffUp(S.DefensiveStance) then
+    return S.DefensiveStance:Cast()
+  end
+
+  if IsReady("Berserker Stance") and not Player:BuffUp(S.BerserkerStance) and (Player:HealthPercentage() >= 85 or (Player:HealthPercentage() >= 35 and not Player:BuffUp(S.DefensiveStance))) then
+    return S.BerserkerStance:Cast()
+  end
+end
+
+if RubimRH.InterruptsON() and Player:AffectingCombat() and RangeCount(10) >= 1 then
+  if IsReady("Bitter Immunity") and Player:DebuffUp(S.VoidRift) then
+    return S.BitterImmunity:Cast()
+  end
+
 --Kick
 if IsReady("Pummel") 
 and kickprio() and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
@@ -331,12 +347,12 @@ end
 
 
 if Player:HealthPercentage() <=60 then
-if IsReady("Victory Rush") and not S.ImpendingVictory:IsAvailable() then
-return S.VictoryRush:Cast()
-end
-if IsReady("Impending Victory")   then
-return S.ImpendingVictory:Cast()
-end
+  if IsReady("Victory Rush") and not S.ImpendingVictory:IsAvailable() then
+  return S.VictoryRush:Cast()
+  end
+  if IsReady("Impending Victory") then
+  return S.ImpendingVictory:Cast()
+  end
 end
 
 if RubimRH.CDsON() then
@@ -379,7 +395,7 @@ if inRange10>=2 and RubimRH.AoEON() then
     return S.Rampage:Cast()
   end
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON() and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) and S.OdynsFury:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains()>Player:GCD() then
+  if RubimRH.CDsON() and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) and S.OdynsFury:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains()>Player:GCD() and S.ThunderousRoar:CooldownRemains() > 3 then
     return S.Bladestorm:Cast()
   end
   -- ravager,if=buff.enrage.up

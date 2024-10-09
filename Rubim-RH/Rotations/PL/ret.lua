@@ -318,7 +318,7 @@ local function Generators()
     end
 
 --wake_of_ashes,if=(holy_power<=2&!talent.lights_guidance|holy_power>=2&talent.lights_guidance)&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6|talent.radiant_glory)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>10|raid_event.adds.up)
-if IsReady("Wake of Ashes") and RubimRH.CDsON() and TargetinRange(8) and (((Player:HolyPower() <= 2 and Player:HeroTreeID() ~= 48) or (Player:HolyPower() >= 2 and Player:HeroTreeID() == 48) or (Player:HolyPower() <= 3 and DSrange > 1)) and (S.AvengingWrath:CooldownRemains() > 6 or S.Crusade:CooldownRemains() > 6 or S.RadiantGlory:IsAvailable()) and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or DSrange > 1)) then
+if IsReady("Wake of Ashes") and RubimRH.CDsON() and TargetinRange(8) and (((Player:HolyPower() <= 2 and Player:HeroTreeID() ~= 48) or (Player:HolyPower() >= 2 and Player:HeroTreeID() == 48) or (Player:HeroTreeID() ~= 48 and Player:HolyPower() <= 3 and DSrange > 1)) and (S.AvengingWrath:CooldownRemains() > 6 or S.Crusade:CooldownRemains() > 6 or S.RadiantGlory:IsAvailable()) and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or DSrange > 1)) then
     return S.WakeofAshes:Cast()
 end
 
@@ -566,19 +566,19 @@ if Player:AffectingCombat() then
         return S.LayonHands:Cast()
     end
 
-    if IsReady("Divine Protection") and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineShield) and (Player:HealthPercentage() <= 50 or HPpercentloss>10 and Player:HealthPercentage()<60) and RangeCount(20) >= 1 then
+    if IsReady("Divine Protection") and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineShield) and (Player:HealthPercentage() <= 50 or HPpercentloss>10 and Player:HealthPercentage()<70) and RangeCount(20) >= 1 then
       return S.DivineProtection:Cast()
     end
 
-    if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 50 or HPpercentloss>10 and Player:HealthPercentage()<60) and not Player:BuffUp(S.DivineProtection) and not Player:BuffUp(S.DivineShield) and RangeCount(20) >= 1 then
+    if IsReady("Shield of Vengeance") and (Player:HealthPercentage() <= 50 or HPpercentloss>10 and Player:HealthPercentage()<70) and not Player:BuffUp(S.DivineProtection) and not Player:BuffUp(S.DivineShield) and RangeCount(20) >= 1 then
         return S.ShieldofVengeance:Cast()
     end
 
-    if IsReady("Word of Glory") and RangeCount(20) == 0 and Player:HealthPercentage() < 70 and Player:HolyPower() >= 3 then
+    if IsReady("Word of Glory") and RangeCount(20) == 0 and Player:HealthPercentage() < 60  then
         return S.WordofGlory:Cast()
     end
 
-    if IsReady("Word of Glory") and Player:HolyPower() >= 3 and (not Player:InArena() and not Player:InBattlegrounds() and not Target:IsAPlayer()) and not Player:BuffUp(S.DivineShield) and (Player:HealthPercentage() < 55 and Player:HealthPercentage() >= 35 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection) or Player:HealthPercentage() < 35) then
+    if IsReady("Word of Glory") and (not Player:InArena() and not Player:InBattlegrounds() and not Target:IsAPlayer()) and not Player:BuffUp(S.DivineShield) and (Player:HealthPercentage() < 60 and Player:HealthPercentage() >= 35 and not Player:BuffUp(S.ShieldofVengeance) and not Player:BuffUp(S.DivineProtection) or Player:HealthPercentage() < 35) then
         return S.WordofGlory:Cast()
     end
 end
