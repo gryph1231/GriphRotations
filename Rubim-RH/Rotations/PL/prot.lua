@@ -412,7 +412,7 @@ aoerangecheckeyeoftyr = (targetRange10 and not Player:IsMoving() or targetRange8
 
 
 
-if ( Player:BuffRemains(S.ShieldoftheRighteousBuff)<Player:GCD() or (Player:HolyPower()>=5 or Player:BuffRemains(S.ShieldoftheRighteousBuff)<13-Player:GCD()*4 or not Player:BuffUp(S.ShiningLightFreeBuff) and Player:BuffStack(S.ShiningLightBuffStack)==2 and Player:HealthPercentage()<60) and not IsReady(427453,1)) and (targetRange8 or inRange8>=1)  then
+if ( Player:BuffRemains(S.ShieldoftheRighteousBuff)<Player:GCD() or (Player:HolyPower()>=5 or Player:BuffRemains(S.ShieldoftheRighteousBuff)<13-Player:GCD()*4 or not Player:BuffUp(S.ShiningLightFreeBuff) and Player:BuffStack(S.ShiningLightBuffStack)==2 and Player:HealthPercentage()<60) and not IsReady(427453,1)) and (targetRange10 or inRange10>=1)  then
   useSoTR = true
 else
   useSoTR = false
@@ -584,7 +584,7 @@ if Player:AffectingCombat() and inRange30>=1 then
     return S.WordofGlory:Cast() 
     end
   
-    if IsReady("Shield of the Righteous") and (Player:HealthPercentage()<90 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 or Player:HolyPower()>=5 and not IsReady(427453,1)) and (targetRange8 or inRange8>=1) then
+    if IsReady("Shield of the Righteous") and (Player:HealthPercentage()<90 and Player:BuffRemains(S.ShieldoftheRighteousBuff)<3 or Player:HolyPower()>=5 and not IsReady(427453,1)) and (targetRange10 or inRange10>=1) then
     return S.ShieldoftheRighteous:Cast()
     end
   end

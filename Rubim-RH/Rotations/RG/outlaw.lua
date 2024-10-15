@@ -803,9 +803,9 @@ end
 if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 40 and Player:AffectingCombat() then
   return S.Evasion:Cast()
   end
-  if IsReady("Crimson Vial") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
-    return S.CrimsonVial:Cast()
-    end
+  -- if IsReady("Crimson Vial") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
+  --   return S.CrimsonVial:Cast()
+  --   end
 if IsReady("Cloak of Shadows") and inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() then
 return S.CloakofShadows:Cast()
 end

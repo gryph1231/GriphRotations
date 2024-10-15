@@ -595,7 +595,7 @@ end
 function spellwardingcast()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = {spellname =="Terrifying Roar" or spellname =="Cosmic Singularity" or spellname =="Obsidian Beam" or spellname =="Repulsive Visage" or spellname =="Process of Elimination"
+            local spell = {"Terrifying Roar","Cosmic Singularity" ,"Obsidian Beam" ,"Repulsive Visage" ,"Process of Elimination",
 
             }
             local unitID = "nameplate" .. id

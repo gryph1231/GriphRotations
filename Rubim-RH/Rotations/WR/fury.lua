@@ -66,7 +66,7 @@ LightningStrikes                      = Spell(434969),
 Avatar                                = Spell(107574),
 BerserkerRage                         = Spell(18499),
 BerserkersTorment                     = Spell(390123),
-Bladestorm                            = MultiSpell(227847, 389774),
+Bladestorm                            = Spell(227847),
 BloodandThunder                       = Spell(384277),
 ChampionsSpear                        = Spell(376079),
 DoubleTime                            = Spell(103827),
@@ -233,7 +233,7 @@ local function SlayerST()
     return S.Rampage:Cast()
   end
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON()  and targetRange10 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
+  if RubimRH.CDsON() and targetRange10 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
     return S.Bladestorm:Cast()
   end
   -- onslaught,if=talent.tenderize&buff.brutal_finish.up
@@ -347,7 +347,7 @@ local function SlayerMT()
   end
 
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON()  and targetRange8 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
     return S.Bladestorm:Cast()
   end
   -- onslaught,if=talent.tenderize&buff.brutal_finish.up
@@ -549,7 +549,7 @@ local function ThaneMT()
     return S.Rampage:Cast()
   end
   -- bladestorm,if=buff.enrage.up
-  if RubimRH.CDsON()  and targetRange8 and IsReady("Bladestorm") and (EnrageUp) then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and (EnrageUp) then
     return S.Bladestorm:Cast()
   end
   -- rampage,if=talent.anger_management
