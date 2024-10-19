@@ -800,7 +800,7 @@ if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 end
 
 
-if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 40 and Player:AffectingCombat() then
+if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
   return S.Evasion:Cast()
   end
   -- if IsReady("Crimson Vial") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
@@ -819,12 +819,12 @@ if inRange30 >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat
 ------------------------------------------------------------------------------------------------------------------------------------------------------=====-----------------------------------------------------------------------------------
 if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") and Player:CanAttack(Target) and Player:AffectingCombat() then
 	--Kick
-	if IsReady("Kick") and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged and (Target:IsAPlayer() or kickprio()) then
+	if IsReady("Kick") and targetRange5 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged and (Target:IsAPlayer() or kickprio()) then
 		return S.Kick:Cast()
 	end
 
 	--Shiv
-	if IsReady("Shiv") and targetRange8 and isEnraged then
+	if IsReady("Shiv") and targetRange5 and isEnraged then
 		return S.Shiv:Cast()
 	end
 end

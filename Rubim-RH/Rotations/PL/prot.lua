@@ -494,7 +494,7 @@ if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or (inRange30 == 0 or not
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-if Player:AffectingCombat() and inRange30>=1 then
+if Player:AffectingCombat() and inRange20>=1 then
 
   --health pot -- will need to update item ID of HPs as expansions progress
   if  Player:HealthPercentage() <= 20 and not Player:BuffUp(S.DivineShield) and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
@@ -598,10 +598,10 @@ if Player:AffectingCombat() and inRange30>=1 then
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and not isEnraged and UnitExists("target") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
-  -- kick on GCD
-  if IsReady("Divine Toll") and targetRange30 and RubimRH.CDsON() and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and (S.AvengersShield:CooldownRemains() > Player:GCD() or inRange20>=3) then
-    return S.DivineToll:Cast()
-    end
+  -- -- kick on GCD
+  -- if IsReady("Divine Toll") and targetRange30 and RubimRH.CDsON() and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and (S.AvengersShield:CooldownRemains() > Player:GCD() or inRange20>=3) then
+  --   return S.DivineToll:Cast()
+  --   end
   -- kick on GCD
   if IsReady("Avenger's Shield") and not IsReady("Rebuke",1) and targetRange30 and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and (S.DivineToll:CooldownRemains() > Player:GCD() or not RubimRH.CDsON()) then
   return S.AvengersShield:Cast()
