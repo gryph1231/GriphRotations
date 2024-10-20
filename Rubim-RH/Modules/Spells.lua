@@ -977,6 +977,8 @@ lust4    = Spell(95809),
 lust5    = Spell(264689),
 lustAT   = Spell(155145), -- war stomp
 autoattack = Spell(59752), -- will to survive (human racial)
+DeathGrip = Spell(49576),
+RaiseAlly = Spell(61999),
 
   }
 
