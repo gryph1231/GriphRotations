@@ -353,7 +353,7 @@ local function DRWBPTicking()
     --     return S.AbominationLimb:Cast()
     -- end
     -- reapers_mark,if=!dot.reapers_mark.ticking&dot.blood_plague.ticking
-    if IsReady("Reaper's Mark") and TargetinRange(10) and (Target:DebuffDown(S.ReapersMarkDebuff) and Target:DebuffDown(S.BloodPlagueDebuff)) then
+    if IsReady("Reaper's Mark") and TargetinRange(10) and (Target:DebuffDown(S.ReapersMarkDebuff) and Target:DebuffUp(S.BloodPlagueDebuff)) then
         return S.ReapersMark:Cast()
     end
     -- bonestorm,if=buff.death_and_decay.up&buff.bone_shield.stack>5&cooldown.dancing_rune_weapon.remains>=10&(dot.reapers_mark.ticking)
