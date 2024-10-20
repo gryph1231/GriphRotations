@@ -932,10 +932,6 @@ end
 
 
 
-
-  
-
-
 -- Table to hold the GUIDs and names of mobs in combat with the player
 local mobsInCombat = {}
 local mobNames = {}
@@ -1231,3 +1227,122 @@ end
 function GetHealthLossPerSecond()
     return healthLossPerSecond
 end
+
+
+
+
+
+
+
+
+
+
+
+-- Global variable to store the time counter
+local rangeTimer = 0
+local timerRunning = false
+local ticker -- To prevent multiple tickers from running
+
+-- Function to check if the target is in 5-yard range and manage the timer
+function TrackRangeTimer()
+    -- Check if the target is within 5 yards
+    if IsItemInRange(8149, "target") then
+        if not timerRunning then
+            -- Start a new timer if not already running
+            timerRunning = true
+            rangeTimer = 0 -- Reset the timer to 0 when starting
+            StartTimer()
+        end
+    else
+        -- If the target is out of range, reset the timer
+        StopTimer()
+    end
+end
+
+-- Function to start counting up the timer
+function StartTimer()
+    -- Stop any existing ticker to avoid overlaps
+    if ticker then
+        ticker:Cancel()
+    end
+
+    -- Create a new ticker that increases the timer every second
+    ticker = C_Timer.NewTicker(0.1, function()
+        rangeTimer = rangeTimer + 0.1
+        -- print("Target is in range for: " .. rangeTimer .. " seconds")
+    end)
+end
+
+-- Function to stop the timer and reset it when the target is out of range
+function StopTimer()
+    if ticker then
+        ticker:Cancel() -- Stop the ticker
+        ticker = nil
+    end
+    timerRunning = false
+    rangeTimer = 0
+    -- print("Target is out of range, timer reset to 0")
+end
+
+-- Function to get the current range timer value
+function GetRangeTimer()
+    return rangeTimer
+end
+
+-- Create a frame to check the range periodically
+local rangeCheckFrame = CreateFrame("Frame")
+rangeCheckFrame:SetScript("OnUpdate", function(self, elapsed)
+    TrackRangeTimer()
+end)
+
+
+
+
+
+
+-- Table for Death and Decay tracking
+local DnDTable = {}
+
+-- Table for Bonestorm tracking
+local BonestormTable = {}
+
+-- Function to check if Death and Decay is ticking
+function IsDnDTicking()
+    if next(DnDTable) == nil then
+        return false
+    end
+
+    local isTicking = false
+    for TarGUID, LastTick in pairs(DnDTable) do
+        if GetTime() - LastTick < 1.25 then
+            isTicking = true
+        end
+    end
+
+    if isTicking and Player:BuffUp(SpellBlood.DeathAndDecayBuff) then
+        return true
+    end
+
+    return false
+end
+
+-- Function to check if Bonestorm is ticking
+function IsBonestormTicking()
+    if next(BonestormTable) == nil then
+        return false
+    end
+
+    for TarGUID, LastTick in pairs(BonestormTable) do
+        if GetTime() - LastTick < 1.25 then
+            return true
+        end
+    end
+
+    return false
+end
+
+
+
+-- If you want to add them to HL (assuming HL is your framework):
+HL.AddCoreOverride("Player.DnDTicking", IsDnDTicking, 250)
+HL.AddCoreOverride("Player.BonestormTicking", IsBonestormTicking, 250)
