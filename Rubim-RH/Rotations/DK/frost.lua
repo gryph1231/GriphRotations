@@ -69,6 +69,7 @@ RubimRH.Spell[251] = {
      -- Interrupts
      MindFreeze                            = Spell(47528),
      -- Custom
+     Lichborne = Spell(49039),
 
 -- Talents
 DarkTalons                            = Spell(436687),
