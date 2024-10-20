@@ -69,7 +69,7 @@ RubimRH.Spell[251] = {
      -- Interrupts
      MindFreeze                            = Spell(47528),
      -- Custom
-     Lichborne = Spell(49039),
+     Lichborne = Spell(20549), -- war stomp
 
 -- Talents
 DarkTalons                            = Spell(436687),
@@ -192,9 +192,7 @@ local VarRimeBuffs, VarRPBuffs, VarCDCheck
 local VarOblitPoolingTime, VarBreathPoolingTime
 local VarPoolingRunes, VarPoolingRP
 local VarGAPriority, VarBreathDying
-local EnemiesMelee, EnemiesMeleeCount
-local BossFightRemains = 11111
-local FightRemains = 11111
+local EnemiesMeleeCount
 local GCDMax
 
 
@@ -243,12 +241,6 @@ local function SetWeaponVariables()
   end
   SetWeaponVariables()
 
---- ===== Event Registrations =====
-HL:RegisterForEvent(function()
-    BossFightRemains = 11111
-    FightRemains = 11111
-  end, "PLAYER_REGEN_ENABLED")
-
 
 
 
@@ -265,7 +257,7 @@ HL:RegisterForEvent(function()
 
 --- ===== Helper Functions =====
 local function DeathStrikeHeal()
-    return ((Player:HealthPercentage() < 55 or Player:HealthPercentage() < 55 and Player:BuffUp(S.DeathStrikeBuff)))
+    return ((Player:HealthPercentage() < 55 and Player:BuffUp(S.DeathStrikeBuff)))
   end
   
   --- ===== CastTargetIf Filter Functions =====
@@ -331,10 +323,10 @@ local function DeathStrikeHeal()
 --- ===== Rotation Functions =====
 local function Precombat()
     
-    if IsReady("Howling Blast") and RangeCount(20)>=1 and Player:IsMoving() and C_Spell.IsCurrentSpell(6603) then
+    if IsReady("Howling Blast",1) and Player:IsMoving() and C_Spell.IsCurrentSpell(6603) then
       return S.HowlingBlast:Cast()
     end
-    if IsReady("Remorseless Winter") and RangeCount(20)>=1 and Player:IsMoving() and C_Spell.IsCurrentSpell(6603) then
+    if IsReady("Remorseless Winter") and RangeCount(10)>=1 and Player:IsMoving() and C_Spell.IsCurrentSpell(6603) then
         return S.RemorselessWinter:Cast()
     end
   end
@@ -499,24 +491,24 @@ local function Precombat()
     if IsReady("Breath of Sindragosa") and (Player:BuffDown(S.BreathofSindragosa) and Player:RunicPower() > VarBreathRPThreshold and (Player:Rune() < 2 or Player:RunicPower() > 80) and (S.PillarofFrost:CooldownUp() and VarSendingCDs or BossFightRemains < 30) or (HL.CombatTime() < 10 and Player:Rune() < 1)) then
         return S.BreathofSindragosa:Cast()
     end
-    -- frostwyrms_fury,if=hero_tree.rider_of_the_apocalypse&talent.apocalypse_now&variable.sending_cds&(!talent.breath_of_sindragosa&buff.pillar_of_frost.up|buff.breath_of_sindragosa.up)|fight_remains<20
-    if IsReady("Frostwyrm's Fury") and (Player:HeroTreeID() == 32 and S.ApocalypseNow:IsAvailable() and VarSendingCDs and (not S.BreathofSindragosa:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff) or Player:BuffUp(S.BreathofSindragosa)) or BossFightRemains < 30) then
-        return S.FrostwyrmsFury:Cast()
-    end
-    -- frostwyrms_fury,if=!talent.apocalypse_now&active_enemies=1&(talent.pillar_of_frost&buff.pillar_of_frost.up&!talent.obliteration|!talent.pillar_of_frost)&(!raid_event.adds.exists|(raid_event.adds.in>15+raid_event.adds.duration|talent.absolute_zero&raid_event.adds.in>15+raid_event.adds.duration))|fight_remains<3
-    if IsReady("Frostwyrm's Fury") and (not S.ApocalypseNow:IsAvailable() and EnemiesMeleeCount == 1 and (S.PillarofFrost:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff) and not S.Obliteration:IsAvailable() or not S.PillarofFrost:IsAvailable()) or BossFightRemains < 3) then
-        return S.FrostwyrmsFury:Cast()
-    end
-    -- frostwyrms_fury,if=!talent.apocalypse_now&active_enemies>=2&(talent.pillar_of_frost&buff.pillar_of_frost.up|raid_event.adds.exists&raid_event.adds.up&raid_event.adds.in<cooldown.pillar_of_frost.remains-raid_event.adds.in-raid_event.adds.duration)
-    if IsReady("Frostwyrm's Fury") and (not S.ApocalypseNow:IsAvailable() and EnemiesMeleeCount >= 2 and (S.PillarofFrost:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff))) then
-        return S.FrostwyrmsFury:Cast()
-    end
-    -- frostwyrms_fury,if=!talent.apocalypse_now&talent.obliteration&(talent.pillar_of_frost&buff.pillar_of_frost.up&!main_hand.2h|!buff.pillar_of_frost.up&main_hand.2h&cooldown.pillar_of_frost.remains|!talent.pillar_of_frost)&(buff.pillar_of_frost.remains<gcd|(buff.unholy_strength.up&buff.unholy_strength.remains<gcd)|(talent.bonegrinder.rank=2&buff.bonegrinder_frost.up&buff.bonegrinder_frost.remains<gcd))&(debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance|talent.shattering_blade)
-    if IsReady("Frostwyrm's Fury") and (not S.ApocalypseNow:IsAvailable() and S.Obliteration:IsAvailable() and (S.PillarofFrost:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff) and not Var2HCheck or Player:BuffDown(S.PillarofFrostBuff) and Var2HCheck and S.PillarofFrost:CooldownDown() or not S.PillarofFrost:IsAvailable()) and (Player:BuffRemains(S.PillarofFrostBuff) < Player:GCD() or (Player:BuffUp(S.UnholyStrengthBuff) and Player:BuffRemains(S.UnholyStrengthBuff) < Player:GCD()) or (S.Bonegrinder:TalentRank() == 2 and Player:BuffUp(S.BonegrinderFrostBuff) and Player:BuffRemains(S.BonegrinderFrostBuff) < Player:GCD())) and (Target:DebuffStack(S.RazoriceDebuff) == 5 or not UsingRazorice and not S.GlacialAdvance:IsAvailable() or S.ShatteringBlade:IsAvailable())) then
-        return S.FrostwyrmsFury:Cast()
-    end
+    -- -- frostwyrms_fury,if=hero_tree.rider_of_the_apocalypse&talent.apocalypse_now&variable.sending_cds&(!talent.breath_of_sindragosa&buff.pillar_of_frost.up|buff.breath_of_sindragosa.up)|fight_remains<20
+    -- if IsReady("Frostwyrm's Fury") and (Player:HeroTreeID() == 32 and S.ApocalypseNow:IsAvailable() and VarSendingCDs and (not S.BreathofSindragosa:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff) or Player:BuffUp(S.BreathofSindragosa)) or BossFightRemains < 30) then
+    --     return S.FrostwyrmsFury:Cast()
+    -- end
+    -- -- frostwyrms_fury,if=!talent.apocalypse_now&active_enemies=1&(talent.pillar_of_frost&buff.pillar_of_frost.up&!talent.obliteration|!talent.pillar_of_frost)&(!raid_event.adds.exists|(raid_event.adds.in>15+raid_event.adds.duration|talent.absolute_zero&raid_event.adds.in>15+raid_event.adds.duration))|fight_remains<3
+    -- if IsReady("Frostwyrm's Fury") and (not S.ApocalypseNow:IsAvailable() and EnemiesMeleeCount == 1 and (S.PillarofFrost:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff) and not S.Obliteration:IsAvailable() or not S.PillarofFrost:IsAvailable()) or BossFightRemains < 3) then
+    --     return S.FrostwyrmsFury:Cast()
+    -- end
+    -- -- frostwyrms_fury,if=!talent.apocalypse_now&active_enemies>=2&(talent.pillar_of_frost&buff.pillar_of_frost.up|raid_event.adds.exists&raid_event.adds.up&raid_event.adds.in<cooldown.pillar_of_frost.remains-raid_event.adds.in-raid_event.adds.duration)
+    -- if IsReady("Frostwyrm's Fury") and (not S.ApocalypseNow:IsAvailable() and EnemiesMeleeCount >= 2 and (S.PillarofFrost:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff))) then
+    --     return S.FrostwyrmsFury:Cast()
+    -- end
+    -- -- frostwyrms_fury,if=!talent.apocalypse_now&talent.obliteration&(talent.pillar_of_frost&buff.pillar_of_frost.up&!main_hand.2h|!buff.pillar_of_frost.up&main_hand.2h&cooldown.pillar_of_frost.remains|!talent.pillar_of_frost)&(buff.pillar_of_frost.remains<gcd|(buff.unholy_strength.up&buff.unholy_strength.remains<gcd)|(talent.bonegrinder.rank=2&buff.bonegrinder_frost.up&buff.bonegrinder_frost.remains<gcd))&(debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance|talent.shattering_blade)
+    -- if IsReady("Frostwyrm's Fury") and (not S.ApocalypseNow:IsAvailable() and S.Obliteration:IsAvailable() and (S.PillarofFrost:IsAvailable() and Player:BuffUp(S.PillarofFrostBuff) and not Var2HCheck or Player:BuffDown(S.PillarofFrostBuff) and Var2HCheck and S.PillarofFrost:CooldownDown() or not S.PillarofFrost:IsAvailable()) and (Player:BuffRemains(S.PillarofFrostBuff) < Player:GCD() or (Player:BuffUp(S.UnholyStrengthBuff) and Player:BuffRemains(S.UnholyStrengthBuff) < Player:GCD()) or (S.Bonegrinder:TalentRank() == 2 and Player:BuffUp(S.BonegrinderFrostBuff) and Player:BuffRemains(S.BonegrinderFrostBuff) < Player:GCD())) and (Target:DebuffStack(S.RazoriceDebuff) == 5 or not UsingRazorice and not S.GlacialAdvance:IsAvailable() or S.ShatteringBlade:IsAvailable())) then
+    --     return S.FrostwyrmsFury:Cast()
+    -- end
     -- raise_dead,use_off_gcd=1
-    if IsReady("Raise Dead") and GetUnitName("pet") == nil then
+    if IsReady("Raise Dead") and GetUnitName("pet") == nil and TargetinRange(30) and C_Spell.IsCurrentSpell(6603) then
       return S.RaiseDead:Cast()
     end
     -- soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_pct_0>5&active_enemies<=1&(talent.obliteration&(buff.pillar_of_frost.up&!buff.killing_machine.react&rune>2|!buff.pillar_of_frost.up|buff.killing_machine.react<2&!buff.exterminate.up&buff.pillar_of_frost.remains<gcd)|talent.breath_of_sindragosa&(buff.breath_of_sindragosa.up&runic_power>50|!buff.breath_of_sindragosa.up)|!talent.breath_of_sindragosa&!talent.obliteration)
@@ -757,6 +749,8 @@ local function Variables()
 
 local function APL()
 
+
+    
     local useIBF = not AuraUtil.FindAuraByName("Lichborne", "player")
     local useLB = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") 
 
@@ -777,9 +771,8 @@ local function APL()
         targetTTD = 8888
       end
  
-    EnemiesMelee = RangeCount(5)
     if RubimRH.AoEON() then
-      EnemiesMeleeCount = RangeCount(5)
+      EnemiesMeleeCount = RangeCount(8)
     else
       EnemiesMeleeCount = 1
     end
@@ -824,12 +817,12 @@ local function APL()
         return RubimRH.QueuedSpell():Cast()
         end
         
-        if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or (RangeCount(30) == 0 or not Target:Exists()) then
+        if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or RangeCount(30) == 0 or not Target:Exists() or S.FrostwyrmsFury:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffDown(S.PillarofFrostBuff)  then
           RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
           end
         
 
-          if RangeCount(20)>=1 then
+          if RangeCount(30)>=1 and Player:AffectingCombat() then
   --health pot -- will need to update item ID of HPs as expansions progress
   if  Player:HealthPercentage() <= 20 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
     return I.HPIcon:Cast()
@@ -841,7 +834,7 @@ local function APL()
     return S.AntiMagicShell:Cast()
     end
     
-    if IsReady("Anti-Magic Zone") and Player:HealthPercentage() < 40 then
+    if IsReady("Anti-Magic Zone") and Player:HealthPercentage() < 40 and not Player:IsMoving() then
         return S.AntiMagicZone:Cast()
         end
 
@@ -875,10 +868,10 @@ local function APL()
       -- auto_attack
 
         --- seasonal affix
-        if targetRange8 and TWWS1AffixMobsInRange()>=5 and IsReady("Blinding Light") and RubimRH.InterruptsON() then
+        if TargetinRange(8) and TWWS1AffixMobsInRange()>=5 and IsReady("Blinding Light") and RubimRH.InterruptsON() then
             return S.BlindingLight:Cast()
             end
-        if targetRange8 and TWWS1AffixMobsInRange()>=5 and IsReady("Arcane Torrent") and RubimRH.InterruptsON() then
+        if TargetinRange(8) and TWWS1AffixMobsInRange()>=5 and IsReady("Arcane Torrent") and RubimRH.InterruptsON() then
           return S.ArcaneTorrent:Cast()
           end
 
@@ -889,6 +882,7 @@ local function APL()
     --     local ShouldReturn = Trinkets(); if ShouldReturn then return ShouldReturn; end
     --   end
       -- call_action_list,name=high_prio_actions
+      if (Player:CanAttack(Target) or Target:AffectingCombat()) and not Target:IsDeadOrGhost() then
       local ShouldReturn = HighPrioActions(); if ShouldReturn then return ShouldReturn; end
       -- call_action_list,name=cooldowns
 
@@ -907,7 +901,7 @@ local function APL()
     --     local ShouldReturn = Racials(); if ShouldReturn then return ShouldReturn; end
     --   end
       -- call_action_list,name=cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&((debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance&!talent.avalanche&!talent.arctic_assault)|fight_remains<=gcd)
-      if S.ColdHeart:IsAvailable() and (Player:BuffDown(S.KillingMachineBuff) or S.BreathofSindragosa:IsAvailable()) and ((Target:DebuffStack(S.RazoriceDebuff) == 5 or not UsingRazorice and not S.GlacialAdvance:IsAvailable() and not S.Avalanche:IsAvailable() and not S.ArcticAssault:IsAvailable()) or BossFightRemains <= Player:GCD() + 0.5) then
+      if S.ColdHeart:IsAvailable() and (Player:BuffDown(S.KillingMachineBuff) or S.BreathofSindragosa:IsAvailable()) and ((Target:DebuffStack(S.RazoriceDebuff) == 5 or not UsingRazorice and not S.GlacialAdvance:IsAvailable() and not S.Avalanche:IsAvailable() and not S.ArcticAssault:IsAvailable()) or targetTTD <= Player:GCD() + 0.5) then
         local ShouldReturn = ColdHeart(); if ShouldReturn then return ShouldReturn; end
       end
       -- run_action_list,name=breath,if=buff.breath_of_sindragosa.up
@@ -929,6 +923,7 @@ local function APL()
       if EnemiesMeleeCount == 1 or not RubimRH.AoEON() then
         local ShouldReturn = SingleTarget(); if ShouldReturn then return ShouldReturn; end
       end
+    end
     --   -- nothing to cast, wait for resouces
     --   if HR.CastAnnotated(S.Pool, false, "WAIT") then return "Wait/Pool Resources"; end
     end

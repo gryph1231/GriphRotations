@@ -897,6 +897,7 @@ RubimRH.Spell[251] = {
   -- Interrupts
   MindFreeze                            = Spell(47528),
   -- Custom
+  Lichborne = Spell(20549), -- war stomp
 
 -- Talents
 DarkTalons                            = Spell(436687),
@@ -976,6 +977,7 @@ lust4    = Spell(95809),
 lust5    = Spell(264689),
 lustAT   = Spell(155145), -- war stomp
 autoattack = Spell(59752), -- will to survive (human racial)
+
   }
 
 RubimRH.Spell[73] = {
