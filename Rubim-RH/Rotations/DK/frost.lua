@@ -161,6 +161,7 @@ local S = RubimRH.Spell[251]
 if not Item.DeathKnight then Item.DeathKnight = {}; end
 
 Item.DeathKnight.Frost = {
+    HPIcon = Item(169451),
 
 
 };
@@ -755,6 +756,9 @@ local function Variables()
 
 local function APL()
 
+    local useIBF = not AuraUtil.FindAuraByName("Lichborne", "player")
+    local useLB = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") 
+
     local startTimeMS = select(4, UnitCastingInfo('target')) or 0
     local currentTimeMS = GetTime() * 1000
     local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
@@ -824,24 +828,35 @@ local function APL()
           end
         
 
+          if RangeCount(20)>=1 then
   --health pot -- will need to update item ID of HPs as expansions progress
   if  Player:HealthPercentage() <= 20 and not Player:BuffUp(S.DivineShield) and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
     return I.HPIcon:Cast()
     end
 
 
-  if IsReady("Death Pact") and Player:HealthPercentage() < 40 then
-    return S.DeathPact:Cast()
-    end
     
   if IsReady("Anti-Magic Shell") and Player:HealthPercentage() < 20 then
     return S.AntiMagicShell:Cast()
     end
+    
+    if IsReady("Anti-Magic Zone") and Player:HealthPercentage() < 40 then
+        return S.AntiMagicZone:Cast()
+        end
 
-  if IsReady("Icebound Fortitude") and Player:HealthPercentage() < 20 then
+    if IsReady("Death Pact") and Player:HealthPercentage() < 40 then
+        return S.DeathPact:Cast()
+        end
+
+  if IsReady("Icebound Fortitude") and Player:HealthPercentage() < 50 and useIBF then
     return S.IceboundFortitude:Cast()
     end
 
+    if IsReady("Lichborne") and Player:HealthPercentage() < 60 and useLB then
+        return S.Lichborne:Cast()
+        end
+
+    end
     if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and UnitExists("target") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
   -- kick on GCD
   if IsReady("Mind Freeze",1) and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and Player:GCDRemains()<0.5 then
