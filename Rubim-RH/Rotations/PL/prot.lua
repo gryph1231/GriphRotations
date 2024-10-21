@@ -235,7 +235,7 @@ local function HammerofLight()
     return S.EyeofTyr:Cast() 
     end
 
-    if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
+    if IsReady("Consecration") and GetRangeTimer()>1.5 and Player:BuffRemains(S.ConsecrationBuff)<2 then
       return S.Consecration:Cast()
       end
 
@@ -407,7 +407,6 @@ local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
 
 
-aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
 aoerangecheckeyeoftyr = (targetRange10 and not Player:IsMoving() or targetRange8 and Player:IsMoving())
 
 
@@ -511,7 +510,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
 
 
-  if IsReady("Blessing of Spellwarding") and spellwardingcast() then
+  if IsReady("Blessing of Spellwarding") and magicdefensives() then
     return S.BlessingofSpellwarding:Cast()
     end
 
@@ -773,7 +772,7 @@ end
   return S.EyeofTyr:Cast()
   end
 
-  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
+  if IsReady("Consecration") and GetRangeTimer()>1.5 and Player:BuffRemains(S.ConsecrationBuff)<2 then
     return S.Consecration:Cast()
     end
 
@@ -843,7 +842,7 @@ end
     return S.AvengersShield:Cast()
   end
   -- consecration,if=!consecration.up
-  if IsReady("Consecration") and (Player:BuffDown(S.ConsecrationBuff)) and aoerangecheck then
+  if IsReady("Consecration") and GetRangeTimer()>1.5 and (Player:BuffDown(S.ConsecrationBuff)) and aoerangecheck then
     return S.Consecration:Cast()
   end
   -- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
@@ -891,7 +890,7 @@ return S.WordofGlory:Cast()
 end
 
   -- consecration,if=!buff.sanctification_empower.up
-  if IsReady("Consecration") and Player:BuffDown(S.SanctificationEmpowerBuff) and aoerangecheck then
+  if IsReady("Consecration") and GetRangeTimer()>1.5 and Player:BuffDown(S.SanctificationEmpowerBuff) then
 return S.Consecration:Cast()
 end
 

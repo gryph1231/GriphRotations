@@ -592,7 +592,7 @@ end
 
 
 
-function spellwardingcast()
+function magicdefensives()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {"Terrifying Roar","Cosmic Singularity" ,"Obsidian Beam" ,"Repulsive Visage" ,"Process of Elimination",
@@ -772,7 +772,7 @@ function mitigateboss()
 "Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Obsidian Beam",	
 "Terrifying Slam",	"Seismic Smash", "Slam",
 	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Shadowflame Bolt",	
-    "Crush", "Mutilate",
+    "Crush", "Mutilate", 
 
             }
             local unitID = "nameplate" .. id

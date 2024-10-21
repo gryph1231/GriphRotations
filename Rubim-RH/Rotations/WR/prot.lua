@@ -139,8 +139,67 @@ local function bool(val)
 	return val ~= 0
 end
 
+local function GetCastPercentage(unit)
+    local castingInfo = select(4, UnitCastingInfo(unit))
+    local channelingInfo = select(4, UnitChannelInfo(unit))
+    
+    if castingInfo then
+        local startTime, endTime = castingInfo, select(5, UnitCastingInfo(unit))
+        local currentTime = GetTime() * 1000
+        return math.min(100, math.max(0, (currentTime - startTime) / (endTime - startTime) * 100))
+    elseif channelingInfo then
+        local startTime, endTime = channelingInfo, select(5, UnitChannelInfo(unit))
+        local currentTime = GetTime() * 1000
+        return math.min(100, math.max(0, (endTime - currentTime) / (endTime - startTime) * 100))
+    end
+    
+    return 0
+end
+
+local function SpellReflect()
+	-- Check for casts targeting the player
+	for i = 1, 40 do
+		local unitID = "nameplate" .. i
+		local unitIDtarget = unitID .. "target"
+		if UnitIsUnit("player", unitIDtarget) and GetCastPercentage(unitID) > 90 then
+			local spellName = select(1, UnitCastingInfo(unitID))
+			local dangerousCasts = {
+				"Terrifying Slam", "Water Bolt", "Cursed Slash", "Brackish Bolt",
+				"Shadow Bolt", "Poison Bolt", "Void Bolt", "Acid Bolt", "Web Bolt",
+				"Umbral Weave", "Grimweave Blast", "Shadows of Doubt", "Shadowflame Bolt",
+				"Lava Fist", "Shadowflame Slash", "Corrupt", "Spirit Bolt",
+				"Acid Expulsion", "Decomposing Acid", "Soul Split", "Anima Slash",
+				"Anima Injection", "Volatile Acid", "Overgrowth", "Night Bolt",
+				"Frostbolt Volley", "Frozen Binds", "Frostbolt", "Necrotic Bolt",
+				"Spew Disease", "Molten Metal", "Stone Bolt", "Arcing Void",
+				"Alloy Bolt", "Censoring Gear", "Shadow Claw"
+			}
+			for _, dangerousCast in ipairs(dangerousCasts) do
+				if spellName == dangerousCast then
+					return true
+				end
+			end
+		end
+	end
+  
+	-- Check for dangerous debuffs on the player
+	local dangerousDebuffs = {
+		"Stalking Shadows", "Splice", "Void Rush", "Twilight Flames",
+		"Debilitating Poison", "Putrid Waters", "Stygian Seed",
+		"Abyssal Blast", "Noxious Fog", "Disease Cloud",
+		"Clinging Darkness", "Shadow Well"
+	}
+	for _, debuff in ipairs(dangerousDebuffs) do
+		if AuraUtil.FindAuraByName(debuff, "player", "HARMFUL") then
+			return true
+		end
+	end
+  
+	return false
+  end
+
 local function Rotation()
-	if IsReady("Ravager") and RubimRH.CDsON() and TargetinRange(5) and RangeCount(8) >= 1 and aoecds8y == true and HL.CombatTime() > 2 then
+	if IsReady("Ravager") and RubimRH.CDsON() and TargetinRange(5) and RangeCount(8) >= 1 and GetRangeTimer()>1.5 and HL.CombatTime() > 2 then
 		return S.Ravager:Cast()
 	end
 
@@ -156,7 +215,7 @@ local function Rotation()
 		return S.IgnorePain:Cast()
 	end
 
-	if IsReady(376079) and RubimRH.CDsON() and TargetinRange(5) then
+	if IsReady(376079) and RubimRH.CDsON() and TargetinRange(5) and S.ChampionsSpear:IsAvailable() then
 		return S.ChampionsSpear:Cast()
 	end
 
@@ -208,14 +267,26 @@ or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName(
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end
 
-validmobsinrange8y = combatmobs40() * .7
-validmobsinrange30y = combatmobs40() * .7
 
-if RangeCount(8) > validmobsinrange8y and combatmobs40() > 0 then
-	aoecds8y = true
-else
-	aoecds8y = false
-end
+local castchannelTime = math.random(250, 500) / 1000
+
+local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+
+local currentTimeMS = GetTime() * 1000
+
+local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+
+castTime = elapsedTimeca / 1000
+
+local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+
+local currentTimeMS = GetTime() * 1000
+
+local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+
+channelTime = elapsedTimech/1000
+
+--tankBuster = select(1, UnitCastingInfo("target")) == "Obsidian Beam" or select(1, UnitCastingInfo("target")) == "Terrifying Slam"
 
 HPpercentloss = GetHealthLossPerSecond()
 
@@ -248,20 +319,38 @@ end
 -------------------------------------------------------------Interrupts---------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if RubimRH.InterruptsON() then
-	if S.Pummel:IsReady() and not isEnraged and targetRange8 and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false then
+	if IsReady("Pummel") and TargetinRange(8) and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false then
 		return S.Pummel:Cast()
 	end
 end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Defensives/Cooldowns-----------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if Player:AffectingCombat() and RangeCount(8) >= 1 and not Player:InArena() and not Player:InBattlegrounds() then
-	if IsReady("Shield Wall") and Player:HealthPercentage() < 37 then
+if RubimRH.InterruptsON() then
+	if IsReady("Spell Reflection") and SpellReflect() then
+		return S.SpellReflection:Cast()
+	end
+
+	if IsReady("Defensive Stance") and (Player:HealthPercentage() < 75 or select(1, UnitCastingInfo("target")) == "Obsidian Beam" or select(1, UnitCastingInfo("target")) == "Seismic Smash") and not Player:BuffUp(S.DefensiveStance) then
+		return S.DefensiveStance:Cast()
+	end
+	
+	if IsReady("Battle Stance") and (Player:HealthPercentage() >= 75 and select(1, UnitCastingInfo("target")) ~= "Obsidian Beam" and select(1, UnitCastingInfo("target")) ~= "Seismic Smash") and not Player:BuffUp(S.BattleStance) then
+		return S.BattleStance:Cast()
+	end
+end
+
+if Player:AffectingCombat() and RangeCount(8) >= 1 and not Player:InArena() and not Player:InBattlegrounds() and RubimRH.InterruptsON() then
+	if IsReady("Shield Wall") and not Player:BuffUp(S.ShieldWallBuff) and ((Player:HealthPercentage() < 50 or (Player:HealthPercentage() < 70 and S.ShieldWall:ChargesFractional() >= 1.75) or select(1, UnitCastingInfo("target")) == "Obsidian Beam" or select(1, UnitCastingInfo("target")) == "Terrifying Slam") or select(1, UnitCastingInfo("target")) == "Seismic Smash") then
 		return S.ShieldWall:Cast()
 	end	
-	
-	if IsReady("Last Stand") and Player:HealthPercentage() < 32 then
+
+	if IsReady("Last Stand") and (Player:HealthPercentage() < 35 or ((select(1, UnitCastingInfo("target")) == "Obsidian Beam" or select(1, UnitCastingInfo("target")) == "Seismic Smash" or select(1, UnitCastingInfo("target")) == "Terrifying Slam") and not Player:BuffUp(S.ShieldWallBuff) and not Player:BuffUp(S.SpellReflection))) then
 		return S.LastStand:Cast()
+	end	
+
+	if IsReady("Impending Victory") and Player:HealthPercentage() < 45 and TargetinRange(5) then
+		return S.ImpendingVictory:Cast()
 	end	
 	
 	if Player:HealthPercentage() < 25 

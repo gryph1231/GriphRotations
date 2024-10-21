@@ -251,39 +251,6 @@ local function DRWBPTicking()
   
 
 
-  local function Defensives()
-    -- Rune Tap Emergency
-    if IsReady("Rune Tap") and TargetinRange(10) and IsTanking and Player:HealthPercentage() <= 60 and Player:Rune() >= 3 and S.RuneTap:Charges() >= 1 and Player:BuffDown(S.RuneTapBuff) then
-        return S.RuneTap:Cast()
-    end
-    -- Active Mitigation
-    if Player:ActiveMitigationNeeded() and S.Marrowrend:TimeSinceLastCast() > 2.5 and S.DeathStrike:TimeSinceLastCast() > 2.5 then
-      if IsReady("Death Strike") and TargetinRange(8) and Player:BuffStack(S.BoneShieldBuff) > 7 then
-        return S.DeathStrike:Cast()
-    end
-      if IsReady("Marrowrend") and TargetinRange(10) then
-        return S.Marrowrend:Cast()
-    end
-      if IsReady("Death Strike") and TargetinRange(8) then
-        return S.DeathStrike:Cast()
-    end
-    end
-    -- Icebound Fortitude
-    if IsReady("Icebound Fortitude") and TargetinRange(15) and IsTanking and Player:HealthPercentage() <= 50 and Player:BuffDown(S.DancingRuneWeaponBuff) and Player:BuffDown(S.VampiricBloodBuff) then
-        return S.IceboundFortitude:Cast()
-    end
-    -- Vampiric Blood
-    if IsReady("Vampiric Blood") and TargetinRange(15) and IsTanking and Player:HealthPercentage() <= 60 and Player:BuffDown(S.DancingRuneWeaponBuff) and Player:BuffDown(S.IceboundFortitudeBuff) and Player:BuffDown(S.VampiricBloodBuff) then
-        return S.VampiricBlood:Cast()
-    end
-    -- Death Strike Healing
-    -- Note: If under 50% health (or 70% health, if RP is above VarDeathStrikeDumpAmt).
-    if IsReady("Death Strike") and TargetinRange(8) and Player:HealthPercentage() <= 50 + (Player:RunicPower() > VarDeathStrikeDumpAmt and 20 or 0) and not Player:HealingAbsorbed() then
-    return S.DeathStrike:Cast()
-    end
-  end
-  
-
 
   local function Deathbringer()
     -- variable,name=death_strike_dump_amount,value=35
@@ -535,12 +502,23 @@ local function DRWBPTicking()
 
 --- ===== APL Main =====
 local function APL()
+    TrackHealthLossPerSecond()
+    local inInstance, instanceType = IsInInstance()
+
+    local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
+    local highkey = 2
+    
 local dndActive = IsDnDTicking()
 local bonestormActive = IsBonestormTicking()
 
 
-    local useIBF = not AuraUtil.FindAuraByName("Lichborne", "player")
-    local useLB = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") 
+local useAMS = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Anti-Magic Zone", "player") and not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Tombstone", "player") and not AuraUtil.FindAuraByName("Rune Tap", "player")
+local useAMZ = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Anti-Magic Shell", "player") and not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Tombstone", "player") and not AuraUtil.FindAuraByName("Rune Tap", "player")
+local useIBF = not AuraUtil.FindAuraByName("Lichborne", "player") and not AuraUtil.FindAuraByName("Anti-Magic Zone", "player") and not AuraUtil.FindAuraByName("Anti-Magic Shell", "player") and not AuraUtil.FindAuraByName("Tombstone", "player") and not AuraUtil.FindAuraByName("Rune Tap", "player")
+local useLB = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Anti-Magic Zone", "player") and not AuraUtil.FindAuraByName("Anti-Magic Shell", "player") and not AuraUtil.FindAuraByName("Tombstone", "player") and not AuraUtil.FindAuraByName("Rune Tap", "player")
+local useTS = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Anti-Magic Zone", "player") and not AuraUtil.FindAuraByName("Anti-Magic Shell", "player") and not AuraUtil.FindAuraByName("Rune Tap", "player") and not AuraUtil.FindAuraByName("Lichborne", "player")
+local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and not AuraUtil.FindAuraByName("Anti-Magic Zone", "player") and not AuraUtil.FindAuraByName("Anti-Magic Shell", "player") and not AuraUtil.FindAuraByName("Tombstone", "player") and not AuraUtil.FindAuraByName("Lichborne", "player")
+
 
     local startTimeMS = select(4, UnitCastingInfo('target')) or 0
     local currentTimeMS = GetTime() * 1000
@@ -550,14 +528,48 @@ local bonestormActive = IsBonestormTicking()
     local currentTimeMS = GetTime() * 1000
     local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
     local channelTime = elapsedTimech / 1000
-    -- S.FrostFeverDebuff:RegisterAuraTracking()
-    -- S.MarkofFyralathDebuff:RegisterAuraTracking()
-    -- print(GetUnitName("pet"))
+
     if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
         targetTTD = UnitHealth('target')/getCurrentDPS()
       else 
         targetTTD = 8888
       end
+
+
+
+      local Boss = {
+        "Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	
+        "Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"General Umbriss",	"Drahga Shadowburner",	
+        "Erudax, the Duke of Below", "Ki'katal the Harvester", "Forgemaster Throngus", "Viq'Goth",
+        
+        
+        }
+        
+        
+        local spellname, _, _, _, _, _, _, _, _ = UnitCastingInfo("target")
+        if spellname == "Icy Shard" and IsEncounterInProgress("Nalthor the Rimebinder") and Player:HealthPercentage()<70 and level>=highkey then
+          mitigateNWBoss = true
+        else
+          mitigateNWBoss = false
+        end
+        
+        
+        if (IsEncounterInProgress(Boss) or IsEncounterInProgress("Void Speaker Eirich")) and (spellname == "Lava Fist" or spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption" or spellname =="Shadowflame Slash") then
+          MagicTankBuster = true
+        else
+          MagicTankBuster = false
+        end
+        
+        if select(1,UnitChannelInfo('target')) == "Molten Flurry" and IsEncounterInProgress("Forgemaster Throngus") then
+          mitigateGBBoss = true
+        else
+          mitigateGBBoss = false
+        end
+        
+        
+        
+        HPpercentloss = GetHealthLossPerSecond()
+
 
 
       if Player:IsCasting() or Player:IsChanneling() then
@@ -603,35 +615,159 @@ local bonestormActive = IsBonestormTicking()
     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
     end
     
-    if S.DeathCharge:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Death Charge", "player") then
-        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-        end
 
     if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
         return RubimRH.QueuedSpell():Cast()
         end
         
-        if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or RangeCount(30) == 0 or not Target:Exists() or S.FrostwyrmsFury:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffDown(S.PillarofFrostBuff)  then
+        if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or RangeCount(30) == 0 or not Target:Exists() or S.FrostwyrmsFury:ID() == RubimRH.queuedSpell[1]:ID() and Player:BuffDown(S.PillarofFrostBuff) 
+        or S.DeathCharge:ID() == RubimRH.queuedSpell[1]:ID() and (AuraUtil.FindAuraByName("Death Charge", "player") or not S.DeathCharge:IsAvailable()) then
           RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
           end
         
-    if Player:AffectingCombat() then
       -- call precombat
       if not Player:AffectingCombat() then
         local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
       end
 
-      if RangeCount(30)>=1 and Player:AffectingCombat() then
+      if Player:AffectingCombat() and RangeCount(20)>=1 then
+
+
         --health pot -- will need to update item ID of HPs as expansions progress
-        if  Player:HealthPercentage() <= 20 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
-          return I.HPIcon:Cast()
-          end
+        if Player:HealthPercentage() <= 20 and (not S.DeathPact:IsAvailable() or S.DeathPact:CooldownDown()) and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+        return I.HPIcon:Cast()
         end
+        
+        --abnout to die need heals or immunity
+        if IsReady("Icebound Fortitude") and Player:HealthPercentage() < 20 then
+        return S.IceboundFortitude:Cast()
+        end
+        
+        if IsReady("Death Pact") and Player:HealthPercentage() < 20 then
+        return S.DeathPact:Cast()
+        end
+
+        if IsReady("Anti-Magic Shell") and magicdefensives() and useAMS then
+            return S.AntiMagicShell:Cast()
+            end
+
+          if IsReady("Anti-Magic Zone") and magicdefensives() and useAMZ then
+            return S.AntiMagicZone:Cast()
+            end
+
+    
+
+        
+        if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
+        
+        if IsReady("Icebound Fortitude") and useIBF then
+        return S.IceboundFortitude:Cast()
+        end
+      
+          
+        if IsReady("Tombstone") and useTS then
+          return S.Tombstone:Cast()
+          end
+                  
+        if IsReady("Lichborne") and useLB then
+            return S.Lichborne:Cast()
+            end
+
+            if IsReady("Rune Tap") and useRT then
+                return S.RuneTap:Cast()
+                end
+
+ 
+                if IsReady("Anti-Magic Shell") and magicdefensives() and useAMS and MagicTankBuster then
+                    return S.AntiMagicShell:Cast()
+                    end
+        
+                  if IsReady("Anti-Magic Zone") and magicdefensives() and useAMZ and MagicTankBuster then
+                    return S.AntiMagicZone:Cast()
+                    end
+
+             
+        end
+
+        
+        --actively use defensives if not on a boss with tank busters or if key is low -- basically want to make sure defensives are being used 
+        --during boss encounters with tank busters and low key if health is dropping (probably some chaos pulling going on in to the boss in this scenario) 
+        if not IsEncounterInProgress(Boss) or level<highkey then
+      
+
+
+            if IsReady("Icebound Fortitude") and useIBF 
+            and (HPpercentloss > 12
+            and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
+            then
+                return S.IceboundFortitude:Cast()
+                end
+              
+                  
+                if IsReady("Tombstone") and useTS 
+                and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55)
+                then
+                  return S.Tombstone:Cast()
+                  end
+                          
+                if IsReady("Lichborne") and useLB
+                and (HPpercentloss > 12
+                and Player:HealthPercentage() < 60 or Player:HealthPercentage() < 45)
+                then
+                    return S.Lichborne:Cast()
+                    end
+        
+                    if IsReady("Rune Tap") and useRT
+                    
+                    and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55)
+                    then
+                        return S.RuneTap:Cast()
+                        end
+        
+         
+                        if IsReady("Anti-Magic Shell") and magicdefensives() and useAMS and MagicTankBuster then
+                            return S.AntiMagicShell:Cast()
+                            end
+                
+                          if IsReady("Anti-Magic Zone") and magicdefensives() and useAMZ and MagicTankBuster then
+                            return S.AntiMagicZone:Cast()
+                            end
+        end
+
 
       -- Defensives
       if IsTanking then
-        local ShouldReturn = Defensives(); if ShouldReturn then return ShouldReturn; end
-      end
+
+        if IsReady("Rune Tap") and TargetinRange(10) and IsTanking and Player:HealthPercentage() <= 60 and Player:Rune() >= 3 and S.RuneTap:Charges() >= 1 and Player:BuffDown(S.RuneTapBuff) then
+            return S.RuneTap:Cast()
+        end
+        -- Active Mitigation
+        if Player:ActiveMitigationNeeded() and S.Marrowrend:TimeSinceLastCast() > 2.5 and S.DeathStrike:TimeSinceLastCast() > 2.5 then
+          if IsReady("Death Strike") and TargetinRange(8) and Player:BuffStack(S.BoneShieldBuff) > 7 then
+            return S.DeathStrike:Cast()
+        end
+          if IsReady("Marrowrend") and TargetinRange(10) then
+            return S.Marrowrend:Cast()
+        end
+          if IsReady("Death Strike") and TargetinRange(8) then
+            return S.DeathStrike:Cast()
+        end
+        end
+
+        -- Vampiric Blood
+        if IsReady("Vampiric Blood") and TargetinRange(15) and IsTanking and Player:HealthPercentage() <= 60 and Player:BuffDown(S.DancingRuneWeaponBuff) and Player:BuffDown(S.IceboundFortitudeBuff) and Player:BuffDown(S.VampiricBloodBuff) then
+            return S.VampiricBlood:Cast()
+        end
+        -- Death Strike Healing
+        -- Note: If under 50% health (or 70% health, if RP is above VarDeathStrikeDumpAmt).
+        if IsReady("Death Strike") and TargetinRange(8) and Player:HealthPercentage() <= 50 + (Player:RunicPower() > VarDeathStrikeDumpAmt and 20 or 0) and not Player:HealingAbsorbed() then
+        return S.DeathStrike:Cast()
+        end
+
+
+
+
+              end
       -- Interrupts
       if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and UnitExists("target") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
         -- kick on GCD
