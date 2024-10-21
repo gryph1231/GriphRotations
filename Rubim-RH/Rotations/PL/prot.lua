@@ -231,11 +231,11 @@ local function HammerofLight()
     end
   end
   -- eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheckeyeoftyr and not IsEncounterInProgress(Boss) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheck and not IsEncounterInProgress(Boss) then
     return S.EyeofTyr:Cast() 
     end
 
-    if IsReady("Consecration") and GetRangeTimer()>1.5 and Player:BuffRemains(S.ConsecrationBuff)<2 then
+    if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
       return S.Consecration:Cast()
       end
 
@@ -249,7 +249,7 @@ if NoIntercession then
   end
 
   -- eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheckeyeoftyr and not IsEncounterInProgress(Boss) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheck and not IsEncounterInProgress(Boss) then
     return S.EyeofTyr:Cast() 
     end
   --testing this
@@ -406,8 +406,8 @@ end
 local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
 
+aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
 
-aoerangecheckeyeoftyr = (targetRange10 and not Player:IsMoving() or targetRange8 and Player:IsMoving())
 
 
 
@@ -532,7 +532,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
   
 
-  if IsReady("Eye of Tyr") and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and aoerangecheckeyeoftyr and useEoT then
+  if IsReady("Eye of Tyr") and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and aoerangecheck and useEoT then
   return S.EyeofTyr:Cast()
   end
 
@@ -571,7 +571,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
   
 
-  if IsReady("Eye of Tyr")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and aoerangecheckeyeoftyr and useEoT and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55) then
+  if IsReady("Eye of Tyr")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and aoerangecheck and useEoT and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55) then
     return S.EyeofTyr:Cast()
     end
   end
@@ -662,7 +662,7 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (GetFocusTargetHealthPercentage()<60 or blessingofsacrificefocus()  or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
     return S.BlessingofSacrifice:Cast()
     end
-    if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<40 and (WordofGlorycast or Player:HolyPower()>=3) and HPpercentloss<10 and Player:HealthPercentage()>75 then
+    if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<60 and (WordofGlorycast or Player:HolyPower()>=3) and HPpercentloss<10 and Player:HealthPercentage()>75 then
     return S.WordofGloryFocus:Cast()
     end
     if IsReady("Cleanse Toxins") and RubimRH.InterruptsON() and not UnitIsDeadOrGhost("focus") and (AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") or GetAppropriateCureSpell("focus")=='Poison' or GetAppropriateCureSpell("focus")=='Disease') and Player:HealthPercentage()>80 then
@@ -772,7 +772,7 @@ end
   return S.EyeofTyr:Cast()
   end
 
-  if IsReady("Consecration") and GetRangeTimer()>1.5 and Player:BuffRemains(S.ConsecrationBuff)<2 then
+  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
     return S.Consecration:Cast()
     end
 
@@ -842,12 +842,12 @@ end
     return S.AvengersShield:Cast()
   end
   -- consecration,if=!consecration.up
-  if IsReady("Consecration") and GetRangeTimer()>1.5 and (Player:BuffDown(S.ConsecrationBuff)) and aoerangecheck then
+  if IsReady("Consecration") and aoerangecheck and (Player:BuffDown(S.ConsecrationBuff)) and aoerangecheck then
     return S.Consecration:Cast()
   end
   -- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and aoerangecheckeyeoftyr then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and aoerangecheck then
     return S.EyeofTyr:Cast()
   end
   -- holy_armaments,if=next_armament=holy_bulwark
@@ -881,7 +881,7 @@ end
   end
   -- eye_of_tyr,if=!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and not IsEncounterInProgress(Boss) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and (targetRange8 and not Player:IsMoving() or targetRange5 and  Player:IsMoving()) then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and not IsEncounterInProgress(Boss) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and aoerangecheck then
     return S.EyeofTyr:Cast()
   end
 
@@ -890,7 +890,7 @@ return S.WordofGlory:Cast()
 end
 
   -- consecration,if=!buff.sanctification_empower.up
-  if IsReady("Consecration") and GetRangeTimer()>1.5 and Player:BuffDown(S.SanctificationEmpowerBuff) then
+  if IsReady("Consecration") and aoerangecheck and Player:BuffDown(S.SanctificationEmpowerBuff) then
 return S.Consecration:Cast()
 end
 

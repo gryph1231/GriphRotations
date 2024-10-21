@@ -257,7 +257,47 @@ local function SetWeaponVariables()
   end, "PLAYER_EQUIPMENT_CHANGED", "SPELLS_CHANGED", "LEARNED_SPELL_IN_TAB")
 
 
-
+  local function AMSorAMZ()
+	-- Check for casts targeting the player
+	for i = 1, 40 do
+		local unitID = "nameplate" .. i
+		local unitIDtarget = unitID .. "target"
+		if UnitIsUnit("player", unitIDtarget) and GetCastPercentage(unitID) > 90 then
+			local spellName = select(1, UnitCastingInfo(unitID))
+			local dangerousCasts = {
+				"Terrifying Slam", "Water Bolt", "Cursed Slash", "Brackish Bolt",
+				"Shadow Bolt", "Poison Bolt", "Void Bolt", "Acid Bolt", "Web Bolt",
+				"Umbral Weave", "Grimweave Blast", "Shadows of Doubt", "Shadowflame Bolt",
+				"Lava Fist", "Shadowflame Slash", "Corrupt", "Spirit Bolt",
+				"Acid Expulsion", "Decomposing Acid", "Soul Split", "Anima Slash",
+				"Anima Injection", "Volatile Acid", "Overgrowth", "Night Bolt",
+				"Frostbolt Volley", "Frozen Binds", "Frostbolt", "Necrotic Bolt",
+				"Spew Disease", "Molten Metal", "Stone Bolt", "Arcing Void",
+				"Alloy Bolt", "Censoring Gear", "Shadow Claw"
+			}
+			for _, dangerousCast in ipairs(dangerousCasts) do
+				if spellName == dangerousCast then
+					return true
+				end
+			end
+		end
+	end
+  
+	-- Check for dangerous debuffs on the player
+	local dangerousDebuffs = {
+		"Stalking Shadows", "Splice", "Void Rush", "Twilight Flames",
+		"Debilitating Poison", "Putrid Waters", "Stygian Seed",
+		"Abyssal Blast", "Noxious Fog", "Disease Cloud",
+		"Clinging Darkness", "Shadow Well"
+	}
+	for _, debuff in ipairs(dangerousDebuffs) do
+		if AuraUtil.FindAuraByName(debuff, "player", "HARMFUL") then
+			return true
+		end
+	end
+  
+	return false
+  end
 
 --- ===== Helper Functions =====
 local function DeathStrikeHeal()
@@ -452,9 +492,9 @@ local function Precombat()
     -- abomination_limb,if=talent.obliteration&!buff.pillar_of_frost.up&variable.sending_cds|fight_remains<15
     -- abomination_limb,if=!talent.obliteration&variable.sending_cds
     -- Note: Combined the lines.
-    if S.AbominationLimb:IsCastable() and (not UnitInParty("player") and not UnitInRaid("player") or Target:IsAPlayer()) and RubimRH.CDsON() and TargetinRange(10) and ((S.Obliteration:IsAvailable() and Player:BuffDown(S.PillarofFrostBuff) and VarSendingCDs or BossFightRemains < 15) or (not S.Obliteration:IsAvailable() and VarSendingCDs)) then
-        return S.AbominationLimb:Cast()
-    end
+    -- if S.AbominationLimb:IsCastable() and (not UnitInParty("player") and not UnitInRaid("player") or Target:IsAPlayer()) and RubimRH.CDsON() and TargetinRange(10) and ((S.Obliteration:IsAvailable() and Player:BuffDown(S.PillarofFrostBuff) and VarSendingCDs or BossFightRemains < 15) or (not S.Obliteration:IsAvailable() and VarSendingCDs)) then
+    --     return S.AbominationLimb:Cast()
+    -- end
     -- remorseless_winter,if=variable.rw_buffs&variable.sending_cds&(!talent.arctic_assault|!buff.pillar_of_frost.up)&fight_remains>10
     if IsReady("Remorseless Winter")  and TargetinRange(10) and (VarRWBuffs and VarSendingCDs and (not S.ArcticAssault:IsAvailable() or Player:BuffDown(S.PillarofFrostBuff)) and FightRemains > 10) then
         return S.RemorselessWinter:Cast()
@@ -839,11 +879,11 @@ local function APL()
 
 
     
-  if IsReady("Anti-Magic Shell") and Player:HealthPercentage() < 20 then
+  if IsReady("Anti-Magic Shell") and (Player:HealthPercentage() < 20 or AMSorAMZ()) then
     return S.AntiMagicShell:Cast()
     end
     
-    if IsReady("Anti-Magic Zone") and Player:HealthPercentage() < 40 and not Player:IsMoving() then
+    if IsReady("Anti-Magic Zone") and (Player:HealthPercentage() < 40 and not Player:IsMoving() or AMSorAMZ()) then
         return S.AntiMagicZone:Cast()
         end
 
