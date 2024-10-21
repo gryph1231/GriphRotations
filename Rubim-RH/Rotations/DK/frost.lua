@@ -179,7 +179,10 @@ local function num(val)
     end
 end
 
-
+    
+local function bool(val)
+    return val ~= 0
+end
 
 --- ===== Rotation Variables =====
 local VarPillarCD = (S.Icecap:IsAvailable()) and 45 or 60
