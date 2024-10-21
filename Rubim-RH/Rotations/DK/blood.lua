@@ -547,7 +547,7 @@ local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and no
         
         
         local spellname, _, _, _, _, _, _, _, _ = UnitCastingInfo("target")
-        if spellname == "Icy Shard" and IsEncounterInProgress("Nalthor the Rimebinder") and Player:HealthPercentage()<70 and level>=highkey then
+        if spellname == "Icy Shard" and IsEncounterInProgress("Nalthor the Rimebinder") and Player:HealthPercentage()<80 and level>=highkey then
           mitigateNWBoss = true
         else
           mitigateNWBoss = false
@@ -630,7 +630,7 @@ local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and no
         local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
       end
 
-      if Player:AffectingCombat() and RangeCount(20)>=1 then
+      if Player:AffectingCombat() and RangeCount(20)>=1 then 
 
 
         --health pot -- will need to update item ID of HPs as expansions progress
@@ -736,7 +736,6 @@ local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and no
 
 
       -- Defensives
-      if IsTanking then
 
         if IsReady("Rune Tap") and TargetinRange(10) and IsTanking and Player:HealthPercentage() <= 60 and Player:Rune() >= 3 and S.RuneTap:Charges() >= 1 and Player:BuffDown(S.RuneTapBuff) then
             return S.RuneTap:Cast()
@@ -765,9 +764,9 @@ local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and no
         end
 
 
+    
 
-
-              end
+              
       -- Interrupts
       if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() and UnitExists("target") and Player:CanAttack(Target) and not Target:IsDeadOrGhost() then
         -- kick on GCD
@@ -775,10 +774,10 @@ local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and no
           return S.MindFreeze:Cast()
           end
       
-      
+        end
           end
 
-
+        
         
 
 
@@ -806,11 +805,13 @@ local useRT = not AuraUtil.FindAuraByName("Icebound Fortitude", "player") and no
       -- run_action_list,name=sanlayn,if=hero_tree.sanlayn
       if Player:HeroTreeID() == 31 then
         local ShouldReturn = Sanlayn(); if ShouldReturn then return ShouldReturn; end
-        return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"      end
-    end
+        return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga" 
+        end
+    
   
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
     end
+
     
     RubimRH.Rotation.SetAPL(250, APL);
     
