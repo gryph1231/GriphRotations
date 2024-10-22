@@ -226,12 +226,12 @@ end
 local function HammerofLight()
   if NoIntercession then
   -- hammer_of_light,if=(buff.blessing_of_dawn.stack>0|!talent.of_dusk_and_dawn.enabled)|spell_targets.shield_of_the_righteous>=5
-  if IsReady(427453,1) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable() or inRange10 >= 5) then
+  if IsReady(427453,1) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable() or inRange10 >= 5)  then
     return S.EyeofTyr:Cast() 
     end
   end
   -- eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheck and not IsEncounterInProgress(Boss) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheck and (not IsEncounterInProgress(Boss) or level<highkey) then
     return S.EyeofTyr:Cast() 
     end
 
@@ -249,7 +249,7 @@ if NoIntercession then
   end
 
   -- eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheck and not IsEncounterInProgress(Boss) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheck and (not IsEncounterInProgress(Boss) or level<highkey) then
     return S.EyeofTyr:Cast() 
     end
   --testing this
@@ -510,36 +510,39 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
 
 
-  if IsReady("Blessing of Spellwarding") and magicdefensives() then
+  if IsReady("Blessing of Spellwarding") and magicdefensives() and useBoSW then
     return S.BlessingofSpellwarding:Cast()
     end
 
   
   if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
   
-  if IsReady("Guardian of Ancient Kings") and S.ArdentDefender:TimeSinceLastCast() > 0.5 and useGoAK then
+
+    if IsReady("Blessing of Spellwarding") and useBoSW and MagicTankBuster then
+      return S.BlessingofSpellwarding:Cast()
+      end
+
+  if IsReady("Guardian of Ancient Kings") and useGoAK  then
   return S.GuardianofAncientKings:Cast()
   end
 
     
-  if IsReady("Ardent Defender") and S.GuardianofAncientKings:CooldownDown() and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5 and useAD then
+  if IsReady("Ardent Defender")  and useAD then
     return S.ArdentDefender:Cast()
     end
     
   
-  if IsReady("Divine Shield") and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and S.FinalStand:IsAvailable() and useDS and S.ArdentDefender:TimeSinceLastCast() > 0.5 and S.GuardianofAncientKings:TimeSinceLastCast() > 0.5 then
+  if IsReady("Divine Shield")  and S.FinalStand:IsAvailable() and useDS then
   return S.DivineShield:Cast()
   end
   
 
-  if IsReady("Eye of Tyr") and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and aoerangecheck and useEoT then
+  if IsReady("Eye of Tyr")  and aoerangecheck and useEoT then
   return S.EyeofTyr:Cast()
   end
 
 
-  if IsReady("Blessing of Spellwarding") and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and useBoSW and MagicTankBuster then
-    return S.BlessingofSpellwarding:Cast()
-    end
+
   
   end
   
@@ -659,7 +662,7 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Blessing of Protection") and not UnitIsDeadOrGhost("focus")  and (GetFocusTargetHealthPercentage()<40 and inRange30>2 or AuraUtil.FindAuraByName("Morbid Fixation", "focus", "HARMFUL") and inRange30>=1) and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.BlessingofProtectionFocus:Cast()
     end
-    if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (GetFocusTargetHealthPercentage()<60 or blessingofsacrificefocus()  or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
+    if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (GetFocusTargetHealthPercentage()<40 or blessingofsacrificefocus()  or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
     return S.BlessingofSacrifice:Cast()
     end
     if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<60 and (WordofGlorycast or Player:HolyPower()>=3) and HPpercentloss<10 and Player:HealthPercentage()>75 then
@@ -765,16 +768,16 @@ end
   if S.LightsGuidance:IsAvailable() and (S.EyeofTyr:CooldownRemains() < 2 or S.HammerofLight:IsLearned()) and (not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) >= 2 or not S.BastionofLight:IsAvailable()) then
     local ShouldReturn = HammerofLight(); if ShouldReturn then return ShouldReturn; end
   end
-
+  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
+    return S.Consecration:Cast()
+    end
 
 
   if  IsReady(427453,1) and ((not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) == 3) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable())) then
   return S.EyeofTyr:Cast()
   end
 
-  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
-    return S.Consecration:Cast()
-    end
+
 
   -- shield_of_the_righteous,if=(((!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up)&!((buff.hammer_of_light_ready.up|buff.hammer_of_light_free.up))
   local RighteousProtectorICD = 999
@@ -791,7 +794,7 @@ end
 
 
   -- holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
-  if IsReady("Sacred Weapon") and (Player:BuffDown(S.SacredWeaponBuff) or (Player:BuffRemains(S.SacredWeaponBuff) < 6 and Player:BuffDown(S.AvengingWrathBuff) and S.AvengingWrath:CooldownRemains() <= 30)) then
+  if IsReady("Sacred Weapon") and targetRange15 and (Player:BuffDown(S.SacredWeaponBuff) or (Player:BuffRemains(S.SacredWeaponBuff) < 6 and Player:BuffDown(S.AvengingWrathBuff) and S.AvengingWrath:CooldownRemains() <= 30)) then
     return S.SacredWeapon:Cast()
   end
   -- judgment,target_if=min:debuff.judgment.remains,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
@@ -826,7 +829,7 @@ end
     return S.Judgment:Cast()
   end
   -- holy_armaments,if=next_armament=holy_bulwark&charges=2
-  if IsReady("Holy Bulwark") and (S.HolyBulwark:Charges() == 2) and targetRange10 then
+  if IsReady("Holy Bulwark") and (S.HolyBulwark:Charges() == 2) and targetRange15 then
     return S.HolyBulwark:Cast()
   end
   -- divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
@@ -851,7 +854,7 @@ end
     return S.EyeofTyr:Cast()
   end
   -- holy_armaments,if=next_armament=holy_bulwark
-  if IsReady("Holy Bulwark") and targetRange10 then
+  if IsReady("Holy Bulwark") and targetRange15 then
     return S.HolyBulwark:Cast()
   end
   -- blessed_hammer
@@ -881,7 +884,7 @@ end
   end
   -- eye_of_tyr,if=!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and not IsEncounterInProgress(Boss) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and aoerangecheck then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and aoerangecheck then
     return S.EyeofTyr:Cast()
   end
 

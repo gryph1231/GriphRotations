@@ -366,13 +366,13 @@ local function Finish_Condition()
   end
 
   -- # Ensure we want to cast Ambush prior to triggering a Stealth cooldown
-  local function Ambush_Condition ()
+  local function Ambush_Condition()
   -- actions+=/variable,name=ambush_condition,value=(talent.hidden_opportunity|combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up)&energy>=50
     return (S.HiddenOpportunity:IsAvailable() or ComboPointsDeficit >=2 + num(S.ImprovedAmbush:IsAvailable()) + num(Player:BuffUp(S.Broadside))) and Energy >= 50
   end
 
   -- Determine if we are allowed to use Vanish offensively in the current situation
-  local function Vanish_DPS_Condition ()
+  local function Vanish_DPS_Condition()
   -- You can vanish if we've set the UseDPSVanish setting, and we're either not tanking or we're solo but the DPS vanish while solo flag is set).
     return (not Player:IsTanking(Target) or Target:IsAPlayer() or IsInInstance())
 end
@@ -460,6 +460,12 @@ local function Finish()
 end
   
 local function StealthCDs()
+
+  if IsReady("Vanish") and Vanish_DPS_Condition() and S.AdrenalineRush:CooldownRemains()>45 and S.Vanish:Charges()==2 and Finish_Condition() then
+    -- if Cast(S.Vanish, Settings.CommonsOGCD.OffGCDasOffGCD.Vanish) then return "Cast Vanish #2" end
+      return S.Vanish:Cast()
+    end
+
   -- # Stealth Cooldowns Builds with Underhanded Upper Hand and Subterfuge (and Without a Trace for Crackshot) must use Vanish while Adrenaline Rush is active
   -- actions.stealth_cds+=/vanish,if=talent.underhanded_upper_hand&talent.subterfuge&
   -- (buff.adrenaline_rush.up|!talent.without_a_trace&talent.crackshot)&(variable.finish_condition|!talent.crackshot&(variable.ambush_condition|!talent.hidden_opportunity))
@@ -592,7 +598,7 @@ local function Build()
   end
 
   -- actions.build+=/ambush,if=talent.hidden_opportunity&buff.audacity.up
-  if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) and targetRange8 then
+  if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) and targetRange8  then
     return S.Ambush:Cast()
   end
 
@@ -672,7 +678,6 @@ else
 end
 
 
---  print(S.Vanish:CooldownRemains())
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -858,7 +863,7 @@ if Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Player:Affecting
 	end
 
 	-- actions+=/call_action_list,name=build
-	if Build() then
+	if Build() and not Finish_Condition() then
 		return Build()
 	end
 end

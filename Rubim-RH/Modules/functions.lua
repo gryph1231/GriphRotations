@@ -572,8 +572,7 @@ end
 function blessingofsacrificefocus()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = {"Putrid Waters", "Fiery Ricochet",
-
+            local spell = {"Putrid Waters", "Fiery Ricochet","Silenced Speaker" ,"Earth Shatterer","Smash Rock", "Ground Pound",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =

@@ -256,6 +256,22 @@ local function SetWeaponVariables()
     SetSpellVariables()
   end, "PLAYER_EQUIPMENT_CHANGED", "SPELLS_CHANGED", "LEARNED_SPELL_IN_TAB")
 
+  local function GetCastPercentage(unit)
+    local castingInfo = select(4, UnitCastingInfo(unit))
+    local channelingInfo = select(4, UnitChannelInfo(unit))
+    
+    if castingInfo then
+        local startTime, endTime = castingInfo, select(5, UnitCastingInfo(unit))
+        local currentTime = GetTime() * 1000
+        return math.min(100, math.max(0, (currentTime - startTime) / (endTime - startTime) * 100))
+    elseif channelingInfo then
+        local startTime, endTime = channelingInfo, select(5, UnitChannelInfo(unit))
+        local currentTime = GetTime() * 1000
+        return math.min(100, math.max(0, (endTime - currentTime) / (endTime - startTime) * 100))
+    end
+    
+    return 0
+end
 
   local function AMSorAMZ()
 	-- Check for casts targeting the player
@@ -939,7 +955,7 @@ local function APL()
       if RubimRH.CDsON() then
         local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end
 
-        if Player:BuffUp(S.EmpowerRuneWeaponBuff) then
+        if (Player:BuffUp(S.EmpowerRuneWeaponBuff) or Player:BuffUp(S.BreathofSindragosa) and Player:BuffUp(S.PillarofFrostBuff)) then
             local ShouldReturn = UseItems();
             if ShouldReturn then return ShouldReturn; end
           end
