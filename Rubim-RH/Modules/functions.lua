@@ -417,7 +417,7 @@ function IsReady(spell,range_check,aoe_check,queue,no_power_check)
         end
 
         --if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
-        if (usable or no_power_check) and enabled and (cooldown_remains < 0.5 or (queue and cooldown_remains < 1.5)) and spell ~= 1 then
+        if (usable or no_power_check) and enabled and (cooldown_remains < 0.5 or (queue and cooldown_remains < 1)) and spell ~= 1 then
             if range_check then
                 if in_range == true then 
                     return true
@@ -791,7 +791,7 @@ end
 function freedom()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = { "Grasping Slash","Silk Binding", }
+            local spell = { "Grasping Slash","Bursting Cocoon","Ground Pound","Bramble Burst", "Reaping Winds","Mass Tremor","Curse of Entropy", }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
             local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)

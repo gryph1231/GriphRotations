@@ -149,6 +149,7 @@ RuthlessPrecision      = Spell(193357),
 TrueBearing            = Spell(193359),
 Evasion                = Spell(5277),
 WoundPoison            = Spell(8679),
+Supercharger = Spell(470347),
 chronofaded            = Spell(404141),
 Crackshot              = Spell(423703),
 UnderhandedUpperhand   = Spell(424044),
@@ -337,7 +338,7 @@ local function RtB_Reroll()
     --variable,name=rtb_reroll,if=talent.loaded_dice,value=(rtb_buffs.will_lose<=buff.loaded_dice.up)|buff.loaded_dice.up&rtb_buffs.will_lose<3&(!rtb_buffs.will_lose.broadside|buff.broadside.remains<11)&(!rtb_buffs.will_lose.ruthless_precision|buff.ruthless_precision.remains<11)&(!rtb_buffs.will_lose.true_bearing|buff.true_bearing.remains<11)
     Cache.APLVar.RtB_Reroll = S.LoadedDice:IsAvailable() and Cache.APLVar.RtB_Buffs.Will_Lose.Total <= num(Player:BuffUp(S.LoadedDiceBuff)) or Player:BuffUp(S.LoadedDiceBuff) and Cache.APLVar.RtB_Buffs.Will_Lose.Total < 3 and (not checkBuffWillLose(S.Broadside) or Player:BuffRemains(S.Broadside) < 11) and (not checkBuffWillLose(S.RuthlessPrecision) or Player:BuffRemains(S.RuthlessPrecision) < 11) and (not checkBuffWillLose(S.TrueBearing) or Player:BuffRemains(S.TrueBearing) < 11)                                                                                                                         
     --variable,name=rtb_reroll,value=variable.rtb_reroll&rtb_buffs.longer=0|rtb_buffs.normal=0&rtb_buffs.longer>=1&buff.loaded_dice.up&(rtb_buffs<6&rtb_buffs.max_remains<39|talent.supercharger)
-    Cache.APLVar.RtB_Reroll = Cache.APLVar.RtB_Reroll and Cache.APLVar.RtB_Buffs.Longer == 0 or Cache.APLVar.RtB_Buffs.Normal == 0 and Cache.APLVar.RtB_Buffs.Longer >= 1 and Player:BuffUp(S.LoadedDiceBuff) and (RtB_Buffs() < 6 and Cache.APLVar.RtB_Buffs.MaxRemains <= 39 or S.supercharger:IsAvailable())
+    Cache.APLVar.RtB_Reroll = Cache.APLVar.RtB_Reroll and Cache.APLVar.RtB_Buffs.Longer == 0 or Cache.APLVar.RtB_Buffs.Normal == 0 and Cache.APLVar.RtB_Buffs.Longer >= 1 and Player:BuffUp(S.LoadedDiceBuff) and (RtB_Buffs() < 6 and Cache.APLVar.RtB_Buffs.MaxRemains <= 39 or S.Supercharger:IsAvailable())
   end
   return Cache.APLVar.RtB_Reroll
 end
@@ -381,15 +382,15 @@ local function Stealth()
       return S.Dispatch:Cast()
     end
     --pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
-    if IsReady("Pistol Shot") and C_Item.IsItemInRange(835, "target") and S.Crackshot:IsAvailable() and S.FantheHammer:TalentRank() >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:BuffUp(S.Broadside) and ComboPoints <= 1 or Player:BuffUp(S.GreenskinsWickersBuff)) then
+    if IsReady("Pistol Shot") and C_Item.IsItemInRange(835, "target") and S.Crackshot:IsAvailable() and S.FantheHammer:TalentRank() >= 2 and Player:BuffStack(S.Opportunity) >= 6 and (Player:BuffUp(S.Broadside) and ComboPoints <= 1 or Player:BuffUp(S.GreenskinsWickersBuff)) and not Finish_Condition() then
       return S.PistolShot:Cast()
     end
     --NOT PART of SimC Condition duplicated from build to Show SS Icon in stealth with audacity buff
-    if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) then
+    if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) and not Finish_Condition() then
       return S.SSAudacity:Cast()
     end
     --ambush,if=talent.hidden_opportunity
-    if IsReady("Ambush") and TargetinRange(5) and S.HiddenOpportunity:IsAvailable() then
+    if IsReady("Ambush") and TargetinRange(5) and S.HiddenOpportunity:IsAvailable() and not Finish_Condition() then
       return S.Ambush:Cast()
     end
   end
@@ -429,9 +430,9 @@ end
 
 local function StealthCDs()
 
--- if IsReady("Vanish") and Vanish_DPS_Condition() and S.AdrenalineRush:CooldownRemains()>45 and S.Vanish:Charges()==2 and Finish_Condition() then
---     return S.Vanish:Cast()
---   end
+if IsReady("Vanish") and Vanish_DPS_Condition() and S.AdrenalineRush:CooldownRemains()>45 and S.Vanish:Charges()==2 and Finish_Condition() then
+    return S.Vanish:Cast()
+  end
 
 ---+=+=+=+CHECK supercharge lines
 -- vanish,if=talent.underhanded_upper_hand&talent.subterfuge&talent.crackshot&buff.adrenaline_rush.up&variable.finish_condition&(!cooldown.between_the_eyes.ready&buff.ruthless_precision.up
@@ -765,6 +766,26 @@ if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.Feint:ID() == RubimRH.qu
     RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
+
+
+if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() then
+	if not TargetinRange(5) or not Player:CanAttack(Target) or not Player:StealthUp(true, true) then
+		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+	end
+end
+
+if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() then
+	if IsReady("Blade Flurry") and not Player:BuffUp(S.BladeFlurry) and RangeCount(5) >= 2 then
+		return S.BladeFlurry:Cast()
+	end	
+  if IsReady("Between the Eyes") and Finish_Condition() then
+		return S.BetweentheEyes:Cast()
+	end
+	if IsReady("Ambush") then
+		return S.Ambush:Cast()
+	end	
+end
+
 if not RubimRH.queuedSpell[1]:CooldownUp() or not RubimRH.queuedSpell[1]:IsAvailable() or not Player:AffectingCombat()
 or (S.KidneyShot:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind) or Target:DebuffUp(S.Gouge))) 
 or (S.Gouge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:DebuffUp(S.CheapShot) or Target:DebuffUp(S.KidneyShot) or Target:DebuffUp(S.Blind))) then
@@ -773,6 +794,7 @@ end
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
     return RubimRH.QueuedSpell():Cast()
 end
+
 
 
 if isTanking == true and IsReady("Evasion") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then

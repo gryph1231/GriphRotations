@@ -169,16 +169,9 @@ S.WakeofAshes.TextureSpellID = { 403695 }
 if not Item.Paladin then Item.Paladin = {} end
 
 Item.Paladin.Retribution = {
-    phialofserenity = Item(177278),
-    tempest = Item(171416),
+
     HPIcon = Item(169451),
-    tx1 = Item(118330),
-    tx2 = Item(114616),
-    healingpot = Item(187802),
-    healingpoticon = Item(169451),
-    healthstone = Item(5512), --health stone
-    drums = Item(193470),
-    legendary = Item(206448), --Fyrakk leggo
+
 };
 
 local I = Item.Paladin.Retribution;
@@ -520,7 +513,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --spell queue---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or RangeCount(30) == 0)
+if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or (not Player:AffectingCombat() or RangeCount(30) == 0) and S.DivineSteed:ID() ~= RubimRH.queuedSpell[1]:ID())
 or (S.FlashofLight:ID() == RubimRH.queuedSpell[1]:ID() and ((C_Spell.IsCurrentSpell(19750) or Player:IsMoving())))
 or (S.BlessingofProtection:ID() == RubimRH.queuedSpell[1]:ID() and Player:DebuffUp(S.Forbearance))
 or (S.HammerofJustice:ID() == RubimRH.queuedSpell[1]:ID() and (not IsReady("Hammer of Justice",nil,nil,1) or not TargetinRange(10)))

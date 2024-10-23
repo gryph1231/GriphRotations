@@ -178,6 +178,7 @@ BastionofLight = Spell(378974),
 local S = RubimRH.Spell[66];
 
 S.EyeofTyr.TextureSpellID = { 209202 }
+S.DivineToll.TextureSpellID = { 304971 }
 
 
 
@@ -188,17 +189,11 @@ if not Item.Paladin then
 Item.Paladin = {}
 end
 Item.Paladin.Protection = {
-trink = Item(178751, { 13, 14 }),
 
-bracer = Item(168978),
-rez = Item(158379),
-drums = Item(193470),
 HPIcon = Item(169451),
-tx1 = Item(118330),
-tx2 = Item(114616),
+
 };
 local I = Item.Paladin.Protection;
-
 
 
 
@@ -472,7 +467,10 @@ if S.Intercession:ID() == RubimRH.queuedSpell[1]:ID() and IsReady("Intercession"
 return S.intercession:Cast()
   end
 
-
+  if S.AvengersShield:ID() == RubimRH.queuedSpell[1]:ID() and (not IsReady("Avenger's Shield") or not Target:Exists() or not Player:CanAttack(Target) or Target:IsDeadOrGhost()) then
+    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+      end
+    
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 return RubimRH.QueuedSpell():Cast()
 end
@@ -672,10 +670,22 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     return S.CleanseToxinsFocus:Cast()
     end
 
-    if IsReady("Blessing of Freedom") and not UnitIsDeadOrGhost("focus") and (freedom() or Player:DebuffUp(S.Entangled) or AuraUtil.FindAuraByName("Time Sink", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL"))  then
+    if IsReady("Blessing of Freedom") and not UnitIsDeadOrGhost("focus") 
+    and (freedom() 
+    or Player:DebuffUp(S.Entangled) 
+    or AuraUtil.FindAuraByName("Containment Beam", "focus", "HARMFUL") 
+    or AuraUtil.FindAuraByName("Ensnaring Shadows", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Silk Binding", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Web Bolt", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Frostbolt", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Ambush", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Burning Shadows", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Molten Metal", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Stinging Assault", "focus", "HARMFUL")
+    or AuraUtil.FindAuraByName("Crushing Leap", "focus", "HARMFUL")
+  )  then
     return S.BlessingofFreedomfocus:Cast()
     end
-
     
     end
 
@@ -749,7 +759,7 @@ if RubimRH.CDsON() then
   end
 
   -- divine_toll,if=spell_targets.shield_of_the_righteous>=3
-  if  IsReady("Divine Toll") and inRange20 >= 3 and HL.CombatTime()>3 then
+  if  IsReady("Divine Toll") and inRange30 >= 3 and HL.CombatTime()>2 then
     return S.DivineToll:Cast()
   end
   -- bastion_of_light,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains<=30
