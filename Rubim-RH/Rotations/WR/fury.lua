@@ -401,11 +401,16 @@ local function Slayer_RA_MT()
     return S.Bladestorm:Cast()
   end
 
+
+
   -- whirlwind,if=buff.meat_cleaver.stack=0&talent.meat_cleaver
   if IsReady("Whirlwind")  and targetRange8 and (Player:BuffDown(S.MeatCleaverBuff) and S.MeatCleaver:IsAvailable()) then
     return S.Whirlwind:Cast()
   end
 
+  if IsReady("Rampage")  and targetRange8 and not IsReady("Execute")  then
+    return S.Rampage:Cast()
+  end
 
   -- execute,if=talent.ashen_juggernaut&buff.ashen_juggernaut.remains<=gcd&buff.enrage.up
   if IsReady("Execute")  and targetRange8 and (S.AshenJuggernaut:IsAvailable() and Player:BuffRemains(S.AshenJuggernautBuff) <= Player:GCD() and EnrageUp) then
