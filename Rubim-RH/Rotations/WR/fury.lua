@@ -397,7 +397,7 @@ local function SlayerMT()
   end
 
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and EnrageUp and S.Avatar:CooldownRemains() >= 9 and Player:BuffRemains(S.Enrage)>3 then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and EnrageUp and S.Avatar:CooldownRemains() >= 9 and Player:BuffRemains(S.EnrageBuff)>3 then
     return S.Bladestorm:Cast()
   end
 
