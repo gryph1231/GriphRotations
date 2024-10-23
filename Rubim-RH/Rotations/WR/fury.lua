@@ -265,7 +265,7 @@ local function SpellReflect()
 
 
 
-local function SlayerST()
+local function Slayer_RA_ST()
   -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
   if RubimRH.CDsON() and targetRange10 and IsReady("Recklessness") and (S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable() or not S.TitansTorment:IsAvailable()) then
   return S.Recklessness:Cast()
@@ -362,7 +362,7 @@ local function SlayerST()
 
 end
 
-local function SlayerMT()
+local function Slayer_RA_MT()
   
   -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
   if RubimRH.CDsON()  and targetRange10 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
@@ -421,6 +421,14 @@ local function SlayerMT()
   if IsReady("Onslaught")  and targetRange8 and (S.Tenderize:IsAvailable() or Player:BuffUp(S.BrutalFinishBuff)) then
     return S.Onslaught:Cast()
   end
+
+  
+  -- onslaught
+  if IsReady("Rampage")  and targetRange8 and not Player:BuffUp(S.EnrageBuff) then
+    return S.Rampage:Cast()
+  end
+
+
   -- bloodbath,if=buff.enrage.up
   if IsReady("Bloodbath")  and targetRange8 and RangeCount(10)>=6 then
     return S.Bloodbath:Cast()
@@ -715,8 +723,6 @@ local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
 
 HPpercentloss = GetHealthLossPerSecond()
 
-
-
 if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
@@ -855,12 +861,12 @@ end
  -- Note: For below lines, using <2 instead of =1 to avoid losing suggestions when moving slightly out of range.
  -- run_action_list,name=slayer_st,if=talent.slayers_dominance&active_enemies=1
  if (S.SlayersDominance:IsAvailable() or Player:Level() < 71) and (inRange10 < 2 or not RubimRH.AoEON()) then
-   local ShouldReturn = SlayerST(); if ShouldReturn then return ShouldReturn; end
+   local ShouldReturn = Slayer_RA_ST(); if ShouldReturn then return ShouldReturn; end
  end
 
  -- run_action_list,name=slayer_mt,if=talent.slayers_dominance&active_enemies>1 
  if (S.SlayersDominance:IsAvailable() or Player:Level() < 71) and RubimRH.AoEON() and inRange10 > 1 then
-   local ShouldReturn = SlayerMT(); if ShouldReturn then return ShouldReturn; end
+   local ShouldReturn = Slayer_RA_MT(); if ShouldReturn then return ShouldReturn; end
  end
 
  -- run_action_list,name=thane_st,if=talent.lightning_strikes&active_enemies=1
