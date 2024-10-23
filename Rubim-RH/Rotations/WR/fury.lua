@@ -364,6 +364,14 @@ end
 
 local function Slayer_RA_MT()
   
+
+----
+---
+---TEST TEST
+if IsReady("Whirlwind")  and targetRange8 and (Player:BuffDown(S.MeatCleaverBuff) and S.MeatCleaver:IsAvailable()) then
+  return S.Whirlwind:Cast()
+end
+
   -- recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
   if RubimRH.CDsON()  and targetRange10 and IsReady("Recklessness") and ((not S.AngerManagement:IsAvailable() and S.Avatar:CooldownRemains() < 1 and S.TitansTorment:IsAvailable()) or S.AngerManagement:IsAvailable() or not S.TitansTorment:IsAvailable()) then
     return S.Recklessness:Cast()
@@ -372,6 +380,7 @@ local function Slayer_RA_MT()
   if RubimRH.CDsON()  and targetRange10 and IsReady("Avatar") and ((S.TitansTorment:IsAvailable() and (EnrageUp or S.TitanicRage:IsAvailable()) and (Target:DebuffUp(S.ChampionsMightDebuff) or not S.ChampionsMight:IsAvailable())) or not S.TitansTorment:IsAvailable()) then
     return S.Avatar:Cast()
   end
+
 
   if IsReady("Rampage")  and targetRange8 and not EnrageUp and not S.TitansTorment:IsAvailable() then
     return S.Rampage:Cast()
@@ -403,10 +412,10 @@ local function Slayer_RA_MT()
 
 
 
-  -- whirlwind,if=buff.meat_cleaver.stack=0&talent.meat_cleaver
-  if IsReady("Whirlwind")  and targetRange8 and (Player:BuffDown(S.MeatCleaverBuff) and S.MeatCleaver:IsAvailable()) then
-    return S.Whirlwind:Cast()
-  end
+  -- -- whirlwind,if=buff.meat_cleaver.stack=0&talent.meat_cleaver
+  -- if IsReady("Whirlwind")  and targetRange8 and (Player:BuffDown(S.MeatCleaverBuff) and S.MeatCleaver:IsAvailable()) then
+  --   return S.Whirlwind:Cast()
+  -- end
 
   if IsReady("Rampage")  and targetRange8 and not IsReady("Execute")  then
     return S.Rampage:Cast()
