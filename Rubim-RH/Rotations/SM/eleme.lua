@@ -67,16 +67,16 @@ Purge = Spell(370),
 BloodFury                             = Spell(33697),
 Fireblood                             = Spell(265221),
 -- Abilities
-Skyfury = Spell(274738),--ancestral call
+Skyfury = Spell(462854),
 Bloodlust                             = MultiSpell(2825,32182), -- Bloodlust/Heroism
+WindRushTotem = Spell(192077),
 FlameShock                            = Spell(470411),
 FlametongueWeapon                     = Spell(318038),
 FrostShock                            = Spell(196840),
 AncestralGuidance = Spell(108281),
 HealingSurge                          = Spell(8004),
 LightningBolt                         = Spell(188196),
--- LightningShield                       = Spell(192106),
-ThunderstrikeWard = Spell(192106), -- lightning shield
+ThunderstrikeWard = Spell(462757), 
 -- Talents
 AstralShift                           = Spell(108271),
 CapacitorTotem                        = Spell(192058),
@@ -154,7 +154,7 @@ SplinteredElements                    = Spell(382042),
 StormElemental                        = Spell(192249),
 Stormkeeper                           = Spell(191634),
 SurgeofPower                          = Spell(262303),
-SwellingMaelstrom                     = Spell(384359),
+SwellingMaelstrom                     = Spell(381707),
 -- ThunderstrikeWard                     = Spell(462757),
 -- Buffs
 AscendanceBuff                        = Spell(114050),
@@ -215,8 +215,36 @@ return val ~= 0
 end
 
 
-local VarMaelstrom
-local VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
+
+
+HL:RegisterForEvent(function()
+  S.PrimordialWave:RegisterInFlightEffect(327162)
+  S.PrimordialWave:RegisterInFlight()
+  S.LavaBurst:RegisterInFlight()
+end, "LEARNED_SPELL_IN_TAB")
+S.PrimordialWave:RegisterInFlightEffect(327162)
+S.PrimordialWave:RegisterInFlight()
+S.LavaBurst:RegisterInFlight()
+
+
+
+local function combatmobs40()
+  local totalRange40 = 0
+
+  for id = 1, 15 do -- Keep this at 15 to limit the checks
+      local unitID = "nameplate" .. id
+      if UnitCanAttack("player", unitID) 
+          and C_Spell.IsSpellInRange("Lightning Bolt", unitID)
+          and UnitHealthMax(unitID) > 5 
+          and (UnitAffectingCombat(unitID) or string.sub(UnitName(unitID), -5) == "Dummy") then
+          totalRange40 = totalRange40 + 1
+      end
+  end
+
+  return totalRange40
+end
+
+
 
 
 if not loscheck then
@@ -269,6 +297,15 @@ local function FSTargets()
 
 local function aoe()
 
+
+  if combatmobs40()>0 then 
+    checktargets = combatmobs40()
+  elseif target_is_dummy() then
+    checktargets = inRange40
+  else
+    checktargets = 6
+  end
+
 if IsReady("Fire Elemental") and targetRange40 then
 return S.FireElemental:Cast()
 end
@@ -281,11 +318,7 @@ if IsReady("Stormkeeper") and cancastAll and targetRange40 then
 return S.Stormkeeper:Cast()
 end
 
-if GetMobsInCombat()>0 then 
-  checktargets = GetMobsInCombat()
-else
-  checktargets = 6
-end
+
 -- totemic_recall,if=cooldown.liquid_magma_totem.remains>15&(active_dot.flame_shock<(spell_targets.chain_lightning>?6)-2|talent.fire_elemental.enabled)
 -- Reset LMT CD as early as possible. Always for Fire, only if you can dot up 3 more targets for Lightning.
 if IsReady("Totemic Recall") and S.LiquidMagmaTotem:CooldownRemains()>15 and (FSTargets()<(checktargets)-2 or S.FireElemental:IsAvailable() and totemName1 == "Greater Fire Elemental Totem") then
@@ -296,7 +329,8 @@ if IsReady("Totemic Recall") and S.LiquidMagmaTotem:CooldownRemains()>15 and (FS
     end
     -- primordial_wave,target_if=min:dot.flame_shock.remains,if=buff.surge_of_power.up|!talent.surge_of_power.enabled|maelstrom<60-5*talent.eye_of_the_storm.enabled
     -- Spread Flame Shock via Primordial Wave using Surge of Power if possible.
-    if IsReady("Primordial Wave") and targetRange40 and Target:DebuffRemains(S.FlameShockDebuff)<2 and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable() or Player:Maelstrom()<60-5*num(S.EyeoftheStorm:IsAvailable())) then
+   -- griph notes: FSremains>0 removed - added to hold up to 5 s for ascenance
+    if IsReady("Primordial Wave") and targetRange40 and (RubimRH.CDsON() and Player:BuffUp(S.AscendanceBuff) or not RubimRH.CDsON() or not S.Ascendance:IsAvailable() or S.Ascendance:CooldownRemains()>5) and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable() or VarMaelstrom<60-5*num(S.EyeoftheStorm:IsAvailable())) then
       return S.PrimordialWave:Cast()
       end
       if IsReady("Ancestral Swiftness") and targetRange40  then
@@ -305,14 +339,15 @@ if IsReady("Totemic Recall") and S.LiquidMagmaTotem:CooldownRemains()>15 and (FS
 
         -- flame_shock,target_if=refreshable,if=buff.surge_of_power.up&dot.flame_shock.remains<target.time_to_die-16&active_dot.flame_shock<(spell_targets.chain_lightning>?6)&!talent.liquid_magma_totem.enabled
         -- Spread Flame Shock using Surge of Power if LMT is not picked.
-      
-if IsReady("Flame Shock") and targetRange40  and Target:DebuffRemains(S.FlameShockDebuff)<2  and Player:BuffUp(S.SurgeofPowerBuff) and Target:DebuffRemains(S.FlameShockDebuff)<targetTTD - 16 and FSTargets()<checktargets and not S.LiquidMagmaTotem:IsAvailable() then
+        -- and FSremains<targetTTD - 16 removed
+if IsReady("Flame Shock") and targetRange40 and FSremains<8 and Player:BuffUp(S.SurgeofPowerBuff) and FSTargets()<checktargets and not S.LiquidMagmaTotem:IsAvailable() then
   return S.FlameShock:Cast()
 end
 
 -- flame_shock,target_if=refreshable,if=talent.fire_elemental.enabled&(buff.surge_of_power.up|!talent.surge_of_power.enabled)&dot.flame_shock.remains<target.time_to_die-5&(active_dot.flame_shock<6|dot.flame_shock.remains>0)
 -- Spread and refresh Flame Shock using Surge of Power (if talented) up to 6.
-if IsReady("Flame Shock")  and targetRange40  and Target:DebuffRemains(S.FlameShockDebuff)<2 and S.FireElemental:IsAvailable() and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable()) and Target:DebuffRemains(S.FlameShockDebuff)<targetTTD - 5 and (FSTargets()<6 or Target:DebuffRemains(S.FlameShockDebuff)>0) then
+-- and FSremains<targetTTD - 5 removed
+if IsReady("Flame Shock")  and targetRange40 and FSremains<2 and S.FireElemental:IsAvailable() and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable()) and (FSTargets()<6 or FSremains>0) then
   return S.FlameShock:Cast()
 end
 if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceBuff) then
@@ -320,11 +355,14 @@ if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceB
   end
 
   -- tempest,target_if=min:debuff.lightning_rod.remains,if=!buff.arc_discharge.up&(buff.surge_of_power.up|!talent.surge_of_power.enabled)
-  if IsReady("Tempest")  and cancastAll and targetRange40  and Target:DebuffRemains(S.LightningRodDebuff)<2 and Player:BuffDown(S.ArcDischargeBuff) and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable()) then
+  if IsReady("Tempest") and tempest
+  and cancastnaturespells and targetRange40 and LRremains>0
+  and Player:BuffDown(S.ArcDischargeBuff) and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable()) then
     return S.Tempest:Cast()
   end
+
   -- chain_lightning,if=active_enemies>=6&buff.surge_of_power.up
-  if IsReady("Chain Lightning") and cancastnaturespells and targetRange40 and GetMobsInCombat()>=6 and Player:BuffUp(S.SurgeofPowerBuff) then
+  if IsReady("Chain Lightning") and cancastnaturespells and targetRange40 and (combatmobs40()>6) and Player:BuffUp(S.SurgeofPowerBuff) then
     return S.ChainLightning:Cast()
     end
 
@@ -333,80 +371,92 @@ if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceB
     -- Consume Primordial Wave buff immediately if you have Stormkeeper buff, fighting 6+ enemies and need maelstrom to spend.
 
     if IsReady("Lava Burst") and targetRange40  and cancastlavaburst
-    and Target:DebuffRemains(S.FlameShockDebuff)>2 
+    and FSremains>2 
     and Player:BuffUp(S.PrimordialWaveBuff) 
-    and (Player:BuffUp(S.StormkeeperBuff) and GetMobsInCombat()>=6 or Player:BuffUp(S.TempestBuff)) 
-    and Player:Maelstrom()<60-5*num(S.EyeoftheStorm:IsAvailable() 
+    and (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>6) or Player:BuffUp(S.TempestBuff)) 
+    and VarMaelstrom<60-5*num(S.EyeoftheStorm:IsAvailable() 
     and S.SurgeofPower:IsAvailable()) then
       return S.LavaBurst:Cast()
       end
 
       -- lava_burst,target_if=dot.flame_shock.remains>2,if=buff.primordial_wave.up&(buff.primordial_wave.remains<4|buff.lava_surge.up)
       -- Cast Lava burst to consume Primordial Wave proc. Wait for Lava Surge proc if possible.
-      if IsReady("Lava Burst") and targetRange40 and Target:DebuffRemains(S.FlameShockDebuff)>2 and Player:BuffUp(S.PrimordialWaveBuff) and (Player:BuffRemains(S.PrimordialWaveBuff)<4 or Player:BuffUp(S.LavaSurgeBuff))  and cancastlavaburst then
+      if IsReady("Lava Burst") and targetRange40 and FSremains>2 and Player:BuffUp(S.PrimordialWaveBuff) and (Player:BuffRemains(S.PrimordialWaveBuff)<4 or Player:BuffUp(S.LavaSurgeBuff)) and cancastlavaburst then
         return S.LavaBurst:Cast()
         end
         -- lava_burst,target_if=dot.flame_shock.remains,if=cooldown_react&buff.lava_surge.up&!buff.master_of_the_elements.up&talent.master_of_the_elements.enabled&talent.fire_elemental.enabled
         -- *{Fire} Use Lava Surge proc to buff <anything> with Master of the Elements.
-        if IsReady("Lava Burst") and targetRange40 and Target:DebuffRemains(S.FlameShockDebuff)>1 and Player:BuffUp(S.LavaSurgeBuff) and Player:BuffDown(S.MasteroftheElementsBuff) and S.MasteroftheElements:IsAvailable() and S.FireElemental:IsAvailable()   and cancastlavaburst then
+        if IsReady("Lava Burst") and targetRange40 and FSremains>1 and Player:BuffUp(S.LavaSurgeBuff) and Player:BuffDown(S.MasteroftheElementsBuff) and S.MasteroftheElements:IsAvailable() and S.FireElemental:IsAvailable() and cancastlavaburst then
           return S.LavaBurst:Cast()
           end
 
           -- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=spell_targets.chain_lightning=2&(maelstrom>variable.mael_cap-30|cooldown.primordial_wave.remains<gcd&talent.surge_of_power.enabled|(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
           -- 2t
-          if IsReady("Elemental Blast")  and cancastAll and targetRange40 and Target:DebuffRemains(S.LightningRodDebuff)>1 and GetMobsInCombat()==2 and (Player:Maelstrom()>VarMaelCap - 30 or S.PrimordialWave:CooldownRemains()<Player:GCD() and S.SurgeofPower:IsAvailable() or (Player:BuffUp(S.StormkeeperBuff) and GetMobsInCombat()>=6 or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable()) then
+          if IsReady("Elemental Blast")  and cancastAll and targetRange40 and LRremains>0 and ((combatmobs40()==2) and (VarMaelstrom>VarMaelCap - 30 or S.PrimordialWave:CooldownRemains()<Player:GCD() and S.SurgeofPower:IsAvailable() or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
             return S.ElementalBlast:Cast()
             end
 
 
+            -- earthquake,if=cooldown.primordial_wave.remains<gcd&talent.surge_of_power.enabled&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
+            -- Activate Surge of Power if next global is Primordial wave. Respect Echoes of Great Sundering.
+            if IsReady("Earthquake") and targetRange40 
+            and S.PrimordialWave:CooldownRemains()<Player:GCD() and S.SurgeofPower:IsAvailable() and  (Player:BuffUp(S.EchoesofGreatSunderingBuff) or not S.EchoesofGreatSundering:IsAvailable()) then
+              return S.Earthquake:Cast()
+            end
 
-  -- earthquake,if=(lightning_rod=0&talent.lightning_rod.enabled|maelstrom>variable.mael_cap-30)&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
-  -- Spend if all Lightning Rods ran out or you are close to overcaping. Respect Echoes of Great Sundering.
+
+            -- earthquake,if=(lightning_rod=0&talent.lightning_rod.enabled|maelstrom>variable.mael_cap-30)&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
+            -- Spend if all Lightning Rods ran out or you are close to overcaping. Respect Echoes of Great Sundering.
   if IsReady("Earthquake") and targetRange40 
   and ((LRTargets() == 0 
   and S.LightningRod:IsAvailable() 
-  or Player:Maelstrom() > VarMaelCap - 30) and 
+  or VarMaelstrom > VarMaelCap - 30) and 
   (Player:BuffUp(S.EchoesofGreatSunderingBuff) 
   or not S.EchoesofGreatSundering:IsAvailable())) then
     return S.Earthquake:Cast()
   end
 
--- earthquake,if=(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
--- Spend to buff your follow-up Stormkeeper with Surge of Power on 6+ targets. Respect Echoes of Great Sundering.
-if IsReady("Earthquake") and targetRange40 and (S.PrimordialWave:CooldownRemains() < Player:GCD() and S.SurgeofPower:IsAvailable() and (Player:BuffUp(S.EchoesofGreatSunderingBuff) or not S.EchoesofGreatSundering:IsAvailable())) then
+  -- earthquake,if=(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
+  -- Spend to buff your follow-up Stormkeeper with Surge of Power on 6+ targets. Respect Echoes of Great Sundering.
+if IsReady("Earthquake") and targetRange40 and (Player:BuffUp(S.StormkeeperBuff) and combatmobs40()>=6 or Player:BuffUp(S.TempestBuff)) 
+and S.SurgeofPower:IsAvailable() and (Player:BuffUp(S.EchoesofGreatSunderingBuff) or not S.EchoesofGreatSundering:IsAvailable()) then
   return S.Earthquake:Cast()
 end
-  -- earthquake,if=(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
-  if IsReady("Earthquake") and targetRange40 and ((Player:BuffUp(S.StormkeeperBuff)and GetMobsInCombat() >= 6 or S.TempestAbility:IsReady()) and S.SurgeofPower:IsAvailable() and (Player:BuffUp(S.EchoesofGreatSunderingBuff) or not S.EchoesofGreatSundering:IsAvailable())) then
-    return S.Earthquake:Cast()
-  end
+
   -- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=talent.echoes_of_great_sundering.enabled&!buff.echoes_of_great_sundering_eb.up&(lightning_rod=0|maelstrom>variable.mael_cap-30|(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
   -- Use the talents you selected. Spread Lightning Rod to as many targets as possible.
-  if IsReady("Elemental Blast")  and cancastAll and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or Player:Maelstrom() > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff)and GetMobsInCombat() >= 6 or S.TempestAbility:IsReady()) and S.SurgeofPower:IsAvailable())) then
+  if IsReady("Elemental Blast")  and LRremains>0 and cancastAll and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
     return S.ElementalBlast:Cast()
   end
 
   -- earth_shock,target_if=min:debuff.lightning_rod.remains,if=talent.echoes_of_great_sundering.enabled&!buff.echoes_of_great_sundering_es.up&(lightning_rod=0|maelstrom>variable.mael_cap-30|(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
   -- Use the talents you selected. Spread Lightning Rod to as many targets as possible.
-  if IsReady("Earth Shock") and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or Player:Maelstrom() > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff)and GetMobsInCombat() >= 6 or S.TempestAbility:IsReady()) and S.SurgeofPower:IsAvailable())) then
+  if IsReady("Earth Shock") and LRremains>0 and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
     return S.EarthShock:Cast()
   end
   -- icefury,if=talent.fusion_of_elements.enabled&!(buff.fusion_of_elements_nature.up|buff.fusion_of_elements_fire.up)
   -- Use Icefury for Fusion of Elements proc.
-  if IsReady("Icefury") and targetRange40 and (S.FusionofElements:IsAvailable() and not (Player:BuffUp(S.FusionofElementsNature) or Player:BuffUp(S.FusionofElementsFire))) then
+  if IsReady("Icefury") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and targetRange40 and (S.FusionofElements:IsAvailable() and not (Player:BuffUp(S.FusionofElementsNature) or Player:BuffUp(S.FusionofElementsFire))) then
     return S.Icefury:Cast()
   end
+
   -- lava_burst,target_if=dot.flame_shock.remains>2,if=talent.master_of_the_elements.enabled&!buff.master_of_the_elements.up&!buff.ascendance.up&talent.fire_elemental.enabled
   -- *{Fire} Proc Master of the Elements outside Ascendance.
   if IsReady("Lava Burst") and cancastlavaburst and targetRange40 and (S.MasteroftheElements:IsAvailable() and Player:BuffDown(S.MasteroftheElementsBuff) and Player:BuffDown(S.AscendanceBuff) and S.FireElemental:IsAvailable()) then
     return S.LavaBurst:Cast()
   end
+
+
+  if IsReady("Lava Burst") and targetRange40 and Player:IsMoving() and Player:BuffUp(S.LavaSurgeBuff) then
+    return S.LavaBurst:Cast()
+  end
+
   -- chain_lightning
   if IsReady("Chain Lightning") and targetRange40 and cancastnaturespells then
     return S.ChainLightning:Cast()
   end
   -- flame_shock,moving=1,target_if=refreshable
-  if IsReady("Flame Shock") and (Target:DebuffRemains(S.FlameShockDebuff)<16 or S.FlameShock:TimeSinceLastCast()>Player:GCD() + 0.5) and Player:IsMoving() and targetRange40 then
+  if IsReady("Flame Shock") and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>Player:GCD() + 0.5) and Player:IsMoving() and targetRange40 then
     return S.FlameShock:Cast()
   end
   -- frost_shock,moving=1
@@ -428,7 +478,7 @@ local function st()
 
 --lightning_bolt,if=buff.stormkeeper.up&buff.surge_of_power.up&spell_targets.chain_lightning=2
 --2t
-if IsReady("Lightning Bolt") and cancastnaturespells and (Player:BuffUp(S.StormkeeperBuff) and Player:BuffUp(S.SurgeofPowerBuff) and GetMobsInCombat()==2 ) then
+if IsReady("Lightning Bolt") and cancastnaturespells and (Player:BuffUp(S.StormkeeperBuff) and Player:BuffUp(S.SurgeofPowerBuff) and (combatmobs40()==2) ) then
   return S.LightningBolt:Cast()
 end
 
@@ -467,7 +517,8 @@ end
 
 -- tempest,if=buff.surge_of_power.up
 -- Surge of Power is strong and should be used. ©
-if IsReady("Tempest") and (Player:BuffUp(S.SurgeofPowerBuff)) and cancastAll then
+if IsReady("Tempest")  and tempest
+and (Player:BuffUp(S.SurgeofPowerBuff)) and cancastnaturespells then
   return S.Tempest:Cast()
 end
 
@@ -484,41 +535,41 @@ end
 
 -- flame_shock,if=(active_dot.flame_shock=0|dot.flame_shock.remains<6)&!buff.surge_of_power.up&!buff.master_of_the_elements.up&!talent.primordial_wave.enabled&!talent.liquid_magma_totem.enabled
 -- Manually refresh Flame shock if better options are not talented.
-if IsReady("Flame Shock") and (FSTargets()==0 or Target:DebuffRemains(S.FlameShockDebuff)<6) and Player:BuffDown(S.SurgeofPowerBuff) and Player:BuffDown(S.MasteroftheElementsBuff) and not S.PrimordialWave:IsAvailable() and not S.LiquidMagmaTotem:IsAvailable() then
+if IsReady("Flame Shock") and (FSTargets()==0 or FSremains<6) and Player:BuffDown(S.SurgeofPowerBuff) and Player:BuffDown(S.MasteroftheElementsBuff) and not S.PrimordialWave:IsAvailable() and not S.LiquidMagmaTotem:IsAvailable() then
   return S.FlameShock:Cast()
 end
 
 -- earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(maelstrom>variable.mael_cap-15|fight_remains<5)
 -- Spend if close to overcaping. Respect Echoes of Great Sundering.
-if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff)  and Player:Maelstrom() > VarMaelCap - 15 ) then
+if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff)  and VarMaelstrom > VarMaelCap - 15 ) then
   return S.Earthquake:Cast()
 end
 
 -- elemental_blast,if=maelstrom>variable.mael_cap-15|fight_remains<5
-if IsReady("Elemental Blast") and Player:Maelstrom()  > VarMaelCap - 15   and cancastAll then
+if IsReady("Elemental Blast") and VarMaelstrom  > VarMaelCap - 15   and cancastAll then
   return S.ElementalBlast:Cast()
 end
 
 -- earth_shock,if=maelstrom>variable.mael_cap-15|fight_remains<5
-if IsReady("Earth Shock") and Player:Maelstrom()  > VarMaelCap - 15 then
+if IsReady("Earth Shock") and VarMaelstrom  > VarMaelCap - 15 then
   return S.EarthShock:Cast()
 end
 
 -- icefury,if=!(buff.fusion_of_elements_nature.up|buff.fusion_of_elements_fire.up)
 -- Use Icefury to proc Fusion of Elements.
-if IsReady("Icefury") and (not (Player:BuffUp(S.FusionofElementsNature) or Player:BuffUp(S.FusionofElementsFire))) then
+if IsReady("Icefury") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and (not (Player:BuffUp(S.FusionofElementsNature) or Player:BuffUp(S.FusionofElementsFire))) then
   return S.Icefury:Cast()
 end
 
 -- lava_burst,target_if=dot.flame_shock.remains>2,if=!buff.master_of_the_elements.up
 -- Use Lava Burst to proc Master of the Elements.
-if IsReady("Lava Burst") and (Player:BuffDown(S.MasteroftheElementsBuff) and Target:DebuffRemains(S.FlameShockDebuff) > 2) and cancastlavaburst then
+if IsReady("Lava Burst") and (Player:BuffDown(S.MasteroftheElementsBuff) and FSremains > 2) and cancastlavaburst then
   return S.LavaBurst:Cast()
 end
 
 -- earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(buff.tempest.up|buff.stormkeeper.up)&talent.surge_of_power.enabled
 -- Spend to activate Surge of Power buff for Tempest or Stormkeeper.
-if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff) and (IsReady("Tempest") or Player:BuffUp(S.StormkeeperBuff)) and S.SurgeofPower:IsAvailable()) then
+if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff) and (Player:BuffUp(S.TempestBuff) or Player:BuffUp(S.StormkeeperBuff)) and S.SurgeofPower:IsAvailable()) then
   return S.Earthquake:Cast()
 end
 
@@ -533,7 +584,8 @@ if IsReady("Earth Shock") and (Player:BuffUp(S.TempestBuff) or Player:BuffUp(S.S
 end
 
 -- tempest
-if IsReady("Tempest") and cancastAll then
+if IsReady("Tempest") and cancastnaturespells and tempest
+then
   return S.Tempest:Cast()
 end
 
@@ -544,7 +596,7 @@ if IsReady("Lightning Bolt") and cancastnaturespells then
 end
 
 -- flame_shock,moving=1,target_if=refreshable
-if IsReady("Flame Shock") and Player:IsMoving() and (Target:DebuffRemains(S.FlameShockDebuff)<16 or S.FlameShock:TimeSinceLastCast()>1) then
+if IsReady("Flame Shock") and Player:IsMoving() and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>1) then
 return S.FlameShock:Cast()
 end
 
@@ -584,7 +636,7 @@ local haveTotem4, totemName4, startTime4, duration4 = GetTotemInfo(4) --air
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TrackHealthLossPerSecond()
-
+HPpercentloss = GetHealthLossPerSecond()
 
 inRange5 = RangeCount(5)
 inRange8 = RangeCount(8)
@@ -604,11 +656,33 @@ targetRange25 = C_Item.IsItemInRange(24268, "target")
 targetRange30 = C_Item.IsItemInRange(835, "target")
 targetRange40 = C_Spell.IsSpellInRange("Lightning Bolt", "target")
 
+if (Player:CanAttack(Target) or Player:AffectingCombat()) then
+
+  -- Store our Maelstrom count into a variable
+  VarMaelstrom = Player:Maelstrom()
+end
+if AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL") then
+  LRremains = select(6,AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL")) - GetTime()
+   else
+    LRremains = 0 
+  end
+
+  if AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") then
+    FSremains = select(6,AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL")) - GetTime()
+     else
+      FSremains = 0 
+    end
+if (C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927673 or C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 or C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653)
+then
+  tempest = true
+else
+  tempest = false
+end
 
 
 
-
-
+VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
+-- print(VarMaelCap)
 
 local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
 
@@ -652,7 +726,6 @@ cancastAll = (not Player:IsMoving() or AuraUtil.FindAuraByName("Spiritwalker's G
 cancastlavaburst = (not Player:IsMoving() or AuraUtil.FindAuraByName("Spiritwalker's Grace", "player") or AuraUtil.FindAuraByName("Lava Surge", "player"))
 
 cancastnaturespells = (not Player:IsMoving() or AuraUtil.FindAuraByName("Spiritwalker's Grace", "player") or AuraUtil.FindAuraByName("Stormkeeper","player") or AuraUtil.FindAuraByName("Nature's Swiftness","player"))
-HPpercentloss = GetHealthLossPerSecond()
 
 
 
@@ -660,7 +733,6 @@ if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
-
 
 if Player:IsCasting() or Player:IsChanneling() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
@@ -700,12 +772,6 @@ return S.PoisonCleansingTotem:Cast()
 end
 
 
--- Enemies40y = Player:GetEnemiesInRange(40)
--- Enemies10ySplash = Target:GetEnemiesInSplashRange(10)
--- print(Player:Maelstrom())
--- print('enemies40y:',#Enemies40y)
--- print('splash10y:',#Enemies10ySplash)
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------SPELL QUEUES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -721,9 +787,11 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and (Player:DebuffUp(S.lust1) o
 RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
-if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player") then
-RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-end
+
+if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) and not S.WindRushTotem:ID() ==  RubimRH.queuedSpell[1]:ID() or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player")
+  then
+  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+  end
 
 if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 return RubimRH.QueuedSpell():Cast()
@@ -739,7 +807,6 @@ end
 
 
 
-
 -- Cast  Storm Elemental on cooldown. If you are talented into  Echo of the Elementals, make sure not to cast it while your Elemental is still up. The previous Elemental always needs to naturally expire first.
 --   Cast  Liquid Magma Totem to spread  Flame Shock on cooldown (and if the pack is not dead in the next 20 seconds).
 --   Cast  Primordial Wave on cooldown.
@@ -750,8 +817,16 @@ end
 
 
 
-if (Target:AffectingCombat() or Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost() then 
+
+if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
 -- kick on GCD
+if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' and RubimRH.InterruptsON() then
+  return S.PoisonCleansingTotem:Cast()
+  end
+if IsReady("Cleanse Spirit") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
+  return S.CleanseSpirit:Cast()
+  end
+
 if IsReady("Spiritwalker's Grace") and RubimRH.CDsON() and targetRange40 and Player:MovingFor()>0.75 and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
 return S.SpiritwalkersGrace:Cast()
 end
@@ -760,13 +835,13 @@ if IsReady("Berserking") and targetRange40 and (AuraUtil.FindAuraByName("Flame S
 return S.Berserking:Cast()
 end
 
-if IsReady("Nature's Swiftness")  and RubimRH.CDsON() and targetRange40 and Player:MovingFor()>0.5 and (not AuraUtil.FindAuraByName("Spiritwalker's Grace","player") and not AuraUtil.FindAuraByName("Stormkeeper","player") or Player:HealthPercentage()<30) then
+if IsReady("Nature's Swiftness")  and RubimRH.CDsON() and targetRange40  then
 return S.NaturesSwiftness:Cast()
 end
 
-if IsReady("Healing Surge") and (AuraUtil.FindAuraByName("Nature's Swiftness","player") or AuraUtil.FindAuraByName("Spiritwalker's Grace","player")) and Player:HealthPercentage()<35 then
-return S.HealingSurge:Cast()
-end
+-- if IsReady("Healing Surge") and (AuraUtil.FindAuraByName("Nature's Swiftness","player") or AuraUtil.FindAuraByName("Spiritwalker's Grace","player")) and Player:HealthPercentage()<35 then
+-- return S.HealingSurge:Cast()
+-- end
 
 if not C_Spell.IsCurrentSpell(6603) and targetRange20 then
 return S.autoattack:Cast()
@@ -784,7 +859,7 @@ end
 
 
 
-	if aoe() ~= nil and RubimRH.AoEON() and (inRange40>=2 or GetMobsInCombat()>=2) and targetRange40 then
+	if aoe() ~= nil and RubimRH.AoEON() and (inRange40>=2 and not Player:AffectingCombat() or combatmobs40()>=2) and targetRange40 then
 		return aoe()
 	end
 
@@ -802,7 +877,7 @@ end
 -- if IsReady("Lava Burst") and targetRange40 and AuraUtil.FindAuraByName("Lava Surge","player")  then
 -- return S.LavaBurst:Cast()
 -- end
--- if IsReady("Earth Shock") and targetRange40 and (AuraUtil.FindAuraByName("Master of the Elements", "player") or Player:Maelstrom()>70) then
+-- if IsReady("Earth Shock") and targetRange40 and (AuraUtil.FindAuraByName("Master of the Elements", "player") or VarMaelstrom>70) then
 -- return S.EarthShock:Cast()
 -- end
 -- if IsReady("Lightning Bolt") and targetRange40 and cancast then
@@ -837,7 +912,9 @@ end
 if IsReady("Thunderstrike Ward") and offHandEnchantID~=7587 and Player:IsMoving() then
 return S.ThunderstrikeWard:Cast()
 end
-
+if IsReady("Lightning Shield") and Player:BuffDown(S.LightningShieldBuff) and Player:IsMoving() then
+  return S.LightningShield:Cast()
+  end
 end
 
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"

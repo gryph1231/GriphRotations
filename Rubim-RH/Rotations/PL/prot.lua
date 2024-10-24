@@ -191,6 +191,7 @@ end
 Item.Paladin.Protection = {
 
 HPIcon = Item(169451),
+drums = Item(219905),
 
 };
 local I = Item.Paladin.Protection;
@@ -218,6 +219,8 @@ local function HPGTo2Dawn()
 end
 
 
+
+
 local function HammerofLight()
   if NoIntercession then
   -- hammer_of_light,if=(buff.blessing_of_dawn.stack>0|!talent.of_dusk_and_dawn.enabled)|spell_targets.shield_of_the_righteous>=5
@@ -226,7 +229,7 @@ local function HammerofLight()
     end
   end
   -- eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheck and (not IsEncounterInProgress(Boss) or level<highkey) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheckeyeoftyr and (not IsEncounterInProgress(Boss) or level<highkey) then
     return S.EyeofTyr:Cast() 
     end
 
@@ -244,7 +247,7 @@ if NoIntercession then
   end
 
   -- eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheck and (not IsEncounterInProgress(Boss) or level<highkey) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheckeyeoftyr and (not IsEncounterInProgress(Boss) or level<highkey) then
     return S.EyeofTyr:Cast() 
     end
   --testing this
@@ -278,7 +281,6 @@ end
 
 
 local function APL()
-  TrackHealthLossPerSecond()
 inRange5 = RangeCount(5)
 inRange8 = RangeCount(8)
 inRange10 = RangeCount(10)
@@ -293,12 +295,22 @@ targetRange15 = C_Item.IsItemInRange(33069, "target")
 targetRange20 = C_Item.IsItemInRange(10645, "target")
 targetRange25 = C_Item.IsItemInRange(24268, "target")
 targetRange30 = C_Item.IsItemInRange(835, "target")
+TrackHealthLossPerSecond()
+
+HPpercentloss = GetHealthLossPerSecond()
+
+
+
+
+
 
 if Player:IsChanneling() or Player:IsCasting() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 end
 
 local iconEoT = C_Spell.GetSpellInfo(387174).iconID
+
+
 
 if iconEoT == 5342121 then
 canCastHoL = true
@@ -381,7 +393,6 @@ end
 
 
 
-HPpercentloss = GetHealthLossPerSecond()
 
 
 
@@ -403,6 +414,7 @@ local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
 aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
 
+aoerangecheckeyeoftyr = (targetRange10 and not Player:IsMoving() or targetRange8 and Player:IsMoving())
 
 
 
@@ -481,10 +493,10 @@ if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or (inRange30 == 0 or not
 
 
         --- seasonal affix
-        if targetRange8 and TWWS1AffixMobsInRange()>=7 and IsReady("Blinding Light") and RubimRH.InterruptsON() then
+        if targetRange8 and TWWS1AffixMobsInRange()>=6 and IsReady("Blinding Light") and RubimRH.InterruptsON() then
           return S.BlindingLight:Cast()
           end
-      if targetRange8 and TWWS1AffixMobsInRange()>=7 and IsReady("Arcane Torrent") and RubimRH.InterruptsON() then
+      if targetRange8 and TWWS1AffixMobsInRange()>=6 and IsReady("Arcane Torrent") and RubimRH.InterruptsON() then
         return S.ArcaneTorrent:Cast()
         end
 --DEFENSIVES---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -535,7 +547,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
   
 
-  if IsReady("Eye of Tyr")  and aoerangecheck and useEoT then
+  if IsReady("Eye of Tyr")  and aoerangecheckeyeoftyr and useEoT then
   return S.EyeofTyr:Cast()
   end
 
@@ -572,7 +584,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
   
 
-  if IsReady("Eye of Tyr")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and aoerangecheck and useEoT and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55) then
+  if IsReady("Eye of Tyr")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and aoerangecheckeyeoftyr and useEoT and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55) then
     return S.EyeofTyr:Cast()
     end
   end
@@ -724,13 +736,6 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
         end
 
 
-        --- seasonal affix
-       if targetRange8 and TWWS1AffixMobsInRange()>=5 and IsReady("Blinding Light") and RubimRH.InterruptsON() then
-          return S.BlindingLight:Cast()
-          end
-      if targetRange8 and TWWS1AffixMobsInRange()>=5 and IsReady("Arcane Torrent") and RubimRH.InterruptsON() then
-        return S.ArcaneTorrent:Cast()
-        end
 
 
 
@@ -860,7 +865,7 @@ end
   end
   -- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and aoerangecheck then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and aoerangecheckeyeoftyr then
     return S.EyeofTyr:Cast()
   end
   -- holy_armaments,if=next_armament=holy_bulwark
@@ -894,7 +899,7 @@ end
   end
   -- eye_of_tyr,if=!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and aoerangecheck then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and aoerangecheckeyeoftyr then
     return S.EyeofTyr:Cast()
   end
 
