@@ -214,10 +214,13 @@ local function bool(val)
 return val ~= 0
 end
 
-
+--- ===== Rotation Variables =====
+local VarMaelstrom
+local VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
 
 
 HL:RegisterForEvent(function()
+  VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
   S.PrimordialWave:RegisterInFlightEffect(327162)
   S.PrimordialWave:RegisterInFlight()
   S.LavaBurst:RegisterInFlight()
@@ -225,7 +228,6 @@ end, "LEARNED_SPELL_IN_TAB")
 S.PrimordialWave:RegisterInFlightEffect(327162)
 S.PrimordialWave:RegisterInFlight()
 S.LavaBurst:RegisterInFlight()
-
 
 
 local function combatmobs40()
@@ -321,7 +323,7 @@ end
 
 -- totemic_recall,if=cooldown.liquid_magma_totem.remains>15&(active_dot.flame_shock<(spell_targets.chain_lightning>?6)-2|talent.fire_elemental.enabled)
 -- Reset LMT CD as early as possible. Always for Fire, only if you can dot up 3 more targets for Lightning.
-if IsReady("Totemic Recall") and S.LiquidMagmaTotem:CooldownRemains()>15 and (FSTargets()<(checktargets)-2 or S.FireElemental:IsAvailable() and totemName1 == "Greater Fire Elemental Totem") then
+if IsReady("Totemic Recall") and S.LiquidMagmaTotem:CooldownRemains()>15 and (FSTargets()<(checktargets)-2 or S.FireElemental:IsAvailable() and S.FireElemental:IsAvailable()) then
   return S.TotemicRecall:Cast()
   end
   if IsReady("Liquid Magma Totem") and targetRange40  then
@@ -356,7 +358,7 @@ if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceB
 
   -- tempest,target_if=min:debuff.lightning_rod.remains,if=!buff.arc_discharge.up&(buff.surge_of_power.up|!talent.surge_of_power.enabled)
   if IsReady("Tempest") and tempest
-  and cancastnaturespells and targetRange40 and LRremains>0
+  and cancastnaturespells and targetRange40
   and Player:BuffDown(S.ArcDischargeBuff) and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable()) then
     return S.Tempest:Cast()
   end
@@ -425,13 +427,15 @@ end
 
   -- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=talent.echoes_of_great_sundering.enabled&!buff.echoes_of_great_sundering_eb.up&(lightning_rod=0|maelstrom>variable.mael_cap-30|(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
   -- Use the talents you selected. Spread Lightning Rod to as many targets as possible.
-  if IsReady("Elemental Blast")  and LRremains>0 and cancastAll and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
+  if IsReady("Elemental Blast") and cancastAll and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
     return S.ElementalBlast:Cast()
   end
 
-  -- earth_shock,target_if=min:debuff.lightning_rod.remains,if=talent.echoes_of_great_sundering.enabled&!buff.echoes_of_great_sundering_es.up&(lightning_rod=0|maelstrom>variable.mael_cap-30|(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
+  -- earth_shock,target_if=min:debuff.lightning_rod.remains,if=talent.echoes_of_great_sundering.enabled&!buff.echoes_of_great_sundering_es.up&(lightning_rod=0|maelstrom>variable.mael_cap-30|
+  -- (buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
   -- Use the talents you selected. Spread Lightning Rod to as many targets as possible.
-  if IsReady("Earth Shock") and LRremains>0 and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
+  if IsReady("Earth Shock") and targetRange40 and S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 
+  or (Player:BuffUp(S.StormkeeperBuff) and combatmobs40()>=6 or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable()) then
     return S.EarthShock:Cast()
   end
   -- icefury,if=talent.fusion_of_elements.enabled&!(buff.fusion_of_elements_nature.up|buff.fusion_of_elements_fire.up)
@@ -681,8 +685,6 @@ end
 
 
 
-VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
--- print(VarMaelCap)
 
 local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
 
@@ -819,6 +821,12 @@ end
 
 
 if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
+
+  if Player:BuffUp(S.AscendanceBuff) and RubimRH.CDsON() then
+    local ShouldReturn = UseItems();
+    if ShouldReturn then return ShouldReturn; end
+  end
+
 -- kick on GCD
 if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' and RubimRH.InterruptsON() then
   return S.PoisonCleansingTotem:Cast()
