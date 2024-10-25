@@ -615,27 +615,6 @@ end
 
 
 
-function tremortotem()
-    if Player:AffectingCombat() then
-        for id = 1, 10 do
-            local spell = {"Repulsive Visage","Horrifying Shrill","Terrorize","Terrifying Slam","Howling Fear","Rasping Scream","Terrifying Roar",
-
-            }
-            local unitID = "nameplate" .. id
-            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-                UnitCastingInfo(unitID)
-            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-
-            for idx = 1, #spell do
-                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
-
 function stunprio()
     local stunspells = {
         'Alarm Shrill','Toxic Trap','Bone Bolt','Vicious Clawmangle','Infuse Corruption','Summon Lashers','Decaying Roots','Screech','Bloody Bite','Rotting Surge', --BRH

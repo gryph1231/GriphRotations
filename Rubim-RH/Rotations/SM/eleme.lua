@@ -215,6 +215,30 @@ local function bool(val)
 return val ~= 0
 end
 
+
+
+
+local function tremortotem()
+  if Player:AffectingCombat() then
+      for id = 1, 10 do
+          local spell = {"Repulsive Visage","Horrifying Shrill","Terrorize","Terrifying Slam","Howling Fear","Rasping Scream","Terrifying Roar",
+
+          }
+          local unitID = "nameplate" .. id
+          local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+              UnitCastingInfo(unitID)
+          local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+          for idx = 1, #spell do
+              if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                  return true
+              end
+          end
+      end
+  end
+  return false
+end
+
 --- ===== Rotation Variables =====
 local VarMaelstrom
 local VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
