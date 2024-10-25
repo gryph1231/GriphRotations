@@ -90,6 +90,7 @@ DeeplyRootedElements                  = Spell(378270),
 NaturesSwiftness                      = Spell(378081),
 PrimordialWave                        = Spell(375982),
 SpiritwalkersGrace                    = Spell(79206),
+TremorTotem = Spell(8143),
 TotemicRecall                         = Spell(108285),
 WindShear                             = Spell(57994),
 -- Buffs
@@ -342,7 +343,7 @@ if IsReady("Totemic Recall") and S.LiquidMagmaTotem:CooldownRemains()>15 and (FS
         -- flame_shock,target_if=refreshable,if=buff.surge_of_power.up&dot.flame_shock.remains<target.time_to_die-16&active_dot.flame_shock<(spell_targets.chain_lightning>?6)&!talent.liquid_magma_totem.enabled
         -- Spread Flame Shock using Surge of Power if LMT is not picked.
         -- and FSremains<targetTTD - 16 removed
-if IsReady("Flame Shock") and targetRange40 and FSremains<8 and Player:BuffUp(S.SurgeofPowerBuff) and FSTargets()<checktargets and not S.LiquidMagmaTotem:IsAvailable() then
+if IsReady("Flame Shock") and targetRange40 and FSremains<7 and Player:BuffUp(S.SurgeofPowerBuff) and FSTargets()<checktargets and not S.LiquidMagmaTotem:IsAvailable() then
   return S.FlameShock:Cast()
 end
 
@@ -766,9 +767,7 @@ if IsReady("Earth Elemental") and Player:HealthPercentage() <= 25  and inRange30
   return S.EarthElemental:Cast()
   end
 
-if IsReady("Cleanse Spirit") and GetAppropriateCureSpell("player")=='Curse' then
-return S.CleanseSpirit:Cast()
-end
+
 if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' then
 return S.PoisonCleansingTotem:Cast()
 end
@@ -790,7 +789,7 @@ RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 end
 
 
-if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0) and not S.WindRushTotem:ID() ==  RubimRH.queuedSpell[1]:ID() or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player")
+if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0 or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
   then
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
   end
@@ -827,23 +826,28 @@ if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanA
     if ShouldReturn then return ShouldReturn; end
   end
 
--- kick on GCD
+
+if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
+  return S.TremorTotem:Cast()
+  end
+
+
 if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' and RubimRH.InterruptsON() then
   return S.PoisonCleansingTotem:Cast()
   end
-if IsReady("Cleanse Spirit") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
-  return S.CleanseSpirit:Cast()
-  end
+-- if IsReady("Cleanse Spirit") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
+--   return S.CleanseSpirit:Cast()
+--   end
 
 if IsReady("Spiritwalker's Grace") and RubimRH.CDsON() and targetRange40 and Player:MovingFor()>0.75 and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
 return S.SpiritwalkersGrace:Cast()
 end
 -- kick on GCD
-if IsReady("Berserking") and targetRange40 and (AuraUtil.FindAuraByName("Flame Shock","target","PLAYER|HARMFUL") or Player:BuffUp(S.AscendanceBuff))  then
+if IsReady("Berserking") and targetRange40 and Player:BuffUp(S.AscendanceBuff) then
 return S.Berserking:Cast()
 end
 
-if IsReady("Nature's Swiftness")  and RubimRH.CDsON() and targetRange40  then
+if IsReady("Nature's Swiftness") and not AuraUtil.FindAuraByName("Nature's Swiftness","target","PLAYER|HARMFUL") and RubimRH.CDsON() and targetRange40  then
 return S.NaturesSwiftness:Cast()
 end
 
@@ -863,6 +867,10 @@ return S.WindShear:Cast()
 end
 
 end
+        --- seasonal affix
+        if TWWS1AffixMobsInRange()>=6 and IsReady("Thunderstorm") and RubimRH.InterruptsON() then
+          return S.Thunderstorm:Cast()
+          end
 
 
 
@@ -914,9 +922,9 @@ end
 if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() then
 return S.EarthShield:Cast()
 end
-if IsReady("Flametongue Weapon") and mainHandEnchantID~=5400 and Player:IsMoving() then
-return S.FlametongueWeapon:Cast()
-end
+-- if IsReady("Flametongue Weapon") and mainHandEnchantID~=5400 and Player:IsMoving() then
+-- return S.FlametongueWeapon:Cast()
+-- end
 if IsReady("Thunderstrike Ward") and offHandEnchantID~=7587 and Player:IsMoving() then
 return S.ThunderstrikeWard:Cast()
 end

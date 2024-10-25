@@ -417,7 +417,7 @@ function IsReady(spell,range_check,aoe_check,queue,no_power_check)
         end
 
         --if usable and enabled and cooldown_remains - gcd_remains < 0.5 and gcd_remains < 0.5 then
-        if (usable or no_power_check) and enabled and (cooldown_remains < 0.5 or (queue and cooldown_remains < 1)) and spell ~= 1 then
+        if (usable or no_power_check) and enabled and (cooldown_remains < 0.5 or (queue and cooldown_remains < 1.5)) and spell ~= 1 then
             if range_check then
                 if in_range == true then 
                     return true
@@ -595,6 +595,30 @@ function magicdefensives()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {"Terrifying Roar","Cosmic Singularity" ,"Obsidian Beam" ,"Repulsive Visage" ,"Process of Elimination",
+
+            }
+            local unitID = "nameplate" .. id
+            local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+                UnitCastingInfo(unitID)
+            local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+            for idx = 1, #spell do
+                if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+
+
+
+function tremortotem()
+    if Player:AffectingCombat() then
+        for id = 1, 10 do
+            local spell = {"Repulsive Visage","Horrifying Shrill","Terrorize","Terrifying Slam","Howling Fear","Rasping Scream","Terrifying Roar",
 
             }
             local unitID = "nameplate" .. id
