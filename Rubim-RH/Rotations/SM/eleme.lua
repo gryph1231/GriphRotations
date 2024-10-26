@@ -239,7 +239,35 @@ local function tremortotem()
   return false
 end
 
+
+
+local function defensives()
+  if Player:AffectingCombat() then
+      for id = 1, 15 do
+          local spell = {
+"Call of the Brood","Massive Slam","Ravenous Swarm","Void Rush","Fierce Stomping","Viscous Darkness","Dark Pulse","Splice","Dark Floes","Shadowy Decay",
+"Erosive Spray","Ground Pound","Void Outburst","Earth Shatterer","Crystalline Eruption","Void Discharge","Furious Thrashing","Acid Nova","Wrath of Zolramus",
+"Dark Shroud","Shattering Bellow","Crushing Slam","Fiery Ricochet","Umbral Wind","Commanding Roar","Forge Weapon","Void Surge",
+
+          }
+          local unitID = "nameplate" .. id
+          local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+              UnitCastingInfo(unitID)
+          local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+          for idx = 1, #spell do
+              if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                  return true
+              end
+          end
+      end
+  end
+  return false
+end
+
+
 --- ===== Rotation Variables =====
+local IsTanking
 local VarMaelstrom
 local VarMaelCap = 100 + 50 * num(S.SwellingMaelstrom:IsAvailable()) + 25 * num(S.PrimordialCapacity:IsAvailable())
 
@@ -341,7 +369,7 @@ end
 if IsReady("Storm Elemental") and targetRange40 then
 return S.FireElemental:Cast()
 end
-if IsReady("Stormkeeper") and cancastAll and targetRange40 then
+if IsReady("Stormkeeper") and cancastAll and targetRange40 and RubimRH.CDsON() and (not S.Ascendance:IsAvailable() or S.Ascendance:CooldownRemains()<Player:GCD() or S.Ascendance:CooldownRemains()>10)  then
 return S.Stormkeeper:Cast()
 end
 
@@ -427,7 +455,7 @@ if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceB
             -- earthquake,if=cooldown.primordial_wave.remains<gcd&talent.surge_of_power.enabled&(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up|!talent.echoes_of_great_sundering.enabled)
             -- Activate Surge of Power if next global is Primordial wave. Respect Echoes of Great Sundering.
             if IsReady("Earthquake") and targetRange40 
-            and S.PrimordialWave:CooldownRemains()<Player:GCD() and S.SurgeofPower:IsAvailable() and  (Player:BuffUp(S.EchoesofGreatSunderingBuff) or not S.EchoesofGreatSundering:IsAvailable()) then
+            and S.PrimordialWave:CooldownRemains()<Player:GCD() and S.SurgeofPower:IsAvailable() and (Player:BuffUp(S.EchoesofGreatSunderingBuff) or not S.EchoesofGreatSundering:IsAvailable()) then
               return S.Earthquake:Cast()
             end
 
@@ -687,8 +715,13 @@ targetRange40 = C_Spell.IsSpellInRange("Lightning Bolt", "target")
 
 if (Player:CanAttack(Target) or Player:AffectingCombat()) then
 
+  IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+
   -- Store our Maelstrom count into a variable
   VarMaelstrom = Player:Maelstrom()
+
+  -- print(VarMaelstrom > VarMaelCap - 30)
+
 end
 if AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL") then
   LRremains = select(6,AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL")) - GetTime()
@@ -768,34 +801,6 @@ return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
 end 
 
 
-  --health pot -- will need to update item ID of HPs as expansions progress
-  --health pot -- will need to update item ID of HPs as expansions progress
-  if  Player:HealthPercentage() <= 20  and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
-    return I.HPIcon:Cast()
-    end
-    
-
-
-if IsReady("Ancestral Guidance") and Player:HealthPercentage() <= 65 and inRange30>=1 and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
-return S.AncestralGuidance:Cast()
-end
-
-if IsReady("Astral Shift") and Player:HealthPercentage() <= 45  and inRange30>=1 and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
-return S.AstralShift:Cast()
-end
-if IsReady("Stone Bulwark Totem") and Player:HealthPercentage() <= 45  and inRange30>=1 and not AuraUtil.FindAuraByName("Astral Shift", "player") then
-return S.StoneBulwarkTotem:Cast()
-end
-
-if IsReady("Earth Elemental") and Player:HealthPercentage() <= 25  and inRange30>=1  then
-  return S.EarthElemental:Cast()
-  end
-
-
-if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' then
-return S.PoisonCleansingTotem:Cast()
-end
-
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -851,6 +856,28 @@ if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanA
   end
 
 
+  if  Player:HealthPercentage() <= 20  and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+    return I.HPIcon:Cast()
+    end
+    
+
+
+if IsReady("Ancestral Guidance") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and inRange30>=1 and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
+return S.AncestralGuidance:Cast()
+end
+
+if IsReady("Astral Shift") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90)  and inRange30>=1 and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
+return S.AstralShift:Cast()
+end
+if IsReady("Stone Bulwark Totem") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and inRange30>=1 and not AuraUtil.FindAuraByName("Astral Shift", "player") then
+return S.StoneBulwarkTotem:Cast()
+end
+
+if IsReady("Earth Elemental") and IsTanking and Player:HealthPercentage() <= 35 and inRange30>=2 then
+  return S.EarthElemental:Cast()
+  end
+
+
 if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
   return S.TremorTotem:Cast()
   end
@@ -859,11 +886,11 @@ if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
 if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' and RubimRH.InterruptsON() then
   return S.PoisonCleansingTotem:Cast()
   end
--- if IsReady("Cleanse Spirit") and (GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Disease') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
---   return S.CleanseSpirit:Cast()
---   end
+if IsReady("Cleanse Spirit") and GetAppropriateCureSpell("player")=='Curse' and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
+  return S.CleanseSpirit:Cast()
+  end
 
-if IsReady("Spiritwalker's Grace") and RubimRH.CDsON() and targetRange40 and Player:MovingFor()>0.75 and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
+if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>Player:GCD() or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
 return S.SpiritwalkersGrace:Cast()
 end
 -- kick on GCD

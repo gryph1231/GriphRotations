@@ -464,6 +464,8 @@ function GetAppropriateCureSpell(unit)
     local debuffTypePoison = "Poison"
     local debuffTypeDisease = "Disease"
 	local debuffTypeMagic = "Magic"
+    local debuffTypeCurse = "Curse"
+
     local debuff_count = GetNumDebuffs(unit)
 
     for i = 1, debuff_count do
@@ -478,6 +480,8 @@ function GetAppropriateCureSpell(unit)
             return debuffTypeDisease
         elseif debuffType == debuffTypeMagic then
             return debuffTypeMagic
+        elseif debuffType == debuffTypeCurse then
+            return debuffTypeCurse
         end
     end
  
