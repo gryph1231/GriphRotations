@@ -28,7 +28,12 @@ Modules\Quest.lua
 Modules\Lists.lua
 Modules\functions.lua
 Modules\MiniMap.lua
+
+Modules\Commons.lua
+
+
 Rotations\Shared.lua
+
 
 Rotations\WR\prot.lua
 Rotations\WR\fury.lua

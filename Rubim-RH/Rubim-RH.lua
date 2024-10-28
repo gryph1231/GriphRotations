@@ -999,7 +999,6 @@ local defaults = {
     }
 }
 
-
 --[[ RubimRH Initialize ]]--
 function RubimRH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("RubimRHDB", defaults, true)

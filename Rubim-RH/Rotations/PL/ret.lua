@@ -164,6 +164,7 @@ S.AvengingWrath.TextureSpellID = { 55748 }
 S.Crusade.TextureSpellID = { 55748 }
 S.CrusaderStrike.TextureSpellID = { 342348 }
 S.WakeofAshes.TextureSpellID = { 403695 }
+S.DivineToll.TextureSpellID = { 304971 }
 
 -- Items
 if not Item.Paladin then Item.Paladin = {} end
