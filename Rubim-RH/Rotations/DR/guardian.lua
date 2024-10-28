@@ -189,7 +189,7 @@ HL:RegisterForEvent(function()
   local function EvaluateCycleMoonfire()
 	-- if=buff.bear_form.up&(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<7&talent.fury_of_nature.enabled)|(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<4&!talent.fury_of_nature.enabled)
 	-- Note: Simplified.
-	return ((Target:DebuffDown(S.MoonfireDebuff) and Target:TimeToDie() > 12) or (Target:DebuffRefreshable(S.MoonfireDebuff) and Target:TimeToDie() > 12)) and (RangeCount(10) < 7 and S.FuryofNature:IsAvailable() or RangeCount(10) < 4 and not S.FuryofNature:IsAvailable())
+	return ((Target:DebuffDown(S.MoonfireDebuff) and Target:TimeToDie() > 12) or (Target:DebuffRefreshable(S.MoonfireDebuff) and Target:TimeToDie() > 12)) and (RangeCount(8) < 7 and S.FuryofNature:IsAvailable() or RangeCount(8) < 4 and not S.FuryofNature:IsAvailable())
   end
   
   local function EvaluateCyclePulverize()
@@ -211,7 +211,7 @@ local function Precombat()
 	end
 
 	-- Manually added: thrash_bear
-	if IsReady("Thrash") and RangeCount(8) then
+	if IsReady("Thrash") and targetRange8 then
 		return S.ThrashBear:Cast()
 	end
 	-- Manually added: mangle
@@ -237,11 +237,11 @@ local function Precombat()
 
   local function Bear()
 	-- maul,if=buff.ravage.up&active_enemies>1
-	if IsReady("Ravage") and (Player:BuffUp(S.RavageBuffGuardian) and RangeCount(10) > 1) then
+	if IsReady("Ravage") and (Player:BuffUp(S.RavageBuffGuardian) and RangeCount(8) > 1) then
 		return S.RavageAbilityBear:Cast()
 	end
 	-- heart_of_the_Wild,if=(talent.heart_of_the_wild.enabled&!talent.rip.enabled)|talent.heart_of_the_wild.enabled&buff.feline_potential_counter.stack=6&active_enemies<3
-	if RubimRH.CDsON() and IsReady("Heart of the Wild") and (not S.Rip:IsAvailable() or Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(10) < 3) then
+	if RubimRH.CDsON() and IsReady("Heart of the Wild") and (not S.Rip:IsAvailable() or Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(8) < 3)  and targetRange10 then
 		return S.HeartoftheWild:Cast()
 	end
 	-- moonfire,cycle_targets=1,if=buff.bear_form.up&(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<7&talent.fury_of_nature.enabled)|(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<4&!talent.fury_of_nature.enabled)
@@ -249,7 +249,7 @@ local function Precombat()
 		return S.Moonfire:Cast()
 	end
 	-- thrash_bear,target_if=refreshable|(dot.thrash_bear.stack<5&talent.flashing_claws.rank=2|dot.thrash_bear.stack<4&talent.flashing_claws.rank=1|dot.thrash_bear.stack<3&!talent.flashing_claws.enabled)
-	if IsReady("Thrash") and EvaluateCycleThrash() then
+	if IsReady("Thrash") and EvaluateCycleThrash() and targetRange8 then
 		return S.ThrashBear:Cast()
 	end
 	-- bristling_fur,if=!cooldown.pause_action.remains&cooldown.rage_of_the_sleeper.remains>8
@@ -274,8 +274,7 @@ local function Precombat()
 	end
 	-- rage_of_the_sleeper,if=(((buff.incarnation_guardian_of_ursoc.down&cooldown.incarnation_guardian_of_ursoc.remains>60)|buff.berserk_bear.down)&rage>40&(!talent.convoke_the_spirits.enabled)|(buff.incarnation_guardian_of_ursoc.up|buff.berserk_bear.up)&rage>40&(!talent.convoke_the_spirits.enabled)|(talent.convoke_the_spirits.enabled)&rage>40)
 	if RubimRH.CDsON() and targetRange10 
-	and (not IsEncounterInProgress(Boss)
-	 or level<highkey) 
+	and (not IsEncounterInProgress(Boss)) 
 	and IsReady("Rage of the Sleeper") 
 	and (((Player:BuffDown(S.Incarnation) and S.Incarnation:CooldownRemains() > 60) 
 	or Player:BuffDown(S.Berserk)) and Player:Rage() > 40 and not S.ConvoketheSpirits:IsAvailable()
@@ -285,15 +284,15 @@ local function Precombat()
 	end
 
 	-- maul,if=buff.ravage.up&active_enemies<2
-	if IsReady("Ravage") and (Player:BuffUp(S.RavageBuffGuardian) and RangeCount(10) < 2) then
+	if IsReady("Ravage") and (Player:BuffUp(S.RavageBuffGuardian) and RangeCount(8) < 2) then
 		return S.RavageAbilityBear:Cast()
 	end
 	-- raze,if=(buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&variable.If_build=1&active_enemies>1
-	if IsReady("Raze") and ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and VarIFBuild and RangeCount(10) > 1) then
+	if IsReady("Raze") and ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and VarIFBuild and RangeCount(8) > 1) then
 		return S.Raze:Cast()
 	end
 	-- thrash_bear,if=active_enemies>=5&talent.lunar_calling.enabled
-	if IsReady("Thrash") and (RangeCount(10) >= 5 and S.LunarCalling:IsAvailable()) then
+	if IsReady("Thrash") and (RangeCount(8) >= 5 and S.LunarCalling:IsAvailable()) and targetRange8  then
 		return S.ThrashBear:Cast()
 	end
 	-- ironfur,target_if=!debuff.tooth_and_claw.up,if=!buff.ironfur.up&rage>50&!cooldown.pause_action.remains&variable.If_build=0&!buff.rage_of_the_sleeper.up|rage>90&variable.If_build=0|!debuff.tooth_and_claw.up&!buff.ironfur.up&rage>50&!cooldown.pause_action.remains&variable.If_build=0&!buff.rage_of_the_sleeper.up
@@ -309,31 +308,31 @@ local function Precombat()
 		return S.Ironfur:Cast()
 	end
 	-- ferocious_bite,if=(buff.cat_form.up&buff.feline_potential.up&active_enemies<3&(buff.incarnation.up|buff.berserk_bear.up)&!dot.rip.refreshable)
-	if IsReady("Ferocious Bite") and targetRange8 and (Player:BuffUp(S.CatForm) and Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(10) < 3 and (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and not Target:DebuffRefreshable(S.RipDebuff)) then
+	if IsReady("Ferocious Bite") and targetRange8 and (Player:BuffUp(S.CatForm) and Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(8) < 3 and (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and not Target:DebuffRefreshable(S.RipDebuff)) then
 		return S.FerociousBite:Cast()
 	end
 	-- rip,if=(buff.cat_form.up&buff.feline_potential.up&active_enemies<3&(!buff.incarnation.up|!buff.berserk_bear.up))|(buff.cat_form.up&buff.feline_potential.up&active_enemies<3&(buff.incarnation.up|buff.berserk_bear.up)&refreshable)
-	if IsReady("Rip")  and targetRange8 and ((Player:BuffUp(S.CatForm) and Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(10) < 3 and (Player:BuffDown(S.Incarnation) or Player:BuffDown(S.Berserk))) or (Player:BuffUp(S.CatForm) and Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(10) < 3 and (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Target:DebuffRefreshable(S.RipDebuff))) then
+	if IsReady("Rip")  and targetRange8 and ((Player:BuffUp(S.CatForm) and Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(8) < 3 and (Player:BuffDown(S.Incarnation) or Player:BuffDown(S.Berserk))) or (Player:BuffUp(S.CatForm) and Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(8) < 3 and (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Target:DebuffRefreshable(S.RipDebuff))) then
 		return S.Rip:Cast()
 	end
 	-- raze,if=variable.If_build=1&buff.vicious_cycle_maul.stack=3&active_enemies>1&!talent.ravage.enabled
-	if IsReady("Raze")  and targetRange8 and (VarIFBuild and Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(10) > 1 and not S.Ravage:IsAvailable()) then
+	if IsReady("Raze")  and targetRange8 and (VarIFBuild and Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(8) > 1 and not S.Ravage:IsAvailable()) then
 		return S.Raze:Cast()
 	end
 	-- mangle,if=buff.gore.up&active_enemies<11|buff.incarnation_guardian_of_ursoc.up&buff.feline_potential_counter.stack<6&talent.wildpower_surge.enabled
-	if IsReady("Mangle")  and targetRange8 and (Player:BuffUp(S.GoreBuff) and RangeCount(10) < 11 or Player:BuffUp(S.Incarnation) and Player:BuffStack(S.FelinePotentialBuff) < 6 and S.WildpowerSurge:IsAvailable()) then
+	if IsReady("Mangle")  and targetRange8 and (Player:BuffUp(S.GoreBuff) and RangeCount(8) < 11 or Player:BuffUp(S.Incarnation) and Player:BuffStack(S.FelinePotentialBuff) < 6 and S.WildpowerSurge:IsAvailable()) then
 		return S.Mangle:Cast()
 	end
 	-- raze,if=variable.If_build=0&(active_enemies>1|(buff.tooth_and_claw.up)&active_enemies>1|buff.vicious_cycle_maul.stack=3&active_enemies>1)
-	if IsReady("Raze") and targetRange8  and (not VarIFBuild and (RangeCount(10) > 1 or Player:BuffUp(S.ToothandClawBuff) and RangeCount(10) > 1 or Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(10) > 1)) then
+	if IsReady("Raze") and targetRange8  and (not VarIFBuild and (RangeCount(8) > 1 or Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) > 1 or Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(8) > 1)) then
 		return S.Raze:Cast()
 	end
 	-- shred,if=cooldown.rage_of_the_sleeper.remains<=52&buff.feline_potential_counter.stack=6&!buff.cat_form.up&!dot.rake.refreshable&active_enemies<3&talent.fluid_form.enabled
-	if IsReady("Shred") and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:BuffStack(S.FelinePotentialBuff) == 6 and Player:BuffDown(S.CatForm) and not Target:DebuffRefreshable(S.RakeDebuff) and RangeCount(10) < 3 and S.FluidForm:IsAvailable()) then
+	if IsReady("Shred") and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:BuffStack(S.FelinePotentialBuff) == 6 and Player:BuffDown(S.CatForm) and not Target:DebuffRefreshable(S.RakeDebuff) and RangeCount(8) < 3 and S.FluidForm:IsAvailable()) then
 		return S.Shred:Cast()
 	end
 	-- rake,if=cooldown.rage_of_the_sleeper.remains<=52&buff.feline_potential_counter.stack=6&!buff.cat_form.up&active_enemies<3&talent.fluid_form.enabled
-	if IsReady("Rake") and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:BuffStack(S.FelinePotentialBuff) == 6 and Player:BuffDown(S.CatForm) and RangeCount(10) < 3 and S.FluidForm:IsAvailable()) then
+	if IsReady("Rake") and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:BuffStack(S.FelinePotentialBuff) == 6 and Player:BuffDown(S.CatForm) and RangeCount(8) < 3 and S.FluidForm:IsAvailable()) then
 		return S.Rake:Cast()
 	end
 	-- mangle,if=buff.cat_form.up&talent.fluid_form.enabled
@@ -341,31 +340,31 @@ local function Precombat()
 		return S.Mangle:Cast()
 	end
 	-- maul,if=variable.If_build=1&(((buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&active_enemies<=5&!talent.raze.enabled)|((buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&active_enemies=1&talent.raze.enabled)|((buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&active_enemies<=5&!talent.raze.enabled))
-	if IsReady("Maul") and targetRange8 and UseMaul and (VarIFBuild and (((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(10) <= 5 and not S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(10) == 1 and S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(10) <= 5 and not S.Raze:IsAvailable()))) then
+	if IsReady("Maul") and targetRange8 and UseMaul and (VarIFBuild and (((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) == 1 and S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()))) then
 		return S.Maul:Cast()
 	end
 	-- maul,if=variable.If_build=0&((buff.tooth_and_claw.up&active_enemies<=5&!talent.raze.enabled)|(buff.tooth_and_claw.up&active_enemies=1&talent.raze.enabled))
-	if IsReady("Maul") and targetRange8 and UseMaul and (not VarIFBuild and ((Player:BuffUp(S.ToothandClawBuff) and RangeCount(10) <= 5 and not S.Raze:IsAvailable()) or (Player:BuffUp(S.ToothandClawBuff) and RangeCount(10) == 1 and S.Raze:IsAvailable()))) then
+	if IsReady("Maul") and targetRange8 and UseMaul and (not VarIFBuild and ((Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) or (Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) == 1 and S.Raze:IsAvailable()))) then
 		return S.Maul:Cast()
 	end
 	-- maul,if=(active_enemies<=5&!talent.raze.enabled&variable.If_build=0)|(active_enemies=1&talent.raze.enabled&variable.If_build=0)|buff.vicious_cycle_maul.stack=3&active_enemies<=5&!talent.raze.enabled
-	if IsReady("Maul") and targetRange8 and UseMaul and ((RangeCount(10) <= 5 and not S.Raze:IsAvailable() and not VarIFBuild) or (RangeCount(10) == 1 and S.Raze:IsAvailable() and not VarIFBuild) or Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(10) <= 5 and not S.Raze:IsAvailable()) then
+	if IsReady("Maul") and targetRange8 and UseMaul and ((RangeCount(8) <= 5 and not S.Raze:IsAvailable() and not VarIFBuild) or (RangeCount(8) == 1 and S.Raze:IsAvailable() and not VarIFBuild) or Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) then
 		return S.Maul:Cast()
 	end
 	-- thrash_bear,if=active_enemies>=5
-	if IsReady("Thrash") and (RangeCount(10) >= 5) then
+	if IsReady("Thrash") and targetRange8  and (RangeCount(8) >= 5) then
 		return S.ThrashBear:Cast()
 	end
 	-- mangle,if=(buff.incarnation.up&active_enemies<=4)|(buff.incarnation.up&talent.soul_of_the_forest.enabled&active_enemies<=5)|((rage<88)&active_enemies<11)|((rage<83)&active_enemies<11&talent.soul_of_the_forest.enabled)
-	if IsReady("Mangle") and ((Player:BuffUp(S.Incarnation) and RangeCount(10) <= 4) or (Player:BuffUp(S.Incarnation) and S.SouloftheForest:IsAvailable() and RangeCount(10) <= 5) and ((Player:Rage() < 88) and RangeCount(10) < 11) or ((Player:Rage() < 83) and RangeCount(10) < 11 and S.SouloftheForest:IsAvailable())) then
+	if IsReady("Mangle") and targetRange8  and ((Player:BuffUp(S.Incarnation) and RangeCount(8) <= 4) or (Player:BuffUp(S.Incarnation) and S.SouloftheForest:IsAvailable() and RangeCount(8) <= 5) and ((Player:Rage() < 88) and RangeCount(8) < 11) or ((Player:Rage() < 83) and RangeCount(8) < 11 and S.SouloftheForest:IsAvailable())) then
 		return S.Mangle:Cast()
 	end
 	-- thrash_bear,if=active_enemies>1
-	if IsReady("Thrash") and (RangeCount(10) > 1) then
+	if IsReady("Thrash") and targetRange8 and (RangeCount(8) > 1) then
 		return S.ThrashBear:Cast()
 	end
 	-- pulverize,target_if=dot.thrash_bear.stack>2
-	if IsReady("Pulverize") and EvaluateCyclePulverize() then
+	if IsReady("Pulverize") and targetRange8  and EvaluateCyclePulverize() then
 		return S.Pulverize:Cast()
 	end
 	-- thrash_bear
@@ -377,19 +376,19 @@ local function Precombat()
 		return S.Moonfire:Cast()
 	end
 	-- rake,if=cooldown.rage_of_the_sleeper.remains<=52&rage<40&active_enemies<3&!talent.lunar_insight.enabled&talent.fluid_form.enabled&energy>70&refreshable&variable.ripweaving=1
-	if IsReady("Rake")  and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:Rage() < 40 and RangeCount(10) < 3 and not S.LunarInsight:IsAvailable() and S.FluidForm:IsAvailable() and Player:Energy() > 70 and Target:DebuffRefreshable(S.RakeDebuff) and VarRipWeaving) then
+	if IsReady("Rake")  and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:Rage() < 40 and RangeCount(8) < 3 and not S.LunarInsight:IsAvailable() and S.FluidForm:IsAvailable() and Player:Energy() > 70 and Target:DebuffRefreshable(S.RakeDebuff) and VarRipWeaving) then
 		return S.Rake:Cast()
 	end
 	-- shred,if=cooldown.rage_of_the_sleeper.remains<=52&rage<40&active_enemies<3&!talent.lunar_insight.enabled&talent.fluid_form.enabled&energy>70&!buff.rage_of_the_sleeper.up&variable.ripweaving=1
-	if IsReady("Shred") and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:Rage() < 40 and RangeCount(10) < 3 and not S.LunarInsight:IsAvailable() and S.FluidForm:IsAvailable() and Player:Energy() > 70 and Player:BuffDown(S.RageoftheSleeper) and VarRipWeaving) then
+	if IsReady("Shred") and targetRange8 and (S.RageoftheSleeper:CooldownRemains() <= 52 and Player:Rage() < 40 and RangeCount(8) < 3 and not S.LunarInsight:IsAvailable() and S.FluidForm:IsAvailable() and Player:Energy() > 70 and Player:BuffDown(S.RageoftheSleeper) and VarRipWeaving) then
 		return S.Shred:Cast()
 	end
 	-- rip,if=buff.cat_form.up&!dot.rip.ticking&active_enemies<3&variable.ripweaving=1
-	if IsReady("Rip") and targetRange8 and (Player:BuffUp(S.CatForm) and Target:DebuffDown(S.RipDebuff) and RangeCount(10) < 3 and VarRipWeaving) then
+	if IsReady("Rip") and targetRange8 and (Player:BuffUp(S.CatForm) and Target:DebuffDown(S.RipDebuff) and RangeCount(8) < 3 and VarRipWeaving) then
 		return S.Rip:Cast()
 	end
 	-- ferocious_bite,if=dot.rip.ticking&combo_points>4&active_enemies<3&variable.ripweaving=1
-	if IsReady("Ferocious Bite") and targetRange8 and (Target:DebuffUp(S.RipDebuff) and Player:ComboPoints() > 4 and RangeCount(10) < 3 and VarRipWeaving) then
+	if IsReady("Ferocious Bite") and targetRange8 and (Target:DebuffUp(S.RipDebuff) and Player:ComboPoints() > 4 and RangeCount(8) < 3 and VarRipWeaving) then
 		return S.FerociousBite:Cast()
 	end
 	-- starsurge,if=talent.starsurge.enabled&rage<20
@@ -397,11 +396,11 @@ local function Precombat()
 		return S.Starsurge:Cast()
 	end
 	-- swipe_bear,if=(talent.lunar_insight.enabled&active_enemies>4)|!talent.lunar_insight.enabled|talent.lunar_insight.enabled&active_enemies<2
-	if IsReady("Swipe") and targetRange8 and ((S.LunarInsight:IsAvailable() and RangeCount(10) > 4) or not S.LunarInsight:IsAvailable() or S.LunarInsight:IsAvailable() and RangeCount(10) < 2) then
+	if IsReady("Swipe") and targetRange8 and ((S.LunarInsight:IsAvailable() and RangeCount(8) > 4) or not S.LunarInsight:IsAvailable() or S.LunarInsight:IsAvailable() and RangeCount(8) < 2) then
 		return S.Swipe:Cast()
 	end
 	-- moonfire,if=(talent.lunar_insight.enabled&active_enemies>1)&buff.bear_form.up
-	if IsReady("Moonfire") and ((S.LunarInsight:IsAvailable() and RangeCount(10) > 1) and Player:BuffUp(S.BearForm)) and targetRange40 and Target:AffectingCombat() then
+	if IsReady("Moonfire") and ((S.LunarInsight:IsAvailable() and RangeCount(8) > 1) and Player:BuffUp(S.BearForm)) and targetRange40 and Target:AffectingCombat() then
 		return S.Moonfire:Cast()
 	end
   end
@@ -409,7 +408,7 @@ local function Precombat()
 local function APL()
 	inRange5 = RangeCount(5)
 	inRange8 = RangeCount(8)
-	inRange10 = RangeCount(10)
+	inRange10 = RangeCount(8)
 	inRange15 = RangeCount(15)
 	inRange20 = RangeCount(20)
 	inRange25 = RangeCount(25)
@@ -435,12 +434,12 @@ local function APL()
     if Player:IsCasting() or Player:IsChanneling() then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
     elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player")
-	 or  (AuraUtil.FindAuraByName("Cat Form", "player") or  AuraUtil.FindAuraByName("Travel Form", "player")) and not Player:AffectingCombat() and RangeCount(10)>=1 then
+	 or  (AuraUtil.FindAuraByName("Cat Form", "player") or  AuraUtil.FindAuraByName("Travel Form", "player")) and not Player:AffectingCombat() and RangeCount(8)>=1 then
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
     end 
     
 
-	isTanking = Player:IsTankingAoE(10) or Player:IsTanking(Target)
+	isTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
 	aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
 
@@ -457,11 +456,8 @@ local function APL()
 	local inInstance, instanceType = IsInInstance()
 	
 	local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-	if level == nil then
-		level = 0
-	end
-	
-	 highkey = 2
+
+	local highkey = 2
 	
 	local castchannelTime = math.random(250, 500) / 1000
 	
@@ -599,9 +595,9 @@ local function APL()
         local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
       end
 
-      if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and (Player:CanAttack(Target) or RangeCount(10)>=1) and not Target:IsDeadOrGhost())  then 
+      if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and (Player:CanAttack(Target) or RangeCount(8)>=1) and not Target:IsDeadOrGhost())  then 
 
-        if IsReady("Bear Form") and (targetRange30 or RangeCount(10)>=1) and not AuraUtil.FindAuraByName("Bear Form","player") then
+        if IsReady("Bear Form") and (targetRange30 or RangeCount(8)>=1) and not AuraUtil.FindAuraByName("Bear Form","player") then
           return S.BearForm:Cast()
         end
 		
@@ -646,7 +642,7 @@ local function APL()
           end
 
 
-		  Enemies10y = Player:GetEnemiesInMeleeRange(10)
+		  Enemies8y = Player:GetEnemiesInMeleeRange(8)
 
 		
 		  if Player:CanAttack(Target) or Player:AffectingCombat() then
@@ -677,7 +673,7 @@ local function APL()
 		return S.Incarnation:Cast()
 	end
 
-		if IsReady("Barkskin") and Player:BuffDown(S.IronfurBuff)  then
+		if IsReady("Barkskin")   then
 			return S.Barkskin:Cast()
 		end
 		if IsReady("Survival Instincts") then
@@ -700,7 +696,7 @@ local function APL()
 
 		
 		if IsReady("Barkskin") and ( (HPpercentloss > 12
-		and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 45) and Player:BuffDown(S.IronfurBuff) ) then
+		and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 45)  ) then
 			return S.Barkskin:Cast()
 		end
 		if IsReady("Survival Instincts") and (HPpercentloss > 12
