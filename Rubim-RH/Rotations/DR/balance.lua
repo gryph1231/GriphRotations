@@ -207,15 +207,9 @@ local S = RubimRH.Spell[102]
 
 if not Item.Druid then Item.Druid = {}; end
 Item.Druid.Balance = {
-    trink = Item(178751, { 13, 14 }),
 
-    bracer = Item(168978),
-    rez = Item(158379),
-    drums = Item(193470),
-    
-    HPIcon = Item(169451),
-    tx1 = Item(118330),
-    tx2 = Item(114616),
+  HPIcon = Item(169451),
+  drums = Item(219905),
 
 	
 };
@@ -455,11 +449,11 @@ local function Precombat()
   -- variable,name=on_use_trinket,op=add,value=trinket.1.has_use_buff&!trinket.1.is.ovinaxs_mercurial_egg
   -- variable,name=on_use_trinket,op=add,value=(trinket.2.has_use_buff&!trinket.2.is.ovinaxs_mercurial_egg)*2
   -- Manually added: Group buff check
-  if S.MarkoftheWild:IsCastable() and motwremains<300 then
+  if IsReady("Mark of the Wild") and motwremains<300 then
 return S.MarkoftheWild:Cast()
   end
   -- moonkin_form
-  if S.MoonkinForm:IsCastable() and not Player:BuffUp(S.MoonkinForm) then
+  if IsReady("Moonkin Form") and not Player:BuffUp(S.MoonkinForm) then
 return S.MoonkinForm:Cast()
   end
   -- wrath
@@ -506,7 +500,7 @@ local function ST()
       return S.CelestialAlignment:Cast()
     end
     -- incarnation,if=variable.cd_condition
-    if IsReady("Incarnation") then
+    if IsReady("Incarnation: Chosen of Elune") then
       return S.Incarnation:Cast()
     end
     -- local ShouldReturn = UseItems();
@@ -668,7 +662,7 @@ local function AoE()
       return S.CelestialAlignment:Cast()
     end
     -- incarnation,if=variable.cd_condition
-    if IsReady("Incarnation") then
+    if IsReady("Incarnation: Chosen of Elune") then
       return S.Incarnation:Cast()
     end
   end
@@ -892,13 +886,6 @@ starfirecastmoving = (AuraUtil.FindAuraByName("Warrior of Elune","player") or no
     local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
     local channelTime = elapsedTimech / 1000
     
-                                --health pot -- will need to update item ID of HPs as expansions progress
-                                if inRange30 >= 1 and Player:HealthPercentage() <= 30 and Player:AffectingCombat() and (IsUsableItem(191380) == true and
-                                GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 or IsUsableItem(207023) == true and
-                                GetItemCooldown(207023) == 0 and GetItemCount(207023) >= 1)
-                                and (not Player:InArena() and not Player:InBattlegrounds()) then
-                                return I.HPIcon:Cast()
-                                end
 
 
                                 	 
@@ -955,6 +942,10 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 
       if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost()) and not AuraUtil.FindAuraByName("Travel Form", "player") then 
 
+
+
+
+        
         if IsReady("Moonkin Form") and ( Player:CanAttack(Target) and not Target:IsDeadOrGhost()) and targetRange40 and not AuraUtil.FindAuraByName("Moonkin Form","player") then
           return S.MoonkinForm:Cast()
         end
@@ -965,7 +956,7 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
           return I.HPIcon:Cast()
           end
           if IsReady("Regrowth") and Player:HealthPercentage() <= 50 and inRange30>=1 and AuraUtil.FindAuraByName("Blooming Infusion", "player") then
-            return S.Renewal:Cast()
+            return S.Regrowth:Cast()
             end
 
           if IsReady("Renewal") and Player:HealthPercentage() <= 35 and inRange30>=1 then
