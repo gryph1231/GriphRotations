@@ -109,12 +109,13 @@ Growl = Spell(6795),
   FountofStrength                       = Spell(441675),
   Ravage                                = Spell(441583),
   WildpowerSurge                        = Spell(441691),
+  RemoveCorruption = Spell(2782),
   -- Buffs
   FelinePotentialBuff                   = Spell(441701),
   RavageBuffFeral                       = Spell(441585),
   RavageBuffGuardian                    = Spell(441602),
 autoattack                  = Spell(291944), -- regeneratin
-
+IncapacitatingRoar = Spell(99),
 lustAT = Spell(155145),
 lust1 = Spell(57724),
 lust2 = Spell(57723),
@@ -206,7 +207,7 @@ HL:RegisterForEvent(function()
 --- ===== Rotation Functions =====
 local function Precombat()
 
-	if IsReady("Moonfire") and targetRange40 and Target:AffectingCombat() then
+	if IsReady("Moonfire") and (targetRange40 and Target:AffectingCombat() or targetRange20) then
 		return S.Moonfire:Cast()
 	end
 
@@ -221,7 +222,7 @@ local function Precombat()
   end
 
   local function Defensives()
-	if Player:HealthPercentage() < 70 and IsReady("Frenzied Regeneration") and Player:BuffDown(S.FrenziedRegenerationBuff) and not Player:HealingAbsorbed() then
+	if Player:HealthPercentage() < 65 and IsReady("Frenzied Regeneration") and Player:BuffDown(S.FrenziedRegenerationBuff) and not Player:HealingAbsorbed() then
 		return S.FrenziedRegeneration:Cast()
 	end
 	if IsReady("Regrowth") and Player:BuffUp(S.DreamofCenariusBuff) and (Player:BuffDown(S.PoPHealBuff) and Player:HealthPercentage() < 65 or Player:BuffUp(S.PoPHealBuff) and Player:HealthPercentage() < 65) then
@@ -245,7 +246,7 @@ local function Precombat()
 		return S.HeartoftheWild:Cast()
 	end
 	-- moonfire,cycle_targets=1,if=buff.bear_form.up&(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<7&talent.fury_of_nature.enabled)|(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<4&!talent.fury_of_nature.enabled)
-	if IsReady("Moonfire") and Player:BuffUp(S.BearForm) and EvaluateCycleMoonfire() and targetRange40 and Target:AffectingCombat() then
+	if IsReady("Moonfire") and Player:BuffUp(S.BearForm) and EvaluateCycleMoonfire()  and (targetRange40 and Target:AffectingCombat() or targetRange20)  then
 		return S.Moonfire:Cast()
 	end
 	-- thrash_bear,target_if=refreshable|(dot.thrash_bear.stack<5&talent.flashing_claws.rank=2|dot.thrash_bear.stack<4&talent.flashing_claws.rank=1|dot.thrash_bear.stack<3&!talent.flashing_claws.enabled)
@@ -372,7 +373,7 @@ local function Precombat()
 		return S.ThrashBear:Cast()
 	end
 	-- moonfire,if=buff.galactic_guardian.up&buff.bear_form.up&talent.boundless_moonlight.enabled
-	if IsReady("Moonfire") and targetRange40 and Target:AffectingCombat() and (Player:BuffUp(S.GalacticGuardianBuff) and Player:BuffUp(S.BearForm) and S.BoundlessMoonlight:IsAvailable()) then
+	if IsReady("Moonfire")  and (targetRange40 and Target:AffectingCombat() or targetRange20) and (Player:BuffUp(S.GalacticGuardianBuff) and Player:BuffUp(S.BearForm) and S.BoundlessMoonlight:IsAvailable()) then
 		return S.Moonfire:Cast()
 	end
 	-- rake,if=cooldown.rage_of_the_sleeper.remains<=52&rage<40&active_enemies<3&!talent.lunar_insight.enabled&talent.fluid_form.enabled&energy>70&refreshable&variable.ripweaving=1
@@ -400,7 +401,7 @@ local function Precombat()
 		return S.Swipe:Cast()
 	end
 	-- moonfire,if=(talent.lunar_insight.enabled&active_enemies>1)&buff.bear_form.up
-	if IsReady("Moonfire") and ((S.LunarInsight:IsAvailable() and RangeCount(8) > 1) and Player:BuffUp(S.BearForm)) and targetRange40 and Target:AffectingCombat() then
+	if IsReady("Moonfire") and ((S.LunarInsight:IsAvailable() and RangeCount(10) > 1) and Player:BuffUp(S.BearForm)) and (targetRange40 and Target:AffectingCombat() or targetRange20) then
 		return S.Moonfire:Cast()
 	end
   end
@@ -439,7 +440,7 @@ local function APL()
     end 
     
 
-	isTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+	IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
 	aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
 
@@ -607,7 +608,7 @@ local function APL()
 
 
         --hold aggro
-        if targetRange30 and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
+        if targetRange30 and IsTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
             if IsReady("Growl")  then
             return S.Growl:Cast()
             end
@@ -620,12 +621,12 @@ local function APL()
 
 
 
-		  if IsReady("Cleanse Toxins") and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
-			return S.CleanseToxins:Cast()
+		  if IsReady("Remove Corruption") and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
+			return S.RemoveCorruption:Cast()
 			end
 
 		  		--- seasonal affix
-			if targetRange8 and TWWS1AffixMobsInRange()>=6 and IsReady("Incapacitating Roar") and RubimRH.InterruptsON() then
+			if  TWWS1AffixMobsInRange()>=6 and IsReady("Incapacitating Roar") and RubimRH.InterruptsON() then
 				return S.IncapacitatingRoar:Cast()
 				end
 		  
