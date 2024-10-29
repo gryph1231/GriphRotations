@@ -122,11 +122,17 @@ lust2 = Spell(57723),
 lust3 = Spell(80354),
 lust4 = Spell(95809),
 lust5 = Spell(264689),
-
+StampedingRoar = Spell(106898),
 
 };
 
+
+
+
 local S = RubimRH.Spell[104];
+
+S.StampedingRoar.TextureSpellID = { 255654 }
+
 local G = RubimRH.Spell[1];
 
 --S.Raze.TextureSpellID = { 258082 } --Icy Claws
@@ -216,7 +222,7 @@ local function Precombat()
 		return S.ThrashBear:Cast()
 	end
 	-- Manually added: mangle
-	if IsReady("Mangle") and targetRange8 then
+	if IsReady("Mangle") and targetRange5 then
 		return S.Mangle:Cast()
 	end
   end
@@ -321,7 +327,7 @@ local function Precombat()
 		return S.Raze:Cast()
 	end
 	-- mangle,if=buff.gore.up&active_enemies<11|buff.incarnation_guardian_of_ursoc.up&buff.feline_potential_counter.stack<6&talent.wildpower_surge.enabled
-	if IsReady("Mangle")  and targetRange8 and (Player:BuffUp(S.GoreBuff) and RangeCount(8) < 11 or Player:BuffUp(S.Incarnation) and Player:BuffStack(S.FelinePotentialBuff) < 6 and S.WildpowerSurge:IsAvailable()) then
+	if IsReady("Mangle")  and targetRange5 and (Player:BuffUp(S.GoreBuff) and RangeCount(8) < 11 or Player:BuffUp(S.Incarnation) and Player:BuffStack(S.FelinePotentialBuff) < 6 and S.WildpowerSurge:IsAvailable()) then
 		return S.Mangle:Cast()
 	end
 	-- raze,if=variable.If_build=0&(active_enemies>1|(buff.tooth_and_claw.up)&active_enemies>1|buff.vicious_cycle_maul.stack=3&active_enemies>1)
@@ -337,19 +343,19 @@ local function Precombat()
 		return S.Rake:Cast()
 	end
 	-- mangle,if=buff.cat_form.up&talent.fluid_form.enabled
-	if IsReady("Mangle") and targetRange8 and (Player:BuffUp(S.CatForm) and S.FluidForm:IsAvailable()) then
+	if IsReady("Mangle") and targetRange5 and (Player:BuffUp(S.CatForm) and S.FluidForm:IsAvailable()) then
 		return S.Mangle:Cast()
 	end
 	-- maul,if=variable.If_build=1&(((buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&active_enemies<=5&!talent.raze.enabled)|((buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&active_enemies=1&talent.raze.enabled)|((buff.tooth_and_claw.stack>1|buff.tooth_and_claw.remains<1+gcd)&active_enemies<=5&!talent.raze.enabled))
-	if IsReady("Maul") and targetRange8 and UseMaul and (VarIFBuild and (((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) == 1 and S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()))) then
+	if IsReady("Maul") and targetRange5 and UseMaul and (VarIFBuild and (((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) == 1 and S.Raze:IsAvailable()) or ((Player:BuffStack(S.ToothandClawBuff) > 1 or Player:BuffRemains(S.ToothandClawBuff) < 1 + Player:GCD()) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()))) then
 		return S.Maul:Cast()
 	end
 	-- maul,if=variable.If_build=0&((buff.tooth_and_claw.up&active_enemies<=5&!talent.raze.enabled)|(buff.tooth_and_claw.up&active_enemies=1&talent.raze.enabled))
-	if IsReady("Maul") and targetRange8 and UseMaul and (not VarIFBuild and ((Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) or (Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) == 1 and S.Raze:IsAvailable()))) then
+	if IsReady("Maul") and targetRange5 and UseMaul and (not VarIFBuild and ((Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) or (Player:BuffUp(S.ToothandClawBuff) and RangeCount(8) == 1 and S.Raze:IsAvailable()))) then
 		return S.Maul:Cast()
 	end
 	-- maul,if=(active_enemies<=5&!talent.raze.enabled&variable.If_build=0)|(active_enemies=1&talent.raze.enabled&variable.If_build=0)|buff.vicious_cycle_maul.stack=3&active_enemies<=5&!talent.raze.enabled
-	if IsReady("Maul") and targetRange8 and UseMaul and ((RangeCount(8) <= 5 and not S.Raze:IsAvailable() and not VarIFBuild) or (RangeCount(8) == 1 and S.Raze:IsAvailable() and not VarIFBuild) or Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) then
+	if IsReady("Maul") and targetRange5 and UseMaul and ((RangeCount(8) <= 5 and not S.Raze:IsAvailable() and not VarIFBuild) or (RangeCount(8) == 1 and S.Raze:IsAvailable() and not VarIFBuild) or Player:BuffStack(S.ViciousCycleMaulBuff) == 3 and RangeCount(8) <= 5 and not S.Raze:IsAvailable()) then
 		return S.Maul:Cast()
 	end
 	-- thrash_bear,if=active_enemies>=5
@@ -357,7 +363,7 @@ local function Precombat()
 		return S.ThrashBear:Cast()
 	end
 	-- mangle,if=(buff.incarnation.up&active_enemies<=4)|(buff.incarnation.up&talent.soul_of_the_forest.enabled&active_enemies<=5)|((rage<88)&active_enemies<11)|((rage<83)&active_enemies<11&talent.soul_of_the_forest.enabled)
-	if IsReady("Mangle") and targetRange8  and ((Player:BuffUp(S.Incarnation) and RangeCount(8) <= 4) or (Player:BuffUp(S.Incarnation) and S.SouloftheForest:IsAvailable() and RangeCount(8) <= 5) and ((Player:Rage() < 88) and RangeCount(8) < 11) or ((Player:Rage() < 83) and RangeCount(8) < 11 and S.SouloftheForest:IsAvailable())) then
+	if IsReady("Mangle") and targetRange5  and ((Player:BuffUp(S.Incarnation) and RangeCount(8) <= 4) or (Player:BuffUp(S.Incarnation) and S.SouloftheForest:IsAvailable() and RangeCount(8) <= 5) and ((Player:Rage() < 88) and RangeCount(8) < 11) or ((Player:Rage() < 83) and RangeCount(8) < 11 and S.SouloftheForest:IsAvailable())) then
 		return S.Mangle:Cast()
 	end
 	-- thrash_bear,if=active_enemies>1
@@ -439,6 +445,7 @@ local function APL()
         return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
     end 
     
+	local tanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 
 	IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
@@ -558,15 +565,15 @@ local function APL()
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
 	
-
+	if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or inRange30 == 0 or not Target:Exists() then
+		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+		end
 		
 	if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 	return RubimRH.QueuedSpell():Cast()
 	end
 	
-	if not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or inRange30 == 0 or not Target:Exists() then
-	  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-	  end
+
 	
 	  if IsReady("Bear Form") and (not AuraUtil.FindAuraByName("Cat Form","player")  and not AuraUtil.FindAuraByName("Travel Form","player") or Player:CanAttack(Target) and not Target:IsDeadOrGhost() and targetRange30) and Player:IsMoving() and not AuraUtil.FindAuraByName("Bear Form","player") then
         return S.BearForm:Cast()
@@ -608,7 +615,7 @@ local function APL()
 
 
         --hold aggro
-        if targetRange30 and IsTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
+        if targetRange30 and tanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
             if IsReady("Growl")  then
             return S.Growl:Cast()
             end
@@ -636,7 +643,7 @@ local function APL()
 
 
             -- kick on GCD
-            if IsReady("Skull Bash") and kickprio() and targetRange5 and Player:GCDRemains()<0.5 then
+            if IsReady("Skull Bash") and kickprio() and targetRange8 and Player:GCDRemains()<0.5 then
             return S.SkullBash:Cast()
             end
     
@@ -661,7 +668,7 @@ local function APL()
 			return S.autoattack:Cast()
 			end
 	
-			if (IsTanking and Player:BuffUp(S.BearForm)) and targetRange30 then
+			if (IsTanking and Player:BuffUp(S.BearForm)) and (RangeCount(20)>=1 or targetRange20) then
 				local ShouldReturn = Defensives(); if ShouldReturn then return ShouldReturn; end
 			  end
 
@@ -670,7 +677,7 @@ local function APL()
 			if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
 
 	-- incarnation
-	if RubimRH.CDsON() and IsReady("Incarnation: Guardian of Ursoc") then
+	if IsReady("Incarnation: Guardian of Ursoc") then
 		return S.Incarnation:Cast()
 	end
 
@@ -695,7 +702,10 @@ local function APL()
 
 	if not IsEncounterInProgress(Boss) or level<highkey then
 
-		
+			-- incarnation
+	if IsReady("Incarnation: Guardian of Ursoc") then
+		return S.Incarnation:Cast()
+	end
 		if IsReady("Barkskin") and ( (HPpercentloss > 12
 		and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 45)  ) then
 			return S.Barkskin:Cast()
