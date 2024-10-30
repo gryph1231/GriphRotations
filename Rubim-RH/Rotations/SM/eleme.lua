@@ -850,7 +850,7 @@ end
 
 if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
 
-  if Player:BuffUp(S.AscendanceBuff) and RubimRH.CDsON() then
+  if (Player:BuffStack(S.SpymastersReportBuff) > 35 and Player:PrevGCDP(1, S.Stormkeeper) or Player:BuffRemains(S.AscendanceBuff) > 12 and Player:BuffStack(S.SpymastersReportBuff) > 25) and RubimRH.CDsON() then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
   end
@@ -883,10 +883,10 @@ if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
   end
 
 
-if IsReady("Poison Cleansing Totem") and GetAppropriateCureSpell("player")=='Poison' and RubimRH.InterruptsON() then
+if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison') and RubimRH.InterruptsON() then
   return S.PoisonCleansingTotem:Cast()
   end
-if IsReady("Cleanse Spirit") and GetAppropriateCureSpell("player")=='Curse' and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
+if IsReady("Cleanse Spirit") and (AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
   return S.CleanseSpirit:Cast()
   end
 

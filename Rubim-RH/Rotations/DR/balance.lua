@@ -520,7 +520,7 @@ local function ST()
     return S.Starsurge:Cast()
   end
   -- force_of_nature,if=cooldown.ca_inc.remains<gcd.max&(!talent.convoke_the_spirits|cooldown.convoke_the_spirits.remains<gcd.max*3|cooldown.convoke_the_spirits.remains>cooldown.ca_inc.full_recharge_time|fight_remains<cooldown.convoke_the_spirits.remains+3)|cooldown.ca_inc.full_recharge_time+5+15*talent.control_of_the_dream>cooldown&(!talent.convoke_the_spirits|cooldown.convoke_the_spirits.remains+10+15*talent.control_of_the_dream>cooldown|fight_remains<cooldown.convoke_the_spirits.remains+cooldown.convoke_the_spirits.duration+5)&(fight_remains>cooldown+5|fight_remains<cooldown.ca_inc.remains+7)|talent.whirling_stars&talent.convoke_the_spirits&cooldown.convoke_the_spirits.remains>cooldown.force_of_nature.duration-10&fight_remains>cooldown.convoke_the_spirits.remains+6
-  if IsReady("Force of Nature") and (CAInc:CooldownRemains() < Player:GCD() and (not S.ConvoketheSpirits:IsAvailable() or S.ConvoketheSpirits:CooldownRemains() < Player:GCD() * 3 or S.ConvoketheSpirits:CooldownRemains() > CAInc:FullRechargeTime() or Target:TimeToDie() < S.ConvoketheSpirits:CooldownRemains() + 3) or CAInc:FullRechargeTime() + 5 + 15 * num(S.ControloftheDream:IsAvailable()) > 60 and (not S.ConvoketheSpirits:IsAvailable() or S.ConvoketheSpirits:CooldownRemains() + 10 + 15 * num(S.ControloftheDream:IsAvailable()) > 60 or Target:TimeToDie() < S.ConvoketheSpirits:CooldownRemains() + ConvokeCD + 5) and (Target:TimeToDie() > 65 or Target:TimeToDie() < CAInc:CooldownRemains() + 7) or S.WhirlingStars:IsAvailable() and S.ConvoketheSpirits:IsAvailable() and S.ConvoketheSpirits:CooldownRemains() > 50 and Target:TimeToDie() > S.ConvoketheSpirits:CooldownRemains() + 6) then
+  if IsReady("Force of Nature") and RubimRH.CDsON() and (CAInc:CooldownRemains() < Player:GCD() and (not S.ConvoketheSpirits:IsAvailable() or S.ConvoketheSpirits:CooldownRemains() < Player:GCD() * 3 or S.ConvoketheSpirits:CooldownRemains() > CAInc:FullRechargeTime() or Target:TimeToDie() < S.ConvoketheSpirits:CooldownRemains() + 3) or CAInc:FullRechargeTime() + 5 + 15 * num(S.ControloftheDream:IsAvailable()) > 60 and (not S.ConvoketheSpirits:IsAvailable() or S.ConvoketheSpirits:CooldownRemains() + 10 + 15 * num(S.ControloftheDream:IsAvailable()) > 60 or Target:TimeToDie() < S.ConvoketheSpirits:CooldownRemains() + ConvokeCD + 5) and (Target:TimeToDie() > 65 or Target:TimeToDie() < CAInc:CooldownRemains() + 7) or S.WhirlingStars:IsAvailable() and S.ConvoketheSpirits:IsAvailable() and S.ConvoketheSpirits:CooldownRemains() > 50 and Target:TimeToDie() > S.ConvoketheSpirits:CooldownRemains() + 6) then
     return S.ForceofNature:Cast()
   end
   -- fury_of_elune,if=5+variable.passive_asp<astral_power.deficit
@@ -582,7 +582,7 @@ local function ST()
     return S.Starsurge:Cast()
   end
   -- force_of_nature,if=!hero_tree.keeper_of_the_grove
-  if IsReady("Force of Nature") and (Player:HeroTreeID() ~= 23) then
+  if IsReady("Force of Nature") and (Player:HeroTreeID() ~= 23) and RubimRH.CDsON() then
     return S.ForceofNature:Cast()
   end
   -- wild_mushroom
@@ -645,7 +645,7 @@ local function AoE()
 
   -- removed and (Target:TimeToDie() > 65 or CAInc:CooldownRemains() > Target:TimeToDie())
   -- force_of_nature,if=cooldown.ca_inc.remains<gcd.max&(!variable.eclipse|variable.eclipse_remains>6)|variable.eclipse_remains>=3&cooldown.ca_inc.remains>10+15*talent.control_of_the_dream&(fight_remains>cooldown+5|cooldown.ca_inc.remains>fight_remains)
-  if IsReady("Force of Nature") and (CAInc:CooldownRemains() < Player:GCD() and (not VarEclipse or VarEclipseRemains > 6) or VarEclipseRemains >= 3 and CAInc:CooldownRemains() > 10 + 15 * num(S.ControloftheDream:IsAvailable()) ) then
+  if IsReady("Force of Nature") and RubimRH.CDsON() and (CAInc:CooldownRemains() < Player:GCD() and (not VarEclipse or VarEclipseRemains > 6) or VarEclipseRemains >= 3 and CAInc:CooldownRemains() > 10 + 15 * num(S.ControloftheDream:IsAvailable()) ) then
     return S.ForceofNature:Cast()
   end
   -- fury_of_elune,if=variable.eclipse
@@ -709,7 +709,7 @@ local function AoE()
     return S.WildMushroom:Cast()
   end
   -- force_of_nature,if=!hero_tree.keeper_of_the_grove
-  if IsReady("Force of Nature") and (Player:HeroTreeID() ~= 23) then
+  if IsReady("Force of Nature") and (Player:HeroTreeID() ~= 23) and RubimRH.CDsON() then
     return S.ForceofNature:Cast()
   end
   -- starfire,if=talent.lunar_calling|buff.eclipse_lunar.up&spell_targets.starfire>1

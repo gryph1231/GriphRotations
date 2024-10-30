@@ -130,6 +130,7 @@ StampedingRoar = Spell(106898),
 
 
 local S = RubimRH.Spell[104];
+S.Maul.TextureSpellID = { 287712 }
 
 S.StampedingRoar.TextureSpellID = { 255654 }
 
@@ -208,7 +209,7 @@ HL:RegisterForEvent(function()
 	-- target_if=refreshable|(dot.thrash_bear.stack<5&talent.flashing_claws.rank=2|dot.thrash_bear.stack<4&talent.flashing_claws.rank=1|dot.thrash_bear.stack<3&!talent.flashing_claws.enabled)
 	return Target:DebuffRefreshable(S.ThrashBearDebuff) or (Target:DebuffStack(S.ThrashBearDebuff) < 5 and S.FlashingClaws:TalentRank() == 2 or Target:DebuffStack(S.ThrashBearDebuff) < 4 and S.FlashingClaws:TalentRank() == 1 or Target:DebuffStack(S.ThrashBearDebuff) < 3 and not S.FlashingClaws:IsAvailable())
   end
-  
+
 
 --- ===== Rotation Functions =====
 local function Precombat()
@@ -248,7 +249,7 @@ local function Precombat()
 		return S.RavageAbilityBear:Cast()
 	end
 	-- heart_of_the_Wild,if=(talent.heart_of_the_wild.enabled&!talent.rip.enabled)|talent.heart_of_the_wild.enabled&buff.feline_potential_counter.stack=6&active_enemies<3
-	if RubimRH.CDsON() and IsReady("Heart of the Wild") and (not S.Rip:IsAvailable() or Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(8) < 3)  and targetRange10 then
+	if RubimRH.CDsON() and AuraUtil.FindAuraByName("Incarnation: Guardian of Ursoc", "player") and IsReady("Heart of the Wild") and (not S.Rip:IsAvailable() or Player:BuffStack(S.FelinePotentialBuff) == 6 and RangeCount(8) < 3)  and targetRange10 then
 		return S.HeartoftheWild:Cast()
 	end
 	-- moonfire,cycle_targets=1,if=buff.bear_form.up&(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<7&talent.fury_of_nature.enabled)|(((!ticking&target.time_to_die>12)|(refreshable&target.time_to_die>12))&active_enemies<4&!talent.fury_of_nature.enabled)
@@ -264,7 +265,7 @@ local function Precombat()
 	-- barkskin,if=buff.bear_form.up
 	-- Note: Handled in Defensives().
 	-- lunar_beam
-	if RubimRH.CDsON() and IsReady("Lunar Beam") and aoerangecheck then
+	if RubimRH.CDsON() and IsReady("Lunar Beam") and aoerangecheck and not IsEncounterInProgress(Boss) then
 		return S.LunarBeam:Cast()
 	end
 	-- convoke_the_spirits,if=(talent.wildpower_surge.enabled&buff.cat_form.up&buff.feline_potential.up)|!talent.wildpower_surge.enabled
@@ -280,7 +281,7 @@ local function Precombat()
 		return S.Incarnation:Cast()
 	end
 	-- rage_of_the_sleeper,if=(((buff.incarnation_guardian_of_ursoc.down&cooldown.incarnation_guardian_of_ursoc.remains>60)|buff.berserk_bear.down)&rage>40&(!talent.convoke_the_spirits.enabled)|(buff.incarnation_guardian_of_ursoc.up|buff.berserk_bear.up)&rage>40&(!talent.convoke_the_spirits.enabled)|(talent.convoke_the_spirits.enabled)&rage>40)
-	if RubimRH.CDsON() and targetRange10 
+	if RubimRH.CDsON() and (targetRange10 or RangeCount(10)>=1)
 	and (not IsEncounterInProgress(Boss)) 
 	and IsReady("Rage of the Sleeper") 
 	and (((Player:BuffDown(S.Incarnation) and S.Incarnation:CooldownRemains() > 60) 
@@ -303,15 +304,15 @@ local function Precombat()
 		return S.ThrashBear:Cast()
 	end
 	-- ironfur,target_if=!debuff.tooth_and_claw.up,if=!buff.ironfur.up&rage>50&!cooldown.pause_action.remains&variable.If_build=0&!buff.rage_of_the_sleeper.up|rage>90&variable.If_build=0|!debuff.tooth_and_claw.up&!buff.ironfur.up&rage>50&!cooldown.pause_action.remains&variable.If_build=0&!buff.rage_of_the_sleeper.up
-	if IsReady("Ironfur") and targetRange15 and (Player:BuffDown(S.IronfurBuff) and Player:Rage() > 50 and IsTanking and not VarIFBuild and Player:BuffDown(S.RageoftheSleeper) or Player:Rage() > 90 and not VarIFBuild or Player:BuffDown(S.ToothandClawBuff) and Player:BuffDown(S.IronfurBuff) and Player:Rage() > 50 and IsTanking and not VarIFBuild and Player:BuffDown(S.RageoftheSleeper)) then
+	if IsReady("Ironfur") and Player:BuffStack(S.IronfurBuff) < 6 and (RangeCount(10)>=1 or targetRange15) and (Player:BuffDown(S.IronfurBuff) and Player:Rage() > 50 and IsTanking and not VarIFBuild and Player:BuffDown(S.RageoftheSleeper) or Player:Rage() > 90 and not VarIFBuild or Player:BuffDown(S.ToothandClawBuff) and Player:BuffDown(S.IronfurBuff) and Player:Rage() > 50 and IsTanking and not VarIFBuild and Player:BuffDown(S.RageoftheSleeper)) then
 		return S.Ironfur:Cast()
 	end
 	-- ironfur,if=!buff.ravage.up&((rage>40&variable.If_build=1&cooldown.rage_of_the_sleeper.remains>3&talent.rage_of_the_sleeper.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&cooldown.rage_of_the_sleeper.remains>3&talent.rage_of_the_sleeper.enabled|rage>90&variable.If_build=1&!talent.fount_of_strength.enabled|rage>110&variable.If_build=1&talent.fount_of_strength.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&buff.rage_of_the_sleeper.up&talent.rage_of_the_sleeper.enabled))
-	if IsReady("Ironfur") and targetRange15 and (Player:BuffDown(S.RavageBuffGuardian) and (Player:Rage() > 40 and VarIFBuild and S.RageoftheSleeper:CooldownRemains() > 3 and S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and S.RageoftheSleeper:CooldownRemains() > 3 and S.RageoftheSleeper:IsAvailable() or Player:Rage() > 90 and VarIFBuild and not S.FountofStrength:IsAvailable() or Player:Rage() > 110 and VarIFBuild and S.FountofStrength:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and Player:BuffUp(S.RageoftheSleeper) and S.RageoftheSleeper:IsAvailable())) then
+	if IsReady("Ironfur") and Player:BuffStack(S.IronfurBuff) < 6 and (RangeCount(10)>=1 or targetRange15) and (Player:BuffDown(S.RavageBuffGuardian) and (Player:Rage() > 40 and VarIFBuild and S.RageoftheSleeper:CooldownRemains() > 3 and S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and S.RageoftheSleeper:CooldownRemains() > 3 and S.RageoftheSleeper:IsAvailable() or Player:Rage() > 90 and VarIFBuild and not S.FountofStrength:IsAvailable() or Player:Rage() > 110 and VarIFBuild and S.FountofStrength:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and Player:BuffUp(S.RageoftheSleeper) and S.RageoftheSleeper:IsAvailable())) then
 		return S.Ironfur:Cast()
 	end
 	-- ironfur,if=!buff.ravage.up&((rage>40&variable.If_build=1&!talent.rage_of_the_sleeper.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&!talent.rage_of_the_sleeper.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&!talent.rage_of_the_sleeper.enabled))
-	if IsReady("Ironfur") and targetRange15 and (Player:BuffDown(S.RavageBuffGuardian) and (Player:Rage() > 40 and VarIFBuild and not S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and not S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and not S.RageoftheSleeper:IsAvailable())) then
+	if IsReady("Ironfur") and Player:BuffStack(S.IronfurBuff) < 6 and (RangeCount(10)>=1 or targetRange15) and (Player:BuffDown(S.RavageBuffGuardian) and (Player:Rage() > 40 and VarIFBuild and not S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and not S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and not S.RageoftheSleeper:IsAvailable())) then
 		return S.Ironfur:Cast()
 	end
 	-- ferocious_bite,if=(buff.cat_form.up&buff.feline_potential.up&active_enemies<3&(buff.incarnation.up|buff.berserk_bear.up)&!dot.rip.refreshable)
@@ -412,6 +413,9 @@ local function Precombat()
 	end
   end
   
+
+
+
 local function APL()
 	inRange5 = RangeCount(5)
 	inRange8 = RangeCount(8)
@@ -432,10 +436,6 @@ local function APL()
 	TrackHealthLossPerSecond()
 	
 	HPpercentloss = GetHealthLossPerSecond()
-	
-	
-	
-	
 
 
     if Player:IsCasting() or Player:IsChanneling() then
@@ -490,7 +490,7 @@ local function APL()
 	end
 	
 	local Boss = {
-	"Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	
+	"Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'ikkaj",	"E.D.N.A",	
 	"Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"General Umbriss",	"Drahga Shadowburner",	
 	"Erudax, the Duke of Below", "Ki'katal the Harvester", "Forgemaster Throngus", "Viq'Goth",
 	
@@ -543,11 +543,11 @@ local function APL()
 	-- else
 	--   useSoTR = false
 	-- end
+-- Check if it's a function and call it to get the table
+
+		
 	
-	
-	
-	
-	local useDEF = not AuraUtil.FindAuraByName("Rage of the Sleeper", "player")  and not AuraUtil.FindAuraByName("Bristling Fur", "player") and not AuraUtil.FindAuraByName("Incarnation: Guardian of Ursoc", "player") and not AuraUtil.FindAuraByName("Survival Instincts", "player") and not AuraUtil.FindAuraByName("Barkskin", "player")
+	local useDEF = not AuraUtil.FindAuraByName("Lunar Beam", "player") and not AuraUtil.FindAuraByName("Rage of the Sleeper", "player")  and not AuraUtil.FindAuraByName("Bristling Fur", "player") and not AuraUtil.FindAuraByName("Incarnation: Guardian of Ursoc", "player") and not AuraUtil.FindAuraByName("Survival Instincts", "player") and not AuraUtil.FindAuraByName("Barkskin", "player")
 
 
 	
@@ -615,20 +615,20 @@ local function APL()
 
 
         --hold aggro
-        if targetRange30 and tanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
-            if IsReady("Growl")  then
+        if tanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
+            if IsReady("Growl") and targetRange30 then
             return S.Growl:Cast()
             end
             --aoe pull aggro 
-			if IsReady("Moonfire")  then
+			if IsReady("Moonfire") and targetRange40 then
 				return S.Moonfire:Cast()
 				end
 
         end
 
 
-
-		  if IsReady("Remove Corruption") and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
+		  if IsReady("Remove Corruption") and (		AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL")
+or 		  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
 			return S.RemoveCorruption:Cast()
 			end
 
@@ -655,7 +655,7 @@ local function APL()
 		
 		  if Player:CanAttack(Target) or Player:AffectingCombat() then
 			ActiveMitigationNeeded = Player:ActiveMitigationNeeded()
-			IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
+			IsTanking = (Player:IsTankingAoE(8) or Player:IsTanking(Target))
 		
 			UseMaul = false
 			if ((Player:Rage() >= S.Maul:Cost() + 20 and not IsTanking) or Player:RageDeficit() <= 10) then
@@ -672,9 +672,18 @@ local function APL()
 				local ShouldReturn = Defensives(); if ShouldReturn then return ShouldReturn; end
 			  end
 
+			  if Player:AffectingCombat() and inRange20>=1 and Player:HealthPercentage()<30 then
+				if IsReady("Barkskin") and not AuraUtil.FindAuraByName("Survival Instincts", "player")  then
+					return S.Barkskin:Cast()
+				end
+				if IsReady("Survival Instincts")  and not AuraUtil.FindAuraByName("Barkskin", "player") then
+					return S.SurvivalInstincts:Cast()
+				end
+
+			  end
 		  if Player:AffectingCombat() and inRange20>=1 and useDEF then
 
-			if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
+	if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() or Player:BuffDown(S.IronfurBuff) and Player:HealthPercentage()<90 and RangeCount(15)>=1 then 
 
 	-- incarnation
 	if IsReady("Incarnation: Guardian of Ursoc") then
@@ -686,6 +695,9 @@ local function APL()
 		end
 		if IsReady("Survival Instincts") then
 			return S.SurvivalInstincts:Cast()
+		end
+		if IsReady("Lunar Beam")   then
+			return S.LunarBeam:Cast()
 		end
 
 		if IsReady("Rage of the Sleeper")  then
@@ -714,7 +726,10 @@ local function APL()
 		and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 45) then
 			return S.SurvivalInstincts:Cast()
 		end
-
+		if IsReady("Lunar Beam") and (HPpercentloss > 12
+		and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 45) then
+			return S.LunarBeam:Cast()
+		end
 		if IsReady("Rage of the Sleeper") and ( (HPpercentloss > 12
 		and Player:HealthPercentage() < 65 or Player:HealthPercentage() < 45)  ) then
 			return S.RageoftheSleeper:Cast()
@@ -734,7 +749,9 @@ local function APL()
 		if Bear() ~= nil and targetRange30 then
 			return Bear()
 		  end
-		
+		if IsReady("Moonfire") and targetRange40 and (RangeCount(8)==0 or not targetRange8) and Target:AffectingCombat() then
+			return S.Moonfire:Cast()
+		end
 
 
 
