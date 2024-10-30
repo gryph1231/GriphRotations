@@ -672,16 +672,25 @@ or 		  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropria
 				local ShouldReturn = Defensives(); if ShouldReturn then return ShouldReturn; end
 			  end
 
-			  if Player:AffectingCombat() and inRange20>=1 and Player:HealthPercentage()<30 then
-				if IsReady("Barkskin") and not AuraUtil.FindAuraByName("Survival Instincts", "player")  then
+
+		  if Player:AffectingCombat() and inRange20>=1 and useDEF then
+			if Player:HealthPercentage()<30 then
+				if IsReady("Barkskin")  then
 					return S.Barkskin:Cast()
 				end
-				if IsReady("Survival Instincts")  and not AuraUtil.FindAuraByName("Barkskin", "player") then
+				if IsReady("Survival Instincts")  then
 					return S.SurvivalInstincts:Cast()
 				end
+				if IsReady("Lunar Beam")   then
+					return S.LunarBeam:Cast()
+				end
+		
+				if IsReady("Rage of the Sleeper")  then
+					return S.RageoftheSleeper:Cast()
+				end
+		
 
-			  end
-		  if Player:AffectingCombat() and inRange20>=1 and useDEF then
+			end
 
 	if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() or Player:BuffDown(S.IronfurBuff) and Player:HealthPercentage()<90 and RangeCount(15)>=1 then 
 

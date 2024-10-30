@@ -245,9 +245,6 @@ local ConvokeCD = S.ElunesGuidance:IsAvailable() and 60 or 120
 
 
 
-
-
-
 local function defensives()
   if Player:AffectingCombat() then
       for id = 1, 15 do
@@ -944,6 +941,12 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 
 
 
+        if IsReady("Remove Corruption") and (		AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL")
+        or 		  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
+              return S.RemoveCorruption:Cast()
+              end
+        
+      
 
         
         if IsReady("Moonkin Form") and ( Player:CanAttack(Target) and not Target:IsDeadOrGhost()) and targetRange40 and not AuraUtil.FindAuraByName("Moonkin Form","player") then
