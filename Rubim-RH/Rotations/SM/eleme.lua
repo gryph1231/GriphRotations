@@ -725,10 +725,7 @@ if (Player:CanAttack(Target) or Player:AffectingCombat()) then
 
 
 end
-print("t1",remainingDura1)
-print("t1",remainingDura2)
-print("t1",remainingDura3)
-print("t1",remainingDura4)
+
 
 
 VarMaelstrom = Player:Maelstrom()

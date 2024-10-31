@@ -100,6 +100,10 @@ LoadedDice             = Spell(256170),
 AceUpYourSleeve        = Spell(278676),
 CheapShot              = Spell(1833),
 CrimsonVial            = Spell(185311),
+EchoingReprimand2       = Spell(323558),
+EchoingReprimand3       = Spell(323559),
+EchoingReprimand4       = Spell(323560),
+EchoingReprimand5       = Spell(354838),
 Feint                  = Spell(1966),
 Gouge                  = Spell(1776),
 Kick                   = Spell(1766),
@@ -141,6 +145,8 @@ local function num(val)
         return 0
     end
 end
+
+local EffectiveComboPoints, ComboPoints, ChargedComboPoints, ComboPointsDeficit
 
 
 --- As buff is "hidden" from the client but we get apply/refresh events for it
@@ -184,6 +190,58 @@ end
 local ShouldReturn; --Used to get the return string
 local ComboPoints, ComboPointsDeficit
 local Energy, EnergyRegen, EnergyDeficit, EnergyTimeToMax, EnergyMaxOffset
+
+
+-- cp_max_spend
+do
+  local DeeperStratagem = Spell(193531)
+  local DeviousStratagem = Spell(394321)
+  local SecretStratagem = Spell(394320)
+  local SanguineStratagem = Spell(457512)
+
+  function CPMaxSpend()
+    return 5 + (DeeperStratagem:IsAvailable() and 1 or 0) + (DeviousStratagem:IsAvailable() and 1 or 0) + (SecretStratagem:IsAvailable() and 1 or 0)
+      + (SanguineStratagem:IsAvailable() and 1 or 0)
+  end
+end
+
+-- "cp_spend"
+function CPSpend()
+  return math.min(Player:ComboPoints(), CPMaxSpend())
+end
+
+-- "animacharged_cp"
+do
+  function AnimachargedCP()
+    if Player:BuffUp(S.EchoingReprimand2) then
+      return 2
+    elseif Player:BuffUp(S.EchoingReprimand3) then
+      return 3
+    elseif Player:BuffUp(S.EchoingReprimand4) then
+      return 4
+    elseif Player:BuffUp(S.EchoingReprimand5) then
+      return 5
+    end
+
+    return -1
+  end
+
+  function RogueEffectiveComboPoints(ComboPoints)
+    if ComboPoints == 2 and Player:BuffUp(S.EchoingReprimand2)
+    or ComboPoints == 3 and Player:BuffUp(S.EchoingReprimand3)
+    or ComboPoints == 4 and Player:BuffUp(S.EchoingReprimand4)
+    or ComboPoints == 5 and Player:BuffUp(S.EchoingReprimand5) then
+      return 7
+    end
+    return ComboPoints
+  end
+end
+
+
+
+
+
+
 -- Stable Energy Prediction
 local PrevEnergyTimeToMaxPredicted, PrevEnergyPredicted = 0, 0
 local function EnergyTimeToMaxStable(MaxOffset)
@@ -205,15 +263,6 @@ local function EnergyPredictedStable()
 end
 
 
-local function CPMaxSpend()
-    if S.DeeperStratagem:IsAvailable() and S.DeviousStratagem:IsAvailable() then
-        return 7
-    elseif S.DeeperStratagem:IsAvailable() and not S.DeviousStratagem:IsAvailable() or not S.DeeperStratagem:IsAvailable() and S.DeviousStratagem:IsAvailable() then
-        return 6
-    else
-        return 5
-    end
-end
 
 local function EnergyTimeToMaxRounded()
     return math.floor(Player:EnergyTimeToMaxPredicted() * 10 + 0.5) / 10;
@@ -321,7 +370,38 @@ local function RtB_Reroll(ForceLoadedDice)
   return Cache.APLVar.RtB_Reroll
 end
 
+--- Fan the Hammer Tracking
+do
+  local OpportunityBuff = Spell(195627)
+  local FanCP = 0
+  local FanStart = GetTime()
 
+  function FanTheHammerCP()
+    if (GetTime() - FanStart) < 0.5 and FanCP > 0 then
+      if FanCP > Player:ComboPoints() then
+        return FanCP
+      else
+        FanCP = 0
+      end
+    end
+
+    return 0
+  end
+
+  -- Reset counter on energize
+  HL:RegisterForSelfCombatEvent(
+    function(_, _, _, _, _, _, _, _, _, _, _, SpellID, _, _, Amount, Over )
+      if SpellID == 185763 then
+        if (GetTime() - FanStart) > 0.5 then
+          -- Subsequent Fan the Hammer procs are reduced by 1 CP
+          FanCP = math.min(CPMaxSpend(), Player:ComboPoints() + Amount + (math.max(0, Amount - 1) * math.min(2, Player:BuffStack(OpportunityBuff) - 1)))
+          FanStart = GetTime()
+        end
+      end
+    end,
+    "SPELL_ENERGIZE"
+  )
+end
 
 local function Finish_Condition()
   -- actions+=/variable,name=Finish_Condition(),value=combo_points>=cp_max_spend-1-(stealthed.all&talent.crackshot|
@@ -341,6 +421,10 @@ local function Vanish_DPS_Condition()
 end
 
 local function Stealth()
+  if IsReady("Blade Flurry") and S.DeftManeuvers:IsAvailable() and not Finish_Condition() and (RangeCount(8) >= 3
+  and ComboPointsDeficit == RangeCount(8) + num(Player:BuffUp(S.Broadside)) or RangeCount(8) >= 5) then
+    return S.BladeFlurry:Cast()
+  end
   --cold_blood,if=variable.Finish_Condition()
   if IsReady("Cold Blood") and Player:BuffDown(S.ColdBlood) and TargetinRange(5) and Finish_Condition() then
     return S.ColdBlood:Cast()
@@ -449,13 +533,13 @@ local function CDs()
     return S.KeepItRolling:Cast()
   end 
   --ghostly_strike,if=combo_points<cp_max_spend
-   if IsReady("Ghostly Strike") and TargetinRange(5) and Player:ComboPoints() < CPMaxSpend() then
+   if IsReady("Ghostly Strike") and TargetinRange(5) and EffectiveComboPoints < 7 then
     return S.GhostlyStrike:Cast()
   end 
   --killing_spree,if=variable.Finish_Condition()&!stealthed.all
    if IsReady("Killing Spree") and TargetinRange(10) and RubimRH.CDsON() and Finish_Condition() and not Player:StealthUp(true, true) then
     return S.KillingSpree:Cast()
-  end 
+  end
   --call_action_list,name=stealth_cds,if=!stealthed.all
   if RubimRH.CDsON() and not Player:StealthUp(true, true)  then
     ShouldReturn = StealthCDs()
@@ -489,7 +573,7 @@ end
 local function Build()
   --ambush,if=talent.hidden_opportunity&buff.audacity.up
   if IsReady("Ambush") and TargetinRange(5) and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) then
-    return S.Ambush:Cast()
+    return S.SSAudacity:Cast()
   end
   --pistol_shot,if=talent.fan_the_hammer&talent.audacity&talent.hidden_opportunity&buff.opportunity.up&!buff.audacity.up
   if IsReady("Pistol Shot") and TargetinRange(30) and S.FantheHammer:IsAvailable() and S.Audacity:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.Opportunity) and Player:BuffDown(S.AudacityBuff) then
@@ -522,6 +606,10 @@ local function Build()
 end
 
 local function APL()
+  EffectiveComboPoints = RogueEffectiveComboPoints(ComboPoints)
+  ComboPoints = Player:ComboPoints()
+  ChargedComboPoints = Player:ChargedComboPoints()
+  ComboPointsDeficit = Player:ComboPointsDeficit()
 --RtB_Buffs()
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -722,7 +810,8 @@ end
 
   -- Fan the Hammer Combo Point Prediction
   if S.FantheHammer:IsAvailable() and S.PistolShot:TimeSinceLastCast() <= Player:GCDRemains() then
-    ComboPoints = math.max(ComboPoints, FantheHammerCP())
+    ComboPoints = math.max(ComboPoints, FanTheHammerCP())
+    EffectiveComboPoints = RogueEffectiveComboPoints(ComboPoints)
     ComboPointsDeficit = Player:ComboPointsDeficit()
   end
 	-- actions+=/call_action_list,name=cds
