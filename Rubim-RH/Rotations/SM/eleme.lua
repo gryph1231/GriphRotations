@@ -725,6 +725,11 @@ if (Player:CanAttack(Target) or Player:AffectingCombat()) then
 
 
 end
+print("t1",remainingDura1)
+print("t1",remainingDura2)
+print("t1",remainingDura3)
+print("t1",remainingDura4)
+
 
 VarMaelstrom = Player:Maelstrom()
 if AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL") then
@@ -897,9 +902,9 @@ if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
 
 
 
-if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>2 or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
-return S.SpiritwalkersGrace:Cast()
-end
+-- if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>2 or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
+-- return S.SpiritwalkersGrace:Cast()
+-- end
 -- kick on GCD
 if IsReady("Berserking") and targetRange40 and Player:BuffUp(S.AscendanceBuff) then
 return S.Berserking:Cast()
