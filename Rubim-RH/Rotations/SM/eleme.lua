@@ -515,6 +515,10 @@ end
   if IsReady("Chain Lightning") and targetRange40 and cancastnaturespells then
     return S.ChainLightning:Cast()
   end
+
+  if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:HealthPercentage()<60 and Player:IsMoving() then
+    return S.EarthShield:Cast()
+    end
   -- flame_shock,moving=1,target_if=refreshable
   if IsReady("Flame Shock") and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>Player:GCD() + 0.5) and Player:IsMoving() and targetRange40 then
     return S.FlameShock:Cast()
@@ -654,6 +658,11 @@ end
 if IsReady("Lightning Bolt") and cancastnaturespells then
   return S.LightningBolt:Cast()
 end
+
+
+if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:HealthPercentage()<60 and Player:IsMoving() then
+  return S.EarthShield:Cast()
+  end
 
 -- flame_shock,moving=1,target_if=refreshable
 if IsReady("Flame Shock") and Player:IsMoving() and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>1) then
@@ -934,7 +943,6 @@ end
 
 
 
-
 	if aoe() ~= nil and RubimRH.AoEON() and (inRange40>=2 and not Player:AffectingCombat() or combatmobs40()>=2) and targetRange40 then
 		return aoe()
 	end
@@ -950,6 +958,8 @@ if st()~= nil and targetRange40 then
   return st()
 end
 
+
+  
 -- if IsReady("Lava Burst") and targetRange40 and AuraUtil.FindAuraByName("Lava Surge","player")  then
 -- return S.LavaBurst:Cast()
 -- end
@@ -979,9 +989,7 @@ if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "play
 return S.EarthShield:Cast()
 end
 
-if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() then
-return S.EarthShield:Cast()
-end
+
 -- if IsReady("Flametongue Weapon") and mainHandEnchantID~=5400 and Player:IsMoving() then
 -- return S.FlametongueWeapon:Cast()
 -- end
