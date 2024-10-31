@@ -44,7 +44,7 @@ RubimRH.Spell[253] = {
     CobraShot = Spell(193455),
     ClearFocus = Spell(255647), --LightsJudgment
     SetFocus = Spell(68992), --Darkflight
-    PetAttack = Spell(107079), --QuakingPalm
+    --PetAttack = Spell(107079), --QuakingPalm
 	KillShot = Spell(53351),
     KillCommand = Spell(34026),
     ResonatingArrow = Spell(308491),
@@ -97,6 +97,9 @@ RubimRH.Spell[253] = {
 	KillCleave = Spell(378207),
 	DeathChakram = Spell(375891),
 	Potion = Spell(176108),
+	BlackArrow = Spell(466932),
+	Deathblow = Spell(343248),
+	BleakPowder = Spell(467911),
 }
 local S = RubimRH.Spell[253]
 
@@ -105,7 +108,7 @@ if not Item.Hunter then Item.Hunter = {}; end
 Item.Hunter.BeastMastery = {
 tx1 = Item(118330),
 tx2 = Item(114616),
-healingpoticon = Item(169451)
+HPIcon = Item(169451),
 };
 local I = Item.Hunter.BeastMastery;
 
@@ -175,9 +178,9 @@ local function APL()
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Functions/Top priorities----------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
--- if Focus:Exists() and not FocusinRange(38) then
--- 	return S.ClearFocus:Cast()
--- end
+if Focus:Exists() and not FocusinRange(38) then
+	return S.ClearFocus:Cast()
+end
 
 if Player:IsCasting() or Player:IsChanneling() or (IsCurrentAction(13) or IsCurrentAction(14)) then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
@@ -311,9 +314,15 @@ if IsSpellKnown(388035, true) and FortoftheBearCD == 0 and Player:HealthPercenta
 	return S.FortitudeoftheBearz:Cast()
 end
 
-if Player:HealthPercentage() <= 25 and Player:AffectingCombat() and IsUsableItem(191380) and GetItemCooldown(191380) == 0 and GetItemCount(191380) >= 1 and (not Player:InArena() and not Player:InBattlegrounds()) then
-    return I.healingpoticon:Cast()
-end
+if Player:HealthPercentage() <= 20 and Player:AffectingCombat() and (not Player:InArena() and not Player:InBattlegrounds()) then
+	if (IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1) 
+	or (IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1)
+	or (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1)
+	  --hp wrists
+	or (IsUsableItem(221806) == true and GetItemCooldown(221806) == 0) then
+		return I.HPIcon:Cast()
+	end
+  end
 --print(GetSpellBaseCooldown(217200))
 --------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------Rotation--------------------------------------------------------------------------
@@ -335,9 +344,9 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
         return I.tx1:Cast()
     end
 	
-	if TargetinRange(nil,"Auto Shot") and RubimRH.CDsON() and IsUsableItem(191382) and GetItemCooldown(191382) == 0 and GetItemCount(191382) >= 1 and not Player:InArena() and not Player:InBattlegrounds() and Player:BuffRemains(S.CalloftheWild) > 15 and not AuraUtil.FindAuraByName("Elemental Potion of Ultimate Power", "player") then
-		return S.Potion:Cast()
-	end
+	-- if TargetinRange(nil,"Auto Shot") and RubimRH.CDsON() and IsUsableItem(191382) and GetItemCooldown(191382) == 0 and GetItemCount(191382) >= 1 and not Player:InArena() and not Player:InBattlegrounds() and Player:BuffRemains(S.CalloftheWild) > 15 and not AuraUtil.FindAuraByName("Elemental Potion of Ultimate Power", "player") then
+	-- 	return S.Potion:Cast()
+	-- end
 
     -- if trinket2ready and TargetinRange(nil,"Auto Shot") and elite and TargetTTD() > 7 and (GetItemCooldown(trinket1) > 20 or S.CalloftheWild:CooldownRemains() > 20) then
         -- return I.tx2:Cast()
@@ -345,17 +354,17 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 
 	if CleaveCount() >= 2 and RubimRH.AoEON() then
 		if IsReady("Barbed Shot") and Pet:BuffUp(S.Frenzy) and Pet:BuffRemains(S.Frenzy) - Player:GCD() < tolerance then
-			if AutoSpreadTarget() then
-				if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
-					return S.BarbedShotP1:Cast()
-				elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
-					return S.BarbedShotP2:Cast()
-				elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
-					return S.BarbedShotP3:Cast()
-				elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
-					return S.BarbedShotP4:Cast()
-				end
-			end
+			-- if AutoSpreadTarget() then
+			-- 	if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
+			-- 		return S.BarbedShotP1:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
+			-- 		return S.BarbedShotP2:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
+			-- 		return S.BarbedShotP3:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
+			-- 		return S.BarbedShotP4:Cast()
+			-- 	end
+			-- end
 			if FocusinRange(38) and Focus:DebuffRemains(S.BarbedShot) < Target:DebuffRemains(S.BarbedShot) and (Focus:AffectingCombat() or target_is_dummy()) then
 				return S.BarbedShotFocus:Cast()
 			end
@@ -379,26 +388,31 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 		if IsReady("Multi-Shot") and Player:BuffRemains(S.CalloftheWild) <= Player:GCD() and Player:BuffRemains(S.BeastCleaveBuff) <= Player:GCD() then
 			return S.Multishot:Cast()
 		end
+
+		if IsReady("Black Arrow") and S.BlackArrow:IsAvailable() and Player:BuffUp(S.BeastCleaveBuff) then
+			return Spell(160223):Cast()
+		end
+
 		--and KCRange()
 		if IsReady("Kill Command") and not (S.BestialWrath:CooldownUp() or (not RubimRH.CDsON() and not S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()))
 		and S.KillCommand:FullRechargeTime() <= Player:GCD() and S.AlphaPredator:IsAvailable() and S.KillCleave:IsAvailable() and Player:BuffUp(S.BeastCleaveBuff) then
 			return S.KillCommand:Cast()
 		end
-		
+
 		if IsReady("Barbed Shot") and (S.BarbedShot:FullRechargeTime() < Player:GCD()
 		or (S.ScentofBlood:IsAvailable() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()) and S.BestialWrath:CooldownRemains() <= (12 + Player:GCD()) * S.BarbedShot:ChargesP())
 		or (BarbRechargeTime < 8 + 2 * num(S.Savagery:IsAvailable()))) then
-			if AutoSpreadTarget() then
-				if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
-					return S.BarbedShotP1:Cast()
-				elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
-					return S.BarbedShotP2:Cast()
-				elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
-					return S.BarbedShotP3:Cast()
-				elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
-					return S.BarbedShotP4:Cast()
-				end
-			end
+			-- if AutoSpreadTarget() then
+			-- 	if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
+			-- 		return S.BarbedShotP1:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
+			-- 		return S.BarbedShotP2:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
+			-- 		return S.BarbedShotP3:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
+			-- 		return S.BarbedShotP4:Cast()
+			-- 	end
+			-- end
 			if FocusinRange(38) and Focus:DebuffRemains(S.BarbedShot) < Target:DebuffRemains(S.BarbedShot) and (Focus:AffectingCombat() or target_is_dummy()) then
 				return S.BarbedShotFocus:Cast()
 			end
@@ -423,10 +437,6 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 			return S.KillCommand:Cast()
 		end
 		
-		if IsReady("Kill Shot") then
-			return S.KillShot:Cast()
-		end
-		
 		if IsReady("Dire Beast") and RubimRH.CDsON() then
 			return S.DireBeast:Cast()
 		end
@@ -438,17 +448,17 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 	elseif CleaveCount() < 2 or not RubimRH.AoEON() then
 	
 		if IsReady("Barbed Shot") and ((Pet:BuffUp(S.Frenzy) and Pet:BuffRemains(S.Frenzy) - Player:GCD() < tolerance) or (Pet:BuffStack(S.Frenzy) < 3 and S.BestialWrath:CooldownUp() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()))) then
-			if AutoSpreadTarget() then
-				if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
-					return S.BarbedShotP1:Cast()
-				elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
-					return S.BarbedShotP2:Cast()
-				elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
-					return S.BarbedShotP3:Cast()
-				elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
-					return S.BarbedShotP4:Cast()
-				end
-			end
+			-- if AutoSpreadTarget() then
+			-- 	if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
+			-- 		return S.BarbedShotP1:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
+			-- 		return S.BarbedShotP2:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
+			-- 		return S.BarbedShotP3:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
+			-- 		return S.BarbedShotP4:Cast()
+			-- 	end
+			-- end
 			if FocusinRange(38) and Focus:DebuffRemains(S.BarbedShot) < Target:DebuffRemains(S.BarbedShot) and (Focus:AffectingCombat() or target_is_dummy()) then
 				return S.BarbedShotFocus:Cast()
 			end
@@ -474,6 +484,15 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 			return S.KillCommand:Cast()
 		end
 	
+		--multishot,if=buff.beast_cleave.remains<gcd*1.25&talent.bleak_powder&(buff.deathblow.up|(cooldown.black_arrow.remains<gcd&(target.health.pct<20|target.health.pct>81)))
+		if IsReady("Multi-Shot") and Player:BuffRemains(S.BeastCleaveBuff) < Player:GCD() * 1.25 and S.BleakPowder:IsAvailable() and (Player:BuffUp(S.Deathblow) or (S.BlackArrow:CooldownRemains() < Player:GCD() and (Target:HealthPercentage() < 20 or Target:HealthPercentage() > 81))) then
+			return S.Multishot:Cast()
+		end
+
+		if IsReady("Black Arrow") then
+			return Spell(160223):Cast()
+		end
+
 		if S.DeathChakram:IsReady() and (RubimRH.CDsON() or Player:BuffRemains(S.CalloftheWild) > 10) and (elite or S.DeathChakram:ID() == RubimRH.queuedSpell[1]:ID()) then
 			return S.DeathChakram:Cast()
 		end
@@ -493,17 +512,17 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 		if IsReady("Barbed Shot") and ((S.WildInstincts:IsAvailable() and Player:Buff(S.CalloftheWild)) or S.BarbedShot:FullRechargeTime() < Player:GCD()
 		or (S.ScentofBlood:IsAvailable() and S.BestialWrath:CooldownRemains() <= (12 + Player:GCD()) * S.BarbedShot:ChargesP() and (RubimRH.CDsON() or S.BestialWrath:ID() == RubimRH.queuedSpell[1]:ID()))
 		or ((BarbRechargeTime < 8 + 2 * num(S.Savagery:IsAvailable())))) then
-			if AutoSpreadTarget() then
-				if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
-					return S.BarbedShotP1:Cast()
-				elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
-					return S.BarbedShotP2:Cast()
-				elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
-					return S.BarbedShotP3:Cast()
-				elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
-					return S.BarbedShotP4:Cast()
-				end
-			end
+			-- if AutoSpreadTarget() then
+			-- 	if AutoSpreadTarget() == "Party1target" and IsActionInRange(37,"Party1target") and UnitHealth("Party1target") > UnitHealth("target") * 0.8 and UnitGUID("Party1target") ~= UnitGUID("focus") and ((UnitHealth("Party1target") / UnitHealthMax("Party1target")) * 100) < 100 then
+			-- 		return S.BarbedShotP1:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party2target" and IsActionInRange(37,"Party2target") and UnitHealth("Party2target") > UnitHealth("target") * 0.8 and UnitGUID("Party2target") ~= UnitGUID("focus") and ((UnitHealth("Party2target") / UnitHealthMax("Party2target")) * 100) < 100 then
+			-- 		return S.BarbedShotP2:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party3target" and IsActionInRange(37,"Party3target") and UnitHealth("Party3target") > UnitHealth("target") * 0.8 and UnitGUID("Party3target") ~= UnitGUID("focus") and ((UnitHealth("Party3target") / UnitHealthMax("Party3target")) * 100) < 100 then
+			-- 		return S.BarbedShotP3:Cast()
+			-- 	elseif AutoSpreadTarget() == "Party4target" and IsActionInRange(37,"Party4target") and UnitHealth("Party4target") > UnitHealth("target") * 0.8 and UnitGUID("Party4target") ~= UnitGUID("focus") and ((UnitHealth("Party4target") / UnitHealthMax("Party4target")) * 100) < 100 then
+			-- 		return S.BarbedShotP4:Cast()
+			-- 	end
+			-- end
 			if FocusinRange(38) and Focus:DebuffRemains(S.BarbedShot) < Target:DebuffRemains(S.BarbedShot) and (Focus:AffectingCombat() or target_is_dummy()) then
 				return S.BarbedShotFocus:Cast()
 			end
@@ -514,10 +533,6 @@ if (Player:AffectingCombat() or (IsAutoRepeatAction(38) and Target:AffectingComb
 
 		if IsReady("Dire Beast") and RubimRH.CDsON() then
 			return S.DireBeast:Cast()
-		end
-
-		if IsReady("Kill Shot") then
-			return S.KillShot:Cast()
 		end
 
 		if IsReady("Cobra Shot") and (Player:Focus() - S.CobraShot:Cost() + Player:FocusRegen() * (S.KillCommand:CooldownRemains() - 1) > S.KillCommand:Cost() or S.KillCommand:CooldownRemains() > 1 + Player:GCD()) or Player:BuffUp(S.BestialWrath) then

@@ -301,7 +301,6 @@ end
 
 
 
-
 if not loscheck then
 loscheck = CreateFrame("Frame")
 end
@@ -348,6 +347,10 @@ local function FSTargets()
       return LRAoe
     end
     
+
+
+
+
 
 
 local function aoe()
@@ -465,7 +468,7 @@ if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceB
   if IsReady("Earthquake") and targetRange40 
   and ((LRTargets() == 0 
   and S.LightningRod:IsAvailable() 
-  or VarMaelstrom > VarMaelCap - 30) and 
+  or VarMaelstrom > VarMaelCap - 40) and 
   (Player:BuffUp(S.EchoesofGreatSunderingBuff) 
   or not S.EchoesofGreatSundering:IsAvailable())) then
     return S.Earthquake:Cast()
@@ -679,13 +682,13 @@ end
 
 local function APL()
 
-  local haveTotem1, totemName1, startTime1, duration1 = GetTotemInfo(1) --fire
+  local haveTotem1, totemName1, startTime1, duration1 = GetTotemInfo(1) --air + poison cleansing totem
   local remainingDura1 = (duration1 - (GetTime() - startTime1))
 local haveTotem2, totemName2, startTime2, duration2 = GetTotemInfo(2) --earth
   local remainingDura2 = (duration2 - (GetTime() - startTime2))
-local haveTotem3, totemName3, startTime3, duration3 = GetTotemInfo(3) --water
+local haveTotem3, totemName3, startTime3, duration3 = GetTotemInfo(3) --fire
   local remainingDura3 = (duration3 - (GetTime() - startTime3))
-local haveTotem4, totemName4, startTime4, duration4 = GetTotemInfo(4) --air
+local haveTotem4, totemName4, startTime4, duration4 = GetTotemInfo(4) --water
   local remainingDura4 = (duration4 - (GetTime() - startTime4))
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -718,11 +721,12 @@ if (Player:CanAttack(Target) or Player:AffectingCombat()) then
   IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target)
 
   -- Store our Maelstrom count into a variable
-  VarMaelstrom = Player:Maelstrom()
 
-  -- print(VarMaelstrom > VarMaelCap - 30)
+
 
 end
+
+VarMaelstrom = Player:Maelstrom()
 if AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL") then
   LRremains = select(6,AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL")) - GetTime()
    else
@@ -740,6 +744,7 @@ then
 else
   tempest = false
 end
+
 
 
 
@@ -794,6 +799,8 @@ targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
 
+
+
 if Player:IsCasting() or Player:IsChanneling() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
 elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
@@ -828,7 +835,6 @@ return RubimRH.QueuedSpell():Cast()
 end
 
 
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------IN-COMBAT ROTATION-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -846,11 +852,17 @@ end
 --   Cast  Chain Lightning.
 
 
-
+if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison') and RubimRH.InterruptsON() then
+  return S.PoisonCleansingTotem:Cast()
+  end
+if IsReady("Cleanse Spirit") and totemName1 ~= "Poison Cleansing Totem"
+and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>7 then
+  return S.CleanseSpirit:Cast()
+  end
 
 if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
 
-  if (Player:BuffStack(S.SpymastersReportBuff) > 35 and Player:PrevGCDP(1, S.Stormkeeper) or Player:BuffRemains(S.AscendanceBuff) > 12 and Player:BuffStack(S.SpymastersReportBuff) > 25) and RubimRH.CDsON() then
+  if ((Player:BuffStack(S.SpymastersReportBuff) > 35 and Player:PrevGCDP(1, S.Stormkeeper) or Player:BuffRemains(S.AscendanceBuff) > 12 and Player:BuffStack(S.SpymastersReportBuff) > 25) or Player:BuffStack(S.SpymastersReportBuff)<15 and Player:BuffRemains(S.AscendanceBuff)>10) and RubimRH.CDsON() then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
   end
@@ -883,14 +895,9 @@ if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
   end
 
 
-if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison') and RubimRH.InterruptsON() then
-  return S.PoisonCleansingTotem:Cast()
-  end
-if IsReady("Cleanse Spirit") and (AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>10 then
-  return S.CleanseSpirit:Cast()
-  end
 
-if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>Player:GCD() or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
+
+if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>2 or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
 return S.SpiritwalkersGrace:Cast()
 end
 -- kick on GCD

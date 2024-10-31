@@ -169,6 +169,7 @@ ThrashCatDebuff                       = Spell(405233),
  OnethsClearVisionBuff                 = Spell(339797),
  OnethsPerceptionBuff                  = Spell(339800),
  TimewornDreambinderBuff               = Spell(340049),
+ RemoveCorruption = Spell(2782),
 
 
 
@@ -941,8 +942,10 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 
 
 
-        if IsReady("Remove Corruption") and (		AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL")
-        or 		  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison' or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
+        if IsReady("Remove Corruption") and (AuraUtil.FindAuraByName("Xal'atath's Bargain: Devour", "player", "HARMFUL")
+        or AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL")
+         or GetAppropriateCureSpell("player")=='Poison' 
+         or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() then
               return S.RemoveCorruption:Cast()
               end
         
@@ -967,11 +970,11 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
             end
           
 
-if IsReady("Nature's Vigil") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and inRange30>=1 and not AuraUtil.FindAuraByName("Barkskin", "player") then
+if IsReady("Nature's Vigil") and (Player:HealthPercentage() <= 55 or HPpercentloss>7 and Player:HealthPercentage() <= 60 or defensives() ) and inRange30>=1 and not AuraUtil.FindAuraByName("Barkskin", "player") then
   return S.NaturesVigil:Cast()
   end
   
-  if IsReady("Barkskin") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90)  and inRange30>=1 and not AuraUtil.FindAuraByName("Nature's Vigil", "player") then
+  if IsReady("Barkskin") and (Player:HealthPercentage() <= 55 or HPpercentloss>7 and Player:HealthPercentage() <= 60 or defensives() )  and inRange30>=1 and not AuraUtil.FindAuraByName("Nature's Vigil", "player") then
   return S.Barkskin:Cast()
   end
 

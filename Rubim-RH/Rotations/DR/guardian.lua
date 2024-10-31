@@ -29,6 +29,7 @@ RubimRH.Spell[104] = {
  Regrowth                              = Spell(8936),
  Shred                                 = Spell(5221),
  -- Talents
+ Rebirth = Spell(20484),
  AstralInfluence                       = Spell(197524),
  ConvoketheSpirits                     = Spell(391528),
  FluidForm                             = Spell(449193),
@@ -523,7 +524,19 @@ local function APL()
 	  else
 		motwremains = 0
 	  end
+
+
+	  if S.Rebirth:Charges()== nil or S.Rebirth:CooldownRemains()>Player:GCD() then
+		rezcharges = 0
+		else
+		rezcharges=S.Rebirth:Charges()
+		end
 	
+if not IsReady("Rebirth",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 or S.Rebirth:TimeSinceLastCast()<=10 then
+	NoRebirth = true
+  else
+	NoRebirth = false
+  end
 	
 	
 
