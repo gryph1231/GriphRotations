@@ -735,7 +735,21 @@ if (Player:CanAttack(Target) or Player:AffectingCombat()) then
 
 end
 
+trinket1 = GetInventoryItemID("player", 13)
+	
+trinket2 = GetInventoryItemID("player", 14)
 
+if trinket1 then
+  trinket1ready = C_Item.IsUsableItem(trinket1) and GetItemCooldown(trinket1) == 0 and C_Item.IsEquippedItem(trinket1)
+else
+  trinket1ready = false
+end
+  
+if trinket2 then
+  trinket2ready = C_Item.IsUsableItem(trinket2) and GetItemCooldown(trinket2) == 0 and C_Item.IsEquippedItem(trinket2)
+else
+  trinket2ready = false
+end
 
 VarMaelstrom = Player:Maelstrom()
 if AuraUtil.FindAuraByName("Lightning Rod","target","PLAYER|HARMFUL") then
@@ -757,7 +771,7 @@ else
 end
 
 
-
+usespymaster = (Player:BuffStack(S.SpymastersReportBuff) > 35 and Player:PrevGCDP(1, S.Stormkeeper) or Player:BuffRemains(S.AscendanceBuff) > 12 and Player:BuffStack(S.SpymastersReportBuff) > 25) 
 
 
 local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
@@ -809,7 +823,6 @@ if Target:Exists() and getCurrentDPS() and getCurrentDPS()>0 then
 targetTTD = UnitHealth('target')/getCurrentDPS()
 else targetTTD = 8888
 end
-
 
 
 if Player:IsCasting() or Player:IsChanneling() then
@@ -871,11 +884,22 @@ and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriate
   return S.CleanseSpirit:Cast()
   end
 
+  if IsReady("Totemic Recall") and (S.PoisonCleansingTotem:CooldownRemains()>3 or S.WindRushTotem:CooldownRemains()>3 or S.TremorTotem:CooldownRemains()>3 or S.CapacitorTotem:CooldownRemains()>3)  then
+    return S.TotemicRecall:Cast()
+    end
+
 if (( Player:AffectingCombat()  or C_Spell.IsCurrentSpell(6603)) and Player:CanAttack(Target)  and not Target:IsDeadOrGhost()) and not AuraUtil.FindAuraByName("Ghost Wolf", "player") then 
 
-  if ((Player:BuffStack(S.SpymastersReportBuff) > 35 and Player:PrevGCDP(1, S.Stormkeeper) or Player:BuffRemains(S.AscendanceBuff) > 12 and Player:BuffStack(S.SpymastersReportBuff) > 25) or Player:BuffStack(S.SpymastersReportBuff)<15 and Player:BuffRemains(S.AscendanceBuff)>10) and RubimRH.CDsON() then
-    local ShouldReturn = UseItems();
-    if ShouldReturn then return ShouldReturn; end
+
+if RubimRH.CDsON() then
+    --use_items,slots=trinket1,if=buff.between_the_eyes.up|trinket.1.has_stat.any_dps|fight_remains<=20
+    if trinket1ready and (trinket1 ~= 220202 or usespymaster and trinket1 == 220202) then
+      return Item(118330):Cast()
+    end
+    --use_items,slots=trinket2,if=buff.between_the_eyes.up|trinket.2.has_stat.any_dps|fight_remains<=20
+    if trinket2ready and (trinket2 ~= 220202 or usespymaster and trinket2 == 220202) then
+        return Item(114616):Cast()
+    end
   end
 
 
@@ -908,9 +932,9 @@ if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
 
 
 
--- if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>2 or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
--- return S.SpiritwalkersGrace:Cast()
--- end
+if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>Player:GCD() or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
+return S.SpiritwalkersGrace:Cast()
+end
 -- kick on GCD
 if IsReady("Berserking") and targetRange40 and Player:BuffUp(S.AscendanceBuff) then
 return S.Berserking:Cast()
