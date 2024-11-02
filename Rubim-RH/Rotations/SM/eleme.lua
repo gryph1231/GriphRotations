@@ -217,54 +217,55 @@ end
 
 
 
-
 local function tremortotem()
-  if Player:AffectingCombat() then
-      for id = 1, 10 do
-          local spell = {"Repulsive Visage","Horrifying Shrill","Terrorize","Terrifying Slam","Howling Fear","Rasping Scream","Terrifying Roar",
-
-          }
-          local unitID = "nameplate" .. id
-          local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-              UnitCastingInfo(unitID)
-          local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-
-          for idx = 1, #spell do
-              if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-                  return true
-              end
-          end
-      end
+	if Player:AffectingCombat() then
+		for id = 1, 10 do
+			local spell = {"Repulsive Visage","Horrifying Shrill","Terrorize","Terrifying Slam","Howling Fear","Rasping Scream","Terrifying Roar",
+  
+			}
+			local unitID = "nameplate" .. id
+			local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+				UnitCastingInfo(unitID)
+			local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+  
+			for idx = 1, #spell do
+				if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+					return true
+				end
+			end
+		end
+	end
+	return false
   end
-  return false
-end
-
+  
+  
+  
 
 
 local function defensives()
-  if Player:AffectingCombat() then
-      for id = 1, 15 do
-          local spell = {
-"Call of the Brood","Massive Slam","Ravenous Swarm","Void Rush","Fierce Stomping","Viscous Darkness","Dark Pulse","Splice","Dark Floes","Shadowy Decay",
-"Erosive Spray","Ground Pound","Void Outburst","Earth Shatterer","Crystalline Eruption","Void Discharge","Furious Thrashing","Acid Nova","Wrath of Zolramus",
-"Dark Shroud","Shattering Bellow","Crushing Slam","Fiery Ricochet","Umbral Wind","Commanding Roar","Forge Weapon","Void Surge",
-
-          }
-          local unitID = "nameplate" .. id
-          local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
-              UnitCastingInfo(unitID)
-          local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
-
-          for idx = 1, #spell do
-              if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
-                  return true
-              end
-          end
-      end
+	if Player:AffectingCombat() then
+		for id = 1, 15 do
+			local spell = {
+  "Call of the Brood","Massive Slam","Viscous Darkness","Dark Pulse","Dark Floes","Shadowy Decay",
+  "Erosive Spray","Ground Pound","Void Outburst","Earth Shatterer","Crystalline Eruption","Void Discharge","Furious Thrashing","Acid Nova","Wrath of Zolramus",
+  "Dark Shroud","Shattering Bellow","Crushing Slam","Fiery Ricochet","Umbral Wind","Commanding Roar","Forge Weapon","Void Surge","Vociferous Indoctrination", "Tremor Slam",
+  
+			}
+			local unitID = "nameplate" .. id
+			local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+				UnitCastingInfo(unitID)
+			local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+  
+			for idx = 1, #spell do
+				if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+					return true
+				end
+			end
+		end
+	end
+	return false
   end
-  return false
-end
-
+  
 
 --- ===== Rotation Variables =====
 local IsTanking
@@ -880,7 +881,7 @@ if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Void Rift", "
   return S.PoisonCleansingTotem:Cast()
   end
 if IsReady("Cleanse Spirit") and totemName1 ~= "Poison Cleansing Totem"
-and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast()>7 then
+and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.PoisonCleansingTotem:TimeSinceLastCast()>7 and S.CleanseSpirit:TimeSinceLastCast()>7 then
   return S.CleanseSpirit:Cast()
   end
 
@@ -935,12 +936,8 @@ if IsReady("Tremor Totem") and tremortotem() and RubimRH.InterruptsON() then
 if IsReady("Spiritwalker's Grace") and targetRange40 and (Player:MovingFor()>Player:GCD() or Player:BuffUp(S.AscendanceBuff) and Player:IsMoving()) and not AuraUtil.FindAuraByName("Stormkeeper","player") and not AuraUtil.FindAuraByName("Nature's Swiftness","player")  then
 return S.SpiritwalkersGrace:Cast()
 end
--- kick on GCD
-if IsReady("Berserking") and targetRange40 and Player:BuffUp(S.AscendanceBuff) then
-return S.Berserking:Cast()
-end
 
-if IsReady("Nature's Swiftness") and not AuraUtil.FindAuraByName("Nature's Swiftness","target","PLAYER|HARMFUL") and RubimRH.CDsON() and targetRange40  then
+if IsReady("Nature's Swiftness") and not AuraUtil.FindAuraByName("Nature's Swiftness","player") and RubimRH.CDsON() and targetRange40  then
 return S.NaturesSwiftness:Cast()
 end
 

@@ -107,12 +107,14 @@ EchoingReprimand5       = Spell(354838),
 Feint                  = Spell(1966),
 Gouge                  = Spell(1776),
 Kick                   = Spell(1766),
-Broadside              = Spell(193356),
-BuriedTreasure         = Spell(199600),
-GrandMelee             = Spell(193358),
-SkullandCrossbones     = Spell(199603),
-RuthlessPrecision      = Spell(193357),
-TrueBearing            = Spell(193359),
+
+Broadside               = Spell(193356),
+BuriedTreasure          = Spell(199600),
+GrandMelee              = Spell(193358),
+RuthlessPrecision       = Spell(193357),
+SkullandCrossbones      = Spell(199603),
+TrueBearing             = Spell(193359),
+
 Evasion                = Spell(5277),
 WoundPoison            = Spell(8679),
 Crackshot              = Spell(423703),
@@ -241,6 +243,31 @@ end
 
 
 
+local function defensives()
+  if Player:AffectingCombat() then
+      for id = 1, 15 do
+          local spell = {
+"Call of the Brood","Massive Slam","Viscous Darkness","Dark Pulse","Dark Floes","Shadowy Decay",
+"Erosive Spray","Ground Pound","Void Outburst","Earth Shatterer","Crystalline Eruption","Void Discharge","Furious Thrashing","Acid Nova","Wrath of Zolramus",
+"Dark Shroud","Shattering Bellow","Crushing Slam","Fiery Ricochet","Umbral Wind","Commanding Roar","Forge Weapon","Void Surge","Vociferous Indoctrination", "Tremor Slam",
+
+          }
+          local unitID = "nameplate" .. id
+          local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
+              UnitCastingInfo(unitID)
+          local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
+
+          for idx = 1, #spell do
+              if UnitCanAttack("player", unitID) and (name == spell[idx] or spellName == spell[idx]) then
+                  return true
+              end
+          end
+      end
+  end
+  return false
+end
+
+
 
 -- Stable Energy Prediction
 local PrevEnergyTimeToMaxPredicted, PrevEnergyPredicted = 0, 0
@@ -278,7 +305,7 @@ RtB_BuffsList = {
 }
 
 -- Get the number of Roll the Bones buffs currently on
-local function RtB_Buffs ()
+local function RtB_Buffs()
   if not Cache.APLVar.RtB_Buffs then
     Cache.APLVar.RtB_Buffs = {}
     Cache.APLVar.RtB_Buffs.Will_Lose = {}
@@ -323,12 +350,15 @@ local function RtB_Buffs ()
 
 
   end
-  return Cache.APLVar.RtB_Buffs.Total
+
+return Cache.APLVar.RtB_Buffs.Total
 end
 
 local function checkBuffWillLose(buff)
   return (Cache.APLVar.RtB_Buffs.Will_Lose and Cache.APLVar.RtB_Buffs.Will_Lose[buff]) and true or false
 end
+
+
 
 -- RtB rerolling strategy, return true if we should reroll
 local function RtB_Reroll(ForceLoadedDice)
@@ -339,7 +369,7 @@ local function RtB_Reroll(ForceLoadedDice)
       -- # Variables that define the reroll rules for Roll the Bones Default rule: reroll if the only buff that will be rolled away is Buried Treasure, or Grand Melee in single target without upcoming adds
       -- actions+=/variable,name=rtb_reroll,value=rtb_buffs.will_lose=(rtb_buffs.will_lose.buried_treasure+rtb_buffs.will_lose.grand_melee
       -- &spell_targets.blade_flurry<2&raid_event.adds.in>12&raid_event.adds.count<2)
-      Cache.APLVar.RtB_Reroll = RtB_Buffs() == num(checkBuffWillLose(S.BuriedTreasure)) + (num(checkBuffWillLose(S.GrandMelee) and num(EnemiesBFCount < 2)))
+      Cache.APLVar.RtB_Reroll = RtB_Buffs() == num(checkBuffWillLose(S.BuriedTreasure)) + (num(checkBuffWillLose(S.GrandMelee) and num(RangeCount(8) < 2)))
 
       -- # If Loaded Dice is talented, then keep any 1 buff from Roll the Bones but roll it into 2 buffs when Loaded Dice is active. Also reroll 2 buffs with loaded dice up if broadside, ruthless precision and true bearing are all missing and loaded dice is up
       -- actions+=/variable,name=rtb_reroll,if=talent.loaded_dice,value=(rtb_buffs.will_lose<=buff.loaded_dice.up)
@@ -417,7 +447,7 @@ local function Ambush_Condition()
 end
 
 local function Vanish_DPS_Condition()
-  return (not Player:IsTanking(Target) and not Target:IsAPlayer()) or target_is_dummy()
+  return ((not Player:IsTanking(Target) and not Target:IsAPlayer()) or target_is_dummy()) and Player:GCDRemains()<0.25
 end
 
 local function Stealth()
@@ -442,11 +472,11 @@ local function Stealth()
     return S.PistolShot:Cast()
   end
   --***NOT PART of SimC*** Condition duplicated from build to Show SS Icon in stealth with audacity buff
-  if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) then
+  if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and Player:BuffUp(S.AudacityBuff) and not Finish_Condition()  then
     return S.SSAudacity:Cast()
   end
   --ambush,if=talent.hidden_opportunity
-  if IsReady("Ambush") and TargetinRange(5) and S.HiddenOpportunity:IsAvailable() then
+  if IsReady("Ambush") and TargetinRange(5) and S.HiddenOpportunity:IsAvailable()  and not Finish_Condition() then
     return S.Ambush:Cast()
   end
 
@@ -477,27 +507,47 @@ local function Finish()
 
   return nil
 end
-  
+   
 local function StealthCDs()
   if TargetinRange(5) then
+
+    if IsReady("Vanish") and Vanish_DPS_Condition() and S.UnderhandedUpperhand:IsAvailable() and S.Subterfuge:IsAvailable() and S.Crackshot:IsAvailable()
+      and (S.AdrenalineRush:CooldownRemains()>45
+      and Finish_Condition() and (not S.BetweentheEyes:IsReady() and S.Vanish:FullRechargeTime() < 15 )) then
+        return S.Vanish:Cast()
+      end
+
+    if IsReady("Vanish") and Vanish_DPS_Condition() and S.UnderhandedUpperhand:IsAvailable() and S.Subterfuge:IsAvailable() and S.Crackshot:IsAvailable()
+      and (Player:BuffUp(S.AdrenalineRush) or S.AdrenalineRush:IsReady())
+      and Finish_Condition() and (not S.BetweentheEyes:IsReady() and Player:BuffUp(S.RuthlessPrecision) or Player:BuffRemains(S.AdrenalineRush) < 3
+      or ChargedComboPoints > 0 or S.Vanish:FullRechargeTime() < 15 or HL.BossFilteredFightRemains("<", 8)) then
+        return S.Vanish:Cast()
+      end
     --vanish,if=talent.underhanded_upper_hand&talent.subterfuge&talent.crackshot&buff.adrenaline_rush.up&variable.Finish_Condition()&(!cooldown.between_the_eyes.ready&buff.ruthless_precision.up|buff.adrenaline_rush.remains<3|buff.supercharge_1.up|buff.supercharge_2.up|cooldown.vanish.full_recharge_time<15|fight_remains<8)
-    if IsReady("Vanish") and Vanish_DPS_Condition() and S.UnderhandedUpperhand:IsAvailable() and S.Subterfuge:IsAvailable() and S.Crackshot:IsAvailable() and Player:BuffUp(S.AdrenalineRush) and Finish_Condition() and (not IsReady("Between the Eyes") and Player:BuffUp(S.RuthlessPrecision) or Player:BuffRemains(S.AdrenalineRush) < 3 or Player:ChargedComboPoints() > 0 or S.Vanish:FullRechargeTime() < 15) then
-      return S.Vanish:Cast()
+    if IsReady("Vanish") and Vanish_DPS_Condition() and S.UnderhandedUpperhand:IsAvailable() and S.Subterfuge:IsAvailable()
+    and not S.Crackshot:IsAvailable() and Player:BuffUp(S.AdrenalineRush) and (Ambush_Condition() or not S.HiddenOpportunity:IsAvailable())
+    and (not S.BetweentheEyes:IsReady() and Player:BuffUp(S.RuthlessPrecision) or Player:BuffDown(S.RuthlessPrecision) or Player:BuffRemains(S.AdrenalineRush) < 3) then
+            return S.Vanish:Cast()
     end
     --vanish,if=talent.underhanded_upper_hand&talent.subterfuge&!talent.crackshot&buff.adrenaline_rush.up&(variable.ambush_condition|!talent.hidden_opportunity)&(!cooldown.between_the_eyes.ready&buff.ruthless_precision.up|buff.ruthless_precision.down|buff.adrenaline_rush.remains<3)
-    if IsReady("Vanish") and Vanish_DPS_Condition() and S.UnderhandedUpperhand:IsAvailable() and S.Subterfuge:IsAvailable() and not S.Crackshot:IsAvailable() and Player:BuffUp(S.AdrenalineRush) and (Ambush_Condition() or not S.HiddenOpportunity:IsAvailable()) and (not IsReady("Between the Eyes") and Player:BuffUp(S.RuthlessPrecision) or Player:BuffDown(S.RuthlessPrecision) or Player:BuffRemains(S.AdrenalineRush)) then
+    if IsReady("Vanish") and Vanish_DPS_Condition()  and not S.UnderhandedUpperhand:IsAvailable() and S.Crackshot:IsAvailable() and Finish_Condition() then
       return S.Vanish:Cast()
     end
     --vanish,if=!talent.underhanded_upper_hand&!talent.crackshot&talent.hidden_opportunity&!buff.audacity.up&buff.opportunity.stack<buff.opportunity.max_stack&variable.ambush_condition
-    if IsReady("Vanish") and Vanish_DPS_Condition() and not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and S.HiddenOpportunity:IsAvailable() and Player:BuffDown(S.AudacityBuff) and Player:BuffStack(S.Opportunity) < 6 and Ambush_Condition() then
+    if IsReady("Vanish") and Vanish_DPS_Condition() 
+    and not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and S.HiddenOpportunity:IsAvailable()
+    and Player:BuffDown(S.AudacityBuff) and Player:BuffStack(S.Opportunity) < 6 and Ambush_Condition() then
       return S.Vanish:Cast()
     end
     --vanish,if=!talent.underhanded_upper_hand&!talent.crackshot&!talent.hidden_opportunity&talent.fateful_ending&(!buff.fatebound_lucky_coin.up&(buff.fatebound_coin_tails.stack>=5|buff.fatebound_coin_heads.stack>=5)|buff.fatebound_lucky_coin.up&!cooldown.between_the_eyes.ready)
-    if IsReady("Vanish") and Vanish_DPS_Condition() and not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity():IsAvailable() and not S.FatefulEnding:IsAvailable() and (Player:BuffDown(S.LuckyCoin) and (FBcoinTailsstacks >= 5 or FBcoinHeadsstacks >= 5) or Player:BuffUp(S.LuckyCoin) and not IsReady("Between the Eyes")) then
+    if IsReady("Vanish") and Vanish_DPS_Condition() and not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity():IsAvailable()
+    and not S.FatefulEnding:IsAvailable() and (Player:BuffDown(S.FateboundLuckyCoin) and (Player:BuffStack(S.FateboundCoinTails) >= 5
+    or Player:BuffStack(S.FateboundCoinHeads) >= 5) or Player:BuffUp(S.FateboundLuckyCoin and not S.BetweentheEyes:IsReady())) then
       return S.Vanish:Cast()
     end
     --vanish,if=!talent.underhanded_upper_hand&!talent.crackshot&!talent.hidden_opportunity&!talent.fateful_ending&talent.take_em_by_surprise&!buff.take_em_by_surprise.up
-    if IsReady("Vanish") and Vanish_DPS_Condition() and not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity:IsAvailable() and not S.FatefulEnding:IsAvailable() and S.TakeEmBySurprise:IsAvailable() and Player:BuffDown(S.TakeEmBySurpriseBuff) then
+    if IsReady("Vanish") and Vanish_DPS_Condition() and not S.UnderhandedUpperhand:IsAvailable() and not S.Crackshot:IsAvailable() and not S.HiddenOpportunity:IsAvailable()
+    and not S.FatefulEnding:IsAvailable() and S.TakeEmBySurprise:IsAvailable() and Player:BuffDown(S.TakeEmBySurpriseBuff) then
       return S.Vanish:Cast()
     end
   end
@@ -524,7 +574,7 @@ local function CDs()
   end
   --roll_the_bones,if=variable.rtb_reroll|rtb_buffs=0
   if IsReady("Roll the Bones") then
-    if (RtB_Reroll() or RtB_Buffs() == 0)  then
+    if (RtB_Reroll() or RtB_Buffs() == 0) then
       return S.RolltheBones:Cast()
     end
   end
@@ -550,13 +600,13 @@ local function CDs()
     return S.BladeRush:Cast()
   end
   if RubimRH.CDsON() and TargetinRange(5) and Player:BuffUp(S.BetweentheEyes) then
-    if Player:BuffRemains(S.SubterfugeBuff) >= 4 and not AuraUtil.FindAuraByName("Tempered Potion", "player") and not target_is_dummy() then
-      if ((IsUsableItem(212263) == true and GetItemCooldown(212263) == 0 and GetItemCount(212263) >= 1) 
-      or (IsUsableItem(212264) == true and GetItemCooldown(212264) == 0 and GetItemCount(212264) >= 1)
-      or (IsUsableItem(212265) == true and GetItemCooldown(212265) == 0 and GetItemCount(212265) >= 1)) then
-          return S.Potion:Cast()
-      end
-    end
+    -- if Player:BuffRemains(S.SubterfugeBuff) >= 4 and not AuraUtil.FindAuraByName("Tempered Potion", "player") and not target_is_dummy() then
+    --   if ((IsUsableItem(212263) == true and GetItemCooldown(212263) == 0 and GetItemCount(212263) >= 1) 
+    --   or (IsUsableItem(212264) == true and GetItemCooldown(212264) == 0 and GetItemCount(212264) >= 1)
+    --   or (IsUsableItem(212265) == true and GetItemCooldown(212265) == 0 and GetItemCount(212265) >= 1)) then
+    --       return S.Potion:Cast()
+    --   end
+    -- end
     --use_items,slots=trinket1,if=buff.between_the_eyes.up|trinket.1.has_stat.any_dps|fight_remains<=20
     if trinket1ready then
       return Item(118330):Cast()
@@ -605,12 +655,19 @@ local function Build()
   return nil
 end
 
+
+
+
+
 local function APL()
+  TrackHealthLossPerSecond()
+  HPpercentloss = GetHealthLossPerSecond()
   EffectiveComboPoints = RogueEffectiveComboPoints(ComboPoints)
   ComboPoints = Player:ComboPoints()
   ChargedComboPoints = Player:ChargedComboPoints()
   ComboPointsDeficit = Player:ComboPointsDeficit()
---RtB_Buffs()
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -698,7 +755,7 @@ if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) then
 		return S.Stealth:Cast()
 	end
 
-  if IsReady("Adrenaline Rush") and RubimRH.CDsON() and not Finish_Condition() and S.UnderhandedUpperhand:IsAvailable() and Player:BuffDown(S.AdrenalineRush) and Player:BuffDown(S.VanishBuff) then
+  if IsReady("Adrenaline Rush") and RangeCount(30) >=1 and RubimRH.CDsON() and not Finish_Condition() and S.UnderhandedUpperhand:IsAvailable() and Player:BuffDown(S.AdrenalineRush) and Player:BuffDown(S.VanishBuff) then
     return S.AdrenalineRush:Cast()
   end
 
@@ -737,12 +794,12 @@ if S.Ambush:ID() == RubimRH.queuedSpell[1]:ID() then
 	if IsReady("Blade Flurry") and not Player:BuffUp(S.BladeFlurry) and RangeCount(5) >= 2 then
 		return S.BladeFlurry:Cast()
 	end	
-  if IsReady("Between the Eyes") and Finish_Condition() then
+  if IsReady("Between the Eyes") and Finish_Condition() and TargetinRange(8) then
 		return S.BetweentheEyes:Cast()
 	end
-	if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() then
+	if IsReady("Ambush") and S.HiddenOpportunity:IsAvailable() and TargetinRange(5) then
 		return S.Ambush:Cast()
-  elseif IsReady("Sinister Strike") and not S.HiddenOpportunity:IsAvailable() then
+  elseif IsReady("Sinister Strike") and not S.HiddenOpportunity:IsAvailable() and TargetinRange(5) then
     return S.SinisterStrike:Cast()
 	end	
 end
@@ -796,15 +853,18 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (not Aura
   if not C_Spell.IsCurrentSpell(6603) and C_Item.IsItemInRange(10645, "target") and Player:BuffDown(S.VanishBuff) and Player:BuffDown(S.Stealth) and Player:AffectingCombat() then
 		return S.autoattack:Cast()
 	end
-
   
-if (isTanking == true or Player:IsTankingAoE(8)) and IsReady("Evasion") and RangeCount(30) and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
+  if IsReady("Feint") and RangeCount(30)>=1  and S.Feint:TimeSinceLastCast()>6 and not AuraUtil.FindAuraByName("Feint", "player") and (Player:HealthPercentage() <= 50 and HPpercentloss>10 or defensives()) and Player:AffectingCombat() then
+    return S.Feint:Cast()
+    end
+  
+if (isTanking == true or Player:IsTankingAoE(8)) and IsReady("Evasion") and RangeCount(30)>=1 and Player:HealthPercentage() <= 50 and HPpercentloss>5 and Player:AffectingCombat() then
   return S.Evasion:Cast()
   end
   -- if IsReady("Crimson Vial") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
   --   return S.CrimsonVial:Cast()
   --   end
-if IsReady("Cloak of Shadows") and RangeCount(30) >= 1 and Player:HealthPercentage() <= 20 and Player:AffectingCombat() then
+if IsReady("Cloak of Shadows") and RubimRH.InterruptsON() and RangeCount(30) >= 1 and ( Player:HealthPercentage() <= 20 or  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") ) and Player:AffectingCombat() then
 return S.CloakofShadows:Cast()
 end
 
