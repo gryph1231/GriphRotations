@@ -1318,7 +1318,7 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 	end
 	
 	
-	if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0 or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
+	if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or RangeCount(30) == 0 or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
 	  then
 	  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	  end
@@ -1354,18 +1354,22 @@ if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Void Rift", "
 -------------------------------------------------------------defensives----------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if RangeCount(30)>=1 then
-if IsReady("Ancestral Guidance") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and inRange30>=1 and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
+if IsReady("Ancestral Guidance")
+ and (Player:HealthPercentage() <= 35 
+ or HPpercentloss>9 and Player:HealthPercentage() <= 50 
+ or defensives() and Player:HealthPercentage()<90) 
+ and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
 	return S.AncestralGuidance:Cast()
 	end
 	
-	if IsReady("Astral Shift") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90)  and inRange30>=1 and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
+	if IsReady("Astral Shift") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
 	return S.AstralShift:Cast()
 	end
-	if IsReady("Stone Bulwark Totem") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and inRange30>=1 and not AuraUtil.FindAuraByName("Astral Shift", "player") then
+	if IsReady("Stone Bulwark Totem") and (Player:HealthPercentage() <= 35 or HPpercentloss>9 and Player:HealthPercentage() <= 50 or defensives() and Player:HealthPercentage()<90) and not AuraUtil.FindAuraByName("Astral Shift", "player") then
 	return S.StoneBulwarkTotem:Cast()
 	end
 	
-	if IsReady("Earth Elemental") and IsTanking and Player:HealthPercentage() <= 35 and inRange30>=2 then
+	if IsReady("Earth Elemental") and IsTanking and Player:HealthPercentage() <= 35 and RangeCount(30)>=2 then
 	  return S.EarthElemental:Cast()
 	  end
 
