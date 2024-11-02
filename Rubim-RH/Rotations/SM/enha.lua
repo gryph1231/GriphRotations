@@ -39,7 +39,12 @@ ChainHeal = Spell(1064),
 Thunderstorm = Spell(51490),
 EarthernWeapon = Spell(392375),
 
-
+lustAT = Spell(155145),
+lust1 = Spell(57724),
+lust2 = Spell(57723),
+lust3 = Spell(80354),
+lust4 = Spell(95809),
+lust5 = Spell(264689),
 
 GhostWolf = Spell(2645),
 Purge = Spell(370),
@@ -668,7 +673,7 @@ local function Precombat()
 		return S.FeralSpirit:Cast()
 	end
 	-- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.tempest.stack=buff.tempest.max_stack&(tempest_mael_count>30|buff.awakening_storms.stack=2)&buff.maelstrom_weapon.stack>=5)
-	if IsReady("Feral Spirit") and TargetinRange(20) and (MaelstromStacks == MaxMaelstromStacks or (Player:BuffStack(S.TempestBuff) == MaxTempestStacks and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2) and MaelstromStacks >= 5)) then
+	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks == MaxMaelstromStacks or (Player:BuffStack(S.TempestBuff) == MaxTempestStacks and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2) and MaelstromStacks >= 5)) then
 		return S.TempestAbility:Cast()
 	end
 	-- elemental_blast,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&talent.elemental_spirits.enabled&feral_spirit.active>=6&(charges_fractional>=1.8|buff.ascendance.up)
@@ -696,7 +701,7 @@ local function Precombat()
 		return S.LightningBolt:Cast()
 	end
 	-- tempest,if=buff.maelstrom_weapon.stack>=7
-	if IsReady("Feral Spirit") and TargetinRange(20) and (MaelstromStacks >= 7) then
+	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks >= 7) then
 		return S.TempestAbility:Cast()
 	end
 	if IsReady("Elemental Blast") and TargetinRange(40) and (
@@ -862,7 +867,7 @@ local function Precombat()
 		return S.Sundering:Cast()
 	end
 	-- tempest,if=buff.maelstrom_weapon.stack>=5
-	if IsReady("Feral Spirit") and TargetinRange(20) and (MaelstromStacks >= 5) then
+	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks >= 5) then
 		return S.TempestAbility:Cast()
 	end
 	-- lightning_bolt,if=talent.hailstorm.enabled&buff.maelstrom_weapon.stack>=5&buff.primordial_wave.down
@@ -897,7 +902,7 @@ local function Precombat()
   
   local function Aoe()
 	-- tempest,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
-	if IsReady("Feral Spirit") and TargetinRange(20) and EvaluateTargetIfFilterLightningRodRemains() and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
+	if IsReady("Tempest") and tempest and TargetinRange(20) and EvaluateTargetIfFilterLightningRodRemains() and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
 		return S.TempestAbility:Cast()
 	end
 	-- windstrike,target_if=min:debuff.lightning_rod.remains,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_chain_lightning
@@ -1044,7 +1049,7 @@ local function Precombat()
 		return S.Windstrike:Cast()
 	end
 	-- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
-	if IsReady("Feral Spirit") and TargetinRange(20) and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
+	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
 		return S.TempestAbility:Cast()
 	end
 	-- lightning_bolt,if=(active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
@@ -1202,33 +1207,59 @@ end
 
 local function APL()
 
-
+	TrackHealthLossPerSecond()
+	HPpercentloss = GetHealthLossPerSecond()
 	if UnitExists('focus') and AuraUtil.FindAuraByName('Earth Shield','focus') then
         _, _, earthshieldstack = AuraUtil.FindAuraByName('Earth Shield','focus')
     else
         earthshieldstack = 0
     end
+	if (C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927673 or C_Spell.GetSpellInfo("Lightning Bolt").iconID == 136048 or C_Spell.GetSpellInfo("Lightning Bolt").iconID == 5927653)
+	then
+	  tempest = true
+	else
+	  tempest = false
+	end
+	
 
+local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
 
-    local lostimer = GetTime() - losCheckTimer
-    local los
+local lostimer = GetTime() - losCheckTimer
+local los
 
-    if lostimer < Player:GCD() then
-        los = true
-    else
-        los = false
-    end
+if lostimer < Player:GCD() then
+los = true
+else
+los = false
+end
+
+local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
+local inInstance, instanceType = IsInInstance()
+
+local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
+local highkey = 4
+
+local castchannelTime = math.random(250, 500) / 1000
+
+local startTimeMS = select(4, UnitCastingInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimeca = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+local castTime = elapsedTimeca / 1000
+local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChannelInfo('target')) or 0
+local currentTimeMS = GetTime() * 1000
+local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
+local channelTime = elapsedTimech / 1000
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------Functions/Top priorities-------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
 if Player:IsCasting() or Player:IsChanneling() then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
-elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") 
-or AuraUtil.FindAuraByName("Food & Drink", "player") or AuraUtil.FindAuraByName("Ghost Wolf", "player") then
+	elseif Player:IsDeadOrGhost() or AuraUtil.FindAuraByName("Drink", "player") or AuraUtil.FindAuraByName("Food", "player") or AuraUtil.FindAuraByName("Food & Drink", "player") then
 	return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"
-end
-
+	end 
+	
 -- local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo("target")
 -- tarSpeed,_,_,_ = GetUnitSpeed('target')
 
@@ -1278,15 +1309,24 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Spell Queue--------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-if (not RubimRH.queuedSpell[1]:CooldownUp() or not Player:AffectingCombat() or RangeCount(30)==0)
-or (S.GhostWolf:ID() == RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
-or (S.FeralLunge:ID() == RubimRH.queuedSpell[1]:ID() and (Target:IsInRange(8) or not Target:IsInRange(25))) then
-    RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
-end
-
-if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) and S.DoomWinds:ID() ~= RubimRH.queuedSpell[1]:ID() then
-    return RubimRH.QueuedSpell():Cast()
-end
+if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) then
+	return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
+	end
+	
+	if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and (Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or Player:Debuff(S.lust5)) then
+	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+	end
+	
+	
+	if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or inRange30 == 0 or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
+	  then
+	  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+	  end
+	
+	if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
+	return RubimRH.QueuedSpell():Cast()
+	end
+	
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------dispells---------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1439,7 +1479,7 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 		return S.FeralSpirit:Cast()
 	end
     -- surging_totem
-    if IsReady("Surging Totem") then
+    if IsReady("Surging Totem") and TargetinRange(20)  then
 		return S.SurgingTotem:Cast()
 	end
     -- ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
@@ -1447,13 +1487,13 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
      return S.Ascendance:Cast()
 	end
 
-	if RubimRH.AoEON() and RangeCount(10) > 1 then
+	if RubimRH.AoEON() and RangeCount(20) > 1 then
 		local ShouldReturn = Aoe(); if ShouldReturn then return ShouldReturn; end
 	else
 	  local ShouldReturn = Funnel(); if ShouldReturn then return ShouldReturn; end
  
     -- call_action_list,name=single,if=active_enemies=1
-    if RangeCount(10) == 1  then
+    if RangeCount(20) == 1  then
       local ShouldReturn = Single(); if ShouldReturn then return ShouldReturn; end
     end
 
