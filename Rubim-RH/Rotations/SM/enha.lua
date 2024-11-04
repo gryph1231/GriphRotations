@@ -1295,12 +1295,19 @@ if not Player:AffectingCombat() then
 		return S.Skyfury:Cast()
 	end
 
+		
+
 	if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Earth Shield", "focus") then 
         if IsReady("Earth Shield") and earthshieldstack<7 then
             return S.EarthShield:Cast()
         end
     end
 	
+	if IsReady("Earth Shield") and not UnitExists("focus") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() then
+		return S.EarthShield:Cast()
+		end
+		
+
     -- Precombat
     if not Player:AffectingCombat() and C_Spell.IsCurrentSpell(6603) then
 		local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
@@ -1487,8 +1494,16 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 		return S.SurgingTotem:Cast()
 	end
     -- ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
-    if IsReady("Ascendance") and TargetinRange(10) and RubimRH.CDsON() and (Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1 or TIAction == S.ChainLightning and RangeCount(10) > 1)) then
-     return S.Ascendance:Cast()
+    -- if IsReady("Ascendance") and TargetinRange(10) and RubimRH.CDsON() and (Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1 or TIAction == S.ChainLightning and RangeCount(10) > 1)) then
+    --  return S.Ascendance:Cast()
+	-- end
+
+	if IsReady("Ascendance") and TargetinRange(10) and RubimRH.CDsON() and HL.CombatTime()>2 then
+		return S.Ascendance:Cast()
+	   end
+
+	   if IsReady("Tempest") and tempest and TargetinRange(20) and MaelstromStacks >= 8 and S.PrimordialWave:CooldownDown() and RangeCount(20)>1 then
+		return S.TempestAbility:Cast()
 	end
 
 	if RubimRH.AoEON() and RangeCount(20) > 1 then

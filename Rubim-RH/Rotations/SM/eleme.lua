@@ -415,7 +415,7 @@ if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceB
 
   -- tempest,target_if=min:debuff.lightning_rod.remains,if=!buff.arc_discharge.up&(buff.surge_of_power.up|!talent.surge_of_power.enabled)
   if IsReady("Tempest") and tempest
-  and cancastnaturespells and targetRange40
+  and cancastAll and targetRange40
   and Player:BuffDown(S.ArcDischargeBuff) and (Player:BuffUp(S.SurgeofPowerBuff) or not S.SurgeofPower:IsAvailable()) then
     return S.Tempest:Cast()
   end
@@ -583,7 +583,7 @@ end
 -- tempest,if=buff.surge_of_power.up
 -- Surge of Power is strong and should be used. ©
 if IsReady("Tempest")  and tempest
-and (Player:BuffUp(S.SurgeofPowerBuff)) and cancastnaturespells then
+and (Player:BuffUp(S.SurgeofPowerBuff)) and cancastAll then
   return S.Tempest:Cast()
 end
 
@@ -649,7 +649,7 @@ if IsReady("Earth Shock") and (Player:BuffUp(S.TempestBuff) or Player:BuffUp(S.S
 end
 
 -- tempest
-if IsReady("Tempest") and cancastnaturespells and tempest
+if IsReady("Tempest") and cancastAll and tempest
 then
   return S.Tempest:Cast()
 end
@@ -877,7 +877,7 @@ end
 --   Cast  Chain Lightning.
 
 
-if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison') and RubimRH.InterruptsON() then
+if IsReady("Poison Cleansing Totem")  and totemName1 ~= "Poison Cleansing Totem" and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Poison') and RubimRH.InterruptsON() then
   return S.PoisonCleansingTotem:Cast()
   end
 if IsReady("Cleanse Spirit") and totemName1 ~= "Poison Cleansing Totem"
@@ -885,7 +885,7 @@ and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriate
   return S.CleanseSpirit:Cast()
   end
 
-  if IsReady("Totemic Recall") and (S.PoisonCleansingTotem:CooldownRemains()>3 or S.WindRushTotem:CooldownRemains()>3 or S.TremorTotem:CooldownRemains()>3 or S.CapacitorTotem:CooldownRemains()>3)  then
+  if IsReady("Totemic Recall")  and (S.PoisonCleansingTotem:CooldownRemains()>3 or S.WindRushTotem:CooldownRemains()>3 or S.TremorTotem:CooldownRemains()>3 or S.CapacitorTotem:CooldownRemains()>3)  then
     return S.TotemicRecall:Cast()
     end
 

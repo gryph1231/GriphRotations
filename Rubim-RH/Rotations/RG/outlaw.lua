@@ -667,7 +667,6 @@ local function APL()
   ChargedComboPoints = Player:ChargedComboPoints()
   ComboPointsDeficit = Player:ComboPointsDeficit()
 
-
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --Functions & Variables-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -854,7 +853,7 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (not Aura
 		return S.autoattack:Cast()
 	end
   
-  if IsReady("Feint") and RangeCount(30)>=1  and S.Feint:TimeSinceLastCast()>6 and not AuraUtil.FindAuraByName("Feint", "player") and (Player:HealthPercentage() <= 50 and HPpercentloss>10 or defensives()) and Player:AffectingCombat() then
+  if IsReady("Feint") and RangeCount(30)>=1  and S.Feint:TimeSinceLastCast()>7 and not AuraUtil.FindAuraByName("Feint", "player") and  defensives() and Player:AffectingCombat() then
     return S.Feint:Cast()
     end
   
@@ -864,9 +863,9 @@ if (isTanking == true or Player:IsTankingAoE(8)) and IsReady("Evasion") and Rang
   -- if IsReady("Crimson Vial") and inRange30 >= 1 and Player:HealthPercentage() <= 50 and Player:AffectingCombat() then
   --   return S.CrimsonVial:Cast()
   --   end
-if IsReady("Cloak of Shadows") and RubimRH.InterruptsON() and RangeCount(30) >= 1 and ( Player:HealthPercentage() <= 20 or  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") ) and Player:AffectingCombat() then
-return S.CloakofShadows:Cast()
-end
+-- if IsReady("Cloak of Shadows") and RubimRH.InterruptsON() and RangeCount(30) >= 1 and ( Player:HealthPercentage() <= 20 or  AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") ) and Player:AffectingCombat() then
+-- return S.CloakofShadows:Cast()
+-- end
 
   -- Fan the Hammer Combo Point Prediction
   if S.FantheHammer:IsAvailable() and S.PistolShot:TimeSinceLastCast() <= Player:GCDRemains() then
