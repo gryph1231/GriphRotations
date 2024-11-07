@@ -668,8 +668,12 @@ if IsReady("Icefury") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 a
 end
 
 -- lava_burst,target_if=dot.flame_shock.remains>2,if=!buff.master_of_the_elements.up
--- Use Lava Burst to proc Master of the Elements.
-if IsReady("Lava Burst") and (Player:BuffDown(S.MasteroftheElementsBuff) and Player:BuffUp(S.LavaSurgeBuff)) and cancastlavaburst then
+if IsReady("Lava Burst") and Player:BuffDown(S.MasteroftheElementsBuff) and  FSremains>2 and cancastlavaburst then
+  return S.LavaBurst:Cast()
+end
+-- lava_burst,if=!buff.master_of_the_elements.up&buff.lava_surge.up
+
+if IsReady("Lava Burst") and Player:BuffDown(S.MasteroftheElementsBuff) and Player:BuffUp(S.LavaSurgeBuff) and cancastlavaburst then
   return S.LavaBurst:Cast()
 end
 
