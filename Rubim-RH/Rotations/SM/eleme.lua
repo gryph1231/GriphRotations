@@ -541,12 +541,6 @@ end
 
 local function st()
 
---lightning_bolt,if=buff.stormkeeper.up&buff.surge_of_power.up&spell_targets.chain_lightning=2
---2t
-if IsReady("Lightning Bolt") and cancastnaturespells and (Player:BuffUp(S.StormkeeperBuff) and Player:BuffUp(S.SurgeofPowerBuff) and (combatmobs40()==2) ) then
-  return S.LightningBolt:Cast()
-end
-
 -- fire_elemental
 if IsReady("Fire Elemental") and RubimRH.CDsON() then
   return S.FireElemental:Cast()
@@ -557,9 +551,10 @@ if IsReady("Storm Elemental") and RubimRH.CDsON() then
   return S.StormElemental:Cast()
 end
 
--- stormkeeper,if=!talent.ascendance.enabled|cooldown.ascendance.remains<gcd|cooldown.ascendance.remains>10
+
+-- stormkeeper
 -- Just use Stormkeeper.
-if IsReady("Stormkeeper") and cancastAll and RubimRH.CDsON() and (not S.Ascendance:IsAvailable() or S.Ascendance:CooldownRemains()<Player:GCD() or S.Ascendance:CooldownRemains()>10) then
+if IsReady("Stormkeeper") and cancastAll and RubimRH.CDsON() then
   return S.Stormkeeper:Cast()
 end
 
@@ -569,16 +564,25 @@ if IsReady("Primordial Wave") and (Player:BuffDown(S.SurgeofPowerBuff)) then
   return S.PrimordialWave:Cast()
 end
 
--- ancestral_swiftness,if=!buff.primordial_wave.up|!buff.stormkeeper.up|!talent.elemental_blast.enabled
--- *Use Ancestral Swiftness as much as possible. Use on EB instead of LvB where possible.
-if IsReady("Ancestral Swiftness") and (not Player:BuffUp(S.PrimordialWaveBuff) or not Player:BuffUp(S.StormkeeperBuff) or not S.ElementalBlast:IsAvailable()) then
+
+-- stormkeeper
+-- Just use Stormkeeper.
+if IsReady("Ancestral Swiftness") and RubimRH.CDsON() then
   return S.AncestralSwiftness:Cast()
 end
 
+
 -- ascendance,if=fight_remains>180|buff.spymasters_web.up|!(variable.spymaster_in_1st|variable.spymaster_in_2nd)
-if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceBuff) then
+if IsReady("Ascendance") and RubimRH.CDsON() and not Player:BuffUp(S.AscendanceBuff) and (S.FirstAscendant:IsAvailable() or Player:BuffUp(S.SpymastersWebBuff) or not usespymaster) then
   return S.Ascendance:Cast()
 end
+
+--lightning_bolt,if=buff.stormkeeper.up&buff.surge_of_power.up&spell_targets.chain_lightning=2
+--2t
+if IsReady("Lightning Bolt") and cancastnaturespells and (Player:BuffUp(S.StormkeeperBuff) and Player:BuffUp(S.SurgeofPowerBuff) and (combatmobs40()==2) ) then
+  return S.LightningBolt:Cast()
+end
+
 
 -- tempest,if=buff.surge_of_power.up
 -- Surge of Power is strong and should be used. ©
@@ -592,11 +596,29 @@ if IsReady("Lightning Bolt") and (Player:BuffUp(S.SurgeofPowerBuff)) and cancast
   return S.LightningBolt:Cast()
 end
 
+-- tempest,if=buff.surge_of_power.up
+-- Surge of Power is strong and should be used. ©
+if IsReady("Tempest")  and tempest
+and Player:BuffStack(S.StormFrenzyBuff)==2 and not S.SurgeofPower:IsAvailable() and cancastAll then
+  return S.Tempest:Cast()
+end
+
+
+
+if IsReady("Lightning Bolt") and (Player:BuffStack(S.StormFrenzyBuff)==2) and cancastnaturespells and Player:BuffStack(S.StormFrenzyBuff)==2 then
+  return S.LightningBolt:Cast()
+end
+
+
+
 -- liquid_magma_totem,if=active_dot.flame_shock=0
 -- Use LMT to apply Flame Shock.
 if IsReady("Liquid Magma Totem") and FSTargets()==0  then
   return S.LiquidMagmaTotem:Cast()
 end
+
+
+
 
 -- flame_shock,if=(active_dot.flame_shock=0|dot.flame_shock.remains<6)&!buff.surge_of_power.up&!buff.master_of_the_elements.up&!talent.primordial_wave.enabled&!talent.liquid_magma_totem.enabled
 -- Manually refresh Flame shock if better options are not talented.
@@ -606,19 +628,38 @@ end
 
 -- earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(maelstrom>variable.mael_cap-15|fight_remains<5)
 -- Spend if close to overcaping. Respect Echoes of Great Sundering.
-if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff)  and VarMaelstrom > VarMaelCap - 15 ) then
+if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff)  and VarMaelstrom > VarMaelCap - 20 ) then
   return S.Earthquake:Cast()
 end
 
 -- elemental_blast,if=maelstrom>variable.mael_cap-15|fight_remains<5
-if IsReady("Elemental Blast") and VarMaelstrom  > VarMaelCap - 15   and cancastAll then
+if IsReady("Elemental Blast") and VarMaelstrom  > VarMaelCap - 20   and cancastAll then
   return S.ElementalBlast:Cast()
 end
 
 -- earth_shock,if=maelstrom>variable.mael_cap-15|fight_remains<5
-if IsReady("Earth Shock") and VarMaelstrom  > VarMaelCap - 15 then
+if IsReady("Earth Shock") and VarMaelstrom  > VarMaelCap - 20 then
   return S.EarthShock:Cast()
 end
+
+
+-- earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(maelstrom>variable.mael_cap-15|fight_remains<5)
+-- Spend if close to overcaping. Respect Echoes of Great Sundering.
+if IsReady("Earthquake") and (Player:BuffUp(S.EchoesofGreatSunderingBuff)  and not S.SurgeofPower:IsAvailable() ) then
+  return S.Earthquake:Cast()
+end
+
+
+-- elemental_blast,if=maelstrom>variable.mael_cap-15|fight_remains<5
+if IsReady("Elemental Blast")  and not S.SurgeofPower:IsAvailable()    and cancastAll then
+  return S.ElementalBlast:Cast()
+end
+
+-- earth_shock,if=maelstrom>variable.mael_cap-15|fight_remains<5
+if IsReady("Earth Shock") and not S.SurgeofPower:IsAvailable() then
+  return S.EarthShock:Cast()
+end
+
 
 -- icefury,if=!(buff.fusion_of_elements_nature.up|buff.fusion_of_elements_fire.up)
 -- Use Icefury to proc Fusion of Elements.
@@ -628,9 +669,11 @@ end
 
 -- lava_burst,target_if=dot.flame_shock.remains>2,if=!buff.master_of_the_elements.up
 -- Use Lava Burst to proc Master of the Elements.
-if IsReady("Lava Burst") and (Player:BuffDown(S.MasteroftheElementsBuff) and FSremains > 2) and cancastlavaburst then
+if IsReady("Lava Burst") and (Player:BuffDown(S.MasteroftheElementsBuff) and Player:BuffUp(S.LavaSurgeBuff)) and cancastlavaburst then
   return S.LavaBurst:Cast()
 end
+
+
 
 -- earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(buff.tempest.up|buff.stormkeeper.up)&talent.surge_of_power.enabled
 -- Spend to activate Surge of Power buff for Tempest or Stormkeeper.
@@ -661,7 +704,7 @@ if IsReady("Lightning Bolt") and cancastnaturespells then
 end
 
 
-if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:HealthPercentage()<60 and Player:IsMoving() then
+if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:HealthPercentage()<70 and Player:IsMoving() then
   return S.EarthShield:Cast()
   end
 

@@ -24,11 +24,12 @@ RubimRH.Spell[65] = {
     HolyShockP2 = Spell(291944), --regeneratin
     HolyShockP3 = Spell(255647), --lights judgment
     HolyShockP4 = Spell(28880), --gift of the narru
-    HolyShockTarget = Spell(210294), --divine favor
+    HolyShockTarget = Spell(436344), --azerite surge
     HammerofWrath = Spell(24275),
     InfusionofLight = Spell(54149),
     Consecration = Spell(26573),
     Judgment = Spell(275773),
+    AvengingCrusader = Spell(216331),
     CrusaderStrike = Spell(35395),
     AvengingWrath = Spell(31884),
     FlashofLight = Spell(19750),
@@ -51,18 +52,15 @@ RubimRH.Spell[65] = {
     BlessingofSacrificeP4 = Spell(7328), --redemption
     HammerofJustice = Spell(853),
     DivineToll = Spell(375576),
-    -- HandofDivinity = Spell(414273),
-    -- HandofDivinityz = Spell(105809), --holy avenger
-    -- TyrsDeliverance = Spell(200652),
     Rebuke = Spell(96231),
     autoattack = Spell(190784), --divine steed
     AuraMastery = Spell(31821),
     Intercession = Spell(391054),
     DivineProtection = Spell(498),
     Cleanse = Spell(4987),
-    CleanseP1 = Spell(172321), --seraphim
-    CleanseP2 = Spell(156910), --beacon of faith
-    CleanseP3 = Spell(148039), --barrier of faith
+    CleanseP1 = Spell(200652), --tyrs deliverance
+    CleanseP2 = Spell(53563), --beacon of light
+    CleanseP3 = Spell(31884), --avenging wrath
     CleanseP4 = Spell(155145), --arcane torrent
     HolyPrism = Spell(114165),
     -- HolyPrismP = Spell(183435), --retribution aura
@@ -72,8 +70,8 @@ RubimRH.Spell[65] = {
     -- HolyPrismP4 = Spell(59752), --human racial
     BlessingofSummer = Spell(388007),
     Potion = Spell(176108),
-    SetFocus = Spell(31884), --avenging wrath
-    ClearFocus = Spell(200652), --tyrs deliverance
+    --SetFocus = Spell(31884), --avenging wrath
+    --ClearFocus = Spell(200652), --tyrs deliverance
 };
 --unused icons: hand of div, holy light, trink2, --divine steed(curr aa)?, avenging wrath(after affix), tyrs deliverance(after affix)
 local S = RubimRH.Spell[65]
@@ -216,7 +214,7 @@ if true then
         los = false
     end
 
-    no_spot_heal_available = not IsReady('Holy Shock') and Player:HolyPower() < 3
+    no_spot_heal_available = (not IsReady('Holy Shock') and Player:HolyPower() < 3) and (not Player:BuffUp(S.AvengingCrusader) or (not IsReady("Crusader Strike") or not IsReady("Judgment")))
 
     inInstance, instanceType = IsInInstance()
 
@@ -409,15 +407,19 @@ end
     end
     
     if Player:AffectingCombat() then
-        if Player:ManaPercentage() < 15 and not AuraUtil.FindAuraByName("Divine Shield", "player") and C_Item.IsUsableItem(191386) and GetItemCooldown(191386) == 0 and GetItemCount(191386) >= 1 and not Player:InArena() and not Player:InBattlegrounds() then
+        if Player:ManaPercentage() < 15 and not AuraUtil.FindAuraByName("Divine Shield", "player") and not Player:InArena() and not Player:InBattlegrounds()
+        and ((C_Item.IsUsableItem(212239) and GetItemCooldown(212239) == 0 and GetItemCount(212239) >= 1)
+        or (C_Item.IsUsableItem(212240) and GetItemCooldown(212240) == 0 and GetItemCount(212240) >= 1)) then
             return S.Potion:Cast()
         end
 
-        if Player:HealthPercentage() < 30 and not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Wall of Hate", "player") and C_Item.IsUsableItem(211880) and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 and (not Player:InArena() and not Player:InBattlegrounds()) then
+        if Player:HealthPercentage() < 30 and not AuraUtil.FindAuraByName("Divine Shield", "player") and 
+        ((C_Item.IsUsableItem(211878) and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1) or 
+        (C_Item.IsUsableItem(211879) and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1)) then
             return I.HPIcon:Cast()
         end
 
-        if IsReady("Divine Protection") and Player:HealthPercentage() < 70 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 20) and not AuraUtil.FindAuraByName("Wall of Hate", "player") and not AuraUtil.FindAuraByName("Divine Shield", "player") then
+        if IsReady("Divine Protection") and Player:HealthPercentage() < 70 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 20) and not AuraUtil.FindAuraByName("Divine Shield", "player") then
             return S.DivineProtection:Cast()
         end
 
@@ -492,13 +494,23 @@ if IsReady("Holy Prism") and Player:AffectingCombat() then
 end
 
 if IsReady("Beacon of Virtue") then
-    if (LowestAlly("HP") >= 25 or no_spot_heal_available) and (MissingHealth(80) >= 2 or MissingHealth(85) >= 3 or MissingHealth(90) >= 4 or MissingHealth(95) >= 5) then
+    if (LowestAlly("HP") >= 35 or no_spot_heal_available) and (MissingHealth(80) >= 2 or MissingHealth(85) >= 3 or MissingHealth(90) >= 4 or MissingHealth(95) >= 5) then
         if IsReady("Blessing of Summer") and BlessingReady("Summer") then
             return Item(178675):Cast()
         end
 
         return S.BeaconofVirtue:Cast()
     end
+end
+
+if Player:BuffUp(S.AvengingCrusader) then
+    if IsReady("Judgment") and TargetinRange(nil,"Judgment") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+        return S.Judgment:Cast()
+    end
+
+    if IsReady("Crusader Strike") and TargetinRange(nil,"Crusader Strike") and UnitCanAttack("player","target") and (Target:AffectingCombat() or C_Spell.IsCurrentSpell(6603)) then
+        return S.CrusaderStrike:Cast()
+    end 
 end
 
 if Spender() and Player:HolyPower() >= 5 then
