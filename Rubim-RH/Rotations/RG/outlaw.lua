@@ -712,7 +712,6 @@ ComboPoints = Player:ComboPoints()
 
 ComboPointsDeficit = Player:ComboPointsDeficit()
 
-
 EnergyMaxOffset = Player:BuffUp(S.AdrenalineRush, nil, true) and -50 or 0 -- For base_time_to_max emulation
 
 Energy = EnergyPredictedStable()

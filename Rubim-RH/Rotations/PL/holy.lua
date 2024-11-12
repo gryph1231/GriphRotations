@@ -59,7 +59,7 @@ RubimRH.Spell[65] = {
     DivineProtection = Spell(498),
     Cleanse = Spell(4987),
     CleanseP1 = Spell(200652), --tyrs deliverance
-    CleanseP2 = Spell(53563), --beacon of light
+    CleanseP2 = Spell(53651), --beacon of light
     CleanseP3 = Spell(31884), --avenging wrath
     CleanseP4 = Spell(155145), --arcane torrent
     HolyPrism = Spell(114165),
@@ -75,6 +75,8 @@ RubimRH.Spell[65] = {
 };
 --unused icons: hand of div, holy light, trink2, --divine steed(curr aa)?, avenging wrath(after affix), tyrs deliverance(after affix)
 local S = RubimRH.Spell[65]
+
+--S.DivineToll.TextureSpellID = { 304971 }
 
 if not Item.Paladin then
     Item.Paladin = {};
@@ -383,9 +385,9 @@ end
         --     return S.DivineShield:Cast()
         -- end
 
-        if trinket1ready and Player:HealthPercentage() < 40 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 30) and not AuraUtil.FindAuraByName("Divine Shield", "player") then
-            return I.tx1:Cast()
-        end
+        --if trinket1ready and Player:HealthPercentage() < 40 and ((S.HolyShock:Charges() == 0 and not Spender()) or LowestAlly("UnitID") ~= "player" or MissingHealth(70,1) >= 3 or Player:HealthPercentage() < 30) and not AuraUtil.FindAuraByName("Divine Shield", "player") then
+            --return I.tx1:Cast()
+        --end
     end
 
     if IsReady("Lay on Hands") and los == false and Player:GCDRemains() < 0.5 then
@@ -493,13 +495,15 @@ if IsReady("Holy Prism") and Player:AffectingCombat() then
     -- end
 end
 
-if IsReady("Beacon of Virtue") then
+if S.BeaconofVirtue:IsCastable() and S.BeaconofVirtue:CooldownRemains() < 2 then
     if (LowestAlly("HP") >= 35 or no_spot_heal_available) and (MissingHealth(80) >= 2 or MissingHealth(85) >= 3 or MissingHealth(90) >= 4 or MissingHealth(95) >= 5) then
         if IsReady("Blessing of Summer") and BlessingReady("Summer") then
             return Item(178675):Cast()
         end
-
-        return S.BeaconofVirtue:Cast()
+		
+		if S.BeaconofVirtue:IsCastable() then
+			return S.BeaconofVirtue:Cast()
+		end
     end
 end
 
@@ -555,13 +559,15 @@ if Spender() and Player:HolyPower() >= 3 and LowestAlly("HP") < 75 then
 	return Spender()
 end
 
-if IsReady("Beacon of Virtue") then
+if S.BeaconofVirtue:IsCastable() and S.BeaconofVirtue:CooldownRemains() < 2 then
     if MissingHealth(75) >= 2 or MissingHealth(80) >= 3 or MissingHealth(85) >= 4 or MissingHealth(90) >= 5 then
         if IsReady("Blessing of Summer") and BlessingReady("Summer") then
             return Item(178675):Cast()
         end
 
-        return S.BeaconofVirtue:Cast()
+		if S.BeaconofVirtue:IsCastable() then
+			return S.BeaconofVirtue:Cast()
+		end
     end
 end
 

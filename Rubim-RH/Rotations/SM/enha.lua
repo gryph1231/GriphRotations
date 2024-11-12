@@ -902,11 +902,11 @@ local function Precombat()
   
   local function Aoe()
 	-- tempest,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
-	if IsReady("Tempest") and tempest and TargetinRange(20) and EvaluateTargetIfFilterLightningRodRemains() and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
+	if IsReady("Tempest") and tempest and TargetinRange(20)  and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
 		return S.TempestAbility:Cast()
 	end
 	-- windstrike,target_if=min:debuff.lightning_rod.remains,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_chain_lightning
-	if IsReady("Windstrike") and TargetinRange(30) and EvaluateTargetIfFilterLightningRodRemains() and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.ChainLightning) then
+	if IsReady("Windstrike") and TargetinRange(30)  and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.ChainLightning) then
 		return S.Windstrike:Cast()
 	end
 	-- crash_lightning,if=talent.crashing_storms.enabled&((talent.unruly_winds.enabled&active_enemies>=10)|active_enemies>=15)
@@ -914,27 +914,29 @@ local function Precombat()
 		return S.CrashLightning:Cast()
 	end
 	-- lightning_bolt,target_if=min:debuff.lightning_rod.remains,if=(!talent.tempest.enabled|(tempest_mael_count<=10&buff.awakening_storms.stack<=1))&((active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd))
-	if IsReady("Lightning Bolt") and TargetinRange(40) and EvaluateTargetIfFilterLightningRodRemains() and ((not S.Tempest:IsAvailable() or (TempestMaelstrom <= 10 and Player:BuffStack(S.AwakeningStormsBuff) <= 1)) and ((FSTargets() == RangeCount(10) or FSTargets() >= 6) and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) or BossFightRemains <= 12))) then
+	if IsReady("Lightning Bolt") and TargetinRange(40)  and ((not S.Tempest:IsAvailable() or (TempestMaelstrom <= 10 and Player:BuffStack(S.AwakeningStormsBuff) <= 1)) and ((FSTargets() == RangeCount(10) or FSTargets() >= 6)
+	and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) or BossFightRemains <= 12))) then
 		return S.LightningBolt:Cast()
 	end
-	-- lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+
+	-- va_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 	if IsReady("Lava Lash") and TargetinRange(8) and (S.MoltenAssault:IsAvailable() and (S.PrimordialWave:IsAvailable() or S.FireNova:IsAvailable()) and Target:DebuffUp(S.FlameShockDebuff) and (FSTargets() < RangeCount(10)) and FSTargets() < 6) then
 		return S.LavaLash:Cast()
 	end
 	-- primordial_wave,target_if=min:dot.flame_shock.remains,if=!buff.primordial_wave.up
-	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff)) and EvaluateTargetIfFilterPrimordialWave() and EvaluateTargetIfPrimordialWave() then
+	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff))  then
 		return S.PrimordialWave:Cast()
 	end
 	-- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
-	if IsReady("Chain Lightning") and TargetinRange(40) and EvaluateTargetIfFilterLightningRodRemains() and (Player:BuffUp(S.ArcDischargeBuff) and MaelstromStacks >= 5) then
+	if IsReady("Chain Lightning") and TargetinRange(40)  and (Player:BuffUp(S.ArcDischargeBuff) and MaelstromStacks >= 5) then
 		return S.ChainLightning:Cast()
 	end
 	-- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
-	if IsReady("Elemental Blast") and TargetinRange(40) and EvaluateTargetIfFilterLightningRodRemains() and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks == MaxMaelstromStacks and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
+	if IsReady("Elemental Blast") and TargetinRange(40)  and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks == MaxMaelstromStacks and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
 		return S.ElementalBlast:Cast()
 	end
 	-- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
-	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks) and EvaluateTargetIfFilterLightningRodRemains() then
+	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks)  then
 		return S.ChainLightning:Cast()
 	end
 	-- feral_spirit
@@ -958,7 +960,7 @@ local function Precombat()
 		return S.FireNova:Cast()
 	end
 	-- lava_lash,target_if=min:debuff.lashing_flames.remains,if=talent.lashing_flames.enabled
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable()) and EvaluateTargetIfFilterLavaLash() then
+	if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable())  then
 		return S.LavaLash:Cast()
 	end
 	-- lava_lash,if=talent.molten_assault.enabled&dot.flame_shock.ticking
@@ -982,7 +984,7 @@ local function Precombat()
 		return S.FlameShock:Cast()
 	end
 	-- flame_shock,target_if=min:dot.flame_shock.remains,if=(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
-	if IsReady("Flame Shock") and TargetinRange(40) and ((S.FireNova:IsAvailable() or S.PrimordialWave:IsAvailable()) and (FSTargets() < RangeCount(10)) and FSTargets() < 6) and EvaluateCycleFlameShock() then
+	if IsReady("Flame Shock") and TargetinRange(40) and ((S.FireNova:IsAvailable() or S.PrimordialWave:IsAvailable()) and (FSTargets() < RangeCount(10)) and FSTargets() < 6)  then
 		return S.FlameShock:Cast()
 	end
 	-- fire_nova,if=active_dot.flame_shock>=3
@@ -1022,11 +1024,11 @@ local function Precombat()
 		return S.FireNova:Cast()
 	end
 	-- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack>=5&(!talent.crashing_storms.enabled|active_enemies<=3)
-	if IsReady("Elemental Blast") and TargetinRange(40) and EvaluateTargetIfFilterLightningRodRemains() and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks >= 5 and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
+	if IsReady("Elemental Blast") and TargetinRange(40)  and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks >= 5 and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
 		return S.ElementalBlast:Cast()
 	end
 	-- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack>=5
-	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks >= 5) and EvaluateTargetIfFilterLightningRodRemains() then
+	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks >= 5)  then
 		return S.ChainLightning:Cast()
 	end
 	-- flame_shock,if=!ticking
@@ -1073,7 +1075,7 @@ local function Precombat()
 		return S.LavaLash:Cast()
 	end
 	-- primordial_wave,target_if=min:dot.flame_shock.remains,if=!buff.primordial_wave.up
-	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff)) and EvaluateTargetIfFilterPrimordialWave() then
+	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff))  then
 		return S.PrimordialWave:Cast()
 	end
 	-- elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|buff.feral_spirit.up)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack

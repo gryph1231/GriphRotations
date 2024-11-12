@@ -517,15 +517,15 @@ end
     return S.ChainLightning:Cast()
   end
 
-  if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:HealthPercentage()<60 and Player:IsMoving() then
+  if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:HealthPercentage()<60 and Player:MovingFor()>Player:GCD() then
     return S.EarthShield:Cast()
     end
   -- flame_shock,moving=1,target_if=refreshable
-  if IsReady("Flame Shock") and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>Player:GCD() + 0.5) and Player:IsMoving() and targetRange40 then
+  if IsReady("Flame Shock") and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>Player:GCD() + 0.5) and Player:MovingFor()>Player:GCD() and targetRange40 then
     return S.FlameShock:Cast()
   end
   -- frost_shock,moving=1
-  if IsReady("Frost Shock") and Player:IsMoving() and targetRange40 then
+  if IsReady("Frost Shock") and Player:MovingFor()>Player:GCD() and targetRange40 then
     return S.FrostShock:Cast()
   end
 
@@ -713,13 +713,13 @@ if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "play
   end
 
 -- flame_shock,moving=1,target_if=refreshable
-if IsReady("Flame Shock") and Player:IsMoving() and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>1) then
+if IsReady("Flame Shock") and Player:MovingFor()>Player:GCD() and (FSremains<16 or S.FlameShock:TimeSinceLastCast()>1) then
 return S.FlameShock:Cast()
 end
 
 -- frost_shock,moving=1
 -- Frost Shock is our movement filler.
-if IsReady("Frost Shock") and Player:IsMoving() then
+if IsReady("Frost Shock") and Player:MovingFor()>Player:GCD() then
   return S.FrostShock:Cast()
 end
 
