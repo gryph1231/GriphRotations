@@ -49,7 +49,8 @@ lust5 = Spell(264689),
 GhostWolf = Spell(2645),
 Purge = Spell(370),
 HealingStreamTotem = Spell(5394),
-LegacyOfTheFrostWitch = Spell(384451),
+
+
 TremorTotem = Spell(8143),
 
 WaterWalking = Spell(546),
@@ -91,73 +92,11 @@ WindRushTotem = Spell(192077),
 Skyfury = Spell(462854),
 PoisonCleansingTotem = Spell(383013),
 
-FlowingSpirits = Spell(469314),
---------[[NEW 1105 update
 ---
 ---
----
----
----
----
-  -- Abilities
-  Windstrike                            = Spell(115356),
-  -- Talents
-  AlphaWolf                             = Spell(198434),
-  Ascendance                            = Spell(114051),
-  AshenCatalyst                         = Spell(390370),
-  ConvergingStorms                      = Spell(384363),
-  CrashLightning                        = Spell(187874),
-  CrashingStorms                        = Spell(334308),
-  DoomWinds                             = Spell(384352),
-  ElementalAssault                      = Spell(210853),
-  ElementalSpirits                      = Spell(262624),
-  FeralSpirit                           = Spell(51533),
-  FireNova                              = Spell(333974),
-  Hailstorm                             = Spell(334195),
-  HotHand                               = Spell(201900),
-  IceStrike                             = Spell(342240),
-  LashingFlames                         = Spell(334046),
-  LavaLash                              = Spell(60103),
-  MoltenAssault                         = Spell(334033),
-  OverflowingMaelstrom                  = Spell(384149),
-  RagingMaelstrom                       = Spell(384143),
-  StaticAccumulation                    = Spell(384411),
-  Stormblast                            = Spell(319930),
-  Stormflurry                           = Spell(344357),
-  Stormstrike                           = Spell(17364),
-  Sundering                             = Spell(197214),
-  SwirlingMaelstrom                     = Spell(384359),
-  ThorimsInvocation                     = Spell(384444),
-  UnrulyWinds                           = Spell(390288),
-  WindfuryTotem                         = Spell(8512),
-  WindfuryWeapon                        = Spell(33757),
-  WitchDoctorsAncestry                  = Spell(384447),
-  -- Buffs
-  AscendanceBuff                        = Spell(114051),
-  AshenCatalystBuff                     = Spell(390371),
-  ConvergingStormsBuff                  = Spell(198300),
-  CracklingThunderBuff                  = Spell(409834),
-  CrashLightningBuff                    = Spell(187878),
-  CLCrashLightningBuff                  = Spell(333964),
-  DoomWindsBuff                         = Spell(384352),
-  FeralSpiritBuff                       = Spell(333957),
-  GatheringStormsBuff                   = Spell(198300),
-  HailstormBuff                         = Spell(334196),
-  HotHandBuff                           = Spell(215785),
-  IceStrikeBuff                         = Spell(384357),
-  MaelstromWeaponBuff                   = Spell(344179),
-  StormsurgeBuff                        = Spell(201846),
-  WindfuryTotemBuff                     = Spell(327942),
-  -- Debuffs
-  LashingFlamesDebuff                   = Spell(334168),
-  -- Elemental Spirits Buffs
-  CracklingSurgeBuff                    = Spell(224127),
-  IcyEdgeBuff                           = Spell(224126),
-  MoltenWeaponBuff                      = Spell(224125),
-  -- Tier 29 Buffs
-  MaelstromofElementsBuff               = Spell(394677),
-  -- Tier 30 Buffs
-  VolcanicStrengthBuff                  = Spell(409833),
+
+
+
 -- Talents
 AncestralSwiftness                    = Spell(443454),
 ElementalReverb                       = Spell(443418),
@@ -226,6 +165,74 @@ HuntersMarkDebuff                     = Spell(257284),
 -- Trinket Effects
 SpymastersReportBuff                  = Spell(451199), -- Stacking buff from before using Spymaster's Web trinket
 SpymastersWebBuff                     = Spell(444959), -- Buff from using Spymaster's Web trinket
+
+
+  -- Abilities
+  VoltaicBlazeAbility                   = Spell(470057),
+  Windstrike                            = Spell(115356),
+  -- Talents
+  AlphaWolf                             = Spell(198434),
+  Ascendance                            = Spell(114051),
+  AshenCatalyst                         = Spell(390370),
+  ConvergingStorms                      = Spell(384363),
+  CrashLightning                        = Spell(187874),
+  CrashingStorms                        = Spell(334308),
+  DoomWinds                             = Spell(384352),
+  ElementalAssault                      = Spell(210853),
+  ElementalSpirits                      = Spell(262624),
+  FeralSpirit                           = Spell(51533),
+  FireNova                              = Spell(333974),
+  FlowingSpirits                        = Spell(469314),
+  Hailstorm                             = Spell(334195),
+  HotHand                               = Spell(201900),
+  IceStrike                             = MultiSpell(342240, 470194),
+  LashingFlames                         = Spell(334046),
+  LavaLash                              = Spell(60103),
+  LegacyoftheFrostWitch                 = Spell(384450),
+  MoltenAssault                         = Spell(334033),
+  OverflowingMaelstrom                  = Spell(384149),
+  RagingMaelstrom                       = Spell(384143),
+  StaticAccumulation                    = Spell(384411),
+  Stormblast                            = Spell(319930),
+  Stormflurry                           = Spell(344357),
+  Stormstrike                           = Spell(17364),
+  Sundering                             = Spell(197214),
+  SwirlingMaelstrom                     = Spell(384359),
+  ThorimsInvocation                     = Spell(384444),
+  UnrelentingStorms                     = Spell(470490),
+  UnrulyWinds                           = Spell(390288),
+  VoltaicBlaze                          = Spell(470053),
+  WindfuryTotem                         = Spell(8512),
+  WindfuryWeapon                        = Spell(33757),
+  WitchDoctorsAncestry                  = Spell(384447),
+  -- Buffs
+  AscendanceBuff                        = Spell(114051),
+  AshenCatalystBuff                     = Spell(390371),
+  ConvergingStormsBuff                  = Spell(198300),
+  CracklingThunderBuff                  = Spell(409834),
+  CrashLightningBuff                    = Spell(187878),
+  CLCrashLightningBuff                  = Spell(333964),
+  DoomWindsBuff                         = Spell(384352),
+  EarthenWeaponBuff                     = Spell(392375),
+  FeralSpiritBuff                       = Spell(333957),
+  GatheringStormsBuff                   = Spell(198300),
+  HailstormBuff                         = Spell(334196),
+  HotHandBuff                           = Spell(215785),
+  IceStrikeBuff                         = Spell(384357),
+  LegacyoftheFrostWitchBuff             = Spell(384451),
+  MaelstromWeaponBuff                   = Spell(344179),
+  StormsurgeBuff                        = Spell(201846),
+  WindfuryTotemBuff                     = Spell(327942),
+  -- Debuffs
+  LashingFlamesDebuff                   = Spell(334168),
+  -- Elemental Spirits Buffs
+  CracklingSurgeBuff                    = Spell(224127),
+  IcyEdgeBuff                           = Spell(224126),
+  MoltenWeaponBuff                      = Spell(224125),
+  -- Tier 29 Buffs
+  MaelstromofElementsBuff               = Spell(394677),
+  -- Tier 30 Buffs
+  VolcanicStrengthBuff                  = Spell(409833),
 
 }
 
@@ -417,8 +424,7 @@ local VarTargetNatureMod, VarExpectedLBFunnel, VarExpectedCLFunnel
 
 local MaxEBCharges = S.LavaBurst:IsAvailable() and 2 or 1
 local TIAction = S.LightningBolt
-local BossFightRemains = 11111
-local FightRemains = 11111
+
 
 --- ===== Event Registrations =====
 HL:RegisterForEvent(function()
@@ -429,8 +435,7 @@ HL:RegisterForEvent(function()
 
   HL:RegisterForEvent(function()
 	TIAction = S.LightningBolt
-	BossFightRemains = 11111
-	FightRemains = 11111
+
   end, "PLAYER_REGEN_ENABLED")
   
   --- ===== Helper Functions =====
@@ -654,313 +659,655 @@ local function Precombat()
 		return S.FeralSpirit:Cast()
 	end
 	-- flame_shock
-	if IsReady("Flame Shock") and TargetinRange(40) and TargetinRange(30) then
+	if IsReady("Flame Shock") and TargetinRange(40) then
 		return S.FlameShock:Cast()
 	end
   end
   
   local function Single()
-	-- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt&!talent.elemental_spirits.enabled
-	if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.LightningBolt and not S.ElementalSpirits:IsAvailable()) then
-		return S.Windstrike:Cast()
-	end
-	-- primordial_wave,if=!dot.flame_shock.ticking&talent.molten_assault.enabled&(raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6)
-	if IsReady("Primordial Wave") and TargetinRange(40) and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and S.MoltenAssault:IsAvailable()) then
-		return S.PrimordialWave:Cast()
-	end
-	-- feral_spirit
-	if IsReady("Feral Spirit") and TargetinRange(20) and not S.FlowingSpirits:IsAvailable() then
-		return S.FeralSpirit:Cast()
-	end
-	-- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.tempest.stack=buff.tempest.max_stack&(tempest_mael_count>30|buff.awakening_storms.stack=2)&buff.maelstrom_weapon.stack>=5)
-	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks == MaxMaelstromStacks or (Player:BuffStack(S.TempestBuff) == MaxTempestStacks and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2) and MaelstromStacks >= 5)) then
-		return S.TempestAbility:Cast()
-	end
-	-- elemental_blast,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&talent.elemental_spirits.enabled&feral_spirit.active>=6&(charges_fractional>=1.8|buff.ascendance.up)
-	if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks and S.ElementalSpirits:IsAvailable() and FeralSpiritCount >= 6 and (S.ElementalBlast:ChargesFractional() >= 1.8 or Player:BuffUp(S.AscendanceBuff))) then
-		return S.ElementalBlast:Cast()
-	end
-	-- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&!talent.elemental_spirits.enabled
-	if IsReady("Doom Winds") and TargetinRange(20) and (not S.ElementalSpirits:IsAvailable()) then
-		return S.DoomWinds:Cast()
-	end
-	-- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt
-	if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.LightningBolt) then
-		return S.Windstrike:Cast()
-	end
-	-- sundering,if=buff.ascendance.up&pet.surging_totem.active&talent.earthsurge.enabled
-	if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.AscendanceBuff) and TotemFinder(S.SurgingTotem) and S.Earthsurge:IsAvailable()) then
-		return S.Sundering:Cast()
-	end
-	-- flame_shock,if=!ticking&talent.lashing_flames.enabled
-	if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and S.LashingFlames:IsAvailable()) then
-		return S.FlameShock:Cast()
-	end
-	-- lightning_bolt,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&buff.primordial_wave.up&talent.tempest.enabled
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= MaxMaelstromStacks and Player:BuffUp(S.PrimordialWaveBuff) and S.Tempest:IsAvailable()) then
-		return S.LightningBolt:Cast()
-	end
-	-- tempest,if=buff.maelstrom_weapon.stack>=7
-	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks >= 7) then
-		return S.TempestAbility:Cast()
-	end
-	if IsReady("Elemental Blast") and TargetinRange(40) and (
-	  -- elemental_blast,if=buff.maelstrom_weapon.stack>=5&talent.elemental_spirits.enabled&feral_spirit.active>=4&!talent.tempest.enabled
-	  (MaelstromStacks >= 5 and S.ElementalSpirits:IsAvailable() and FeralSpiritCount >= 4 and not S.Tempest:IsAvailable()) or
-	  -- elemental_blast,if=buff.maelstrom_weapon.stack>=7&feral_spirit.active>=5&(buff.icy_edge.up|buff.molten_weapon.up)&cooldown.feral_spirit.remains>=3
-	  (MaelstromStacks >= 7 and FeralSpiritCount >= 5 and (Player:BuffUp(S.IcyEdgeBuff) or Player:BuffUp(S.MoltenWeaponBuff)) and S.FeralSpirit:CooldownRemains() >= 3) or
-	  -- elemental_blast,if=buff.maelstrom_weapon.stack>=7&feral_spirit.active>=1&(buff.icy_edge.stack+buff.molten_weapon.stack>=1)&charges_fractional>=1.8&cooldown.feral_spirit.remains>=3
-	  (MaelstromStacks >= 7 and FeralSpiritCount >= 1 and (IcyEdgeStacks + MoltenWeaponStacks >= 1) and S.ElementalBlast:ChargesFractional() >= 1.8 and S.FeralSpirit:CooldownRemains() >= 3)
-	) then
-		return S.ElementalBlast:Cast()
-	end
-	-- lightning_bolt,if=talent.tempest.enabled&buff.maelstrom_weapon.stack>=(buff.maelstrom_weapon.max_stack-talent.elemental_spirits.enabled*(talent.supercharge.enabled+talent.static_accumulation.enabled))&!buff.primordial_wave.up
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (S.Tempest:IsAvailable() and MaelstromStacks >= (MaxMaelstromStacks - num(S.ElementalSpirits:IsAvailable()) * (num(S.Supercharge:IsAvailable()) + num(S.StaticAccumulation:IsAvailable()))) and Player:BuffDown(S.PrimordialWaveBuff)) then
-		return S.LightningBolt:Cast()
-	end
-	-- lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.ascendance.up&ti_chain_lightning&(buff.ascendance.remains>(cooldown.strike.remains+gcd))&!buff.primordial_wave.up
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 5 and Player:BuffUp(S.AscendanceBuff) and TIAction == S.ChainLightning and (Player:BuffRemains(S.AscendanceBuff) > (S.Windstrike:CooldownRemains() + Player:GCD())) and Player:BuffDown(S.PrimordialWaveBuff)) then
-		return S.LightningBolt:Cast()
-	end
-	-- lava_lash,if=buff.hot_hand.up&!talent.tempest.enabled
-	if IsReady("Lava Lash") and TargetinRange(8) and (Player:BuffUp(S.HotHandBuff) and not S.Tempest:IsAvailable()) then
-		return S.LavaLash:Cast()
-	end
-	-- stormstrike,if=!talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormsurge.up))
-	if IsReady("Stormstrike") and TargetinRange(8) and (not S.ElementalSpirits:IsAvailable() and (Player:BuffUp(S.DoomWindsBuff) or S.DeeplyRootedElements:IsAvailable() or (S.Stormblast:IsAvailable() and Player:BuffUp(S.StormsurgeBuff)))) then
-		return S.Stormstrike:Cast()
-	end
-	-- elemental_blast,if=buff.maelstrom_weapon.stack>=5&charges=max_charges&!talent.tempest.enabled
-	if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and S.ElementalBlast:Charges() == S.ElementalBlast:MaxCharges() and not S.Tempest:IsAvailable()) then
-		return S.ElementalBlast:Cast()
-	end
-	-- lightning_bolt,if=buff.maelstrom_weapon.stack>=8&buff.primordial_wave.up&raid_event.adds.in>buff.primordial_wave.remains&(!buff.splintered_elements.up|fight_remains<=12)
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 8 and Player:BuffUp(S.PrimordialWaveBuff) and (Player:BuffDown(S.SplinteredElementsBuff) or FightRemains <= 12)) then
-		return S.LightningBolt:Cast()
-	end
-	-- elemental_blast,if=buff.maelstrom_weapon.stack>=8&(feral_spirit.active>=2|!talent.elemental_spirits.enabled)&!talent.tempest.enabled
-	if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 8 and (FeralSpiritCount >= 2 or not S.ElementalSpirits:IsAvailable()) and not S.Tempest:IsAvailable()) then
-		return S.ElementalBlast:Cast()
-	end
-	-- lava_burst,if=!talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>=5
-	if IsReady("Lava Burst") and TargetinRange(40) and (not S.ThorimsInvocation:IsAvailable() and MaelstromStacks >= 5) then
-		return S.LavaBurst:Cast()
-	end
-	-- primordial_wave,if=raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6
-	if IsReady("Primordial Wave") and TargetinRange(40) then
-		return S.PrimordialWave:Cast()
-	end
-	-- elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.active>=4&talent.ascendance.enabled&(charges_fractional>=1.8|(buff.icy_edge.stack+buff.molten_weapon.stack>=4))
-	if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and FeralSpiritCount >= 4 and S.Ascendance:IsAvailable() and (S.ElementalBlast:ChargesFractional() >= 1.8 or (IcyEdgeStacks + MoltenWeaponStacks >= 4))) then
-		return S.ElementalBlast:Cast()
-	end
-	-- lightning_bolt,if=((buff.maelstrom_weapon.stack>=8)|(talent.static_accumulation.enabled&buff.maelstrom_weapon.stack>=5))&buff.primordial_wave.down&talent.ascendance.enabled&talent.tempest.enabled
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (((MaelstromStacks >= 8) or (S.StaticAccumulation:IsAvailable() and MaelstromStacks >= 5)) and Player:BuffDown(S.PrimordialWaveBuff) and S.Ascendance:IsAvailable() and S.Tempest:IsAvailable()) then
-		return S.LightningBolt:Cast()
-	end
-	-- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled&talent.ascendance.enabled&talent.tempest.enabled
-	if IsReady("Doom Winds") and TargetinRange(20) and (S.ElementalSpirits:IsAvailable() and S.Ascendance:IsAvailable() and S.Tempest:IsAvailable()) then
-		return S.DoomWinds:Cast()
-	end
-	-- lava_lash,if=talent.tempest.enabled&(buff.hot_hand.up|(talent.molten_assault.enabled&talent.elemental_spirits.enabled&!talent.deeply_rooted_elements.enabled&dot.flame_shock.remains<=3))
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.Tempest:IsAvailable() and (Player:BuffUp(S.HotHandBuff) or (S.MoltenAssault:IsAvailable() and S.ElementalSpirits:IsAvailable() and not S.DeeplyRootedElements:IsAvailable() and Target:DebuffRemains(S.FlameShockDebuff) <= 3))) then
-		return S.LavaLash:Cast()
-	end
-	-- stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormsurge.up))
-	if IsReady("Stormstrike") and TargetinRange(8) and (S.ElementalSpirits:IsAvailable() and (Player:BuffUp(S.DoomWindsBuff) or S.DeeplyRootedElements:IsAvailable() or (S.Stormblast:IsAvailable() and Player:BuffUp(S.StormsurgeBuff)))) then
-		return S.Stormstrike:Cast()
-	end
-	-- frost_shock,if=buff.hailstorm.up&buff.ice_strike.up&talent.swirling_maelstrom.enabled&talent.tempest.enabled&talent.ascendance.enabled
-	if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff) and Player:BuffUp(S.IceStrikeBuff) and S.SwirlingMaelstrom:IsAvailable() and S.Tempest:IsAvailable() and S.Ascendance:IsAvailable()) then
-		return S.FrostShock:Cast()
-	end
-	-- elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.active>=4&talent.deeply_rooted_elements.enabled&(charges_fractional>=1.8|(buff.icy_edge.stack+buff.molten_weapon.stack>=4))
-	if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and FeralSpiritCount >= 4 and S.DeeplyRootedElements:IsAvailable() and (S.ElementalBlast:ChargesFractional() >= 1.8 or (IcyEdgeStacks + MoltenWeaponStacks >= 4))) then
-		return S.ElementalBlast:Cast()
-	end
-	-- lightning_bolt,if=((buff.maelstrom_weapon.stack>=8)|(talent.static_accumulation.enabled&buff.maelstrom_weapon.stack>=5))&buff.primordial_wave.down
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (((MaelstromStacks >= 8) or (S.StaticAccumulation:IsAvailable() and MaelstromStacks >= 5)) and Player:BuffDown(S.PrimordialWaveBuff)) then
-		return S.LightningBolt:Cast()
-	end
-	-- crash_lightning,if=talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0
-	if IsReady("Crash Lightning") and TargetinRange(8) and (S.AlphaWolf:IsAvailable() and Player:BuffUp(S.FeralSpiritBuff) and AlphaWolfMinRemains() == 0) then
-		return S.CrashLightning:Cast()
-	end
-	-- flame_shock,if=!ticking&!talent.tempest.enabled
-	if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and not S.Tempest:IsAvailable()) then
-		return S.FlameShock:Cast()
-	end
-	-- windstrike,if=(talent.totemic_rebound.enabled&(time-(action.stormstrike.last_used<?action.windstrike.last_used))>=3.5)|(talent.awakening_storms.enabled&(time-(action.stormstrike.last_used<?action.windstrike.last_used<?action.lightning_bolt.last_used<?action.tempest.last_used<?action.chain_lightning.last_used))>=3.5)
-	-- stormstrike,if=(talent.totemic_rebound.enabled&(time-(action.stormstrike.last_used<?action.windstrike.last_used))>=3.5)|(talent.awakening_storms.enabled&(time-(action.stormstrike.last_used<?action.windstrike.last_used<?action.lightning_bolt.last_used<?action.tempest.last_used<?action.chain_lightning.last_used))>=3.5)
-	-- Note: These two lines have the same if condition.
-	if (S.TotemicRebound:IsAvailable() and math.min(S.Stormstrike:TimeSinceLastCast(), S.Windstrike:TimeSinceLastCast()) >= 3.5) 
-	or (S.AwakeningStorms:IsAvailable() and math.min(S.Stormstrike:TimeSinceLastCast(), S.Windstrike:TimeSinceLastCast(), S.LightningBolt:TimeSinceLastCast(), S.TempestAbility:TimeSinceLastCast(), S.ChainLightning:TimeSinceLastCast()) >= 3.5) then
-	  if IsReady("Windstrike") and TargetinRange(30) then
-		return S.Windstrike:Cast()
-	end
-	  if IsReady("Stormstrike") and TargetinRange(8) then
-		return S.Stormstrike:Cast()
-	end
-	end
-	-- lava_lash,if=talent.lively_totems.enabled&(time-action.lava_lash.last_used>=3.5)
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.LivelyTotems:IsAvailable() and S.LavaLash:TimeSinceLastCast() >= 3.5) then
-		return S.LavaLash:Cast()
-	end
-	-- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled
-	if IsReady("Doom Winds") and TargetinRange(20) and (S.ElementalSpirits:IsAvailable()) then
-		return S.DoomWinds:Cast()
-	end
-	-- lava_lash,if=talent.elemental_assault.enabled&talent.tempest.enabled&talent.molten_assault.enabled&talent.deeply_rooted_elements.enabled&dot.flame_shock.ticking
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.ElementalAssault:IsAvailable() and S.Tempest:IsAvailable() and S.MoltenAssault:IsAvailable() and S.DeeplyRootedElements:IsAvailable() and Target:DebuffUp(S.FlameShockDebuff)) then
-		return S.LavaLash:Cast()
-	end
-	-- ice_strike,if=talent.elemental_assault.enabled&talent.swirling_maelstrom.enabled
-	if S.IceStrike:IsCastable() and TargetinRange(40) and (S.ElementalAssault:IsAvailable() and S.SwirlingMaelstrom:IsAvailable()) then
-		return S.IceStrike:Cast()
-	end
-	-- lava_lash,if=talent.elemental_assault.enabled&talent.tempest.enabled&talent.molten_assault.enabled&dot.flame_shock.ticking
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.ElementalAssault:IsAvailable() and S.Tempest:IsAvailable() and S.MoltenAssault:IsAvailable() and Target:DebuffUp(S.FlameShockDebuff)) then
-		return S.LavaLash:Cast()
-	end
-	-- frost_shock,if=buff.hailstorm.up&buff.ice_strike.up&talent.swirling_maelstrom.enabled&talent.tempest.enabled
-	if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff) and Player:BuffUp(S.IceStrikeBuff) and S.SwirlingMaelstrom:IsAvailable() and S.Tempest:IsAvailable()) then
-		return S.FrostShock:Cast()
-	end
-	-- flame_shock,if=!ticking
-	if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff)) then
-		return S.FlameShock:Cast()
-	end
-	-- lava_lash,if=talent.lashing_flames.enabled
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable()) then
-		return S.LavaLash:Cast()
-	end
-	-- ice_strike,if=!buff.ice_strike.up
-	if S.IceStrike:IsCastable() and TargetinRange(40) and (Player:BuffDown(S.IceStrikeBuff)) then
-		return S.IceStrike:Cast()
-	end
-	-- frost_shock,if=buff.hailstorm.up
-	if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff)) then
-		return S.FrostShock:Cast()
-	end
-	-- crash_lightning,if=talent.converging_storms.enabled
-	if IsReady("Crash Lightning") and TargetinRange(8) and (S.ConvergingStorms:IsAvailable()) then
-		return S.CrashLightning:Cast()
-	end
-	-- lava_lash
-	if IsReady("Lava Lash") and TargetinRange(8) then
-		return S.LavaLash:Cast()
-	end
-	-- ice_strike
-	if S.IceStrike:IsCastable() and TargetinRange(40) then
-		return S.IceStrike:Cast()
-	end
-	-- windstrike
-	if IsReady("Windstrike") and TargetinRange(30) then
-		return S.Windstrike:Cast()
-	end
-	-- stormstrike
-	if IsReady("Stormstrike") and TargetinRange(8) then
-		return S.Stormstrike:Cast()
-	end
-	-- sundering,if=raid_event.adds.in>=action.sundering.cooldown
-	if IsReady("Sundering") and TargetinRange(8) then
-		return S.Sundering:Cast()
-	end
-	-- tempest,if=buff.maelstrom_weapon.stack>=5
-	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks >= 5) then
-		return S.TempestAbility:Cast()
-	end
-	-- lightning_bolt,if=talent.hailstorm.enabled&buff.maelstrom_weapon.stack>=5&buff.primordial_wave.down
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (S.Hailstorm:IsAvailable() and MaelstromStacks >= 5 and Player:BuffDown(S.PrimordialWaveBuff)) then
-		return S.LightningBolt:Cast()
-	end
-	-- frost_shock
-	if IsReady("Frost Shock") and TargetinRange(40) then
-		return S.FrostShock:Cast()
-	end
-	-- crash_lightning
-	if IsReady("Crash Lightning") and TargetinRange(8) then
-		return S.CrashLightning:Cast()
-	end
-	-- fire_nova,if=active_dot.flame_shock
-	if IsReady("Fire Nova") and TargetinRange(8) and (Target:DebuffUp(S.FlameShockDebuff)) then
-		return S.FireNova:Cast()
-	end
-	-- earth_elemental
-	if IsReady("Earth Elemental") then
-		return S.EarthElemental:Cast()
-	end
-	-- flame_shock
-	if IsReady("Flame Shock") and TargetinRange(40) then
-		return S.FlameShock:Cast()
-	end
-	-- lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.primordial_wave.down
-	if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 5 and Player:BuffDown(S.PrimordialWaveBuff)) then
-		return S.LightningBolt:Cast()
-	end
-  end
-  
-  local function Aoe()
-	-- tempest,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
-	if IsReady("Tempest") and tempest and TargetinRange(20)  and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
-		return S.TempestAbility:Cast()
-	end
-	-- windstrike,target_if=min:debuff.lightning_rod.remains,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_chain_lightning
-	if IsReady("Windstrike") and TargetinRange(30)  and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.ChainLightning) then
-		return S.Windstrike:Cast()
-	end
-	-- crash_lightning,if=talent.crashing_storms.enabled&((talent.unruly_winds.enabled&active_enemies>=10)|active_enemies>=15)
-	if IsReady("Crash Lightning") and TargetinRange(8) and (S.CrashingStorms:IsAvailable() and ((S.UnrulyWinds:IsAvailable() and RangeCount(10) >= 10) or RangeCount(10) >= 15)) then
-		return S.CrashLightning:Cast()
-	end
-	-- lightning_bolt,target_if=min:debuff.lightning_rod.remains,if=(!talent.tempest.enabled|(tempest_mael_count<=10&buff.awakening_storms.stack<=1))&((active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd))
-	if IsReady("Lightning Bolt") and TargetinRange(40)  and ((not S.Tempest:IsAvailable() or (TempestMaelstrom <= 10 and Player:BuffStack(S.AwakeningStormsBuff) <= 1)) and ((FSTargets() == RangeCount(10) or FSTargets() >= 6)
-	and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) or BossFightRemains <= 12))) then
-		return S.LightningBolt:Cast()
-	end
 
-	-- va_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+  -- feral_spirit,if=talent.elemental_spirits.enabled
+  if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() and (S.ElementalSpirits:IsAvailable()) then
+	return S.FeralSpirit:Cast()
+end
+  -- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt&!talent.elemental_spirits.enabled
+  if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.LightningBolt and not S.ElementalSpirits:IsAvailable()) then
+	return S.Windstrike:Cast()
+end
+  -- primordial_wave,if=!dot.flame_shock.ticking&talent.molten_assault.enabled&(raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6)
+  if IsReady("Primordial Wave") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and S.MoltenAssault:IsAvailable()) then
+	return S.PrimordialWave:Cast()
+end
+  -- lava_lash,if=talent.lashing_flames.enabled&debuff.lashing_flames.down
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable() and Target:DebuffDown(S.LashingFlamesDebuff)) then
+	return S.LavaLash:Cast()
+end
+  -- stormstrike,if=buff.maelstrom_weapon.stack<2&cooldown.ascendance.remains=0
+  if IsReady("Stormstrike") and TargetinRange(8) and (MaelstromStacks < 2 and S.Ascendance:CooldownUp()) then
+	return S.Stormstrike:Cast()
+end
+  -- feral_spirit
+  if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() then
+	return S.FeralSpirit:Cast()
+end
+  -- ascendance,if=dot.flame_shock.ticking&(ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)&buff.maelstrom_weapon.stack>=2
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1) and MaelstromStacks >= 2) then
+	return S.Ascendance:Cast()
+end
+  -- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.tempest.stack=buff.tempest.max_stack&(tempest_mael_count>30|buff.awakening_storms.stack=2)&buff.maelstrom_weapon.stack>=5)
+  if IsReady("Tempest") and TargetinRange(40) and tempest  and (MaelstromStacks == MaxMaelstromStacks or (Player:BuffStack(S.TempestBuff) == MaxTempestStacks and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2) and MaelstromStacks >= 5)) then
+	return S.TempestAbility:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&talent.elemental_spirits.enabled&feral_spirit.active>=6&(charges_fractional>=1.8|buff.ascendance.up)
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks and S.ElementalSpirits:IsAvailable() and FeralSpiritCount >= 6 and (S.ElementalBlast:ChargesFractional() >= 1.8 or Player:BuffUp(S.AscendanceBuff))) then
+	return S.ElementalBlast:Cast()
+end
+  -- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt&charges=max_charges
+  if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.LightningBolt and S.Windstrike:Charges() == S.Windstrike:MaxCharges()) then
+	return S.Windstrike:Cast()
+end
+  -- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled&talent.ascendance.enabled&buff.maelstrom_weapon.stack>=2
+  if IsReady("Doom Winds") and TargetinRange(30) and (S.ElementalSpirits:IsAvailable() and S.Ascendance:IsAvailable() and MaelstromStacks >= 2) then
+	return S.DoomWinds:Cast()
+end
+  -- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt
+  if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.LightningBolt) then
+	return S.Windstrike:Cast()
+end
+  -- flame_shock,if=!ticking&talent.ashen_catalyst.enabled
+  if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and not S.AshenCatalyst:IsAvailable()) then
+	return S.FlameShock:Cast()
+end
+  -- lightning_bolt,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&buff.primordial_wave.up
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= MaxMaelstromStacks and Player:BuffUp(S.PrimordialWaveBuff)) then
+	return S.LightningBolt:Cast()
+end
+  -- tempest,if=(!talent.overflowing_maelstrom.enabled&buff.maelstrom_weapon.stack>=5)|(buff.maelstrom_weapon.stack>=10-2*talent.elemental_spirits.enabled)
+  if IsReady("Tempest") and TargetinRange(40) and tempest  and ((not S.OverflowingMaelstrom:IsAvailable() and MaelstromStacks >= 5) or (MaelstromStacks >= 10 - 2 * num(S.ElementalSpirits:IsAvailable()))) then
+	return S.TempestAbility:Cast()
+end
+  -- primordial_wave,if=(raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6)&!talent.deeply_rooted_elements.enabled
+  if IsReady("Primordial Wave") and TargetinRange(40) and (not S.DeeplyRootedElements:IsAvailable()) then
+	return S.PrimordialWave:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack>=8&feral_spirit.active>=4&(!buff.ascendance.up|charges_fractional>=1.8)
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 8 and FeralSpiritCount >= 4 and (Player:BuffUp(S.AscendanceBuff) or S.ElementalBlast:ChargesFractional() >= 1.8)) then
+	return S.ElementalBlast:Cast()
+end
+  -- lightning_bolt,if=buff.maelstrom_weapon.stack>=8+2*talent.legacy_of_the_frost_witch.enabled
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 8 + 2 * num(S.LegacyoftheFrostWitch:IsAvailable())) then
+	return S.LightningBolt:Cast()
+end
+  -- lightning_bolt,if=buff.maelstrom_weapon.stack>=5&!talent.legacy_of_the_frost_witch.enabled&(talent.deeply_rooted_elements.enabled|!talent.overflowing_maelstrom.enabled|!talent.witch_doctors_ancestry.enabled)
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 5 and not S.LegacyoftheFrostWitch:IsAvailable() and (S.DeeplyRootedElements:IsAvailable() or not S.OverflowingMaelstrom:IsAvailable() or not S.WitchDoctorsAncestry:IsAvailable())) then
+	return S.LightningBolt:Cast()
+end
+  -- voltaic_blaze,if=talent.elemental_spirits.enabled&!talent.witch_doctors_ancestry.enabled
+  if IsReady("Voltaic Blaze") and TargetinRange(40) and (S.ElementalSpirits:IsAvailable() and not S.WitchDoctorsAncestry:IsAvailable()) then
+	return S.VoltaicBlazeAbility:Cast()
+end
+  -- lightning_bolt,if=buff.arc_discharge.up&talent.deeply_rooted_elements.enabled
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (Player:BuffUp(S.ArcDischargeBuff) and S.DeeplyRootedElements:IsAvailable()) then
+	return S.LightningBolt:Cast()
+end
+  -- lava_lash,if=buff.hot_hand.up|(buff.ashen_catalyst.stack=buff.ashen_catalyst.max_stack)
+  if IsReady("Lava Lash") and TargetinRange(8) and (Player:BuffUp(S.HotHandBuff) or (Player:BuffStack(S.AshenCatalystBuff) == MaxAshenCatalystStacks)) then
+	return S.LavaLash:Cast()
+end
+  -- stormstrike,if=buff.doom_winds.up|(talent.stormblast.enabled&buff.stormsurge.up&charges=max_charges)
+  if IsReady("Stormstrike") and TargetinRange(8) and (Player:BuffUp(S.DoomWindsBuff) or (S.Stormblast:IsAvailable() and Player:BuffUp(S.StormsurgeBuff) and S.Stormstrike:Charges() == S.Stormstrike:MaxCharges())) then
+	return S.Stormstrike:Cast()
+end
+  -- lava_lash,if=talent.lashing_flames.enabled&!buff.doom_winds.up
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable() and Player:BuffDown(S.DoomWindsBuff)) then
+	return S.LavaLash:Cast()
+end
+  -- voltaic_blaze,if=talent.elemental_spirits.enabled&!buff.doom_winds.up
+  if IsReady("Voltaic Blaze") and TargetinRange(40) and (S.ElementalSpirits:IsAvailable() and Player:BuffDown(S.DoomWindsBuff)) then
+	return S.VoltaicBlazeAbility:Cast()
+end
+  -- crash_lightning,if=talent.unrelenting_storms.enabled&talent.elemental_spirits.enabled&!talent.deeply_rooted_elements.enabled
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.UnrelentingStorms:IsAvailable() and S.ElementalSpirits:IsAvailable() and not S.DeeplyRootedElements:IsAvailable()) then
+	return S.CrashLightning:Cast()
+end
+  -- ice_strike,if=talent.elemental_assault.enabled&talent.swirling_maelstrom.enabled&talent.witch_doctors_ancestry.enabled
+  if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (S.ElementalAssault:IsAvailable() and S.SwirlingMaelstrom:IsAvailable() and S.WitchDoctorsAncestry:IsAvailable()) then
+	return S.IceStrike:Cast()
+end
+  -- stormstrike
+  if IsReady("Stormstrike") and TargetinRange(8) then
+	return S.Stormstrike:Cast()
+end
+  -- lightning_bolt,if=buff.maelstrom_weapon.stack>=5&talent.ascendance.enabled&!talent.legacy_of_the_frost_witch.enabled
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 5 and S.Ascendance:IsAvailable() and not S.LegacyoftheFrostWitch:IsAvailable()) then
+	return S.LightningBolt:Cast()
+end
+  -- crash_lightning,if=talent.unrelenting_storms.enabled
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.UnrelentingStorms:IsAvailable()) then
+	return S.CrashLightning:Cast()
+end
+  -- voltaic_blaze
+  if IsReady("Voltaic Blaze") and TargetinRange(40) then
+	return S.VoltaicBlazeAbility:Cast()
+end
+  -- sundering,if=!talent.elemental_spirits.enabled&raid_event.adds.in>=action.sundering.cooldown
+  if IsReady("Sundering") and TargetinRange(8) and (not S.ElementalSpirits:IsAvailable()) then
+	return S.Sundering:Cast()
+end
+  -- frost_shock,if=buff.hailstorm.up&buff.ice_strike.up&talent.swirling_maelstrom.enabled&talent.ascendance.enabled
+  if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff) and Player:BuffUp(S.IceStrikeBuff) and S.SwirlingMaelstrom:IsAvailable() and S.Ascendance:IsAvailable()) then
+	return S.FrostShock:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.active>=4&talent.deeply_rooted_elements.enabled&(charges_fractional>=1.8|(buff.molten_weapon.stack+buff.icy_edge.stack>=4))&!talent.flowing_spirits.enabled
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and FeralSpiritCount >= 4 and S.DeeplyRootedElements:IsAvailable() and (S.ElementalBlast:ChargesFractional() >= 1.8 or (MoltenWeaponStacks + IcyEdgeStacks >= 4)) and not S.FlowingSpirits:IsAvailable()) then
+	return S.ElementalBlast:Cast()
+end
+  -- crash_lightning,if=talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.AlphaWolf:IsAvailable() and Player:BuffUp(S.FeralSpiritBuff) and AlphaWolfMinRemains() == 0) then
+	return S.CrashLightning:Cast()
+end
+  -- flame_shock,if=!ticking&!talent.tempest.enabled
+  if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and not S.Tempest:IsAvailable()) then
+	return S.FlameShock:Cast()
+end
+  -- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled
+  if IsReady("Doom Winds") and TargetinRange(30) and (S.ElementalSpirits:IsAvailable()) then
+	return S.DoomWinds:Cast()
+end
+  -- lava_lash,if=talent.elemental_assault.enabled&talent.tempest.enabled&talent.molten_assault.enabled&talent.deeply_rooted_elements.enabled&dot.flame_shock.ticking
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.ElementalAssault:IsAvailable() and S.Tempest:IsAvailable() and S.MoltenAssault:IsAvailable() and S.DeeplyRootedElements:IsAvailable() and Target:DebuffUp(S.FlameShockDebuff)) then
+	return S.LavaLash:Cast()
+end
+  -- ice_strike,if=talent.elemental_assault.enabled&talent.swirling_maelstrom.enabled
+  if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (S.ElementalAssault:IsAvailable() and S.SwirlingMaelstrom:IsAvailable()) then
+	return S.IceStrike:Cast()
+end
+  -- lightning_bolt,if=buff.arc_discharge.up
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (Player:BuffUp(S.ArcDischargeBuff)) then
+	return S.LightningBolt:Cast()
+end
+  -- crash_lightning,if=talent.unrelenting_storms.enabled
+  -- Note: Duplicate line of crash_lightning single 52.
+  -- lava_lash,if=talent.elemental_assault.enabled&talent.tempest.enabled&talent.molten_assault.enabled&dot.flame_shock.ticking
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.ElementalAssault:IsAvailable() and S.Tempest:IsAvailable() and S.MoltenAssault:IsAvailable() and Target:DebuffUp(S.FlameShockDebuff)) then
+	return S.LavaLash:Cast()
+end
+  -- frost_shock,if=buff.hailstorm.up&buff.ice_strike.up&talent.swirling_maelstrom.enabled&talent.tempest.enabled
+  if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff) and Player:BuffUp(S.IceStrikeBuff) and S.SwirlingMaelstrom:IsAvailable() and S.Tempest:IsAvailable()) then
+	return S.FrostShock:Cast()
+end
+  -- flame_shock,if=!ticking
+  if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff)) then
+	return S.FlameShock:Cast()
+end
+  -- lava_lash,if=talent.lashing_flames.enabled
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable()) then
+	return S.LavaLash:Cast()
+end
+  -- ice_strike,if=!buff.ice_strike.up
+  if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (Player:BuffDown(S.IceStrikeBuff)) then
+	return S.IceStrike:Cast()
+end
+  -- frost_shock,if=buff.hailstorm.up
+  if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff)) then
+	return S.FrostShock:Cast()
+end
+  -- crash_lightning,if=talent.converging_storms.enabled
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.ConvergingStorms:IsAvailable()) then
+	return S.CrashLightning:Cast()
+end
+  -- lava_lash
+  if IsReady("Lava Lash") and TargetinRange(8) then
+	return S.LavaLash:Cast()
+end
+  -- ice_strike
+  if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) then
+	return S.IceStrike:Cast()
+end
+  -- windstrike
+  if IsReady("Windstrike") and TargetinRange(30) then
+	return S.Windstrike:Cast()
+end
+  -- stormstrike
+  if IsReady("Stormstrike") and TargetinRange(8) then
+	return S.Stormstrike:Cast()
+end
+  -- sundering,if=raid_event.adds.in>=action.sundering.cooldown
+  if IsReady("Sundering") and TargetinRange(8) then
+	return S.Sundering:Cast()
+end
+  -- frost_shock
+  if IsReady("Frost Shock") and TargetinRange(40) then
+	return S.FrostShock:Cast()
+end
+  -- crash_lightning
+  if IsReady("Crash Lightning") and TargetinRange(8) then
+	return S.CrashLightning:Cast()
+end
+  -- fire_nova,if=active_dot.flame_shock
+  if IsReady("Fire Nova") and TargetinRange(8) and (Target:DebuffUp(S.FlameShockDebuff)) then
+	return S.FireNova:Cast()
+end
+  -- earth_elemental
+  if IsReady("Earth Elemental") and TargetinRange(10) then
+	return S.EarthElemental:Cast()
+end
+  -- flame_shock
+  if IsReady("Flame Shock") and TargetinRange(40) then
+	return S.FlameShock:Cast()
+end
+
+
+
+  end
+
+  
+local function SingleTotemic()
+  -- surging_totem
+  if IsReady("Surging Totem") and TargetinRange(8) then
+	return S.SurgingTotem:Cast()
+end
+  -- ascendance,if=ti_lightning_bolt&pet.surging_totem.remains>4&(buff.totemic_rebound.stack>=3|buff.maelstrom_weapon.stack>0)
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (TIAction == S.LightningBolt and TotemFinder(S.SurgingTotem, true) > 4 and (Player:BuffStack(S.TotemicReboundBuff) >= 3 or MaelstromStacks > 0)) then
+	return S.Ascendance:Cast()
+end
+  -- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&!talent.elemental_spirits.enabled&buff.legacy_of_the_frost_witch.up
+  if IsReady("Doom Winds") and TargetinRange(30) and (not S.ElementalSpirits:IsAvailable() and Player:BuffUp(S.LegacyoftheFrostWitchBuff)) then
+	return S.DoomWinds:Cast()
+end
+  -- sundering,if=buff.ascendance.up&pet.surging_totem.active&talent.earthsurge.enabled&buff.legacy_of_the_frost_witch.up&buff.totemic_rebound.stack>=5&buff.earthen_weapon.stack>=2
+  if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.AscendanceBuff) and TotemFinder(S.SurgingTotem) and S.Earthsurge:IsAvailable() and Player:BuffUp(S.LegacyoftheFrostWitchBuff) and Player:BuffStack(S.TotemicReboundBuff) >= 5 and Player:BuffStack(S.EarthenWeaponBuff) >= 2) then
+	return S.Sundering:Cast()
+end
+  -- crash_lightning,if=talent.unrelenting_storms.enabled&talent.alpha_wolf.enabled&alpha_wolf_min_remains=0&buff.earthen_weapon.stack>=8
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.UnrelentingStorms:IsAvailable() and S.AlphaWolf:IsAvailable() and AlphaWolfMinRemains() == 0 and Player:BuffStack(S.EarthenWeaponBuff) >= 8) then
+	return S.CrashLightning:Cast()
+end
+  -- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt&!talent.elemental_spirits.enabled
+  if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.LightningBolt and not S.ElementalSpirits:IsAvailable()) then
+	return S.Windstrike:Cast()
+end
+  -- sundering,if=buff.legacy_of_the_frost_witch.up&cooldown.ascendance.remains>=10&pet.surging_totem.active&buff.totemic_rebound.stack>=3&!buff.ascendance.up
+  if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) and S.Ascendance:CooldownRemains() >= 10 and TotemFinder(S.SurgingTotem) and Player:BuffStack(S.TotemicReboundBuff) >= 3 and Player:BuffDown(S.AscendanceBuff)) then
+	return S.Sundering:Cast()
+end
+  -- primordial_wave,if=!dot.flame_shock.ticking&talent.molten_assault.enabled&(raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6)
+  if IsReady("Primordial Wave") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and S.MoltenAssault:IsAvailable()) then
+	return S.PrimordialWave:Cast()
+end
+  -- feral_spirit
+  if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() then
+	return S.FeralSpirit:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&talent.elemental_spirits.enabled&feral_spirit.active>=6&(charges_fractional>=1.8|buff.ascendance.up)
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks and S.ElementalSpirits:IsAvailable() and FeralSpiritCount >= 6 and (S.ElementalBlast:ChargesFractional() >= 1.8 or Player:BuffUp(S.AscendanceBuff))) then
+	return S.ElementalBlast:Cast()
+end
+  -- voltaic_blaze,if=buff.whirling_earth.up
+  if IsReady("Voltaic Blaze") and TargetinRange(40) and (Player:BuffUp(S.WhirlingEarthBuff)) then
+	return S.VoltaicBlazeAbility:Cast()
+end
+  -- crash_lightning,if=talent.unrelenting_storms.enabled&talent.alpha_wolf.enabled&alpha_wolf_min_remains=0
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.UnrelentingStorms:IsAvailable() and S.AlphaWolf:IsAvailable() and AlphaWolfMinRemains() == 0) then
+	return S.CrashLightning:Cast()
+end
+  -- flame_shock,if=!ticking&talent.lashing_flames.enabled
+  if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and S.LashingFlames:IsAvailable()) then
+	return S.FlameShock:Cast()
+end
+  -- lava_lash,if=buff.hot_hand.up&!talent.legacy_of_the_frost_witch.enabled
+  if IsReady("Lava Lash") and TargetinRange(8) and (Player:BuffUp(S.HotHandBuff) and not S.LegacyoftheFrostWitch:IsAvailable()) then
+	return S.LavaLash:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack>=5&charges=max_charges
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and S.ElementalBlast:Charges() == S.ElementalBlast:MaxCharges()) then
+	return S.ElementalBlast:Cast()
+end
+  -- lightning_bolt,if=buff.maelstrom_weapon.stack>=8&buff.primordial_wave.up&raid_event.adds.in>buff.primordial_wave.remains&(!buff.splintered_elements.up|fight_remains<=12)
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 8 and Player:BuffUp(S.PrimordialWaveBuff) and (Player:BuffDown(S.SplinteredElementsBuff) )) then
+	return S.LightningBolt:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack>=8&(feral_spirit.active>=2|!talent.elemental_spirits.enabled)
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 8 and (FeralSpiritCount >= 2 or not S.ElementalSpirits:IsAvailable())) then
+	return S.ElementalBlast:Cast()
+end
+  -- lava_burst,if=!talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>=5
+  if IsReady("Lava Burst") and TargetinRange(40) and (not S.ThorimsInvocation:IsAvailable() and MaelstromStacks >= 5) then
+	return S.LavaBurst:Cast()
+end
+  -- primordial_wave,if=(raid_event.adds.in>action.primordial_wave.cooldown)|raid_event.adds.in<6
+  if IsReady("Primordial Wave") and TargetinRange(40) then
+	return S.PrimordialWave:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack>=5&(charges_fractional>=1.8|(buff.molten_weapon.stack+buff.icy_edge.stack>=4))&talent.ascendance.enabled&(feral_spirit.active>=4|!talent.elemental_spirits.enabled)
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and (S.ElementalBlast:ChargesFractional() >= 1.8 or (MoltenWeaponStacks + IcyEdgeStacks >= 4)) and S.Ascendance:IsAvailable() and (FeralSpiritCount >= 4 or not S.ElementalSpirits:IsAvailable())) then
+	return S.ElementalBlast:Cast()
+end
+  -- elemental_blast,if=talent.ascendance.enabled&(buff.maelstrom_weapon.stack>=10|(buff.maelstrom_weapon.stack>=5&buff.whirling_air.up&!buff.legacy_of_the_frost_witch.up))
+  if IsReady("Elemental Blast") and TargetinRange(40) and (S.Ascendance:IsAvailable() and (MaelstromStacks >= 10 or (MaelstromStacks >= 5 and Player:BuffUp(S.WhirlingAirBuff) and not S.LegacyoftheFrostWitch:IsAvailable()))) then
+	return S.ElementalBlast:Cast()
+end
+  -- lightning_bolt,if=talent.ascendance.enabled&(buff.maelstrom_weapon.stack>=10|(buff.maelstrom_weapon.stack>=5&buff.whirling_air.up&!buff.legacy_of_the_frost_witch.up))
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (S.Ascendance:IsAvailable() and (MaelstromStacks >= 10 or (MaelstromStacks >= 5 and Player:BuffUp(S.WhirlingAirBuff) and not S.LegacyoftheFrostWitch:IsAvailable()))) then
+	return S.LightningBolt:Cast()
+end
+  -- lava_lash,if=buff.hot_hand.up&talent.molten_assault.enabled&pet.searing_totem.active
+  if IsReady("Lava Lash") and TargetinRange(8) and (Player:BuffUp(S.HotHandBuff) and S.MoltenAssault:IsAvailable() and Player:BuffUp(S.LivelyTotemsBuff)) then
+	return S.LavaLash:Cast()
+end
+  -- windstrike
+  if IsReady("Windstrike") and TargetinRange(30) then
+	return S.Windstrike:Cast()
+end
+  -- stormstrike
+  if IsReady("Stormstrike") and TargetinRange(8) then
+	return S.Stormstrike:Cast()
+end
+  -- lava_lash,if=talent.molten_assault.enabled
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.MoltenAssault:IsAvailable()) then
+	return S.LavaLash:Cast()
+end
+  -- crash_lightning,if=talent.unrelenting_storms.enabled
+  if IsReady("Crash Lightning") and TargetinRange(40) and (S.UnrelentingStorms:IsAvailable()) then
+	return S.CrashLightning:Cast()
+end
+  -- lightning_bolt,if=buff.maelstrom_weapon.stack>=5&talent.ascendance.enabled
+  if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 5 and S.Ascendance:IsAvailable()) then
+	return S.LightningBolt:Cast()
+end
+  -- ice_strike,if=!buff.ice_strike.up
+  if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (Player:BuffDown(S.IceStrikeBuff)) then
+	return S.IceStrike:Cast()
+end
+  -- frost_shock,if=buff.hailstorm.up&pet.searing_totem.active
+  if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff) and Player:BuffUp(S.LivelyTotemsBuff)) then
+	return S.FrostShock:Cast()
+end
+  -- lava_lash
+  if IsReady("Lava Lash") and TargetinRange(8) then
+	return S.LavaLash:Cast()
+end
+  -- elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.active>=4&talent.deeply_rooted_elements.enabled&(charges_fractional>=1.8|(buff.icy_edge.stack+buff.molten_weapon.stack>=4))
+  if IsReady("Elemental Blast") and TargetinRange(40) and (MaelstromStacks >= 5 and Shaman.FeralSpiritCount >= 4 and S.DeeplyRootedElements:IsAvailable() and (S.ElementalBlast:ChargesFractional() >= 1.8 or (IcyEdgeStacks + MoltenWeaponStacks >= 4))) then
+	return S.ElementalBlast:Cast()
+end
+  -- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled
+  if IsReady("Doom Winds") and TargetinRange(30) and (S.ElementalSpirits:IsAvailable()) then
+	return S.DoomWinds:Cast()
+end
+  -- flame_shock,if=!ticking&!talent.voltaic_blaze.enabled
+  if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff) and not S.VoltaicBlaze:IsAvailable()) then
+	return S.FlameShock:Cast()
+end
+  -- frost_shock,if=buff.hailstorm.up
+  if IsReady("Frost Shock") and TargetinRange(40) and (Player:BuffUp(S.HailstormBuff)) then
+	return S.FrostShock:Cast()
+end
+  -- crash_lightning,if=talent.converging_storms.enabled
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.ConvergingStorms:IsAvailable()) then
+	return S.CrashLightning:Cast()
+end
+  -- frost_shock
+  if IsReady("Frost Shock") and TargetinRange(40) then
+	return S.FrostShock:Cast()
+end
+  -- crash_lightning
+  if IsReady("Crash Lightning") and TargetinRange(8) then
+	return S.CrashLightning:Cast()
+end
+  -- fire_nova,if=active_dot.flame_shock
+  if IsReady("Fire Nova") and TargetinRange(8) and (Target:DebuffUp(S.FlameShockDebuff)) then
+	return S.FireNova:Cast()
+end
+  -- earth_elemental
+  if IsReady("Earth Elemental") and TargetinRange(10) then
+	return S.EarthElemental:Cast()
+end
+  -- flame_shock,if=!talent.voltaic_blaze.enabled
+  if IsReady("Flame Shock") and TargetinRange(40) and (not S.VoltaicBlaze:IsAvailable()) then
+	return S.FlameShock:Cast()
+end
+
+end
+
+local function Aoe()
+
+ -- feral_spirit,if=talent.elemental_spirits.enabled|talent.alpha_wolf.enabled
+ if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() and (S.ElementalSpirits:IsAvailable() or S.AlphaWolf:IsAvailable()) then
+	return S.FeralSpirit:Cast()
+end
+  -- ascendance,if=dot.flame_shock.ticking&ti_chain_lightning
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (FSTargets() > 0 and TIAction == S.ChainLightning) then
+	return S.Ascendance:Cast()
+end
+  -- tempest,target_if=min:debuff.lightning_rod.remains,if=!buff.arc_discharge.up&((buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&!talent.raging_maelstrom.enabled)|(buff.maelstrom_weapon.stack>=8))|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
+  if IsReady("Tempest") and TargetinRange(40) and tempest  and (Player:BuffDown(S.ArcDischargeBuff) and ((MaelstromStacks == MaxMaelstromStacks and not S.RagingMaelstrom:IsAvailable()) or (MaelstromStacks >= 8)) or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
+    -- if Settings.Enhancement.TempestOnMTOnly then
+	-- 	return S.LightningBolt:Cast()
+	
+    -- else
+		return S.TempestAbility:Cast()
+	end
+    
+  
+  -- windstrike,target_if=min:debuff.lightning_rod.remains,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_chain_lightning
+  if IsReady("Windstrike") and TargetinRange(30) and (S.ThorimsInvocation:IsAvailable() and MaelstromStacks > 0 and TIAction == S.ChainLightning) then
+	return S.Windstrike:Cast()
+end
+  -- crash_lightning,if=talent.crashing_storms.enabled&((talent.unruly_winds.enabled&active_enemies>=10)|active_enemies>=15)
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.CrashingStorms:IsAvailable() and ((S.UnrulyWinds:IsAvailable() and RangeCount(10) >= 10) or RangeCount(10) >= 15)) then
+	return S.CrashLightning:Cast()
+end
+  -- lightning_bolt,target_if=min:debuff.lightning_rod.remains,if=(!talent.tempest.enabled|(tempest_mael_count<=10&buff.awakening_storms.stack<=1))&((active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd))
+  if IsReady("Lightning Bolt") and TargetinRange(40) and ((not S.Tempest:IsAvailable() or (TempestMaelstrom <= 10 and Player:BuffStack(S.AwakeningStormsBuff) <= 1)) and ((FSTargets() == RangeCount(10) or FSTargets() >= 6) and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) ))) then
+	return S.LightningBolt:Cast()
+end
+  -- voltaic_blaze,if=buff.maelstrom_weapon.stack<=8
+  if IsReady("Voltaic Blaze") and TargetinRange(40) and (MaelstromStacks <= 8) then
+	return S.VoltaicBlazeAbility:Cast()
+end
+  -- lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.MoltenAssault:IsAvailable() and (S.PrimordialWave:IsAvailable() or S.FireNova:IsAvailable()) and Target:DebuffUp(S.FlameShockDebuff) and (FSTargets() < RangeCount(10)) and FSTargets() < 6) then
+	return S.LavaLash:Cast()
+end
+  -- primordial_wave,target_if=min:dot.flame_shock.remains,if=!buff.primordial_wave.up
+  if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff)) then
+	return S.PrimordialWave:Cast()
+end
+  -- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
+  if IsReady("Chain Lightning") and TargetinRange(40) and (Player:BuffUp(S.ArcDischargeBuff) and MaelstromStacks >= 5) then
+	return S.ChainLightning:Cast()
+end
+  -- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
+  if IsReady("Elemental Blast") and TargetinRange(40) and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks == MaxMaelstromStacks and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
+	return S.ElementalBlast:Cast()
+end
+  -- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=(buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&!talent.raging_maelstrom.enabled)|(buff.maelstrom_weapon.stack>=7)
+  if IsReady("Chain Lightning") and TargetinRange(40) and ((MaelstromStacks == MaxMaelstromStacks and not S.RagingMaelstrom:IsAvailable()) or (MaelstromStacks >= 7)) then
+	return S.ChainLightning:Cast()
+end
+  -- feral_spirit
+  if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() then
+	return S.FeralSpirit:Cast()
+end
+  -- doom_winds,if=ti_chain_lightning&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)
+  if IsReady("Doom Winds") and TargetinRange(30) and (TIAction == S.ChainLightning and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable())) then
+	return S.DoomWinds:Cast()
+end
+  -- crash_lightning,if=(buff.doom_winds.up&active_enemies>=4)|!buff.crash_lightning.up|(talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0)
+  if IsReady("Crash Lightning") and TargetinRange(8) and ((Player:BuffUp(S.DoomWindsBuff) and RangeCount(10) >= 4) or Player:BuffDown(S.CrashLightningBuff) or (S.AlphaWolf:IsAvailable() and Player:BuffUp(S.FeralSpiritBuff) and AlphaWolfMinRemains() == 0)) then
+	return S.CrashLightning:Cast()
+end
+  -- sundering,if=buff.doom_winds.up|talent.earthsurge.enabled
+  if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.DoomWindsBuff) or S.Earthsurge:IsAvailable()) then
+	return S.Sundering:Cast()
+end
+  -- fire_nova,if=active_dot.flame_shock=6|(active_dot.flame_shock>=4&active_dot.flame_shock=active_enemies)
+  if IsReady("Fire Nova") and TargetinRange(8) and (FSTargets() == 6 or (FSTargets() >= 4 and FSTargets() >= RangeCount(10))) then
+	return S.FireNova:Cast()
+end
+  -- stormstrike,if=talent.stormblast.enabled&talent.stormflurry.enabled
+  if IsReady("Stormstrike") and TargetinRange(8) and (S.Stormblast:IsAvailable() and S.Stormflurry:IsAvailable()) then
+	return S.Stormstrike:Cast()
+end
+  -- voltaic_blaze
+  if IsReady("Voltaic Blaze") and TargetinRange(40) then
+	return S.VoltaicBlazeAbility:Cast()
+end
+  -- lava_lash,target_if=min:debuff.lashing_flames.remains,if=talent.lashing_flames.enabled
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable()) then
+	return S.LavaLash:Cast()
+end
+  -- lava_lash,if=talent.molten_assault.enabled&dot.flame_shock.ticking
+  if IsReady("Lava Lash") and TargetinRange(8) and (S.MoltenAssault:IsAvailable() and Target:DebuffUp(S.FlameShockDebuff)) then
+	return S.LavaLash:Cast()
+end
+  -- ice_strike,if=talent.hailstorm.enabled&!buff.ice_strike.up
+  if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffDown(S.IceStrikeBuff)) then
+	return S.IceStrike:Cast()
+end
+  -- frost_shock,if=talent.hailstorm.enabled&buff.hailstorm.up
+  if IsReady("Frost Shock") and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffUp(S.HailstormBuff)) then
+	return S.FrostShock:Cast()
+end
+  -- sundering
+  if IsReady("Sundering") and TargetinRange(8) then
+	return S.Sundering:Cast()
+end
+  -- flame_shock,if=talent.molten_assault.enabled&!ticking
+  if IsReady("Flame Shock") and TargetinRange(40) and (S.MoltenAssault:IsAvailable() and Target:DebuffDown(S.FlameShockDebuff)) then
+	return S.FlameShock:Cast()
+end
+  -- flame_shock,target_if=min:dot.flame_shock.remains,if=(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+  if IsReady("Flame Shock") and TargetinRange(40) and ((S.FireNova:IsAvailable() or S.PrimordialWave:IsAvailable()) and (FSTargets() < RangeCount(10)) and FSTargets() < 6) then
+	return S.FlameShock:Cast()
+end
+  -- fire_nova,if=active_dot.flame_shock>=3
+  if IsReady("Fire Nova") and TargetinRange(8) and (FSTargets() >= 3) then
+	return S.FireNova:Cast()
+end
+  -- stormstrike,if=buff.crash_lightning.up&(talent.deeply_rooted_elements.enabled|buff.converging_storms.stack=buff.converging_storms.max_stack)
+  if IsReady("Stormstrike") and TargetinRange(8) and (Player:BuffUp(S.CrashLightningBuff) and (S.DeeplyRootedElements:IsAvailable() or Player:BuffStack(S.ConvergingStormsBuff) == MaxConvergingStormsStacks)) then
+	return S.Stormstrike:Cast()
+end
+  -- crash_lightning,if=talent.crashing_storms.enabled&buff.cl_crash_lightning.up&active_enemies>=4
+  if IsReady("Crash Lightning") and TargetinRange(8) and (S.CrashingStorms:IsAvailable() and Player:BuffUp(S.CLCrashLightningBuff) and RangeCount(10) >= 4) then
+	return S.CrashLightning:Cast()
+end
+  -- windstrike
+  if IsReady("Windstrike") and TargetinRange(30) then
+	return S.Windstrike:Cast()
+end
+  -- stormstrike
+  if IsReady("Stormstrike") and TargetinRange(8) then
+	return S.Stormstrike:Cast()
+end
+  -- ice_strike
+  if IsReady("Ice Strike")  and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) then
+	return S.IceStrike:Cast()
+end
+  -- lava_lash
+  if IsReady("Lava Lash") and TargetinRange(8) then
+	return S.LavaLash:Cast()
+end
+  -- crash_lightning
+  if IsReady("Crash Lightning") and TargetinRange(8) then
+	return S.CrashLightning:Cast()
+end
+  -- fire_nova,if=active_dot.flame_shock>=2
+  if IsReady("Fire Nova") and TargetinRange(8) and (FSTargets() >= 2) then
+	return S.FireNova:Cast()
+end
+  -- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack>=5&(!talent.crashing_storms.enabled|active_enemies<=3)
+  if IsReady("Elemental Blast") and TargetinRange(40) and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks >= 5 and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
+	return S.ElementalBlast:Cast()
+end
+  -- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack>=5
+  if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks >= 5) then
+	return S.ChainLightning:Cast()
+end
+  -- flame_shock,if=!ticking
+  if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff)) then
+	return S.FlameShock:Cast()
+end
+  -- frost_shock,if=!talent.hailstorm.enabled
+  if IsReady("Frost Shock") and TargetinRange(40) and (not S.Hailstorm:IsAvailable()) then
+	return S.FrostShock:Cast()
+end
+
+
+
+end
+
+
+
+local function AoeTotemic()
+	-- surging_totem
+	if IsReady("Surging Totem") and TargetinRange(8) then
+		return S.SurgingTotem:Cast()
+	end
+	-- ascendance,if=ti_chain_lightning
+	if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (TIAction == S.ChainLightning) then
+		return S.Ascendance:Cast()
+	end
+	-- sundering,if=buff.ascendance.up&pet.surging_totem.active&talent.earthsurge.enabled&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)
+	if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.AscendanceBuff) and TotemFinder(S.SurgingTotem) and S.Earthsurge:IsAvailable() and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable())) then
+		return S.Sundering:Cast()
+	end
+	-- crash_lightning,if=talent.crashing_storms.enabled&(active_enemies>=15-5*talent.unruly_winds.enabled)
+	if IsReady("Crash Lightning") and TargetinRange(8) and (S.CrashingStorms:IsAvailable() and (RangeCount(10) >= 15 - 5 * num(S.UnrulyWinds:IsAvailable()))) then
+		return S.CrashLightning:Cast()
+	end
+	-- lightning_bolt,if=((active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd))
+	if IsReady("Lightning Bolt") and TargetinRange(40) and ((FSTargets() == RangeCount(10) or FSTargets() >= 6) and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) )) then
+		return S.LightningBolt:Cast()
+	end
+	-- doom_winds,if=!talent.elemental_spirits.enabled&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)
+	if IsReady("Doom Winds") and TargetinRange(30) and (not S.ElementalSpirits:IsAvailable() and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable())) then
+		return S.DoomWinds:Cast()
+	end
+	-- lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 	if IsReady("Lava Lash") and TargetinRange(8) and (S.MoltenAssault:IsAvailable() and (S.PrimordialWave:IsAvailable() or S.FireNova:IsAvailable()) and Target:DebuffUp(S.FlameShockDebuff) and (FSTargets() < RangeCount(10)) and FSTargets() < 6) then
 		return S.LavaLash:Cast()
 	end
 	-- primordial_wave,target_if=min:dot.flame_shock.remains,if=!buff.primordial_wave.up
-	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff))  then
+	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff)) then
 		return S.PrimordialWave:Cast()
 	end
-	-- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
-	if IsReady("Chain Lightning") and TargetinRange(40)  and (Player:BuffUp(S.ArcDischargeBuff) and MaelstromStacks >= 5) then
-		return S.ChainLightning:Cast()
-	end
-	-- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
-	if IsReady("Elemental Blast") and TargetinRange(40)  and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks == MaxMaelstromStacks and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
+	-- elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
+	if IsReady("Elemental Blast") and TargetinRange(40) and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == S.ElementalBlast:MaxCharges() or FeralSpiritCount >= 2))) and MaelstromStacks == MaxMaelstromStacks and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
 		return S.ElementalBlast:Cast()
 	end
-	-- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
-	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks)  then
+	-- chain_lightning,if=buff.maelstrom_weapon.stack>=10
+	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks >= 10) then
 		return S.ChainLightning:Cast()
 	end
 	-- feral_spirit
-	if IsReady("Feral Spirit") and TargetinRange(20) and not S.FlowingSpirits:IsAvailable() then
+	if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() then
 		return S.FeralSpirit:Cast()
 	end
-	-- doom_winds
-	if IsReady("Doom Winds") and TargetinRange(20) then
+	-- doom_winds,if=buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled
+	if IsReady("Doom Winds") and TargetinRange(30) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) then
 		return S.DoomWinds:Cast()
 	end
 	-- crash_lightning,if=buff.doom_winds.up|!buff.crash_lightning.up|(talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0)
 	if IsReady("Crash Lightning") and TargetinRange(8) and (Player:BuffUp(S.DoomWindsBuff) or Player:BuffDown(S.CrashLightningBuff) or (S.AlphaWolf:IsAvailable() and Player:BuffUp(S.FeralSpiritBuff) and AlphaWolfMinRemains() == 0)) then
 		return S.CrashLightning:Cast()
 	end
-	-- sundering,if=buff.doom_winds.up|talent.earthsurge.enabled
-	if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.DoomWindsBuff) or S.Earthsurge:IsAvailable()) then
+	-- sundering,if=buff.doom_winds.up|talent.earthsurge.enabled&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)&pet.surging_totem.active
+	if IsReady("Sundering") and TargetinRange(8) and (Player:BuffUp(S.DoomWindsBuff) or S.Earthsurge:IsAvailable() and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) and TotemFinder(S.SurgingTotem)) then
 		return S.Sundering:Cast()
 	end
 	-- fire_nova,if=active_dot.flame_shock=6|(active_dot.flame_shock>=4&active_dot.flame_shock=active_enemies)
 	if IsReady("Fire Nova") and TargetinRange(8) and (FSTargets() == 6 or (FSTargets() >= 4 and FSTargets() >= RangeCount(10))) then
 		return S.FireNova:Cast()
 	end
+	-- voltaic_blaze
+	if IsReady("Voltaic Blaze") and TargetinRange(40) then
+		return S.VoltaicBlazeAbility:Cast()
+	end
 	-- lava_lash,target_if=min:debuff.lashing_flames.remains,if=talent.lashing_flames.enabled
-	if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable())  then
+	if IsReady("Lava Lash") and TargetinRange(8) and (S.LashingFlames:IsAvailable()) then
 		return S.LavaLash:Cast()
 	end
 	-- lava_lash,if=talent.molten_assault.enabled&dot.flame_shock.ticking
@@ -968,15 +1315,15 @@ local function Precombat()
 		return S.LavaLash:Cast()
 	end
 	-- ice_strike,if=talent.hailstorm.enabled&!buff.ice_strike.up
-	if S.IceStrike:IsCastable() and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffDown(S.IceStrikeBuff)) then
+	if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffDown(S.IceStrikeBuff)) then
 		return S.IceStrike:Cast()
 	end
 	-- frost_shock,if=talent.hailstorm.enabled&buff.hailstorm.up
 	if IsReady("Frost Shock") and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffUp(S.HailstormBuff)) then
 		return S.FrostShock:Cast()
 	end
-	-- sundering
-	if IsReady("Sundering") and TargetinRange(8) then
+	-- sundering,if=(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)&pet.surging_totem.active
+	if IsReady("Sundering") and TargetinRange(8) and ((Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) and TotemFinder(S.SurgingTotem)) then
 		return S.Sundering:Cast()
 	end
 	-- flame_shock,if=talent.molten_assault.enabled&!ticking
@@ -984,7 +1331,7 @@ local function Precombat()
 		return S.FlameShock:Cast()
 	end
 	-- flame_shock,target_if=min:dot.flame_shock.remains,if=(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
-	if IsReady("Flame Shock") and TargetinRange(40) and ((S.FireNova:IsAvailable() or S.PrimordialWave:IsAvailable()) and (FSTargets() < RangeCount(10)) and FSTargets() < 6)  then
+	if IsReady("Flame Shock") and TargetinRange(40) and ((S.FireNova:IsAvailable() or S.PrimordialWave:IsAvailable()) and (FSTargets() < RangeCount(10)) and FSTargets() < 6) then
 		return S.FlameShock:Cast()
 	end
 	-- fire_nova,if=active_dot.flame_shock>=3
@@ -1008,7 +1355,7 @@ local function Precombat()
 		return S.Stormstrike:Cast()
 	end
 	-- ice_strike
-	if S.IceStrike:IsCastable() and TargetinRange(40) then
+	if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) then
 		return S.IceStrike:Cast()
 	end
 	-- lava_lash
@@ -1024,26 +1371,31 @@ local function Precombat()
 		return S.FireNova:Cast()
 	end
 	-- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack>=5&(!talent.crashing_storms.enabled|active_enemies<=3)
-	if IsReady("Elemental Blast") and TargetinRange(40)  and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks >= 5 and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
+	if IsReady("Elemental Blast") and TargetinRange(40) and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == MaxEBCharges or FeralSpiritCount >= 2))) and MaelstromStacks >= 5 and (not S.CrashingStorms:IsAvailable() or RangeCount(10) <= 3)) then
 		return S.ElementalBlast:Cast()
 	end
 	-- chain_lightning,target_if=min:debuff.lightning_rod.remains,if=buff.maelstrom_weapon.stack>=5
-	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks >= 5)  then
+	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks >= 5) then
 		return S.ChainLightning:Cast()
 	end
 	-- flame_shock,if=!ticking
 	if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff)) then
 		return S.FlameShock:Cast()
 	end
-	-- frost_shock,if=!talent.hailstorm.enabled
-	if IsReady("Frost Shock") and TargetinRange(40) and (not S.Hailstorm:IsAvailable()) then
-		return S.FrostShock:Cast()
-	end
   end
-  
+
+
   local function Funnel()
+	-- feral_spirit,if=talent.elemental_spirits.enabled
+	if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() and (S.ElementalSpirits:IsAvailable()) and not S.FlowingSpirits:IsAvailable() then
+		return S.FeralSpirit:Cast()
+	end
+	-- surging_totem
+	if IsReady("Surging Totem") and TargetinRange(8) then
+		return S.SurgingTotem:Cast()
+	end
 	-- ascendance
-	if IsReady("Ascendance") and TargetinRange(10) and RubimRH.CDsON() then
+	if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) then
 		return S.Ascendance:Cast()
 	end
 	-- windstrike,if=(talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0)|buff.converging_storms.stack=buff.converging_storms.max_stack
@@ -1051,11 +1403,11 @@ local function Precombat()
 		return S.Windstrike:Cast()
 	end
 	-- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
-	if IsReady("Tempest") and tempest and TargetinRange(20) and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
+	if IsReady("Tempest") and TargetinRange(40) and tempest  and (MaelstromStacks == MaxMaelstromStacks or (MaelstromStacks >= 5 and (TempestMaelstrom > 30 or Player:BuffStack(S.AwakeningStormsBuff) == 2))) then
 		return S.TempestAbility:Cast()
 	end
 	-- lightning_bolt,if=(active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd)
-	if IsReady("Lightning Bolt") and TargetinRange(40) and ((FSTargets() >= RangeCount(10) or FSTargets() >= 6) and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) or FightRemains <= 12)) then
+	if IsReady("Lightning Bolt") and TargetinRange(40) and ((FSTargets() >= RangeCount(10) or FSTargets() >= 6) and Player:BuffUp(S.PrimordialWaveBuff) and MaelstromStacks == MaxMaelstromStacks and (Player:BuffDown(S.SplinteredElementsBuff) )) then
 		return S.LightningBolt:Cast()
 	end
 	-- elemental_blast,if=buff.maelstrom_weapon.stack>=5&talent.elemental_spirits.enabled&feral_spirit.active>=4
@@ -1067,7 +1419,7 @@ local function Precombat()
 		return S.LightningBolt:Cast()
 	end
 	-- chain_lightning,if=(talent.supercharge.enabled&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack)|buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
-	if IsReady("Chain Lightning") and TargetinRange(40) and ((S.Supercharge:IsAvailable() and MaelstromStacks == MaxMaelstromStacks) or Player:BuffUp(S.ArcDischargeBuff) and MaelstromStacks >= 5) then
+	if S.ChainLightning:IsCastable() and ((S.Supercharge:IsAvailable() and MaelstromStacks == MaxMaelstromStacks) or Player:BuffUp(S.ArcDischargeBuff) and MaelstromStacks >= 5) then
 		return S.ChainLightning:Cast()
 	end
 	-- lava_lash,if=(talent.molten_assault.enabled&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6)|(talent.ashen_catalyst.enabled&buff.ashen_catalyst.stack=buff.ashen_catalyst.max_stack)
@@ -1075,7 +1427,7 @@ local function Precombat()
 		return S.LavaLash:Cast()
 	end
 	-- primordial_wave,target_if=min:dot.flame_shock.remains,if=!buff.primordial_wave.up
-	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff))  then
+	if IsReady("Primordial Wave") and TargetinRange(40) and (Player:BuffDown(S.PrimordialWaveBuff)) then
 		return S.PrimordialWave:Cast()
 	end
 	-- elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|buff.feral_spirit.up)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
@@ -1083,19 +1435,19 @@ local function Precombat()
 		return S.ElementalBlast:Cast()
 	end
 	-- feral_spirit
-	if IsReady("Feral Spirit") and TargetinRange(20) and not S.FlowingSpirits:IsAvailable() then
+	if IsReady("Feral Spirit") and not S.FlowingSpirits:IsAvailable() then
 		return S.FeralSpirit:Cast()
 	end
 	-- doom_winds
-	if IsReady("Doom Winds") and TargetinRange(20) then
+	if IsReady("Doom Winds") and TargetinRange(30) then
 		return S.DoomWinds:Cast()
 	end
 	-- stormstrike,if=buff.converging_storms.stack=buff.converging_storms.max_stack
 	if IsReady("Stormstrike") and TargetinRange(8) and (Player:BuffStack(S.ConvergingStormsBuff) == MaxConvergingStormsStacks) then
 		return S.Stormstrike:Cast()
 	end
-	-- lava_burst,if=(buff.molten_weapon.stack+buff.volcanic_strength.up>buff.crackling_surge.stack)&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
-	if IsReady("Lava Burst") and TargetinRange(40) and ((MoltenWeaponStacks + num(Player:BuffUp(S.VolcanicStrengthBuff)) > CracklingSurgeStacks) and MaelstromStacks == MaxMaelstromStacks) then
+	-- lava_burst,if=(buff.molten_weapon.stack>buff.crackling_surge.stack)&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
+	if IsReady("Lava Burst") and TargetinRange(40) and ((MoltenWeaponStacks > CracklingSurgeStacks) and MaelstromStacks == MaxMaelstromStacks) then
 		return S.LavaBurst:Cast()
 	end
 	-- lightning_bolt,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(variable.expected_lb_funnel>variable.expected_cl_funnel)
@@ -1103,7 +1455,7 @@ local function Precombat()
 		return S.LightningBolt:Cast()
 	end
 	-- chain_lightning,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
-	if IsReady("Chain Lightning") and TargetinRange(40) and (MaelstromStacks == MaxMaelstromStacks) then
+	if S.ChainLightning:IsCastable() and (MaelstromStacks == MaxMaelstromStacks) then
 		return S.ChainLightning:Cast()
 	end
 	-- crash_lightning,if=buff.doom_winds.up|!buff.crash_lightning.up|(talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0)|(talent.converging_storms.enabled&buff.converging_storms.stack<buff.converging_storms.max_stack)
@@ -1119,7 +1471,7 @@ local function Precombat()
 		return S.FireNova:Cast()
 	end
 	-- ice_strike,if=talent.hailstorm.enabled&!buff.ice_strike.up
-	if S.IceStrike:IsCastable() and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffDown(S.IceStrikeBuff)) then
+	if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) and (S.Hailstorm:IsAvailable() and Player:BuffDown(S.IceStrikeBuff)) then
 		return S.IceStrike:Cast()
 	end
 	-- frost_shock,if=talent.hailstorm.enabled&buff.hailstorm.up
@@ -1159,7 +1511,7 @@ local function Precombat()
 		return S.Stormstrike:Cast()
 	end
 	-- ice_strike
-	if S.IceStrike:IsCastable() and TargetinRange(40) then
+	if IsReady("Ice Strike") and C_Spell.GetSpellInfo("Frost Shock").iconID == 135855 and TargetinRange(40) then
 		return S.IceStrike:Cast()
 	end
 	-- lava_lash
@@ -1178,8 +1530,8 @@ local function Precombat()
 	if IsReady("Elemental Blast") and TargetinRange(40) and ((not S.ElementalSpirits:IsAvailable() or (S.ElementalSpirits:IsAvailable() and (S.ElementalBlast:Charges() == S.ElementalBlast:MaxCharges() or Player:BuffUp(S.FeralSpiritBuff)))) and MaelstromStacks >= 5) then
 		return S.ElementalBlast:Cast()
 	end
-	-- lava_burst,if=(buff.molten_weapon.stack+buff.volcanic_strength.up>buff.crackling_surge.stack)&buff.maelstrom_weapon.stack>=5
-	if IsReady("Lava Burst") and TargetinRange(40) and ((MoltenWeaponStacks + num(Player:BuffUp(S.VolcanicStrengthBuff)) > CracklingSurgeStacks) and MaelstromStacks >= 5) then
+	-- lava_burst,if=(buff.molten_weapon.stack>buff.crackling_surge.stack)&buff.maelstrom_weapon.stack>=5
+	if IsReady("Lava Burst") and TargetinRange(40) and ((MoltenWeaponStacks > CracklingSurgeStacks) and MaelstromStacks >= 5) then
 		return S.LavaBurst:Cast()
 	end
 	-- lightning_bolt,if=buff.maelstrom_weapon.stack>=5&(variable.expected_lb_funnel>variable.expected_cl_funnel)
@@ -1196,11 +1548,11 @@ local function Precombat()
 	end
 	-- frost_shock,if=!talent.hailstorm.enabled
 	if IsReady("Frost Shock") and TargetinRange(40) and (not S.Hailstorm:IsAvailable()) then
-return S.FrostShock:Cast()
+		return S.FrostShock:Cast()
+	end
   end
-end
 
-
+  
 
 
 
@@ -1252,7 +1604,28 @@ local currentTimeMS = GetTime() * 1000
 local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
 local channelTime = elapsedTimech / 1000
 
+  -- Calculate fight_remains
+    -- Calculate fight_remains
+    MaelstromStacks = Player:BuffStack(S.MaelstromWeaponBuff)
 
+    -- Variables from Precombat
+    -- variable,name=min_talented_cd_remains,value=((cooldown.feral_spirit.remains%(4*talent.witch_doctors_ancestry.enabled))+1000*!talent.feral_spirit.enabled)>?(cooldown.doom_winds.remains+1000*!talent.doom_winds.enabled)>?(cooldown.ascendance.remains+1000*!talent.ascendance.enabled)
+    -- variable,name=target_nature_mod,value=(1+debuff.chaos_brand.up*debuff.chaos_brand.value)*(1+(debuff.hunters_mark.up*target.health.pct>=80)*debuff.hunters_mark.value)
+    VarTargetNatureMod = (1 + num(Target:DebuffUp(S.ChaosBrandDebuff)) * 0.05) * (1 + num(Target:DebuffUp(S.HuntersMarkDebuff) and Target:HealthPercentage() >= 80) * 0.05)
+    -- variable,name=expected_lb_funnel,value=action.lightning_bolt.damage*(1+debuff.lightning_rod.up*variable.target_nature_mod*(1+buff.primordial_wave.up*active_dot.flame_shock*buff.primordial_wave.value)*debuff.lightning_rod.value)
+    local PWValue = 1.75 * S.LightningBolt:Damage()
+    local LRValue = 0.2 * S.LightningBolt:Damage() * (Target:DebuffUp(S.LightningRodDebuff) and 1.75 or 1)
+    VarExpectedLBFunnel = S.LightningBolt:Damage() * (1 + num(Target:DebuffUp(S.LightningRodDebuff)) * VarTargetNatureMod * (1 + num(Player:BuffUp(S.PrimordialWaveBuff)) * FSTargets() * PWValue) * LRValue)
+    -- variable,name=expected_cl_funnel,value=action.chain_lightning.damage*(1+debuff.lightning_rod.up*variable.target_nature_mod*(active_enemies>?(3+2*talent.crashing_storms.enabled))*debuff.lightning_rod.value)
+    VarExpectedCLFunnel = S.ChainLightning:Damage() * (1 + num(Target:DebuffUp(S.LightningRodDebuff)) * VarTargetNatureMod * math.min(RangeCount(10), 3 + 2 * num(S.CrashingStorms:IsAvailable())) * LRValue)
+
+
+    if Player:PrevGCD(1, S.ChainLightning) then
+      TIAction = S.ChainLightning
+    elseif Player:PrevGCD(1, S.LightningBolt) then
+      TIAction = S.LightningBolt
+    end
+  
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------Functions/Top priorities-------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1277,44 +1650,7 @@ if hasOffHandEnchant ~= true then
 elseif hasOffHandEnchant == true then 
 	ohenchantremains = offHandExpiration*0.001
 end
---------------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------Out of Combat-------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------
-if not Player:AffectingCombat() then
-	if IsReady("Windfury Weapon") and mhenchantremains < 300 then
-		return S.WindfuryWeapon:Cast()
-	end
 
-	if IsReady("Flametongue Weapon") and ohenchantremains < 300 then
-		return S.FlametongueWeapon:Cast()
-	end
-
-	if IsReady("Lightning Shield") and not Player:BuffUp(S.LightningShield) then
-		return S.LightningShield:Cast()
-	end
-
-	if IsReady("Skyfury") and not Player:BuffUp(S.Skyfury) then
-		return S.Skyfury:Cast()
-	end
-
-		
-
-	if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Earth Shield", "focus") then 
-        if IsReady("Earth Shield") and earthshieldstack<7 then
-            return S.EarthShield:Cast()
-        end
-    end
-	
-	if IsReady("Earth Shield") and not UnitExists("focus") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() then
-		return S.EarthShield:Cast()
-		end
-		
-
-    -- Precombat
-    if not Player:AffectingCombat() and C_Spell.IsCurrentSpell(6603) then
-		local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
-	  end
-end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Spell Queue--------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1325,16 +1661,19 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 	if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and (Player:DebuffUp(S.lust1) or Player:DebuffUp(S.lust2) or Player:DebuffUp(S.lust3) or Player:DebuffUp(S.lust4) or Player:Debuff(S.lust5)) then
 	RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 	end
-	
+	if S.FeralLunge:ID() == RubimRH.queuedSpell[1]:ID() and (TargetinRange(8) or not TargetinRange(30)) then
+		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+		end
 	
 	if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or not Player:AffectingCombat() or RangeCount(30) == 0 or S.GhostWolf:ID() ==  RubimRH.queuedSpell[1]:ID() and AuraUtil.FindAuraByName("Ghost Wolf", "player"))
 	  then
-	  RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+		end
+
+	  
+	  if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
+	  return RubimRH.QueuedSpell():Cast()
 	  end
-	
-	if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
-	return RubimRH.QueuedSpell():Cast()
-	end
 	
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------dispells---------------------------------------------------------------------
@@ -1404,7 +1743,7 @@ end
 if (castTime > 0.1 or channelTime > 0.1) and select(8, UnitCastingInfo("target")) == false and RubimRH.InterruptsON() then
 
 	-- kick on GCD
-	if IsReady("Wind Shear") and targetRange40 and kickprio()  then
+	if IsReady("Wind Shear") and TargetinRange(30) and kickprio()  then
 	return S.WindShear:Cast()
 	end
 	
@@ -1427,39 +1766,7 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 		return S.autoattack:Cast()
 	end	
 
-  -- Calculate fight_remains
-  if Player:CanAttack(Target) or Player:AffectingCombat() then
-    -- Calculate fight_remains
-    BossFightRemains = HL.BossFightRemains()
-    FightRemains = BossFightRemains
-    if FightRemains == 11111 then
-      FightRemains = HL.FightRemains(EnemiesMelee, false)
-    end
 
-    -- Check our Maelstrom Weapon buff stacks
-    MaelstromStacks = Player:BuffStack(S.MaelstromWeaponBuff)
-
-    -- Variables from Precombat
-    -- variable,name=min_talented_cd_remains,value=((cooldown.feral_spirit.remains%(4*talent.witch_doctors_ancestry.enabled))+1000*!talent.feral_spirit.enabled)>?(cooldown.doom_winds.remains+1000*!talent.doom_winds.enabled)>?(cooldown.ascendance.remains+1000*!talent.ascendance.enabled)
-    VarMinTalentedCDRemains = math.min(((S.FeralSpirit:CooldownRemains() / (4 * num(S.WitchDoctorsAncestry:IsAvailable()))) + 1000 * num(not S.FeralSpirit:IsAvailable())), (S.DoomWinds:CooldownRemains() + 1000 * num(not S.DoomWinds:IsAvailable())), (S.Ascendance:CooldownRemains() + 1000 * num(not S.Ascendance:IsAvailable())))
-    -- variable,name=target_nature_mod,value=(1+debuff.chaos_brand.up*debuff.chaos_brand.value)*(1+(debuff.hunters_mark.up*target.health.pct>=80)*debuff.hunters_mark.value)
-    VarTargetNatureMod = (1 + num(Target:DebuffUp(S.ChaosBrandDebuff)) * 0.05) * (1 + num(Target:DebuffUp(S.HuntersMarkDebuff) and Target:HealthPercentage() >= 80) * 0.05)
-    -- variable,name=expected_lb_funnel,value=action.lightning_bolt.damage*(1+debuff.lightning_rod.up*variable.target_nature_mod*(1+buff.primordial_wave.up*active_dot.flame_shock*buff.primordial_wave.value)*debuff.lightning_rod.value)
-    local PWValue = 1.75 * S.LightningBolt:Damage()
-    local LRValue = 0.2 * S.LightningBolt:Damage() * (Target:DebuffUp(S.LightningRodDebuff) and 1.75 or 1)
-    VarExpectedLBFunnel = S.LightningBolt:Damage() * (1 + num(Target:DebuffUp(S.LightningRodDebuff)) * VarTargetNatureMod * (1 + num(Player:BuffUp(S.PrimordialWaveBuff)) * FSTargets() * PWValue) * LRValue)
-    -- variable,name=expected_cl_funnel,value=action.chain_lightning.damage*(1+debuff.lightning_rod.up*variable.target_nature_mod*(active_enemies>?(3+2*talent.crashing_storms.enabled))*debuff.lightning_rod.value)
-    VarExpectedCLFunnel = S.ChainLightning:Damage() * (1 + num(Target:DebuffUp(S.LightningRodDebuff)) * VarTargetNatureMod * math.min(RangeCount(10), 3 + 2 * num(S.CrashingStorms:IsAvailable())) * LRValue)
-  end
-
-  -- Update Thorim's Invocation
-  if Player:AffectingCombat() then
-    if Player:PrevGCD(1, S.ChainLightning) then
-      TIAction = S.ChainLightning
-    elseif Player:PrevGCD(1, S.LightningBolt) then
-      TIAction = S.LightningBolt
-    end
-  end
 
 
 
@@ -1480,45 +1787,69 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 
 
 
+--------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------Call rotation functions-------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+    
 
-    -- invoke_external_buff,name=power_infusion,if=(buff.ascendance.up|buff.feral_spirit.up|buff.doom_winds.up|(fight_remains%%120<=20)|(variable.min_talented_cd_remains>=120)|(!talent.ascendance.enabled&!talent.feral_spirit.enabled&!talent.doom_winds.enabled))
-    -- Note: Not handling external PI.
-    -- primordial_wave,if=set_bonus.tier31_2pc&(raid_event.adds.in>(action.primordial_wave.cooldown%(1+set_bonus.tier31_4pc))|raid_event.adds.in<6)
-    if IsReady("Primordial Wave") and TargetinRange(40) and (Player:HasTier(31, 2)) then
-		return S.PrimordialWave:Cast()
-	end
-    -- feral_spirit,if=talent.elemental_spirits.enabled|(talent.alpha_wolf.enabled&active_enemies>1)
-    if IsReady("Feral Spirit") and TargetinRange(20) and not S.FlowingSpirits:IsAvailable() and RubimRH.CDsON() and (S.ElementalSpirits:IsAvailable() or (S.AlphaWolf:IsAvailable() and RangeCount(10) > 1)) then
-		return S.FeralSpirit:Cast()
-	end
-    -- surging_totem
-    if IsReady("Surging Totem") and TargetinRange(20)  then
-		return S.SurgingTotem:Cast()
-	end
-    -- ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
-    -- if IsReady("Ascendance") and TargetinRange(10) and RubimRH.CDsON() and (Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1 or TIAction == S.ChainLightning and RangeCount(10) > 1)) then
-    --  return S.Ascendance:Cast()
-	-- end
+		if not S.SurgingTotem:IsAvailable() and Aoe() ~= nil and RubimRH.AoEON() and (RangeCount(20)>=2 ) and TargetinRange(40) then
+			return Aoe()
+		end
+		if S.SurgingTotem:IsAvailable() and AoeTotemic() ~= nil and RubimRH.AoEON() and (RangeCount(20)>=2 ) and TargetinRange(40) then
+			return AoeTotemic()
+		end
 
-	if IsReady("Ascendance") and TargetinRange(10) and RubimRH.CDsON() and HL.CombatTime()>2 then
-		return S.Ascendance:Cast()
-	   end
+		if Funnel() ~= nil and RubimRH.AoEON() and (RangeCount(20)>=2 ) and TargetinRange(40) then
+			return Funnel()
+		end
 
-	   if IsReady("Tempest") and tempest and TargetinRange(20) and MaelstromStacks >= 8 and S.PrimordialWave:CooldownDown() and RangeCount(20)>1 then
-		return S.TempestAbility:Cast()
+	if not S.SurgingTotem:IsAvailable() and Single()~= nil and TargetinRange(40) and (RangeCount(20)<2 or not RubimRH.AoEON()) then
+	  return Single()
 	end
-
-	if RubimRH.AoEON() and RangeCount(20) > 1 then
-		local ShouldReturn = Aoe(); if ShouldReturn then return ShouldReturn; end
-	else
-	  local ShouldReturn = Funnel(); if ShouldReturn then return ShouldReturn; end
- 
-    -- call_action_list,name=single,if=active_enemies=1
-    if RangeCount(20) == 1  then
-      local ShouldReturn = Single(); if ShouldReturn then return ShouldReturn; end
-    end
+	if S.SurgingTotem:IsAvailable() and SingleTotemic()~= nil and TargetinRange(40) and (RangeCount(20)<2 or not RubimRH.AoEON()) then
+		return SingleTotemic()
+	  end
 
 end
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------Out of Combat-------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+if not Player:AffectingCombat() then
+	if IsReady("Windfury Weapon") and mhenchantremains < 300 then
+		return S.WindfuryWeapon:Cast()
+	end
+
+	if IsReady("Flametongue Weapon") and ohenchantremains < 300 then
+		return S.FlametongueWeapon:Cast()
+	end
+
+	if IsReady("Lightning Shield") and Player:BuffRemains(S.LightningShield)<300 then
+		return S.LightningShield:Cast()
+	end
+
+	if IsReady("Skyfury") and  Player:BuffRemains(S.Skyfury)<300 then
+		return S.Skyfury:Cast()
+	end
+
+		
+
+	if los == false and UnitExists('focus') and C_Spell.IsSpellInRange("Earth Shield", "focus") then 
+        if IsReady("Earth Shield") and earthshieldstack<7 then
+            return S.EarthShield:Cast()
+        end
+    end
+	
+	if IsReady("Earth Shield") and not UnitExists("focus") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() then
+		return S.EarthShield:Cast()
+		end
+		
+
+    -- Precombat
+    if not Player:AffectingCombat() and C_Spell.IsCurrentSpell(6603) then
+		local ShouldReturn = Precombat(); if ShouldReturn then return ShouldReturn; end
+	  end
 end
 
     return 0, "Interface\\Addons\\Rubim-RH\\Media\\griph.tga"

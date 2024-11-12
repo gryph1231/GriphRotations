@@ -98,93 +98,215 @@ Cleanse = Spell(4987),
 
 RubimRH.Spell[263] = {
     autoattack = Spell(274738), -- ancestral call
-    Bloodlust = Spell(2825),
-    primalstrike = Spell(73899),
-    BloodlustPVP = Spell(204361),
-    bloodlust = Spell(32182),
-    Hailstorm = Spell(334195),
-    HailstormBuff = Spell(334196),
-    Windstrike = Spell(115356),	
-    AncestralSpirit = Spell(2008),
-    AncestralGuidance = Spell(108281),
-    ChainLightning = Spell(188443),
-    EarthElemental = Spell(198103),
-    AstralShift = Spell(108271),
-    EarthbindTotem = Spell(2484),
-    CapacitorTotem = Spell(192058),
-    ConvergingStormsBuff = Spell(198300),
-    FlameShock = Spell(188389),
-    ChainHeal = Spell(1064),
-    ElementalAssault = Spell(210853),
-    Stormblast = Spell(319930),
-    Thunderstorm = Spell(51490),
-    EarthernWeapon = Spell(392375),
-    FlametongueWeapon = Spell(318038),
-    Tempestz = Spell(20549), --war stomp
-    WindfuryWeapon = Spell(33757),
-    StaticAccumulation = Spell(384411),
-    FrostShock = Spell(196840),
-    LightningShield = Spell(192106),
-    GhostWolf = Spell(2645),
-    Purge = Spell(370),
-    HealingStreamTotem = Spell(5394),
-    LegacyOfTheFrostWitch = Spell(384451),
-    TremorTotem = Spell(8143),
-    HealingSurge = Spell(8004),
-    WaterWalking = Spell(546),
-    Hex = Spell(51514),
-    WindShear = Spell(57994),
-    Stormbringer = Spell(201846),
-    LightningBolt = Spell(188196),
-    CleanseSpirit = Spell(51886),
-    CrashLightning = Spell(187874),
-    CrashLightningBuff = Spell(187878),
-    ChainLightningBuff = Spell(333964),
-    EarthShield = Spell(974),
-    FeralLunge = Spell(196884),
-    FeralSpirit = Spell(51533),
-    LavaLash = Spell(60103),
-    SpiritWalk = Spell(58875),
-    Stormstrike = Spell(17364),
-    WindfuryTotem = Spell(8512),
-    WindfuryTotemBuff = Spell(327942),
-    Ascendance = Spell(114051),
-    DoomWinds = Spell(384352),
-    FireNova = Spell(333974),
-    LightningLasso = Spell(305483),
-    MoltenAssault = Spell(334033),
-    LashingFlames = Spell(334046),
-    LashingFlamesDebuff = Spell(334168),
-    PrimordialWave = Spell(375982), 
-    VesperTotem = Spell(324386),
-    LavaBurst = Spell(51505),
-    DoorofShadows = Spell(300728),
-    MaelstromWeapon = Spell(344179),
-    StormKeeper = Spell(320137),
-    ChainHarvest = Spell(320674),
-    ElementalBlast = Spell(117014),
-    Sundering = Spell(197214),
-    Sunderingz = Spell(69070), --rocket jump
-    IceStrike = Spell(342240),
-    EarthenSpike = Spell(188089),
-    CrashingStorms = Spell(334308),
-    WinfuryTotemBuff = Spell(327942),
-    HotHand = Spell(201900),
-    ThorimsInvocation = Spell(384444),
-    Berserking = Spell(26297),
-    SplinteredElementsBuff = Spell(382043),
-    DeeplyRootedElements = Spell(378270),
-    healthstone = Spell(291944),
-    healingpot = Spell(176108),
-    PrimordialWaveBuff = Spell(375986),
-    Shamanism = Spell(193876),
-    SwirlingMaelstrom = Spell(384359),
-    OverflowingMaelstrom = Spell(384149),
-    StoneBulwarkTotem = Spell(108270),
-    WindRushTotem = Spell(192077),
 
-    FeralSpiritBuff = Spell(333957),
-    ElementalSpirits = Spell(242624),
+primalstrike = Spell(73899),
+BloodlustPVP = Spell(204361),
+bloodlust = Spell(32182),
+
+AncestralSpirit = Spell(2008),
+AncestralGuidance = Spell(108281),
+
+EarthbindTotem = Spell(2484),
+
+ChainHeal = Spell(1064),
+
+Thunderstorm = Spell(51490),
+EarthernWeapon = Spell(392375),
+
+lustAT = Spell(155145),
+lust1 = Spell(57724),
+lust2 = Spell(57723),
+lust3 = Spell(80354),
+lust4 = Spell(95809),
+lust5 = Spell(264689),
+
+GhostWolf = Spell(2645),
+Purge = Spell(370),
+HealingStreamTotem = Spell(5394),
+
+
+TremorTotem = Spell(8143),
+
+WaterWalking = Spell(546),
+Hex = Spell(51514),
+
+Stormbringer = Spell(201846),
+
+CleanseSpirit = Spell(51886),
+
+ChainLightningBuff = Spell(333964),
+
+FeralLunge = Spell(196884),
+
+SpiritWalk = Spell(58875),
+
+LightningLasso = Spell(305483),
+
+VesperTotem = Spell(324386),
+
+DoorofShadows = Spell(300728),
+MaelstromWeapon = Spell(344179),
+StormKeeper = Spell(320137),
+ChainHarvest = Spell(320674),
+
+StoneBulwarkTotem = Spell(108270),
+
+
+EarthenSpike = Spell(188089),
+
+WinfuryTotemBuff = Spell(327942),
+
+healthstone = Spell(291944),
+healingpot = Spell(176108),
+
+Shamanism = Spell(193876),
+
+WindRushTotem = Spell(192077),
+
+Skyfury = Spell(462854),
+PoisonCleansingTotem = Spell(383013),
+
+---
+---
+
+
+
+-- Talents
+AncestralSwiftness                    = Spell(443454),
+ElementalReverb                       = Spell(443418),
+PrimordialCapacity                    = Spell(443448),
+  -- Abilities
+  TempestAbility                        = Spell(452201),
+  TempestOverload                       = Spell(463351),
+  -- Talents
+  ArcDischarge                          = Spell(455096),
+  AwakeningStorms                       = Spell(455129),
+  RollingThunder                        = Spell(454026),
+  Supercharge                           = Spell(455110),
+  Tempest                               = Spell(454009),
+  -- Buffs
+  ArcDischargeBuff                      = Spell(455097),
+  AwakeningStormsBuff                   = Spell(462131),
+  TempestBuff                           = Spell(454015),
+  AmplificationCore                     = Spell(445029),
+  Earthsurge                            = Spell(455590),
+  LivelyTotems                          = Spell(445034),
+  SurgingTotem                          = Spell(444995),
+  TotemicRebound                        = Spell(445025),
+-- Racials
+AncestralCall                         = Spell(274738),
+BagofTricks                           = Spell(312411),
+Berserking                            = Spell(26297),
+BloodFury                             = Spell(33697),
+Fireblood                             = Spell(265221),
+-- Abilities
+Bloodlust                             = MultiSpell(2825,32182), -- Bloodlust/Heroism
+FlameShock                            = MultiSpell(188389,470411),
+FlametongueWeapon                     = Spell(318038),
+FrostShock                            = Spell(196840),
+HealingSurge                          = Spell(8004),
+LightningBolt                         = Spell(188196),
+LightningShield                       = Spell(192106),
+-- Talents
+AstralShift                           = Spell(108271),
+CapacitorTotem                        = Spell(192058),
+ChainLightning                        = Spell(188443),
+EarthElemental                        = Spell(198103),
+EarthShield                           = Spell(974),
+ElementalBlast                        = Spell(117014),
+ElementalOrbit                        = Spell(383010),
+LavaBurst                             = Spell(51505),
+DeeplyRootedElements                  = Spell(378270),
+NaturesSwiftness                      = Spell(378081),
+PrimordialWave                        = Spell(375982),
+SpiritwalkersGrace                    = Spell(79206),
+TotemicRecall                         = Spell(108285),
+WindShear                             = Spell(57994),
+-- Buffs
+EarthShieldOtherBuff                  = Spell(974),
+EarthShieldSelfBuff                   = Spell(383648),
+LightningShieldBuff                   = Spell(192106),
+PrimordialWaveBuff                    = Spell(375986),
+SpiritwalkersGraceBuff                = Spell(79206),
+SplinteredElementsBuff                = Spell(382043),
+-- Debuffs
+IceStrikePassive = Spell(466467),
+FlameShockDebuff                      = Spell(188389),
+LightningRodDebuff                    = Spell(197209),
+-- Other Class Debuffs
+ChaosBrandDebuff                      = Spell(1490),
+HuntersMarkDebuff                     = Spell(257284),
+-- Trinket Effects
+SpymastersReportBuff                  = Spell(451199), -- Stacking buff from before using Spymaster's Web trinket
+SpymastersWebBuff                     = Spell(444959), -- Buff from using Spymaster's Web trinket
+
+
+  -- Abilities
+  VoltaicBlazeAbility                   = Spell(470057),
+  Windstrike                            = Spell(115356),
+  -- Talents
+  AlphaWolf                             = Spell(198434),
+  Ascendance                            = Spell(114051),
+  AshenCatalyst                         = Spell(390370),
+  ConvergingStorms                      = Spell(384363),
+  CrashLightning                        = Spell(187874),
+  CrashingStorms                        = Spell(334308),
+  DoomWinds                             = Spell(384352),
+  ElementalAssault                      = Spell(210853),
+  ElementalSpirits                      = Spell(262624),
+  FeralSpirit                           = Spell(51533),
+  FireNova                              = Spell(333974),
+  FlowingSpirits                        = Spell(469314),
+  Hailstorm                             = Spell(334195),
+  HotHand                               = Spell(201900),
+  IceStrike                             = MultiSpell(342240, 470194),
+  LashingFlames                         = Spell(334046),
+  LavaLash                              = Spell(60103),
+  LegacyoftheFrostWitch                 = Spell(384450),
+  MoltenAssault                         = Spell(334033),
+  OverflowingMaelstrom                  = Spell(384149),
+  RagingMaelstrom                       = Spell(384143),
+  StaticAccumulation                    = Spell(384411),
+  Stormblast                            = Spell(319930),
+  Stormflurry                           = Spell(344357),
+  Stormstrike                           = Spell(17364),
+  Sundering                             = Spell(197214),
+  SwirlingMaelstrom                     = Spell(384359),
+  ThorimsInvocation                     = Spell(384444),
+  UnrelentingStorms                     = Spell(470490),
+  UnrulyWinds                           = Spell(390288),
+  VoltaicBlaze                          = Spell(470053),
+  WindfuryTotem                         = Spell(8512),
+  WindfuryWeapon                        = Spell(33757),
+  WitchDoctorsAncestry                  = Spell(384447),
+  -- Buffs
+  AscendanceBuff                        = Spell(114051),
+  AshenCatalystBuff                     = Spell(390371),
+  ConvergingStormsBuff                  = Spell(198300),
+  CracklingThunderBuff                  = Spell(409834),
+  CrashLightningBuff                    = Spell(187878),
+  CLCrashLightningBuff                  = Spell(333964),
+  DoomWindsBuff                         = Spell(384352),
+  EarthenWeaponBuff                     = Spell(392375),
+  FeralSpiritBuff                       = Spell(333957),
+  GatheringStormsBuff                   = Spell(198300),
+  HailstormBuff                         = Spell(334196),
+  HotHandBuff                           = Spell(215785),
+  IceStrikeBuff                         = Spell(384357),
+  LegacyoftheFrostWitchBuff             = Spell(384451),
+  MaelstromWeaponBuff                   = Spell(344179),
+  StormsurgeBuff                        = Spell(201846),
+  WindfuryTotemBuff                     = Spell(327942),
+  -- Debuffs
+  LashingFlamesDebuff                   = Spell(334168),
+  -- Elemental Spirits Buffs
+  CracklingSurgeBuff                    = Spell(224127),
+  IcyEdgeBuff                           = Spell(224126),
+  MoltenWeaponBuff                      = Spell(224125),
+  -- Tier 29 Buffs
+  MaelstromofElementsBuff               = Spell(394677),
+  -- Tier 30 Buffs
+  VolcanicStrengthBuff                  = Spell(409833),
 }
 
 RubimRH.Spell[253] = {

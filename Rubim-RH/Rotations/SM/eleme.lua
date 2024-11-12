@@ -484,7 +484,8 @@ end
 
   -- elemental_blast,target_if=min:debuff.lightning_rod.remains,if=talent.echoes_of_great_sundering.enabled&!buff.echoes_of_great_sundering_eb.up&(lightning_rod=0|maelstrom>variable.mael_cap-30|(buff.stormkeeper.up&spell_targets.chain_lightning>=6|buff.tempest.up)&talent.surge_of_power.enabled)
   -- Use the talents you selected. Spread Lightning Rod to as many targets as possible.
-  if IsReady("Elemental Blast") and cancastAll and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
+  if IsReady("Elemental Blast") and cancastAll and targetRange40 and (S.EchoesofGreatSundering:IsAvailable() and Player:BuffDown(S.EchoesofGreatSunderingBuff) 
+  and (LRTargets() == 0 or VarMaelstrom > VarMaelCap - 30 or (Player:BuffUp(S.StormkeeperBuff) and (combatmobs40()>=6) or Player:BuffUp(S.TempestBuff)) and S.SurgeofPower:IsAvailable())) then
     return S.ElementalBlast:Cast()
   end
 
