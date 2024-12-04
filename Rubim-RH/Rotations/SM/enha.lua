@@ -145,6 +145,7 @@ LavaBurst                             = Spell(51505),
 DeeplyRootedElements                  = Spell(378270),
 NaturesSwiftness                      = Spell(378081),
 PrimordialWave                        = Spell(375982),
+VoltaicBlazeBuff = Spell(470058),
 SpiritwalkersGrace                    = Spell(79206),
 TotemicRecall                         = Spell(108285),
 WindShear                             = Spell(57994),
@@ -743,7 +744,7 @@ end
 	return S.LightningBolt:Cast()
 end
   -- voltaic_blaze,if=talent.elemental_spirits.enabled&!talent.witch_doctors_ancestry.enabled
-  if IsReady("Voltaic Blaze") and TargetinRange(40) and (S.ElementalSpirits:IsAvailable() and not S.WitchDoctorsAncestry:IsAvailable()) then
+  if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff)  and TargetinRange(40) and (S.ElementalSpirits:IsAvailable() and not S.WitchDoctorsAncestry:IsAvailable()) then
 	return S.VoltaicBlazeAbility:Cast()
 end
   -- lightning_bolt,if=buff.arc_discharge.up&talent.deeply_rooted_elements.enabled
@@ -763,7 +764,7 @@ end
 	return S.LavaLash:Cast()
 end
   -- voltaic_blaze,if=talent.elemental_spirits.enabled&!buff.doom_winds.up
-  if IsReady("Voltaic Blaze") and TargetinRange(40) and (S.ElementalSpirits:IsAvailable() and Player:BuffDown(S.DoomWindsBuff)) then
+  if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff) and TargetinRange(40) and (S.ElementalSpirits:IsAvailable() and Player:BuffDown(S.DoomWindsBuff)) then
 	return S.VoltaicBlazeAbility:Cast()
 end
   -- crash_lightning,if=talent.unrelenting_storms.enabled&talent.elemental_spirits.enabled&!talent.deeply_rooted_elements.enabled
@@ -787,7 +788,7 @@ end
 	return S.CrashLightning:Cast()
 end
   -- voltaic_blaze
-  if IsReady("Voltaic Blaze") and TargetinRange(40) then
+  if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff) and TargetinRange(40) then
 	return S.VoltaicBlazeAbility:Cast()
 end
   -- sundering,if=!talent.elemental_spirits.enabled&raid_event.adds.in>=action.sundering.cooldown
@@ -944,7 +945,7 @@ end
 	return S.ElementalBlast:Cast()
 end
   -- voltaic_blaze,if=buff.whirling_earth.up
-  if IsReady("Voltaic Blaze") and TargetinRange(40) and (Player:BuffUp(S.WhirlingEarthBuff)) then
+  if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff) and TargetinRange(40) and (Player:BuffUp(S.WhirlingEarthBuff)) then
 	return S.VoltaicBlazeAbility:Cast()
 end
   -- crash_lightning,if=talent.unrelenting_storms.enabled&talent.alpha_wolf.enabled&alpha_wolf_min_remains=0
@@ -1103,7 +1104,7 @@ end
 	return S.LightningBolt:Cast()
 end
   -- voltaic_blaze,if=buff.maelstrom_weapon.stack<=8
-  if IsReady("Voltaic Blaze") and TargetinRange(40) and (MaelstromStacks <= 8) then
+  if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff) and TargetinRange(40) and (MaelstromStacks <= 8) then
 	return S.VoltaicBlazeAbility:Cast()
 end
   -- lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
@@ -1151,7 +1152,7 @@ end
 	return S.Stormstrike:Cast()
 end
   -- voltaic_blaze
-  if IsReady("Voltaic Blaze") and TargetinRange(40) then
+  if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff) and TargetinRange(40) then
 	return S.VoltaicBlazeAbility:Cast()
 end
   -- lava_lash,target_if=min:debuff.lashing_flames.remains,if=talent.lashing_flames.enabled
@@ -1303,7 +1304,7 @@ local function AoeTotemic()
 		return S.FireNova:Cast()
 	end
 	-- voltaic_blaze
-	if IsReady("Voltaic Blaze") and TargetinRange(40) then
+	if IsReady("Voltaic Blaze") and Player:BuffUp(S.VoltaicBlazeBuff) and TargetinRange(40) then
 		return S.VoltaicBlazeAbility:Cast()
 	end
 	-- lava_lash,target_if=min:debuff.lashing_flames.remains,if=talent.lashing_flames.enabled
@@ -1674,6 +1675,8 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 	  if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 	  return RubimRH.QueuedSpell():Cast()
 	  end
+
+
 	
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------dispells---------------------------------------------------------------------
