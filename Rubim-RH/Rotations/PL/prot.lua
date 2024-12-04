@@ -767,6 +767,13 @@ if RubimRH.CDsON() then
   if  IsReady("Divine Toll") and inRange30 >= 3 and HL.CombatTime()>2 then
     return S.DivineToll:Cast()
   end
+
+  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
+    return S.Consecration:Cast()
+  end
+
+
+
   -- bastion_of_light,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains<=30
   if IsReady("Bastion of Light") and (Player:BuffUp(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() <= 30) then
     return S.BastionofLight:Cast()

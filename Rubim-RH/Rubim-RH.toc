@@ -54,4 +54,5 @@ Rotations\DR\guardian.lua
 Rotations\PL\prot.lua
 Rotations\PL\ret.lua
 Rotations\PL\holy.lua
+Rotations\PR\shadow.lua
 Rotations\DR\balance.lua

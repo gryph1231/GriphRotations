@@ -929,7 +929,7 @@ if IsReady("Poison Cleansing Totem")  and totemName1 ~= "Poison Cleansing Totem"
   return S.PoisonCleansingTotem:Cast()
   end
 if IsReady("Cleanse Spirit") and totemName1 ~= "Poison Cleansing Totem"
-and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.PoisonCleansingTotem:TimeSinceLastCast()>7 and S.CleanseSpirit:TimeSinceLastCast()>7 then
+and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or AuraUtil.FindAuraByName("Enveloping Shadowflame", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.PoisonCleansingTotem:TimeSinceLastCast()>7 and S.CleanseSpirit:TimeSinceLastCast()>7 then
   return S.CleanseSpirit:Cast()
   end
 

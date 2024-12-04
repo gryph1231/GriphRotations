@@ -238,7 +238,7 @@ SpymastersWebBuff                     = Spell(444959), -- Buff from using Spymas
 
 local S = RubimRH.Spell[263]
 local G = RubimRH.Spell[1] -- General Skills
--- S.StoneBulwarkTotem.TextureSpellID = { 255654 } --bullrush
+S.VoltaicBlazeAbility.TextureSpellID = { 255654 } --bullrush
 -- S.Skyfury.TextureSpellID = { 8512 } --windfurry totem
 
 -- start, duration, enabled = GetSpellCooldown(115356);
@@ -691,7 +691,7 @@ end
 	return S.FeralSpirit:Cast()
 end
   -- ascendance,if=dot.flame_shock.ticking&(ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)&buff.maelstrom_weapon.stack>=2
-  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1) and MaelstromStacks >= 2) then
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and ((Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1) and MaelstromStacks >= 2) or not UnitInRaid("player")) then
 	return S.Ascendance:Cast()
 end
   -- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.tempest.stack=buff.tempest.max_stack&(tempest_mael_count>30|buff.awakening_storms.stack=2)&buff.maelstrom_weapon.stack>=5)
@@ -908,7 +908,7 @@ local function SingleTotemic()
 	return S.SurgingTotem:Cast()
 end
   -- ascendance,if=ti_lightning_bolt&pet.surging_totem.remains>4&(buff.totemic_rebound.stack>=3|buff.maelstrom_weapon.stack>0)
-  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (TIAction == S.LightningBolt and TotemFinder(S.SurgingTotem, true) > 4 and (Player:BuffStack(S.TotemicReboundBuff) >= 3 or MaelstromStacks > 0)) then
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (TIAction == S.LightningBolt and TotemFinder(S.SurgingTotem, true) > 4 and (Player:BuffStack(S.TotemicReboundBuff) >= 3 or MaelstromStacks > 0) or not UnitInRaid("player")) then
 	return S.Ascendance:Cast()
 end
   -- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&!talent.elemental_spirits.enabled&buff.legacy_of_the_frost_witch.up
@@ -1077,7 +1077,7 @@ local function Aoe()
 	return S.FeralSpirit:Cast()
 end
   -- ascendance,if=dot.flame_shock.ticking&ti_chain_lightning
-  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (FSTargets() > 0 and TIAction == S.ChainLightning) then
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and ((FSTargets() > 0 and TIAction == S.ChainLightning) or not UnitInRaid("player")) then
 	return S.Ascendance:Cast()
 end
   -- tempest,target_if=min:debuff.lightning_rod.remains,if=!buff.arc_discharge.up&((buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&!talent.raging_maelstrom.enabled)|(buff.maelstrom_weapon.stack>=8))|(buff.maelstrom_weapon.stack>=5&(tempest_mael_count>30|buff.awakening_storms.stack=2))
@@ -1247,7 +1247,7 @@ local function AoeTotemic()
 		return S.SurgingTotem:Cast()
 	end
 	-- ascendance,if=ti_chain_lightning
-	if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and (TIAction == S.ChainLightning) then
+	if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and ((TIAction == S.ChainLightning) or not UnitInRaid("player")) then
 		return S.Ascendance:Cast()
 	end
 	-- sundering,if=buff.ascendance.up&pet.surging_totem.active&talent.earthsurge.enabled&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)
@@ -1748,6 +1748,13 @@ if (castTime > 0.1 or channelTime > 0.1) and select(8, UnitCastingInfo("target")
 	end
 	
 	end
+
+	       --- seasonal affix
+		   if TWWS1AffixMobsInRange()>=6 and IsReady("Thunderstorm") and RubimRH.InterruptsON() then
+			return S.Thunderstorm:Cast()
+			end
+  
+  
 
 if IsReady("Windfury Weapon") and mhenchantremains < 300 then
 	return S.WindfuryWeapon:Cast()

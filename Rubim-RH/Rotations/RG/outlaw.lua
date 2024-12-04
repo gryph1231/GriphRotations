@@ -839,6 +839,11 @@ if RubimRH.InterruptsON() and not AuraUtil.FindAuraByName("Stealth", "player") a
 	if IsReady("Kick") and TargetinRange(5) and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) and select(8, UnitCastingInfo("target")) == false and not isEnraged then
 		return S.Kick:Cast()
 	end
+          --- seasonal affix
+          if (TWWS1AffixMobsInRange()>=6 or UnitName("target") == "Orb of Ascendance" and TWWS1AffixMobsInRange()>=4) and IsReady("Blind") and RubimRH.InterruptsON() and TargetinRange(20) then
+            return S.Blind:Cast()
+            end
+  
 	--Shiv
 	if IsReady("Shiv") and TargetinRange(5) and isEnraged then
 		return S.Shiv:Cast()
