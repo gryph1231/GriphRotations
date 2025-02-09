@@ -112,7 +112,7 @@ PrimordialCapacity                    = Spell(443448),
   Supercharge                           = Spell(455110),
   Tempest                               = Spell(454009),
   -- Buffs
-  ArcDischargeBuff                      = Spell(455097),
+  ArcDischargeBuff                      = Spell(470532),
   AwakeningStormsBuff                   = Spell(462131),
   TempestBuff                           = Spell(454015),
   AmplificationCore                     = Spell(445029),
@@ -151,9 +151,10 @@ VoltaicBlazeBuff = Spell(470058),
 SpiritwalkersGrace                    = Spell(79206),
 TotemicRecall                         = Spell(108285),
 WindShear                             = Spell(57994),
+WindShearz                            = Spell(68992),--Darkflight kick@focus
 -- Buffs
 EarthShieldOtherBuff                  = Spell(974),
-EarthShieldSelfBuff                   = Spell(383648),
+EarthShieldBuff                       = Spell(383648),
 LightningShieldBuff                   = Spell(192106),
 PrimordialWaveBuff                    = Spell(375986),
 SpiritwalkersGraceBuff                = Spell(79206),
@@ -538,7 +539,20 @@ frame:SetScript("OnEvent", function(self,event,errorType,message)
     end
 end)
 
+--Invalid Target CHECK
+if not InvalidTargetcheck then
+    InvalidTargetcheck = CreateFrame("Frame")
+end
 
+local InvalidTargetCheckTimer = 0
+
+local frame = InvalidTargetcheck
+frame:RegisterEvent("UI_ERROR_MESSAGE")
+frame:SetScript("OnEvent", function(self,event,errorType,message)
+    if message == 'Invalid target' then
+        InvalidTargetCheckTimer = GetTime()
+    end
+end)
 
 local function FSTargets()
 local inRange15 = 0
@@ -656,15 +670,15 @@ local function Precombat()
 	-- snapshot_stats
 	-- Manually added openers:
 	-- primordial_wave
-	if IsReady("Primordial Wave") and TargetinRange(40) and TargetinRange(40) then
+	if IsReady("Primordial Wave") and TargetinRange(30) then
 		return S.PrimordialWave:Cast()
 	end
 	-- feral_spirit
-	if IsReady("Feral Spirit") and TargetinRange(20) and not S.FlowingSpirits:IsAvailable() and TargetinRange(20) then
+	if IsReady("Feral Spirit") and TargetinRange(20) and not S.FlowingSpirits:IsAvailable() then
 		return S.FeralSpirit:Cast()
 	end
 	-- flame_shock
-	if IsReady("Flame Shock")  and TargetinRange(40) then
+	if IsReady("Flame Shock")  and TargetinRange(30) then
 		return S.FlameShock:Cast()
 	end
   end
@@ -696,7 +710,7 @@ end
 	return S.FeralSpirit:Cast()
 end
   -- ascendance,if=dot.flame_shock.ticking&(ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)&buff.maelstrom_weapon.stack>=2
-  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and ((Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1) and MaelstromStacks >= 2) or not UnitInRaid("player")) then
+  if RubimRH.CDsON() and IsReady("Ascendance") and TargetinRange(8) and ((Target:DebuffUp(S.FlameShockDebuff) and (TIAction == S.LightningBolt and RangeCount(10) == 1) and MaelstromStacks >= 2)) then
 	return S.Ascendance:Cast()
 end
   -- tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.tempest.stack=buff.tempest.max_stack&(tempest_mael_count>30|buff.awakening_storms.stack=2)&buff.maelstrom_weapon.stack>=5)
@@ -1484,7 +1498,7 @@ local function AoeTotemic()
 		return S.FrostShock:Cast()
 	end
 	-- sundering
-	if IsReady("Sundering") and TargetinRange(8) then
+	if IsReady("Sundering") and  TargetinRange(8) then
 		return S.Sundering:Cast()
 	end
 	-- flame_shock,if=talent.molten_assault.enabled&!ticking
@@ -1566,6 +1580,8 @@ local function AoeTotemic()
 
 local function APL()
 
+	-- print(Player:BuffStack(S.MaelstromWeaponBuff))
+
 	TrackHealthLossPerSecond()
 	HPpercentloss = GetHealthLossPerSecond()
 	if UnitExists('focus') and AuraUtil.FindAuraByName('Earth Shield','focus') then
@@ -1591,6 +1607,17 @@ los = true
 else
 los = false
 end
+
+local ITimer = GetTime() - InvalidTargetCheckTimer 
+local IT
+
+if ITimer < Player:GCD() then
+IT= true
+else
+IT= false
+end
+
+-- print(IT)
 
 local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 local inInstance, instanceType = IsInInstance()
@@ -1659,6 +1686,8 @@ end
 --------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------Spell Queue--------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
+---
+
 if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) and Player:DebuffDown(S.lust2) and Player:DebuffDown(S.lust3) and Player:DebuffDown(S.lust4) and Player:DebuffDown(S.lust5) then
 	return S.lustAT:Cast() -- BIND LUST KEYBIND IN BINDPAD TO ARCANE TORRENT
 	end
@@ -1675,10 +1704,17 @@ if S.lustAT:ID() ==  RubimRH.queuedSpell[1]:ID() and Player:DebuffDown(S.lust1) 
 		RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
 		end
 
-	  
+		if S.Hex:ID() ==  RubimRH.queuedSpell[1]:ID() and IT==true  then
+            RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+            end
+			  if RubimRH.queuedSpell[1]:ID()~= nil and IsPlayerSpell(RubimRH.queuedSpell[1]:ID(), true) == false then
+        RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
+    end
+
 	  if IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) then
 	  return RubimRH.QueuedSpell():Cast()
 	  end
+
 
 
 	
@@ -1698,6 +1734,16 @@ if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Void Rift", "
   and (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') and RubimRH.InterruptsON() and S.PoisonCleansingTotem:TimeSinceLastCast()>7 and S.CleanseSpirit:TimeSinceLastCast()>7 then
 	return S.CleanseSpirit:Cast()
 	end
+	if IsReady("Cleanse Spirit") and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast() > 7 then
+		if (AuraUtil.FindAuraByName("Void Rift", "player", "HARMFUL") or AuraUtil.FindAuraByName("Enveloping Shadowflame", "player", "HARMFUL") or GetAppropriateCureSpell("player")=='Curse') then
+		  return S.CleanseSpirit:Cast()
+		end
+	  end
+	  if IsReady("Cleanse Spirit") and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast() > 7 then
+		if (AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Enveloping Shadowflame", "focus", "HARMFUL") or GetAppropriateCureSpell("focus")=='Curse') then
+		  return S.CleanseSpiritz:Cast()
+		end
+	  end
   
 	if IsReady("Totemic Recall") and not Player:BuffUp(S.AscendanceBuff) and (S.PoisonCleansingTotem:CooldownRemains()>3 or S.WindRushTotem:CooldownRemains()>3 or S.TremorTotem:CooldownRemains()>3 or S.CapacitorTotem:CooldownRemains()>3)  then
 	  return S.TotemicRecall:Cast()
@@ -1711,8 +1757,8 @@ if IsReady("Poison Cleansing Totem") and (AuraUtil.FindAuraByName("Void Rift", "
 if RangeCount(30)>=1 then
 if IsReady("Ancestral Guidance")
  and (Player:HealthPercentage() <= 35 
- or HPpercentloss>9 and Player:HealthPercentage() <= 50 
- or defensives() and Player:HealthPercentage()<90) 
+ or HPpercentloss>9 and Player:HealthPercentage() <= 30
+ or defensives() and Player:HealthPercentage()<20) 
  and not AuraUtil.FindAuraByName("Stone Bulwark", "player") then
 	return S.AncestralGuidance:Cast()
 	end
@@ -1734,6 +1780,10 @@ if IsReady("Healing Surge") and Player:BuffStack(S.MaelstromWeapon) >= 5 and Pla
 	return S.HealingSurge:Cast()
 end
 
+if IsReady("Healing Stream Totem") and  Player:HealthPercentage() < 75 then
+	return S.HealingStreamTotem:Cast()
+end
+
 if  Player:HealthPercentage() <= 20  and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
     return I.HPIcon:Cast()
     end
@@ -1753,13 +1803,20 @@ if (castTime > 0.567 or channelTime > 0.4522) and select(8, UnitCastingInfo("tar
 	if IsReady("Wind Shear") and TargetinRange(30) and kickprio()  then
 	return S.WindShear:Cast()
 	end
+	if C_Spell.IsSpellInRange("Wind Shear","focus") and kickprio(1) and select(8, UnitCastingInfo("focus")) == false then
+		return S.WindShearz:Cast()
+	end    
 	
 	end
 
-	       --- seasonal affix
-		   if TWWS1AffixMobsInRange()>=6 and IsReady("Thunderstorm") and RubimRH.InterruptsON() then
-			return S.Thunderstorm:Cast()
-			end
+	if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() and  Player:HealthPercentage() < 44 then
+		return S.EarthShield:Cast()
+		end
+
+	    --    --- seasonal affix
+		--    if TWWS1AffixMobsInRange()>=6 and IsReady("Thunderstorm") and RubimRH.InterruptsON() then
+		-- 	return S.Thunderstorm:Cast()
+		-- 	end
   
   
 
@@ -1785,7 +1842,7 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 
 
   -- Weapon Buff Handling
-  if Player:CanAttack(Target) or Player:AffectingCombat() or not Player:AffectingCombat() and RangeCount(30)>=1 then
+  if Player:CanAttack(Target) or Player:AffectingCombat() or not Player:AffectingCombat() and RangeCount(40)>=1 then
     -- Check weapon enchants
     HasMainHandEnchant, MHEnchantTimeRemains, _, MHEnchantID, HasOffHandEnchant, OHEnchantTimeRemains, _, OHEnchantID = GetWeaponEnchantInfo()
     -- windfury_weapon
@@ -1804,7 +1861,7 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 --------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------Call rotation functions-------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------
-    
+        if not AuraUtil.FindAuraByName("Hex","target") then
 
 		if not S.SurgingTotem:IsAvailable() and Aoe() ~= nil and RubimRH.AoEON() and (RangeCount(20)>=2 ) and TargetinRange(40) then
 			return Aoe()
@@ -1823,7 +1880,7 @@ if UnitCanAttack('player','target') and not Target:IsDeadOrGhost() and (Target:A
 	if S.SurgingTotem:IsAvailable() and SingleTotemic()~= nil and TargetinRange(40) and (RangeCount(20)<2 or not RubimRH.AoEON()) then
 		return SingleTotemic()
 	  end
-
+    end
 end
 
 
@@ -1854,15 +1911,16 @@ if not Player:AffectingCombat() then
 			return S.EarthShieldFocus:Cast()
 		end
     end
-	if IsReady("Cleanse Spirit") and RubimRH.InterruptsON() and S.CleanseSpirit:TimeSinceLastCast() > 7 then
-		if (AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Enveloping Shadowflame", "focus", "HARMFUL") or GetAppropriateCureSpell("focus")=='Curse') then
-		  return S.CleanseSpiritz:Cast()
-		end
-	  end
-	if IsReady("Earth Shield") and not AuraUtil.FindAuraByName("Earth Shield", "player") and Player:IsMoving() then
-		return S.EarthShield:Cast()
-		end
-		
+	
+	if IsReady("Earth Shield") 
+	and Player:IsMoving() 
+	and (not Player:BuffUp(S.EarthShieldBuff) 
+	or Player:BuffUp(S.EarthShieldBuff) 
+	and Player:BuffStack(S.EarthShieldBuff)<7) then
+			return S.EarthShield:Cast()
+			end
+
+		--print(Player:BuffStack(S.EarthShieldBuff))
 
     -- Precombat
     if not Player:AffectingCombat() and C_Spell.IsCurrentSpell(6603) then
