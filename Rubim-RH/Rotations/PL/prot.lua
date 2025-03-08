@@ -229,7 +229,8 @@ local function HammerofLight()
     end
   end
   -- eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and aoerangecheckeyeoftyr and (not IsEncounterInProgress(Boss) or level<highkey) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and targetRange8  
+  and (Player:AffectingCombat()) then
     return S.EyeofTyr:Cast() 
     end
 
@@ -247,7 +248,7 @@ if NoIntercession then
   end
 
   -- eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and aoerangecheckeyeoftyr and (not IsEncounterInProgress(Boss) or level<highkey) then
+  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and targetRange8 and (Player:AffectingCombat() ) then
     return S.EyeofTyr:Cast() 
     end
   --testing this
@@ -336,8 +337,8 @@ end
 local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation("player", "target")
 local inInstance, instanceType = IsInInstance()
 
-local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
-local highkey = 2
+-- local level, affixIDs, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo()
+-- local highkey = 2
 
 local castchannelTime = math.random(250, 500) / 1000
 
@@ -362,30 +363,23 @@ else
 elite = false
 end
 
-local Boss = {
-"Avanoxx",	"Orator Krix'vizk",	"Fangs of the Queen",	"The Coaglamation",	"Izo, the Grand Splicer",	"Speaker Shadowcrown",	"Anub'Ikkaj",	"E.D.N.A",	
-"Master Machinists Brokk and Dorlita",	"Skarmorak",	"Mistcaller",	"Blightbone",	"Amarth",	"Surgeon Stitchflesh",	"General Umbriss",	"Drahga Shadowburner",	
-"Erudax, the Duke of Below", "Ki'katal the Harvester", "Forgemaster Throngus", "Viq'Goth",
-
-
-}
 
 
 local spellname, _, _, _, _, _, _, _, _ = UnitCastingInfo("target")
-if spellname == "Icy Shard" and IsEncounterInProgress("Nalthor the Rimebinder") and Player:HealthPercentage()<70 and level>=highkey then
+if spellname == "Icy Shard" and Player:HealthPercentage()<70  then
   mitigateNWBoss = true
 else
   mitigateNWBoss = false
 end
 
 
-if (IsEncounterInProgress(Boss) or IsEncounterInProgress("Void Speaker Eirich")) and (spellname == "Lava Fist" or spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption" or spellname =="Shadowflame Slash") then
+if  (spellname == "Lava Fist" or spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption" or spellname =="Shadowflame Slash") then
   MagicTankBuster = true
 else
   MagicTankBuster = false
 end
 
-if select(1,UnitChannelInfo('target')) == "Molten Flurry" and IsEncounterInProgress("Forgemaster Throngus") then
+if select(1,UnitChannelInfo('target')) == "Molten Flurry" then
   mitigateGBBoss = true
 else
   mitigateGBBoss = false
@@ -414,11 +408,10 @@ local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
 aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
 
-aoerangecheckeyeoftyr = (targetRange10 and not Player:IsMoving() or targetRange8 and Player:IsMoving())
 
 
 
-if ( Player:BuffRemains(S.ShieldoftheRighteousBuff)<Player:GCD() or (Player:HolyPower()>=5 or Player:BuffRemains(S.ShieldoftheRighteousBuff)<13-Player:GCD()*4 or not Player:BuffUp(S.ShiningLightFreeBuff) and Player:BuffStack(S.ShiningLightBuffStack)==2 and Player:HealthPercentage()<60) and not IsReady(427453,1)) and (targetRange10 or inRange10>=1)  then
+if ( Player:BuffRemains(S.ShieldoftheRighteousBuff)<Player:GCD() or (Player:HolyPower()>=5 or Player:BuffRemains(S.ShieldoftheRighteousBuff)<13-Player:GCD()*4 or not Player:BuffUp(S.ShiningLightFreeBuff) and Player:BuffStack(S.ShiningLightBuffStack)==2 and Player:HealthPercentage()<60) and not IsReady(427453,1)) and (targetRange8 or inRange8>=1)  then
   useSoTR = true
 else
   useSoTR = false
@@ -525,7 +518,7 @@ if Player:AffectingCombat() and inRange20>=1 then
     end
 
   
-  if IsEncounterInProgress(Boss) and (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
+  if  (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
   
 
     if IsReady("Blessing of Spellwarding") and useBoSW and MagicTankBuster then
@@ -547,7 +540,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
   
 
-  if IsReady("Eye of Tyr")  and aoerangecheckeyeoftyr and useEoT then
+  if IsReady("Eye of Tyr")  and targetRange8 and useEoT then
   return S.EyeofTyr:Cast()
   end
 
@@ -558,7 +551,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   
   --actively use defensives if not on a boss with tank busters or if key is low -- basically want to make sure defensives are being used 
   --during boss encounters with tank busters and low key if health is dropping (probably some chaos pulling going on in to the boss in this scenario) 
-  if not IsEncounterInProgress(Boss) or level<highkey then
+  if Player:AffectingCombat() then
 
   
   if IsReady("Guardian of Ancient Kings") 
@@ -584,7 +577,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
   
 
-  if IsReady("Eye of Tyr")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and aoerangecheckeyeoftyr and useEoT and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55) then
+  if IsReady("Eye of Tyr")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and Player:HolyPower()<=2 and S.LightsGuidance:IsAvailable() and targetRange8 and useEoT and (HPpercentloss > 10 and Player:HealthPercentage()<70 or Player:HealthPercentage()<55) then
     return S.EyeofTyr:Cast()
     end
   end
@@ -620,7 +613,7 @@ if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")
   end
   
   -- kick on GCD
-  if IsReady("Rebuke",1) and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance") and Player:GCDRemains()<0.5 then
+  if IsReady("Rebuke",1) and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance" ) and Player:GCDRemains()<0.5 then
   return S.Rebuke:Cast()
   end
   
@@ -795,7 +788,7 @@ end
     end
 
 
-  if  IsReady(427453,1) and ((not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) == 3) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable())) then
+  if targetRange8 and IsReady(427453,1) and ((not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) == 3) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable())) then
   return S.EyeofTyr:Cast()
   end
 
@@ -872,7 +865,7 @@ end
   end
   -- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and aoerangecheckeyeoftyr then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (Player:AffectingCombat() ) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and targetRange8 then
     return S.EyeofTyr:Cast()
   end
   -- holy_armaments,if=next_armament=holy_bulwark
@@ -906,7 +899,7 @@ end
   end
   -- eye_of_tyr,if=!talent.lights_deliverance.enabled
   -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (not IsEncounterInProgress(Boss) or level<highkey) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and aoerangecheckeyeoftyr then
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (Player:AffectingCombat() ) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and targetRange8  then
     return S.EyeofTyr:Cast()
   end
 
