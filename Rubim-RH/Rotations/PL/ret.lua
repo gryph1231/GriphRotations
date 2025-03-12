@@ -245,14 +245,17 @@ local function Cooldowns()
 	-- end            
     
     if RubimRH.CDsON() and TargetinRange(20) and (AuraUtil.FindAuraByName("Avenging Wrath", "player") or AuraUtil.FindAuraByName("Crusade", "player") or S.AvengingWrath:CooldownRemains() > 17 or S.Crusade:CooldownRemains() > 17) then
-   
+
     
-    
-        if trinket1ready and trinket1 ~= 202612 and trinket1 ~= 203729 and (trinket1 ~= 203963 or trinket1 ~= 193701 or not Player:IsMoving()) and (trinket1 ~= 207167 or Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.CrusadeBuff) >= 17 or Player:BuffRemains(S.CrusadeBuffRG) >= 17 or (S.RadiantGlory:IsAvailable() and Player:BuffRemains(S.CrusadeBuffRG) >= 8)) then
+        if trinket1ready and trinket1 ~= 202612 and trinket1 ~= 203729 and (trinket1 ~= 203963 or trinket1 ~= 193701 or not Player:IsMoving()) 
+        and (trinket1 ~= 207167 or Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.CrusadeBuff) >= 17 or Player:BuffRemains(S.CrusadeBuffRG) >= 17 
+        or (S.RadiantGlory:IsAvailable() and Player:BuffRemains(S.CrusadeBuffRG) >= 8)) then
            return Item(118330):Cast()
         end
         
-        if trinket2ready and trinket2 ~= 202612 and trinket2 ~= 203729 and (trinket2 ~= 203963 or trinket2 ~= 193701 or not Player:IsMoving()) and (trinket2 ~= 207167 or Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.CrusadeBuff) >= 17 or Player:BuffRemains(S.CrusadeBuffRG) >= 17 or (S.RadiantGlory:IsAvailable() and Player:BuffRemains(S.CrusadeBuffRG) >= 8)) then
+        if trinket2ready and trinket2 ~= 202612 and trinket2 ~= 203729 and (trinket2 ~= 203963 or trinket2 ~= 193701 or not Player:IsMoving()) 
+        and (trinket2 ~= 207167 or Player:BuffRemains(S.AvengingWrathBuff) >= 17 or Player:BuffRemains(S.CrusadeBuff) >= 17 or Player:BuffRemains(S.CrusadeBuffRG) >= 17 
+        or (S.RadiantGlory:IsAvailable() and Player:BuffRemains(S.CrusadeBuffRG) >= 8)) then
             return Item(114616):Cast()
         end
     end
@@ -471,6 +474,9 @@ if true then
 
     isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
 end
+
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --out of combat-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -539,7 +545,7 @@ end
 --defensives----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if Player:AffectingCombat() then 
-    if RangeCount(30) >= 1 and Player:HealthPercentage() <= 99 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
+    if RangeCount(30) >= 1 and Player:HealthPercentage() <= 35 and (IsUsableItem(211880) == true and GetItemCooldown(211880) == 0 and GetItemCount(211880) >= 1 or IsUsableItem(211878) == true and GetItemCooldown(211878) == 0 and GetItemCount(211878) >= 1 or IsUsableItem(211879) == true and GetItemCooldown(211879) == 0 and GetItemCount(211879) >= 1) and (not Player:InArena() and not Player:InBattlegrounds()) then
         return I.HPIcon:Cast()
       end
 
@@ -582,7 +588,8 @@ if RubimRH.InterruptsON() and Player:CanAttack(Target) and Player:AffectingComba
     --Kick
     if IsReady("Rebuke") 
     and (kickprio() or Target:IsAPlayer())
-    and TargetinRange(8) and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5)  and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
+    and TargetinRange(8) and (castTime > castchannelTime+0.5 or channelTime > castchannelTime+0.5) 
+     and select(8, UnitCastingInfo("target")) == false  and not isEnraged then
     return S.Rebuke:Cast()
     end
     
