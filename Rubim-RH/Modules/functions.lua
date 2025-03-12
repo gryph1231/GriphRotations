@@ -198,7 +198,7 @@ function TargetinRange(range,spell_range_check)
 		elseif range == 25 then
 			input = 24268
 		elseif range == 30 then
-			input = 835
+			input = 1404
 		else
 			local input = nil
 		end
@@ -631,6 +631,9 @@ function stunprio()
         'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
         'Storm Bolt','Pierce','Swift Stab','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
         'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
+    "Wind Up","Plant Seaforium Charge","Snipe","Reload","Surpise Inspection","Jettison Kelp","Fan of Knives","Activate Mech",
+    
+    
     }
     
     local currentspellchannel = select(1,UnitChannelInfo('target'))
@@ -659,6 +662,8 @@ function blindprio()
         'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
         'Storm Bolt','Pierce','Swift Stab','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
         'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
+    "Jagged Quarrel","Corrosive Gunk","Fiery Jaws","Defend", "Wind Up","Plant Seaforium Charge","Snipe","Reload","Surpise Inspection","Jettison Kelp","Fan of Knives","Activate Mech",
+    
     }
         
     local currentspellchannel = select(1,UnitChannelInfo('target'))
@@ -682,7 +687,13 @@ function kickprio()
 "Acidic Eruption",	"Arcing Void",	"Howling Fear",	"Alloy Bolt",	"Restoring Metals",	"Piercing Wail",	"Censoring Gear",	"Stone Bolt",	"Molten Metal",	"Spirit Bolt",	"Harvest Essence",	"Bramblethorn Coat",	"Nourish the Forest",	
 "Stimulate Resistance",	"Stimulate Regeneration",	"Spirit Bolt",	"Patty Cake",	"Consumption",	"Drain Fluids",	"Necrotic Bolt",	"Necrotic Bolt",	"Necrotic Bolt",	"Frostbolt",	"Bonemend",	"Rasping Scream",	"Necrotic Bolt",	
 "Drain Fluids",	"Goresplatter",	"Drain Fluids",	"Necrotic Bolt",	"Enfeeble",	"Watertight Shell",	"Brackish Bolt",	"Bolstering Shout",	"Stinky Vomit",	"Water Bolt",	"Choking Waters",	"Earth Bolt",	"Mass Tremor",	"Shadowflame Bolt",	"Sear Mind",	
-"Shadowflame Bolt",	"Shadowflame Bolt",										
+"Shadowflame Bolt",	"Shadowflame Bolt",	
+"Boiling Flames","Rejuvenating Honey","Free Samples?","Honey Volley","Mole Frenzy","Wicklighter Bolt","Explosive Flame","Flame Bolt",
+"Flaming Tether","Paranoid Mind","Drain Light","Detonate","Giga-Wallop","Tune Up","Greater Heal","Inner Fire","Fireball","Repentance",
+"Battle Cry","Cinderblast","Fireball Volley","Embrace the Light","Surveying Beam","Harpoon","Trickshot","Blood Blast","Bloodthirsty Cackle",
+"Maximum Distortion","Restorative Algae","Lightning Bolt","Unholy Fervor","Necrotic Bolt","Bind Soul","Bone Spear","Necrotic Bolt Volley",
+"Necrotic Bolt","Meat Shield","Decaying Filth","Demoralizing Shout","Death Bolt","Iced Spritzer","Toxic Blades","Rock Lance","Furious Quake",
+"Tectonic Barrier","Caustic Compound","Transmute","Lightning Bolt","Lightning Surge","Void Bolt",									
     }
     local currentspellchannel = select(1,UnitChannelInfo('target'))
     local currentspellcast = select(1, UnitCastingInfo('target'))
@@ -696,9 +707,95 @@ function kickprio()
     return false
 end
 
+-- local initialTotalMaxHealth = 0
+-- local combatStartTime = 0
+-- local inCombat = false
+
+-- local function getTotalHealthOfCombatMobs()
+--     local totalMaxHealth = 0
+--     local totalCurrentHealth = 0
+
+--     for i = 1, 40 do
+--         local unitID = "nameplate" .. i
+--         if UnitExists(unitID) and UnitCanAttack("player", unitID) and UnitAffectingCombat(unitID) then
+--             totalMaxHealth = totalMaxHealth + UnitHealthMax(unitID)
+--             totalCurrentHealth = totalCurrentHealth + UnitHealth(unitID)
+--         end
+--     end
+
+--     return totalMaxHealth, totalCurrentHealth
+-- end
+
+-- -- Event Frame for tracking combat state
+-- local eventFrame = CreateFrame("Frame")
+-- eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
+-- eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
+
+-- eventFrame:SetScript("OnEvent", function(_, event)
+--     if event == "PLAYER_REGEN_DISABLED" then
+--         inCombat = true
+--         combatStartTime = GetTime()
+--         initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
+--     elseif event == "PLAYER_REGEN_ENABLED" then
+--         inCombat = false
+--     end
+-- end)
+
+-- function getCurrentDPS()
+--     if inCombat and combatStartTime > 0 then
+--         local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
+--         if totalMaxHealth > initialTotalMaxHealth then
+--             initialTotalMaxHealth = totalMaxHealth
+--         end
+
+--         local totalDamageDone = initialTotalMaxHealth - totalCurrentHealth
+--         local combatDuration = GetTime() - combatStartTime
+--         return math.max(0, totalDamageDone / combatDuration)
+--     else
+--         return 0
+--     end
+-- end
+
+-- function aoeTTD()
+--     local currentDPS = getCurrentDPS()
+--     local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
+
+--     if currentDPS and currentDPS > 0 then
+--         local TTD = totalCurrentHealth / currentDPS
+--         return TTD
+--     else
+--        return 8888
+--     end
+-- end
+
+
+
+
+
+
+
 local initialTotalMaxHealth = 0
 local combatStartTime = 0
 local inCombat = false
+local historicalDPS = {}
+
+local function addToHistoricalDPS(dps)
+    table.insert(historicalDPS, dps)
+    if #historicalDPS > 5 then
+        table.remove(historicalDPS, 1)
+    end
+end
+
+local function getAverageHistoricalDPS()
+    if #historicalDPS == 0 then
+        return nil
+    end
+    local sum = 0
+    for _, d in ipairs(historicalDPS) do
+        sum = sum + d
+    end
+    return sum / #historicalDPS
+end
 
 local function getTotalHealthOfCombatMobs()
     local totalMaxHealth = 0
@@ -715,10 +812,9 @@ local function getTotalHealthOfCombatMobs()
     return totalMaxHealth, totalCurrentHealth
 end
 
--- Event Frame for tracking combat state
 local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED") -- Player enters combat
-eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Player leaves combat
+eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 eventFrame:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_REGEN_DISABLED" then
@@ -727,6 +823,17 @@ eventFrame:SetScript("OnEvent", function(_, event)
         initialTotalMaxHealth, _ = getTotalHealthOfCombatMobs()
     elseif event == "PLAYER_REGEN_ENABLED" then
         inCombat = false
+        if combatStartTime > 0 then
+            local totalMaxHealth, totalCurrentHealth = getTotalHealthOfCombatMobs()
+            local totalDamageDone = initialTotalMaxHealth - totalCurrentHealth
+            local combatDuration = GetTime() - combatStartTime
+            if combatDuration > 0 and totalDamageDone > 0 then
+                local pullDPS = totalDamageDone / combatDuration
+                addToHistoricalDPS(pullDPS)
+            end
+            combatStartTime = 0
+            initialTotalMaxHealth = 0
+        end
     end
 end)
 
@@ -746,16 +853,28 @@ function getCurrentDPS()
 end
 
 function aoeTTD()
+    if not inCombat then
+        return 8888
+    end
+
     local currentDPS = getCurrentDPS()
     local totalCurrentHealth = select(2, getTotalHealthOfCombatMobs())
 
-    if currentDPS and currentDPS > 0 then
+    if currentDPS > 0 then
         local TTD = totalCurrentHealth / currentDPS
         return TTD
     else
-       return 8888
+        local avgDPS = getAverageHistoricalDPS()
+        if avgDPS then
+            local TTD = totalCurrentHealth / avgDPS
+            return TTD
+        else
+            return 8888
+        end
     end
 end
+
+
 
 function GetFocusTargetHealthPercentage()
     if UnitExists("focus") then
@@ -775,8 +894,8 @@ function mitigateboss()
     if Player:AffectingCombat() then
         for id = 1, 40 do
             local spell = {
-"Voracious Bite",	"Subjugate",	"Rime Dagger",	"Freezing Blood",	"Oozing Smash",	"Gorge",	"Process of Elimination",	"Obsidian Beam",	
-"Terrifying Slam",	"Seismic Smash", "Slam",
+"Reaping Scythe",	"Hateful Strike",	"Keg Smash",	"Bottoms Uppercut",	"Cash Cannon",	"Electrocrush",	"Wallop",	"Sludge Claws",	
+"Thunder Punch",	"Seismic Smash", "Slam",
 	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Shadowflame Bolt",	
     "Crush", "Mutilate", 
 

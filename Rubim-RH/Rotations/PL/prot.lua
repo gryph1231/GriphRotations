@@ -300,10 +300,8 @@ TrackHealthLossPerSecond()
 
 HPpercentloss = GetHealthLossPerSecond()
 
-
-
-
-
+-- print(Player:SpellHaste())
+-- print(aoeTTD())
 
 if Player:IsChanneling() or Player:IsCasting() then
 return 0, "Interface\\Addons\\Rubim-RH\\Media\\channel.tga"
@@ -513,15 +511,15 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
 
 
-  if IsReady("Blessing of Spellwarding") and magicdefensives() and useBoSW then
+  if IsReady("Blessing of Spellwarding") and (magicdefensives() or AuraUtil.FindAuraByName("Honey Marinade", "player", "HARMFUL") ) and useBoSW then
     return S.BlessingofSpellwarding:Cast()
     end
 
   
-  if  (mitigateboss() or mitigateNWBoss or mitigateGBBoss) or mitigatedng() then 
+  if  mitigateboss() or mitigateNWBoss or mitigateGBBoss or mitigatedng() then 
   
 
-    if IsReady("Blessing of Spellwarding") and useBoSW and MagicTankBuster then
+    if IsReady("Blessing of Spellwarding") and useBoSW  and ( MagicTankBuster or AuraUtil.FindAuraByName("Honey Marinade", "player", "HARMFUL")) then
       return S.BlessingofSpellwarding:Cast()
       end
 
