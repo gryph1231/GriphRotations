@@ -269,7 +269,7 @@ local function Cooldowns()
     if IsReady("Execution Sentence") and TargetinRange(30) and ((not AuraUtil.FindAuraByName("Crusade", "player") and S.Crusade:CooldownRemains() > 15 
     or crusadestack == 10 or  S.AvengingWrath:CooldownRemains() < 0.75 or  S.AvengingWrath:CooldownRemains() > 15 or S.RadiantGlory:IsAvailable()) and ( Player:HolyPower()>=4 and HL.CombatTime() < 5 or Player:HolyPower() >= 3 and HL.CombatTime() > 5 
     or (Player:HolyPower() >= 2 or HL.CombatTime() < 5)  and (S.DivineAuxiliary:IsAvailable() or S.RadiantGlory:IsAvailable())) and (S.DivineHammer:CooldownRemains() > 5 or Player:BuffUp(S.DivineHammer) or not S.DivineHammer:IsAvailable())
-    and (aoeTTD() > 8 and not S.ExecutionersWill:IsAvailable() or aoeTTD() > 12) and S.WakeofAshes:CooldownRemains() < Player:GCD()) then
+    and (aoeTTD() > 4 and not S.ExecutionersWill:IsAvailable() or aoeTTD() > 6 or Target:IsAPlayer() or UnitHealth("target")>4500000) and S.WakeofAshes:CooldownRemains() < Player:GCD()) then
     return S.ExecutionSentence:Cast()
 end   
 
@@ -366,7 +366,9 @@ if IsReady("Blade of Justice") and TargetinRange(nil, "Blade of Justice")
     return S.BladeofJustice:Cast()
 end
 --wake_of_ashes,if=(!talent.lights_guidance|holy_power>=2&talent.lights_guidance)&(cooldown.avenging_wrath.remains>6|cooldown.crusade.remains>6|talent.radiant_glory)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>10|raid_event.adds.up)
-if IsReady("Wake of Ashes") and RubimRH.CDsON() and TargetinRange(8) and ((not S.LightsGuidance:IsAvailable() or Player:HolyPower() >= 2 and S.LightsGuidance:IsAvailable()) and (S.AvengingWrath:CooldownRemains() > 6 or S.Crusade:CooldownRemains() > 6 or S.RadiantGlory:IsAvailable()) and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4)) then
+if IsReady("Wake of Ashes") and RubimRH.CDsON() and TargetinRange(8) and ((not S.LightsGuidance:IsAvailable() or Player:HolyPower() >= 2 
+and S.LightsGuidance:IsAvailable()) and (S.AvengingWrath:CooldownRemains() > 6 or S.Crusade:CooldownRemains() > 6 or S.RadiantGlory:IsAvailable()) 
+and (not S.ExecutionSentence:IsAvailable() or S.ExecutionSentence:CooldownRemains() > 4 or aoeTTD()<5 and DSrange>2)) then
     return S.WakeofAshes:Cast()
 end
 --divine_toll,if=holy_power<=2&(!raid_event.adds.exists|raid_event.adds.in>10|raid_event.adds.up)&(cooldown.avenging_wrath.remains>15|cooldown.crusade.remains>15|talent.radiant_glory|fight_remains<8)
@@ -462,6 +464,7 @@ else
     crusadebuff = 0
 end
 
+-- print(aoeTTD())
 
 if true then
     local _,instanceType = IsInInstance()
