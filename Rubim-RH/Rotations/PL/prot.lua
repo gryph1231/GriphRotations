@@ -326,7 +326,7 @@ else
 los = false
 end
 
-if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 or S.Intercession:TimeSinceLastCast()<=10 then
+if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 or S.Intercession:TimeSinceLastCast()<=10 or timesincefocusdeath()<=2 then
   NoIntercession = true
 else
   NoIntercession = false
@@ -348,6 +348,7 @@ local startTimeMS = select(4, UnitCastingInfo('target')) or select(4, UnitChanne
 local currentTimeMS = GetTime() * 1000
 local elapsedTimech = (startTimeMS > 0) and (currentTimeMS - startTimeMS) or 0
 local channelTime = elapsedTimech / 1000
+isEnraged = (AuraUtil.FindAuraByName("Enrage", "target") or UnitChannelInfo("target") == "Ragestorm" or AuraUtil.FindAuraByName("Frenzy", "target"))
 
 WordofGlorycast = (AuraUtil.FindAuraByName("Divine Purpose", "player") or Player:BuffUp(S.ShiningLightFreeBuff) or AuraUtil.FindAuraByName("Bastion of Light", "player"))
 
@@ -362,7 +363,6 @@ elite = false
 end
 
 
-
 local spellname, _, _, _, _, _, _, _, _ = UnitCastingInfo("target")
 if spellname == "Icy Shard" and Player:HealthPercentage()<70  then
   mitigateNWBoss = true
@@ -371,7 +371,7 @@ else
 end
 
 
-if  (spellname == "Lava Fist" or spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption" or spellname =="Shadowflame Slash") then
+if  (spellname == "Oblivion Wave" or spellname == "Charged Shield" or spellname == "Lava Fist" or spellname =="Crush" or spellname =="Terrifying Slam" or spellname =="Subjugate" or spellname =="Oozing Smash" or spellname =="Obsidian Beam" or spellname =="Igneous Hammer" or spellname =="Void Corruption" or spellname =="Shadowflame Slash") then
   MagicTankBuster = true
 else
   MagicTankBuster = false
@@ -511,7 +511,7 @@ if Player:AffectingCombat() and inRange20>=1 then
   end
 
 
-  if IsReady("Blessing of Spellwarding") and (magicdefensives() or AuraUtil.FindAuraByName("Honey Marinade", "player", "HARMFUL") ) and useBoSW then
+  if IsReady("Blessing of Spellwarding") and (MagicTankBuster or magicdefensives() or AuraUtil.FindAuraByName("Honey Marinade", "player", "HARMFUL") ) and useBoSW then
     return S.BlessingofSpellwarding:Cast()
     end
 
@@ -611,7 +611,7 @@ if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")
   end
   
   -- kick on GCD
-  if IsReady("Rebuke",1) and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance" ) and Player:GCDRemains()<0.5 then
+  if IsReady("Rebuke") and targetRange10 and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance" ) and Player:GCDRemains()<0.5 then
   return S.Rebuke:Cast()
   end
   
@@ -636,7 +636,7 @@ if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")
   if los == false and UnitExists('focus') and (C_Spell.IsSpellInRange("Flash of Light", "focus") or C_Spell.IsSpellInRange("Intercession", "focus")) then 
 
 if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcharges>=1 and S.Intercession:TimeSinceLastCast()>10 then
-  if IsReady("Intercession") then
+  if IsReady("Intercession") and timesincefocusdeath()>2 then
   return S.intercession:Cast()
   elseif Player:HolyPower() < 3 then
   if IsReady("Judgment",1) then
@@ -660,10 +660,10 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Lay on Hands") and not UnitIsDeadOrGhost("focus") and Player:GCDRemains()<0.5 and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.LayonHandsFocus:Cast()
     end
-    if IsReady("Blessing of Protection") and not UnitIsDeadOrGhost("focus")  and (GetFocusTargetHealthPercentage()<40 and inRange30>2 or AuraUtil.FindAuraByName("Morbid Fixation", "focus", "HARMFUL") and inRange30>=1) and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+    if IsReady("Blessing of Protection") and not UnitIsDeadOrGhost("focus")  and (AuraUtil.FindAuraByName("Raging Gaze", "focus", "HARMFUL") and not AuraUtil.FindAuraByName("Blessing of Sacrifice", "focus", "HARMFUL") or GetFocusTargetHealthPercentage()<40 and inRange30>2 or AuraUtil.FindAuraByName("Morbid Fixation", "focus", "HARMFUL") and inRange30>=1) and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.BlessingofProtectionFocus:Cast()
     end
-    if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (GetFocusTargetHealthPercentage()<40 or blessingofsacrificefocus()  or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
+    if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (AuraUtil.FindAuraByName("Raging Gaze", "focus", "HARMFUL") and not AuraUtil.FindAuraByName("Blessing of Protection", "focus", "HARMFUL") or GetFocusTargetHealthPercentage()<40 or blessingofsacrificefocus()  or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
     return S.BlessingofSacrifice:Cast()
     end
     if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<60 and (WordofGlorycast or Player:HolyPower()>=3) and HPpercentloss<10 and Player:HealthPercentage()>75 then

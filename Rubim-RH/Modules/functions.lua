@@ -552,7 +552,7 @@ function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {
-"Rigorous Jab","Brutal Jab", 
+"Rigorous Jab","Brutal Jab", "Savage Flurry",
 "Terrifying Slam","Anima Slash","Shred Armor","Triple Bite","Mutilate",
 "Brutal Strike","Lava Fist","Shadowflame Slash",
             }
@@ -576,7 +576,7 @@ end
 function blessingofsacrificefocus()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = {"Putrid Waters", "Fiery Ricochet","Silenced Speaker" ,"Earth Shatterer","Smash Rock", "Ground Pound","Commanding Roar","Rock Spike"
+            local spell = {"Putrid Waters", "Fiery Ricochet","Silenced Speaker" ,"Earth Shatterer","Smash Rock", "Ground Pound","Commanding Roar","Rock Spike",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -598,7 +598,7 @@ end
 function magicdefensives()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = {"Terrifying Roar","Cosmic Singularity" ,"Obsidian Beam" ,"Repulsive Visage" ,"Process of Elimination",
+            local spell = {"Terrifying Roar","Cosmic Singularity" ,"Obsidian Beam" ,"Repulsive Visage" ,"Process of Elimination","Honey Marinade","Oblivion Wave",
 
             }
             local unitID = "nameplate" .. id
@@ -685,13 +685,13 @@ function kickprio()
 "Resonant Barrage",	"Web Bolt",	"Horrifying Shrill",	"Poison Bolt", "Silken Restraints",	"Revolting Volley",	"Venom Volley",	"Bloodstained Webmage",	"Web Bolt",	"Silk Binding",	"Twist Thoughts",	"Grimweave Blast",	
 "Mending Web",	"Void Wave",	"Void Bolt",	"Night Bolt",	"Ensnaring Shadows",	"Abyssal Howl",	"Tormenting Beam",	"Umbral Barrier",	"Congealed Shadow",	"Silken Shell",	"Night Bolt",	"Shadow Bolt",	"Animate Shadows",	
 "Acidic Eruption",	"Arcing Void",	"Howling Fear",	"Alloy Bolt",	"Restoring Metals",	"Piercing Wail",	"Censoring Gear",	"Stone Bolt",	"Molten Metal",	"Spirit Bolt",	"Harvest Essence",	"Bramblethorn Coat",	"Nourish the Forest",	
-"Stimulate Resistance",	"Stimulate Regeneration",	"Spirit Bolt",	"Patty Cake",	"Consumption",	"Drain Fluids",	"Necrotic Bolt",	"Necrotic Bolt",	"Necrotic Bolt",	"Frostbolt",	"Bonemend",	"Rasping Scream",	"Necrotic Bolt",	
-"Drain Fluids",	"Goresplatter",	"Drain Fluids",	"Necrotic Bolt",	"Enfeeble",	"Watertight Shell",	"Brackish Bolt",	"Bolstering Shout",	"Stinky Vomit",	"Water Bolt",	"Choking Waters",	"Earth Bolt",	"Mass Tremor",	"Shadowflame Bolt",	"Sear Mind",	
+"Stimulate Resistance",	"Stimulate Regeneration",	"Spirit Bolt",	"Patty Cake",	"Consumption",	"Drain Fluids",	"Frostbolt",	"Bonemend",	"Rasping Scream",	"Necrotic Bolt",	
+"Drain Fluids",	"Goresplatter",	"Drain Fluids",		"Enfeeble",	"Watertight Shell",	"Brackish Bolt",	"Bolstering Shout",	"Stinky Vomit",	"Water Bolt",	"Choking Waters",	"Earth Bolt",	"Mass Tremor",	"Shadowflame Bolt",	"Sear Mind",	
 "Shadowflame Bolt",	"Shadowflame Bolt",	
 "Boiling Flames","Rejuvenating Honey","Free Samples?","Honey Volley","Mole Frenzy","Wicklighter Bolt","Explosive Flame","Flame Bolt",
 "Flaming Tether","Paranoid Mind","Drain Light","Detonate","Giga-Wallop","Tune Up","Greater Heal","Inner Fire","Fireball","Repentance",
 "Battle Cry","Cinderblast","Fireball Volley","Embrace the Light","Surveying Beam","Harpoon","Trickshot","Blood Blast","Bloodthirsty Cackle",
-"Maximum Distortion","Restorative Algae","Lightning Bolt","Unholy Fervor","Necrotic Bolt","Bind Soul","Bone Spear","Necrotic Bolt Volley",
+"Maximum Distortion","Restorative Algae","Lightning Bolt","Unholy Fervor","Bind Soul","Bone Spear","Necrotic Bolt Volley",
 "Necrotic Bolt","Meat Shield","Decaying Filth","Demoralizing Shout","Death Bolt","Iced Spritzer","Toxic Blades","Rock Lance","Furious Quake",
 "Tectonic Barrier","Caustic Compound","Transmute","Lightning Bolt","Lightning Surge","Void Bolt",									
     }
@@ -895,7 +895,7 @@ function mitigateboss()
         for id = 1, 40 do
             local spell = {
 "Reaping Scythe",	"Hateful Strike",	"Keg Smash",	"Bottoms Uppercut",	"Cash Cannon",	"Electrocrush",	"Wallop",	"Sludge Claws",	
-"Thunder Punch",	"Seismic Smash", "Slam",
+"Thunder Punch",	"Seismic Smash", "Slam","Oblivion Wave",
 	"Igneous Hammer",	"Crystalline Smash",	"Crunch",	"Sever Flesh",	"Skullsplitter",	"Molten Flurry",	"Shadowflame Bolt",	
     "Crush", "Mutilate", 
 
@@ -1394,6 +1394,61 @@ function GetMobsInCombat()
     return numMobsInCombat
 end
 
+
+
+
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("UNIT_HEALTH")
+frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
+
+local focusDeathTime
+local isFocusDead = false
+local currentFocusGUID
+
+frame:SetScript("OnEvent", function(self, event, unit)
+    if event == "UNIT_HEALTH" then
+        if unit == "focus" then
+            if UnitIsDead("focus") then
+                if not isFocusDead then
+                    isFocusDead = true
+                    focusDeathTime = GetTime()
+                end
+            else
+                if isFocusDead then
+                    isFocusDead = false
+                    focusDeathTime = nil
+                end
+            end
+        end
+    elseif event == "PLAYER_FOCUS_CHANGED" then
+        if UnitExists("focus") then
+            local newGUID = UnitGUID("focus")
+            if newGUID ~= currentFocusGUID then
+                currentFocusGUID = newGUID
+                if UnitIsDead("focus") then
+                    isFocusDead = true
+                    focusDeathTime = GetTime()
+                else
+                    isFocusDead = false
+                    focusDeathTime = nil
+                end
+            end
+        else
+            currentFocusGUID = nil
+            isFocusDead = false
+            focusDeathTime = nil
+        end
+    end
+end)
+
+function timesincefocusdeath()
+    if focusDeathTime then
+        return GetTime() - focusDeathTime
+    else
+        return 0
+    end
+end
 
 
 
