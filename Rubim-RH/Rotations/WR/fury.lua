@@ -296,7 +296,7 @@ local function Slayer_RA_ST()
 
 
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON() and targetRange10 and IsReady("Bladestorm") and (EnrageUp and S.Avatar:CooldownRemains() >= 9) then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and C_Spell.GetSpellInfo("Bladestorm").iconID == 236303 and (EnrageUp and  S.Bladestorm:IsAvailable() and S.Avatar:CooldownRemains() >= 9) then
     return S.Bladestorm:Cast()
   end
 
@@ -406,7 +406,7 @@ end
   end
 
   -- bladestorm,if=buff.enrage.up&cooldown.avatar.remains>=9
-  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and EnrageUp and S.Avatar:CooldownRemains() >= 9 and Player:BuffRemains(S.EnrageBuff)>3 then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and C_Spell.GetSpellInfo("Bladestorm").iconID == 236303 and EnrageUp and S.Avatar:CooldownRemainads() >= 9 and Player:BuffRemains(S.EnrageBuff)>3 then
     return S.Bladestorm:Cast()
   end
 
@@ -535,13 +535,20 @@ local function ThaneST()
     return S.Rampage:Cast()
   end
   -- bladestorm,if=buff.enrage.up&talent.unhinged
-  if RubimRH.CDsON() and targetRange8  and IsReady("Bladestorm") and (EnrageUp and S.Unhinged:IsAvailable()) then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and C_Spell.GetSpellInfo("Bladestorm").iconID == 236303 and (EnrageUp and S.Unhinged:IsAvailable()) then
     return S.Bladestorm:Cast()
   end
   -- rampage,if=talent.anger_management
   if IsReady("Rampage")  and targetRange8 and (S.AngerManagement:IsAvailable()) then
     return S.Rampage:Cast()
   end
+  if IsReady("Bloodthirst") and targetRange8 and Player:BuffStack(S.BloodcrazeBuff) >=3 then
+    return S.Bloodthirst:Cast()
+  end
+    -- raging_blow
+    if IsReady("Raging Blow")  and targetRange8 then
+      return S.RagingBlow:Cast()
+    end
   -- crushing_blow
   if IsReady("Crushing Blow")  and targetRange8 then
     return S.CrushingBlow:Cast()
@@ -634,13 +641,20 @@ local function ThaneMT()
     return S.Rampage:Cast()
   end
   -- bladestorm,if=buff.enrage.up
-  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and (EnrageUp) then
+  if RubimRH.CDsON() and targetRange8 and IsReady("Bladestorm") and C_Spell.GetSpellInfo("Bladestorm").iconID == 236303 and (EnrageUp) then
     return S.Bladestorm:Cast()
   end
   -- rampage,if=talent.anger_management
   if IsReady("Rampage")  and targetRange8 and (S.AngerManagement:IsAvailable()) then
     return S.Rampage:Cast()
   end
+  if IsReady("Bloodthirst") and targetRange8 and Player:BuffStack(S.BloodcrazeBuff) >=3 then
+    return S.Bloodthirst:Cast()
+  end
+    -- raging_blow
+    if IsReady("Raging Blow") and targetRange8  then
+      return S.RagingBlow:Cast()
+    end
   -- crushing_blow,if=buff.enrage.up
   if IsReady("Crushing Blow")  and targetRange8 and (EnrageUp) then
     return S.CrushingBlow:Cast()
@@ -673,10 +687,7 @@ local function ThaneMT()
   if IsReady("Execute") and targetRange8  then
     return S.Execute:Cast()
   end
-  -- raging_blow
-  if IsReady("Raging Blow") and targetRange8  then
-    return S.RagingBlow:Cast()
-  end
+
   -- whirlwind
   if IsReady("Whirlwind") then
     return S.Whirlwind:Cast()

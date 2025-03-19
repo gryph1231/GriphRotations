@@ -552,9 +552,9 @@ function mitigatedng()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {
-"Rigorous Jab","Brutal Jab", "Savage Flurry",
+"Rigorous Jab","Brutal Jab", "Savage Flurry","Blazing Strike",
 "Terrifying Slam","Anima Slash","Shred Armor","Triple Bite","Mutilate",
-"Brutal Strike","Lava Fist","Shadowflame Slash",
+"Brutal Strike","Lava Fist","Shadowflame Slash","Charged Shield",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -632,7 +632,12 @@ function stunprio()
         'Storm Bolt','Pierce','Swift Stab','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
         'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
     "Wind Up","Plant Seaforium Charge","Snipe","Reload","Surpise Inspection","Jettison Kelp","Fan of Knives","Activate Mech",
-    
+    "Boiling Flames","Rejuvenating Honey","Free Samples?","Honey Volley","Mole Frenzy","Wicklighter Bolt","Explosive Flame","Flame Bolt",
+"Flaming Tether","Paranoid Mind","Drain Light","Detonate","Giga-Wallop","Tune Up","Greater Heal","Inner Fire","Fireball","Repentance",
+"Battle Cry","Cinderblast","Fireball Volley","Embrace the Light","Surveying Beam","Harpoon","Trickshot","Blood Blast","Bloodthirsty Cackle",
+"Maximum Distortion","Restorative Algae","Lightning Bolt","Unholy Fervor","Bind Soul","Bone Spear","Necrotic Bolt Volley",
+"Necrotic Bolt","Meat Shield","Decaying Filth","Demoralizing Shout","Death Bolt","Iced Spritzer","Toxic Blades","Rock Lance","Furious Quake",
+"Tectonic Barrier","Caustic Compound","Transmute","Lightning Bolt","Lightning Surge","Void Bolt",	
     
     }
     
@@ -663,7 +668,12 @@ function blindprio()
         'Storm Bolt','Pierce','Swift Stab','Rally the Clan',"Hunter's Mark",'Hunt Prey','Arcing Strike','Tempest','Summon Squall','Necrotic Eruption','Rotting Wind','Mortal Strike','Swift Wind','Deadly Thunder', -- NO
         'Brutal Strike','Molten Core','Magma Conflagration','Explosive Concoction','Binding Spear','Magma Fist','Fired Up','Bone Toss','Mending Clay','Scorching Breath','Mote of Combustion','Pierce Marrow','Dragonbone Axe', -- neltharus
     "Jagged Quarrel","Corrosive Gunk","Fiery Jaws","Defend", "Wind Up","Plant Seaforium Charge","Snipe","Reload","Surpise Inspection","Jettison Kelp","Fan of Knives","Activate Mech",
-    
+    "Boiling Flames","Rejuvenating Honey","Free Samples?","Honey Volley","Mole Frenzy","Wicklighter Bolt","Explosive Flame","Flame Bolt",
+"Flaming Tether","Paranoid Mind","Drain Light","Detonate","Giga-Wallop","Tune Up","Greater Heal","Inner Fire","Fireball","Repentance",
+"Battle Cry","Cinderblast","Fireball Volley","Embrace the Light","Surveying Beam","Harpoon","Trickshot","Blood Blast","Bloodthirsty Cackle",
+"Maximum Distortion","Restorative Algae","Lightning Bolt","Unholy Fervor","Bind Soul","Bone Spear","Necrotic Bolt Volley",
+"Necrotic Bolt","Meat Shield","Decaying Filth","Demoralizing Shout","Death Bolt","Iced Spritzer","Toxic Blades","Rock Lance","Furious Quake",
+"Tectonic Barrier","Caustic Compound","Transmute","Lightning Bolt","Lightning Surge","Void Bolt",	
     }
         
     local currentspellchannel = select(1,UnitChannelInfo('target'))

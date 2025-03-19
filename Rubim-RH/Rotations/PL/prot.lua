@@ -70,10 +70,14 @@ DivineShield                = Spell(642),
 DivineSteed                 = Spell(190784),
 FlashofLight                = Spell(19750),
 HammerofJustice             = Spell(853),
+DivineGuidanceBuff                   = Spell(433106),
+Sanctuary = Spell(379021),
 HandofReckoning             = Spell(62124),
 Rebuke                      = Spell(96231),
 ShieldoftheRighteous        = Spell(53600),
 WordofGlory                 = Spell(85673),
+RefiningFire                          = Spell(469883),
+
 -- Talents
 AvengingWrath               = Spell(31884),
 HolyBulwark = Spell(432459),
@@ -83,12 +87,18 @@ HammerofLight = Spell(427453),
 HoL = Spell(427445),
 HolyAvengerBuff             = Spell(105809),
 LayonHands                  = Spell(633),
+ShaketheHeavens                      = Spell(431533),
+-- Buffs
+LightsDeliveranceBuff                = Spell(433674),
+ShaketheHeavensBuff                  = Spell(431536),
 
 -- Covenants (Shadowlands)
 BlessingofFreedomfocus = Spell(145067),-- turn evil
 
 -- DivineTollCov                         = Spell(304971),
 DoorofShadows               = Spell(300728),
+HammerandAnvil                       = Spell(433718),
+
 Fleshcraft                  = Spell(324631),
 Soulshape                   = Spell(310143),
 SummonSteward               = Spell(324739),
@@ -117,7 +127,18 @@ CleanseToxinsFocus = Spell(20594), --stone form
 WordofGloryFocus = Spell(215652), --shield of virtue
 BlessingofProtectionFocus = Spell(5502),-- sense undead
 BlessingofSacrifice = Spell(6940),
+--/cast [@focus] Blessing of Sacrifice - use BoS KB
 LayonHandsFocus = Spell(32223),--crusader aura
+-- /cast [@focus,exists]Blessing of Freedom;Blessing of Freedom
+-- bind to turn evil GGL
+-- /cast [@focus] Cleanse Toxins
+-- bind to stone form GGL
+-- /cast [@focus] word of glory
+-- bind to shield of virtue GGL
+-- /cast [@focus] Blessing of Protection
+-- bind to sense undead GGL
+-- /cast [@focus] Lay on Hands
+-- bind to crusader aura GGL
 BastionofLightBuff                    = Spell(378974),
 BlessingofDawnBuff                    = Spell(385127),
 BlessingofDuskBuff                    = Spell(385126),
@@ -221,65 +242,6 @@ end
 
 
 
-local function HammerofLight()
-  if NoIntercession then
-  -- hammer_of_light,if=(buff.blessing_of_dawn.stack>0|!talent.of_dusk_and_dawn.enabled)|spell_targets.shield_of_the_righteous>=5
-  if IsReady(427453,1) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable() or inRange10 >= 5)  then
-    return S.EyeofTyr:Cast() 
-    end
-  end
-  -- eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) and targetRange8  
-  and (Player:AffectingCombat()) then
-    return S.EyeofTyr:Cast() 
-    end
-
-    if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
-      return S.Consecration:Cast()
-      end
-
-if NoIntercession then
-
-      -- shield_of_the_righteous,if=hpg_to_2dawn=4
-
-  if IsReady("Shield of the Righteous") and (HPGTo2Dawn() == 4) and useSoTR  then
-    return S.ShieldoftheRighteous:Cast() 
-    end
-  end
-
-  -- eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-  if IsReady("Eye of Tyr") and (HPGTo2Dawn() == 1 or Player:BuffUp(S.BlessingofDawnBuff)) and targetRange8 and (Player:AffectingCombat() ) then
-    return S.EyeofTyr:Cast() 
-    end
-  --testing this
-  if IsReady("Avenger's Shield") and inRange30 >= 3 and targetRange30 and Player:BuffRemains(S.ShieldoftheRighteousBuff)>Player:GCD()*3 - Player:HolyPower() then
-    return S.AvengersShield:Cast()
-  end
-  -- hammer_of_wrath
-  if IsReady("Hammer of Wrath") and targetRange30 then
-    return S.HammerofWrath:Cast() 
-  end
-  -- judgment
-  if IsReady("Judgment") and targetRange30 then
-    return S.Judgment:Cast() 
-  end
-  -- blessed_hammer
-  if IsReady("Blessed Hammer") and S.BlessedHammer:Charges()>=1 and inRange10>=1 then
-    return S.BlessedHammer:Cast() 
-  end
-  -- hammer_of_the_righteous
-  if IsReady("Hammer of the Righteous") and inRange8>=1 and S.HammeroftheRighteous:IsAvailable() then
-    return S.HammeroftheRighteous:Cast() 
-  end
-  -- crusader_strike
-  -- if IsReady("Crusader Strike") and targetRange8 then
-  --   return S.CrusaderStrike:Cast() 
-  -- end
-
-end
-
-
-
 
 local function APL()
 inRange5 = RangeCount(5)
@@ -325,6 +287,9 @@ los = true
 else
 los = false
 end
+
+
+
 
 if not IsReady("Intercession",nil,nil,1,1) or not UnitIsDeadOrGhost("focus") or rezcharges==0 or S.Intercession:TimeSinceLastCast()<=10 or timesincefocusdeath()<=2 then
   NoIntercession = true
@@ -388,7 +353,6 @@ end
 
 
 
-
 if S.Intercession:Charges()== nil or S.Intercession:CooldownRemains()>Player:GCD() then
 rezcharges = 0
 else
@@ -404,7 +368,7 @@ end
 local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
 
-aoerangecheck = (targetRange8 and not Player:IsMoving() or targetRange5 and Player:IsMoving())
+aoerangecheck = (inRange10>=1 and not Player:IsMoving() or inRange8>=1  and Player:IsMoving())
 
 
 
@@ -415,8 +379,11 @@ else
   useSoTR = false
 end
 
-
-
+-- if AuraUtil.FindAuraByName("Shield of the Righetous", "target", "PLAYER|HARMFUL") then
+--   shieldoftherighteousdebuffremains = select(6, AuraUtil.FindAuraByName("Shield of the Righetous", "target", "PLAYER|HARMFUL")) - GetTime()
+-- else
+--   shieldoftherighteousdebuffremains = 0
+-- end
 
 local useAD = not AuraUtil.FindAuraByName("Divine Shield", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player") and not AuraUtil.FindAuraByName("Blessing of Spellwarding", "player")
 local useDS = not AuraUtil.FindAuraByName("Ardent Defender", "player") and not AuraUtil.FindAuraByName("Eye of Tyr","target","PLAYER|HARMFUL") and not AuraUtil.FindAuraByName("Guardian of Ancient Kings", "player") and not AuraUtil.FindAuraByName("Blessing of Spellwarding", "player")
@@ -481,7 +448,6 @@ end
 if (not IsReady(RubimRH.queuedSpell[1]:ID(),nil,nil,1) or (inRange30 == 0 or not Target:Exists()) and S.Consecration:ID() ~= RubimRH.queuedSpell[1]:ID()) then
   RubimRH.queuedSpell = { RubimRH.Spell[1].Empty, 0 }
   end
-
 
         --- seasonal affix
         if targetRange8 and TWWS1AffixMobsInRange()>=6 and IsReady("Blinding Light") and RubimRH.InterruptsON() then
@@ -611,7 +577,7 @@ if (castTime > 0.5 or channelTime > 0.5) and select(8, UnitCastingInfo("target")
   end
   
   -- kick on GCD
-  if IsReady("Rebuke") and targetRange10 and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance" ) and Player:GCDRemains()<0.5 then
+  if IsReady("Rebuke") and targetRange5 and (kickprio() or Target:IsAPlayer() or UnitName("target") == "Orb of Ascendance" ) and Player:GCDRemains()<0.5 then
   return S.Rebuke:Cast()
   end
   
@@ -704,7 +670,7 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
         end 
 
         --hold aggro
-        if targetRange30 and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") then 
+        if targetRange30 and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") and UnitName("target") ~= "Cleave Training Dummy" then 
             if IsReady("Hand of Reckoning") and S.AvengersShield:TimeSinceLastCast()>0.5 and S.AvengersShield:CooldownDown() and S.Judgment:TimeSinceLastCast()>0.5 and S.Judgment:CooldownDown() then
             return S.HandofReckoning:Cast()
             end
@@ -759,8 +725,8 @@ if RubimRH.CDsON() then
     return S.DivineToll:Cast()
   end
 
-  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
-    return S.Consecration:Cast()
+  if IsReady("Bastion of Light") and targetRange10 and (Player:BuffUp(S.AvengingWrathBuff) or S.AvengingWrath:CooldownRemains() <= 30) then
+return S.BastionofLight:Cast() 
   end
 
 
@@ -770,146 +736,239 @@ if RubimRH.CDsON() then
     return S.BastionofLight:Cast()
   end
 
-  if Player:BuffUp(S.AvengingWrath) or Player:BuffUp(S.Sentinel) then
+  if (Player:BuffUp(S.AvengingWrath) or Player:BuffUp(S.Sentinel)) and targetRange8 then
     local ShouldReturn = UseItems();
     if ShouldReturn then return ShouldReturn; end
   end
 
 end
 
+if S.Sanctuary:IsAvailable() then
+  consecrationtimer = 4
+else
+  consecrationtimer = 0
+end
+if IsReady("Consecration") and aoerangecheck and (Player:BuffDown(S.ConsecrationBuff) or S.Consecration:TimeSinceLastCast()>10 + consecrationtimer - Player:GCD()*2 and S.HammerofLight:TimeSinceLastCast()> 10 + consecrationtimer - Player:GCD()*2 ) then
+  return S.Consecration:Cast()
+end
+-- start of standard rotation
 
-  if S.LightsGuidance:IsAvailable() and (S.EyeofTyr:CooldownRemains() < 2 or S.HammerofLight:IsLearned()) and (not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) >= 2 or not S.BastionofLight:IsAvailable()) then
-    local ShouldReturn = HammerofLight(); if ShouldReturn then return ShouldReturn; end
-  end
-  if IsReady("Consecration") and aoerangecheck and Player:BuffRemains(S.ConsecrationBuff)<2 then
-    return S.Consecration:Cast()
-    end
+
+if IsReady("Judgment") and (S.Judgment:Charges() >= 2 or S.Judgment:FullRechargeTime() <= Player:GCD()) and targetRange30 then
+  return S.Judgment:Cast()
+end
 
 
-  if targetRange8 and IsReady(427453,1) and ((not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) == 3) and (Player:BuffUp(S.BlessingofDawnBuff) or not S.OfDuskandDawn:IsAvailable())) then
+-- hammer_of_light,if=buff.hammer_of_light_free.remains<2|buff.shake_the_heavens.remains<1|!buff.shake_the_heavens.up|cooldown.eye_of_tyr.remains<1.5|fight_remains<2
+
+if targetRange8 and IsReady(427453,1) and (Player:BuffRemains(S.LightsDeliveranceBuff) < 2 
+or Player:BuffRemains(S.ShaketheHeavensBuff) < 1 or Player:BuffDown(S.ShaketheHeavensBuff) 
+or S.EyeofTyr:CooldownRemains() < 1.5 or aoeTTD() < 2) then
   return S.EyeofTyr:Cast()
   end
 
+  -- eye_of_tyr,if=(hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled)&talent.lights_guidance.enabled
 
+  -- eye_of_tyr,if=(hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0)&talent.lights_guidance.enabled
 
-  -- shield_of_the_righteous,if=(((!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&holy_power>2)|buff.bastion_of_light.up|buff.divine_purpose.up)&!((buff.hammer_of_light_ready.up|buff.hammer_of_light_free.up))
-  local RighteousProtectorICD = 999
-  if S.RighteousProtector:IsAvailable() then
-    local LastCast = math.min(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast())
-    RighteousProtectorICD = math.max(0, 1 - math.min(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast()))
+  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and IsReady("Eye of Tyr") and targetRange8 and (S.LightsGuidance:IsAvailable() and ((HPGTo2Dawn() == 5 or not S.OfDuskandDawn:IsAvailable()) or (HPGTo2Dawn() == 1 or Player:BuffStack(S.BlessingofDawnBuff) > 0))) then
+   return S.EyeofTyr:Cast()
   end
-  if NoIntercession then
 
-  if IsReady("Shield of the Righteous") and useSoTR and ((((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and Player:HolyPower() > 2) or Player:BuffUp(S.BastionofLightBuff) or Player:BuffUp(S.DivinePurposeBuff)) and not (S.HammerofLight:IsLearned())) then
-return S.ShieldoftheRighteous:Cast()
+
+ -- shield_of_the_righteous,if=(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&!buff.hammer_of_light_ready.up
+ local RighteousProtectorICD = 999
+ if S.RighteousProtector:IsAvailable() then
+   local LastCast = math.min(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast())
+   RighteousProtectorICD = math.max(0, 1 - math.min(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast()))
+ end
+
+ if NoIntercession then
+
+--  shield_of_the_righteous,if=!buff.hammer_of_light_ready.up&(buff.luck_of_the_draw.up&((holy_power+judgment_holy_power>=5)|(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)))
+
+--  shield_of_the_righteous,if=!buff.hammer_of_light_ready.up&set_bonus.thewarwithin_season_2_4pc&((holy_power+judgment_holy_power>5)|(holy_power+judgment_holy_power>=5&cooldown.righteous_protector_icd.remains=0))
+
+--  shield_of_the_righteous,if=!set_bonus.thewarwithin_season_2_4pc&(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&!buff.hammer_of_light_ready.up
+
+
+ if IsReady("Shield of the Righteous")  and (targetRange8 or inRange8>=1)  and ((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and canCastHoL==false) then
+  return S.ShieldoftheRighteous:Cast()
 end
 end
 
 
-  -- holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
-  if IsReady("Sacred Weapon") and targetRange15 and (Player:BuffDown(S.SacredWeaponBuff) or (Player:BuffRemains(S.SacredWeaponBuff) < 6 and Player:BuffDown(S.AvengingWrathBuff) and S.AvengingWrath:CooldownRemains() <= 30)) then
-    return S.SacredWeapon:Cast()
-  end
-  -- judgment,target_if=min:debuff.judgment.remains,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
-  if IsReady("Judgment") and (inRange20 > 3 and Player:BuffStack(S.BulwarkofRighteousFuryBuff) >= 3 and Player:HolyPower() < 3) and targetRange30 and Target:DebuffRemains(S.JudgmentDebuff)<Player:GCD() then
-    return S.Judgment:Cast()
-  end
-  if Player:BuffUp(S.BlessedAssuranceBuff) and inRange15 < 3 and targetRange10 then
-    -- blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3
-    if IsReady("Blessed Hammer") and S.BlessedHammer:Charges()>=1  then
-      return S.BlessedHammer:Cast()
-    end
-    -- hammer_of_the_righteous,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3
-    if IsReady("Hammer of the Righteous") and S.HammeroftheRighteous:IsAvailable() then
-      return S.HammeroftheRighteous:Cast()
-  end
-  end
-  -- crusader_strike,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2
-  -- if IsReady("Crusader Strike") and (Player:BuffUp(S.BlessedAssuranceBuff) and inRange10 < 2) and targetRange8 then
-  --   return S.CrusaderStrike:Cast()
-  -- end
-  -- avengers_shield,if=!buff.bulwark_of_righteous_fury.up&talent.bulwark_of_righteous_fury.enabled&spell_targets.shield_of_the_righteous>=3
-  if IsReady("Avenger's Shield") and (Player:BuffDown(S.BulwarkofRighteousFuryBuff) and S.BulwarkofRighteousFury:IsAvailable() and inRange20 >= 3) and targetRange30 then
-    return S.AvengersShield:Cast()
-  end
+if IsReady("Judgment") and targetRange30 and (inRange10 > 3 and Player:BuffStack(S.BulwarkofRighteousFuryBuff) >= 3 and Player:HolyPower() < 3) then
+ return S.Judgment:Cast()
+end
 
-  -- hammer_of_wrath
-  if IsReady("Hammer of Wrath") and targetRange30 then
-    return S.HammerofWrath:Cast()
-  end
-  -- judgment,target_if=min:debuff.judgment.remains,if=charges>=2|full_recharge_time<=gcd.max
-  if IsReady("Judgment") and (S.Judgment:Charges() >= 2 or S.Judgment:FullRechargeTime() <= Player:GCD() + 0.25) and targetRange30  then
-    return S.Judgment:Cast()
-  end
-  -- holy_armaments,if=next_armament=holy_bulwark&charges=2
-  if IsReady("Holy Bulwark") and (S.HolyBulwark:Charges() == 2) and targetRange15 then
-    return S.HolyBulwark:Cast()
-  end
-  -- divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
-  if RubimRH.CDsON() and IsReady("Divine Toll") and inRange30>=3 then
-    return S.DivineToll:Cast()
-  end
-  -- judgment,target_if=min:debuff.judgment.remains
-  if IsReady("Judgment") and targetRange30 then
-    return S.Judgment:Cast()
-  end
-  -- avengers_shield,if=!talent.lights_guidance.enabled
-  if IsReady("Avenger's Shield") and (not S.LightsGuidance:IsAvailable()) and targetRange30 then
-    return S.AvengersShield:Cast()
-  end
-  -- consecration,if=!consecration.up
-  if IsReady("Consecration") and aoerangecheck and (Player:BuffDown(S.ConsecrationBuff)) and aoerangecheck then
-    return S.Consecration:Cast()
-  end
-  -- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
-  -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (Player:AffectingCombat() ) and IsReady("Eye of Tyr") and ((S.InmostLight:IsAvailable() and inRange8 == 1 or inRange8 >= 3) and not S.LightsDeliverance:IsAvailable()) and targetRange8 then
-    return S.EyeofTyr:Cast()
-  end
-  -- holy_armaments,if=next_armament=holy_bulwark
-  if IsReady("Holy Bulwark") and targetRange15 then
-    return S.HolyBulwark:Cast()
-  end
-  -- blessed_hammer
-  if IsReady("Blessed Hammer") and S.BlessedHammer:Charges()>=1 and inRange10>=1 then
-    return S.BlessedHammer:Cast()
-  end
-  -- hammer_of_the_righteous
-  if IsReady("Hammer of the Righteous") and S.HammeroftheRighteous:IsAvailable() and inRange8>=1 then
+
+
+if IsReady("Avenger's Shield") and targetRange30 and (Player:BuffDown(S.BulwarkofRighteousFuryBuff) and S.BulwarkofRighteousFury:IsAvailable() and inRange10 >= 3) then
+  return S.AvengersShield:Cast()
+end
+
+if Player:BuffUp(S.BlessedAssuranceBuff) and inRange15 < 3 and Player:BuffDown(S.AvengingWrathBuff) then
+  -- hammer_of_the_righteous,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3&!buff.avenging_wrath.up
+  if IsReady("Hammer of the Righteous") and targetRange8 then
     return S.HammeroftheRighteous:Cast()
   end
-  -- crusader_strike
-  -- if IsReady("Crusader Strike") and targetRange8 then
-  --   return S.CrusaderStrike:Cast()
-  -- end
-
-
-  --CHECK
-  --this word of glory is for dmg increase. still good to have a health percentage tied in i think. may revise later
-  -- word_of_glory,if=buff.shining_light_free.up&talent.lights_guidance.enabled&cooldown.hammerfall_icd.remains=0
-  if IsReady("Word of Glory") and not IsReady(427453,1) and (Player:BuffUp(S.ShiningLightFreeBuff) and S.LightsGuidance:IsAvailable() and S.WordofGlory:TimeSinceLastCast() > 1 and S.ShieldoftheRighteous:TimeSinceLastCast() > 1) and Player:HealthPercentage()<75 then
-    return S.WordofGlory:Cast()
+  -- blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3&!buff.avenging_wrath.up
+  if IsReady("Blessed Hammer") and (targetRange10 or inRange15>=1) then
+    return S.BlessedHammer:Cast()
   end
-
-  -- avengers_shield
-  if IsReady("Avenger's Shield") and targetRange30 then
-    return S.AvengersShield:Cast()
-  end
-  -- eye_of_tyr,if=!talent.lights_deliverance.enabled
-  -- Note: Ignoring CDsON if spec'd Templar Hero Tree.
-  if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and (Player:AffectingCombat() ) and IsReady("Eye of Tyr") and (not S.LightsDeliverance:IsAvailable()) and targetRange8  then
-    return S.EyeofTyr:Cast()
-  end
-
-  if IsReady("Word of Glory")  and Player:HealthPercentage() <= 65 and (Player:BuffUp(S.ShiningLightFreeBuff) ) then
-return S.WordofGlory:Cast()
 end
 
-  -- consecration,if=!buff.sanctification_empower.up
-  if IsReady("Consecration") and aoerangecheck and Player:BuffDown(S.SanctificationEmpowerBuff) then
-return S.Consecration:Cast()
+
+
+
+
+
+
+
+
+
+
+
+-- crusader_strike,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2&!buff.avenging_wrath.up
+if IsReady("Crusader Strike") and targetRange8 and (Player:BuffUp(S.BlessedAssuranceBuff) and inRange10 < 2 and Player:BuffDown(S.AvengingWrathBuff)) then
+  return S.CrusaderStrike:Cast()
+end
+-- judgment,target_if=min:debuff.judgment.remains,if=charges>=2|full_recharge_time<=gcd.max
+if IsReady("Judgment")   and targetRange30 and (S.Judgment:Charges() >= 2 or S.Judgment:FullRechargeTime() <= Player:GCD() + 0.25) then
+  return S.Judgment:Cast()
+end
+-- consecration,if=buff.divine_guidance.stack=5
+if IsReady("Consecration")  and aoerangecheck and (Player:BuffStack(S.DivineGuidanceBuff) == 5) then
+  return S.Consecration:Cast()
+end
+-- holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
+if IsReady("Sacred Weapon") and targetRange8 and (Player:BuffDown(S.SacredWeaponBuff) or (Player:BuffRemains(S.SacredWeaponBuff) < 6 and Player:BuffDown(S.AvengingWrathBuff) and S.AvengingWrath:CooldownRemains() <= 30)) then
+  return S.SacredWeapon:Cast()
+end
+-- hammer_of_wrath
+if IsReady("Hammer of Wrath") and targetRange30 then
+  return S.HammerofWrath:Cast()
+end
+-- divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
+if RubimRH.CDsON() and IsReady("Divine Toll")  and targetRange30 and (inRange20>=2 or not RubimRH.AoEON()) then
+  return S.DivineToll:Cast()
+end
+-- avengers_shield,if=talent.refining_fire.enabled&talent.lights_guidance.enabled
+if IsReady("Avenger's Shield") and targetRange30 and (S.RefiningFire:IsAvailable() and S.LightsGuidance:IsAvailable()) then
+  return S.AvengersShield:Cast()
+end
+-- judgment,target_if=min:debuff.judgment.remains,if=(buff.avenging_wrath.up&talent.hammer_and_anvil.enabled)
+if IsReady("Judgment") and targetRange30 and (Player:BuffUp(S.AvengingWrathBuff) and S.HammerandAnvil:IsAvailable()) then
+  return S.Judgment:Cast()
+end
+-- holy_armaments,if=next_armament=holy_bulwark&charges=2
+if IsReady("Holy Bulwark") and targetRange8 and (S.HolyBulwark:Charges() == 2) then
+  return S.HolyBulwark:Cast()
+end
+-- judgment,target_if=min:debuff.judgment.remains
+if IsReady("Judgment") and targetRange30  then
+  return S.Judgment:Cast()
+end
+-- avengers_shield,if=!buff.shake_the_heavens.up&talent.shake_the_heavens.enabled
+if IsReady("Avenger's Shield") and targetRange30 and (Player:BuffDown(S.ShaketheHeavensBuff) and S.ShaketheHeavens:IsAvailable()) then
+  return S.AvengersShield:Cast()
 end
 
+  -- hammer_of_the_righteous,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
+  if IsReady("Hammer of the Righteous") and targetRange8 and (AuraUtil.FindAuraByName("Blessed Assurance","player")  and  inRange10<3 or AuraUtil.FindAuraByName("Shake the Heavens","player") ) then
+    return S.HammeroftheRighteous:Cast()
+  end
+  -- blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3&!buff.avenging_wrath.up
+  if IsReady("Blessed Hammer") and (targetRange10 or inRange15>=1) and  AuraUtil.FindAuraByName("Blessed Assurance","player")  and inRange10<3 and not  AuraUtil.FindAuraByName("Avenging Wrath","player")   then
+    return S.BlessedHammer:Cast()
+  end
+  -- blessed_hammer,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
+  if IsReady("Blessed Hammer") and (targetRange10 or inRange15>=1) and (AuraUtil.FindAuraByName("Blessed Assurance","player")  and inRange10<3 or AuraUtil.FindAuraByName("Shake the Heavens","player"))   then
+    return S.BlessedHammer:Cast()
+  end
+
+
+-- crusader_strike,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2)|buff.shake_the_heavens.up
+if IsReady("Crusader Strike") and targetRange8 and ((Player:BuffUp(S.BlessedAssuranceBuff) and inRange10 < 2) or Player:BuffUp(S.ShaketheHeavensBuff)) then
+  return S.CrusaderStrike:Cast()
+end
+-- avengers_shield,if=!talent.lights_guidance.enabled
+if IsReady("Avenger's Shield") and targetRange30 and (not S.LightsGuidance:IsAvailable()) then
+  return S.AvengersShield:Cast()
+end
+-- consecration,if=!consecration.up
+if IsReady("Consecration") and aoerangecheck and (Player:BuffDown(S.ConsecrationBuff)) then
+  return S.Consecration:Cast()
+end
+-- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
+-- Note: Ignoring CDsON if spec'd Templar Hero Tree.
+if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and IsReady("Eye of Tyr") and targetRange8 and ((S.InmostLight:IsAvailable() and inRange10 == 1 or inRange10 >= 3) and not S.LightsDeliverance:IsAvailable()) then
+  return S.EyeofTyr:Cast()
+end
+-- holy_armaments,if=next_armament=holy_bulwark
+if IsReady("Holy Bulwark") and targetRange8 then
+  return S.HolyBulwark:Cast()
+end
+-- blessed_hammer
+if IsReady("Blessed Hammer") and (targetRange10 or inRange15>=1)then
+  return S.BlessedHammer:Cast()
+end
+-- hammer_of_the_righteous
+if IsReady("Hammer of the Righteous") and targetRange8 then
+  return S.HammeroftheRighteous:Cast()
+end
+-- crusader_strike
+if IsReady("Crusader Strike") and targetRange8 then
+  return S.CrusaderStrike:Cast()
+end
+-- word_of_glory,if=buff.shining_light_free.up&(talent.blessed_assurance.enabled|(talent.lights_guidance.enabled&cooldown.hammerfall_icd.remains=0))
+-- if S.WordofGlory:IsReady() and (Player:BuffUp(S.ShiningLightFreeBuff) and (S.BlessedAssurance:IsAvailable() or (S.LightsGuidance:IsAvailable() and HammerfallICD() == 0))) then
+--   -- Is our health ok? Are we in a party with a wounded party member? Heal them instead.
+--   if Player:HealthPercentage() > 90 and Player:IsInParty() and not Player:IsInRaid() then
+--     for _, Char in pairs(Unit.Party) do
+--       if Char:Exists() and Char:IsInRange(40) and Char:HealthPercentage() <= 80 then
+--         if HR.CastAnnotated(S.WordofGlory, false, Char:Name()) then return "word_of_glory standard party 60"; end
+--       end
+--     end
+
+if IsReady("Word of Glory") and (Player:BuffUp(S.ShiningLightFreeBuff) and S.LightsGuidance:IsAvailable() and S.WordofGlory:TimeSinceLastCast() > 1 and S.ShieldoftheRighteous:TimeSinceLastCast() > 1) and Player:HealthPercentage()<75 then
+  return S.WordofGlory:Cast()
+end
+
+  
+--     -- Nobody in the party needs it. We might as well heal ourselves for the extra block chance.
+--     if Cast(S.WordofGlory, Settings.Protection.GCDasOffGCD.WordOfGlory) then return "word_of_glory standard self 62"; end
+--   else
+--     -- We're either solo, in a raid, or injured. Heal ourselves.
+--     if Cast(S.WordofGlory, Settings.Protection.GCDasOffGCD.WordOfGlory) then return "word_of_glory standard self 64"; end
+--   end
+-- end
+-- avengers_shield
+if IsReady("Avenger's Shield") and targetRange30 then
+  return S.AvengersShield:Cast()
+end
+-- eye_of_tyr,if=!talent.lights_deliverance.enabled
+
+-- Note: Ignoring CDsON if spec'd Templar Hero Tree.
+if (RubimRH.CDsON() or S.LightsGuidance:IsAvailable()) and IsReady("Eye of Tyr") and targetRange8 and (not S.LightsDeliverance:IsAvailable()) then
+  return S.EyeofTyr:Cast()
+end
+-- word_of_glory,if=buff.shining_light_free.up
+
+if IsReady("Word of Glory")  and Player:HealthPercentage() <= 65 and (Player:BuffUp(S.ShiningLightFreeBuff) ) then
+  return S.WordofGlory:Cast()
+  end
+
+
+-- arcane_torrent,if=holy_power<5
+-- if CDsON() and S.ArcaneTorrent:IsCastable() and (Player:HolyPower() < 5) then
+--   if Cast(S.ArcaneTorrent, Settings.CommonsOGCD.OffGCDasOffGCD.Racials, nil, not Target:IsInRange(8)) then return "arcane_torrent standard 76"; end
+-- end
+-- consecration
+if IsReady("Consecration") and aoerangecheck then
+  return S.Consecration:Cast()
+end
 
 
 

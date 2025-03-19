@@ -753,7 +753,7 @@ if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) then
 		return S.Stealth:Cast()
 	end
 
-  if IsReady("Adrenaline Rush") and RangeCount(30) >=1 and RubimRH.CDsON() and not Finish_Condition() and S.UnderhandedUpperhand:IsAvailable() and Player:BuffDown(S.AdrenalineRush) and Player:BuffDown(S.VanishBuff) then
+  if IsReady("Adrenaline Rush") and Player:IsMoving()  and RangeCount(30) >=1 and RubimRH.CDsON() and not Finish_Condition() and S.UnderhandedUpperhand:IsAvailable() and Player:BuffDown(S.AdrenalineRush) and Player:BuffDown(S.VanishBuff) then
     return S.AdrenalineRush:Cast()
   end
 
