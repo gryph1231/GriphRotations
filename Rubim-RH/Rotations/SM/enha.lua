@@ -600,7 +600,7 @@ local function UseItems(item)
 		select(2, C_Item.GetItemCooldown(trinket2)) < 1.5
 	local trinketblacklist = 202612
 
-	if RubimRH.CDsON() and (AuraUtil.FindAuraByName("Doom Winds", "player") or S.DoomWinds:CooldownRemains()<3) then
+	if RubimRH.CDsON() and (AuraUtil.FindAuraByName("Doom Winds", "player") or S.DoomWinds:CooldownRemains() < 3) and TargetinRange(5) then
 		if trinket1ready and trinket1 ~= trinketblacklist then
 			return Item(118330):Cast()
 		end
@@ -720,7 +720,7 @@ local function Precombat()
 	-- snapshot_stats
 	-- Manually added openers:
 	-- primordial_wave
-	if RubimRH.CDsON()and IsReady("Primordial Wave") and TargetinRange(10) then
+	if RubimRH.CDsON() and IsReady("Primordial Wave") and TargetinRange(10) then
 		return Spell(326059):Cast()
 	end
 	-- feral_spirit
@@ -743,24 +743,25 @@ local function SingleTotemicOpen()
 		return S.FlameShock:Cast()
 	end
 	-- lava_lash,if=!pet.surging_totem.active&talent.lashing_flames.enabled&debuff.lashing_flames.down
-	if IsReady("Lava Lash") and TargetinRange(5) and (not TotemFinder(S.SurgingTotem) and S.LashingFlames:IsAvailable() and Target:DebuffDown(S.LashingFlamesDebuff)) then
+	if IsReady("Lava Lash") and TargetinRange(5) and ((S.LashingFlames:IsAvailable() and Target:DebuffDown(S.LashingFlamesDebuff)) or Player:BuffUp(S.HotHandBuff)) then
 		return S.LavaLash:Cast()
 	end
 	-- surging_totem
-	if IsReady("Surging Totem") and TargetinRange(5) and (not SurgingTotemDown() or numTargetsHit < RangeCount(8)) then
+	if IsReady("Surging Totem") and TargetinRange(5) and (numTargetsHit < RangeCount(8) or not SurgingTotemDown()) then
 		return S.SurgingTotem:Cast()
 	end
 	-- primordial_wave
-	if RubimRH.CDsON() and IsReady("Primordial Wave") and cancastPS == false and TargetinRange(10) then
+	if IsReady("Primordial Wave") and cancastPS == false and TargetinRange(10) then
 		return Spell(326059):Cast()
 	end
-	if RubimRH.CDsON() and Player:BuffUp(S.LegacyoftheFrostWitchBuff) then
+
+	if Player:BuffUp(S.LegacyoftheFrostWitchBuff) then
 		-- feral_spirit,if=buff.legacy_of_the_frost_witch.up
-		if IsReady("Feral Spirit") and TargetinRange(30) then
+		if IsReady("Feral Spirit") and TargetinRange(10) then
 			return S.FeralSpirit:Cast()
 		end
 		-- doom_winds,if=buff.legacy_of_the_frost_witch.up
-		if RubimRH.CDsON() and IsReady("Doom Winds") and TargetinRange(10) then
+		if IsReady("Doom Winds") and Player:BuffDown(S.DoomWindsBuff) and TargetinRange(5) then
 			return S.DoomWinds:Cast()
 		end
 		-- primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&buff.legacy_of_the_frost_witch.up
@@ -802,73 +803,6 @@ local function SingleTotemicOpen()
 		return S.LavaLash:Cast()
 	end
 end
-
-local function AoeTotemicOpen()
-	if IsReady("Surging Totem") and TargetinRange(5) and (not SurgingTotemDown() or numTargetsHit < RangeCount(8)) then
-		return S.SurgingTotem:Cast()
-	end
-
-	-- flame_shock,if=!ticking
-	if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff)) then
-		return S.FlameShock:Cast()
-	end
-	if RubimRH.CDsON() and IsReady("Primordial Wave") and cancastPS == false and TargetinRange(10) then
-		return Spell(326059):Cast()
-	end
-	-- feral_spirit,if=buff.legacy_of_the_frost_witch.up
-	if RubimRH.CDsON() and IsReady("Feral Spirit") and TargetinRange(30) and (MaelstromStacks >= 8) then
-		return S.FeralSpirit:Cast()
-	end
-	if IsReady("Crash Lightning") and TargetinRange(8) and ((Player:BuffStack(S.ElectrostaticWagerBuff) > 9 and Player:BuffUp(S.DoomWindsBuff)) or Player:BuffDown(S.CrashLightningBuff)) then
-		return S.CrashLightning:Cast()
-	end
-	-- doom_winds,if=buff.legacy_of_the_frost_witch.up
-	if RubimRH.CDsON() and IsReady("Doom Winds") and TargetinRange(10) and (MaelstromStacks >= 8) then
-		return S.DoomWinds:Cast()
-	end
-	-- primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&buff.legacy_of_the_frost_witch.up
-	if RubimRH.CDsON() and IsReady("Primordial Wave") and cancastPS == true and C_Spell.GetSpellInfo("Primordial Wave").iconID == 643246
-		and TargetinRange(40) and (Player:BuffStack(S.MaelstromWeapon) >= 9) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) then
-		return Spell(326059):Cast()
-	end
-	-- doo
-	-- lava_lash,if=!pet.surging_totem.active&talent.lashing_flames.enabled&debuff.lashing_flames.down
-	if IsReady("Lava Lash") and TargetinRange(5) and (Player:BuffUp(S.HotHandBuff) or Player:BuffUp(S.LegacyoftheFrostWitchBuff) and Player:BuffUp(S.WhirlingFireBuff)) then
-		return S.LavaLash:Cast()
-	end
-
-	-- sundering,if=buff.legacy_of_the_frost_witch.up
-	if IsReady("Sundering") and TargetinRange(10) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff)) then
-		return S.Sundering:Cast()
-	end
-
-	if MaelstromStacks >= 10 then
-		if IsReady("Elemental Blast") and TargetinRange(10) then
-			return S.ElementalBlast:Cast()
-		end
-		-- doom_winds,if=buff.legacy_of_the_frost_witch.up
-		if IsReady("Chain Lightning") and TargetinRange(8) then
-			return S.ChainLightning:Cast()
-		end
-	end
-	-- sundering,if=buff.legacy_of_the_frost_witch.up
-	if IsReady("Sundering") and TargetinRange(10) and Player:BuffUp(S.LegacyoftheFrostWitchBuff) then
-		return S.Sundering:Cast()
-	end
-	if IsReady("Frost Shock") and TargetinRange(8) and S.Hailstorm:IsAvailable() and Player:BuffUp(S.HailstormBuff) then
-		return S.FrostShock:Cast()
-	end
-	-- surging_totem
-
-	if IsReady("Stormstrike") and TargetinRange(8) then
-		return S.Stormstrike:Cast()
-	end
-	-- lava_lash
-	if IsReady("Lava Lash") and TargetinRange(8) then
-		return S.LavaLash:Cast()
-	end
-end
-
 --   local function Single()
 
 --   -- feral_spirit,if=talent.elemental_spirits.enabled
@@ -1111,7 +1045,7 @@ local function SingleTotemic()
 	if HL.CombatTime() < 20 then
 		local ShouldReturn = SingleTotemicOpen(); if ShouldReturn then return ShouldReturn; end
 	end
-	if IsReady("Surging Totem") and TargetinRange(5) and (not SurgingTotemDown() or numTargetsHit < RangeCount(8)) then
+	if IsReady("Surging Totem") and TargetinRange(5) and not SurgingTotemDown() or (numTargetsHit < RangeCount(8)) then
 		return S.SurgingTotem:Cast()
 	end
 	-- ascendance,if=ti_lightning_bolt&pet.surging_totem.remains>4&(buff.totemic_rebound.stack>=3|buff.maelstrom_weapon.stack>0)
@@ -1126,7 +1060,7 @@ local function SingleTotemic()
 		return S.LavaLash:Cast()
 	end
 	--   feral_spirit
-	if IsReady("Feral Spirit") and TargetinRange(10) and ((S.DoomWinds:CooldownRemains() > 23 or S.DoomWinds:CooldownRemains() < 7) and (S.PrimordialWave:CooldownRemains() < 20 or Player:BuffUp(S.PrimordialStormBuff) or not S.PrimordialStorm:IsAvailable())) then
+	if IsReady("Feral Spirit") and TargetinRange(10) and ((S.DoomWinds:CooldownRemains() > 30 or S.DoomWinds:CooldownRemains() < 7) and (S.PrimordialWave:CooldownRemains() < 20 or Player:BuffUp(S.PrimordialStormBuff) or not S.PrimordialStorm:IsAvailable())) then
 		return S.FeralSpirit:Cast()
 	end
 	-- primordial_wave,if=!dot.flame_shock.ticking&talent.molten_assault.enabled&(raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6)
@@ -1134,7 +1068,7 @@ local function SingleTotemic()
 		return Spell(326059):Cast()
 	end
 	-- doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&!talent.elemental_spirits.enabled&buff.legacy_of_the_frost_witch.up
-	if RubimRH.CDsON() and IsReady("Doom Winds") and TargetinRange(8) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff)) then
+	if RubimRH.CDsON() and IsReady("Doom Winds") and TargetinRange(8) and Player:BuffDown(S.DoomWindsBuff) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff)) then
 		return S.DoomWinds:Cast()
 	end
 	-- primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)&(cooldown.doom_winds.remains>=15|buff.doom_winds.up)
@@ -1175,8 +1109,8 @@ local function SingleTotemic()
 	if IsReady("Lightning Bolt") and TargetinRange(40) and (MaelstromStacks >= 10) and not (Player:BuffUp(S.PrimordialStormBuff) or Player:BuffUp(S.PrimordialStormBuff)) then
 		return S.LightningBolt:Cast()
 	end
-	  -- crash_lightning,if=talent.unrelenting_storms.enabled&talent.alpha_wolf.enabled&alpha_wolf_min_remains=0
-	  if IsReady("Crash Lightning") and TargetinRange(8) and (Player:BuffStack(S.ElectrostaticWagerBuff) >= 4) then
+	-- crash_lightning,if=talent.unrelenting_storms.enabled&talent.alpha_wolf.enabled&alpha_wolf_min_remains=0
+	if IsReady("Crash Lightning") and TargetinRange(8) and (Player:BuffStack(S.ElectrostaticWagerBuff) >= 4) then
 		return S.CrashLightning:Cast()
 	end
 	-- stormstrike,if=buff.doom_winds.up&buff.legacy_of_the_frost_witch.up
@@ -1215,7 +1149,7 @@ local function SingleTotemic()
 		return S.CrashLightning:Cast()
 	end
 	-- frost_shock,if=buff.hailstorm.up
-	if IsReady("Frost Shock") and TargetinRange(40)  then
+	if IsReady("Frost Shock") and TargetinRange(40) then
 		return S.FrostShock:Cast()
 	end
 	-- fire_nova,if=active_dot.flame_shock
@@ -1390,7 +1324,79 @@ end
 --     return S.FrostShock:Cast()
 --   end
 -- end
+local function AoeTotemicOpen()
+	if IsReady("Surging Totem") and TargetinRange(5) and (numTargetsHit < RangeCount(8) or not SurgingTotemDown()) then
+		return S.SurgingTotem:Cast()
+	end
 
+	
+	-- flame_shock,if=!ticking
+	if RubimRH.CDsON() and IsReady("Beserking") and TargetinRange(8) and (S.Doomwinds:CooldownRemains() or S.PrimordialWave:CooldownRemains()) then
+		return S.Berserking:Cast()
+	end
+
+	-- flame_shock,if=!ticking
+	if IsReady("Flame Shock") and TargetinRange(40) and (Target:DebuffDown(S.FlameShockDebuff)) then
+		return S.FlameShock:Cast()
+	end
+
+	-- ((FSTargets() == RangeCount(10) or FSTargets() >= 6))
+	if IsReady("Primordial Wave") and cancastPS == false and TargetinRange(10) then
+		return Spell(326059):Cast()
+	end
+
+	-- feral_spirit,if=buff.legacy_of_the_frost_witch.up
+	if IsReady("Feral Spirit") and TargetinRange(10) and (MaelstromStacks >= 8) then
+		return S.FeralSpirit:Cast()
+	end
+
+	if IsReady("Crash Lightning") and TargetinRange(5) and ((Player:BuffStack(S.ElectrostaticWagerBuff) > 9 and Player:BuffUp(S.DoomWindsBuff)) or Player:BuffDown(S.CrashLightningBuff)) then
+		return S.CrashLightning:Cast()
+	end
+	-- doom_winds,if=buff.legacy_of_the_frost_witch.up
+	if IsReady("Doom Winds") and Player:BuffDown(S.DoomWindsBuff) and TargetinRange(5) and (MaelstromStacks >= 8) then
+		return S.DoomWinds:Cast()
+	end
+	-- primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&buff.legacy_of_the_frost_witch.up
+	if IsReady("Primordial Storm") and cancastPS == true and C_Spell.GetSpellInfo("Primordial Wave").iconID == 643246
+		and TargetinRange(40) and (Player:BuffStack(S.MaelstromWeapon) >= 9) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) then
+		return Spell(326059):Cast()
+	end
+	-- lava_lash
+	if IsReady("Lava Lash") and TargetinRange(8) and (Player:BuffUp(S.HotHandBuff) or Player:BuffUp(S.LegacyoftheFrostWitchBuff) and Player:BuffUp(S.WhirlingFireBuff)) then
+		return S.LavaLash:Cast()
+	end
+	-- sundering,if=buff.legacy_of_the_frost_witch.up
+	if IsReady("Sundering") and TargetinRange(10) and Player:BuffUp(S.LegacyoftheFrostWitchBuff) then
+		return S.Sundering:Cast()
+	end
+	if MaelstromStacks >= 10 then
+		if IsReady("Elemental Blast") and TargetinRange(10) then
+			return S.ElementalBlast:Cast()
+		end
+		-- doom_winds,if=buff.legacy_of_the_frost_witch.up
+		if IsReady("Chain Lightning") and TargetinRange(8) then
+			return S.ChainLightning:Cast()
+		end
+	end
+	-- primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&buff.legacy_of_the_frost_witch.up
+	if IsReady("Primordial Wave") and cancastPS == true and C_Spell.GetSpellInfo("Primordial Wave").iconID == 643246
+		and TargetinRange(40) and (Player:BuffStack(S.MaelstromWeapon) >= 9) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) then
+		return Spell(326059):Cast()
+	end
+	if IsReady("Frost Shock") and TargetinRange(8) and S.Hailstorm:IsAvailable() and Player:BuffUp(S.HailstormBuff) then
+		return S.FrostShock:Cast()
+	end
+	-- surging_totem
+
+	if IsReady("Stormstrike") and TargetinRange(8) then
+		return S.Stormstrike:Cast()
+	end
+
+	if IsReady("Lava Lash") and TargetinRange(8) then
+		return S.LavaLash:Cast()
+	end
+end
 
 
 
@@ -1398,11 +1404,11 @@ end
 
 local function AoeTotemic()
 	-- surging_totem
-	if IsReady("Surging Totem") and TargetinRange(5) and (not SurgingTotemDown() or numTargetsHit < RangeCount(8)) then
+	if IsReady("Surging Totem") and TargetinRange(5) and (numTargetsHit < RangeCount(8) or not SurgingTotemDown()) then
 		return S.SurgingTotem:Cast()
 	end
 	-- run_action_list,name=aoe_totemic_open,if=(cooldown.doom_winds.remains=0|cooldown.sundering.remains=0|!buff.hot_hand.up)&time<15
-	if (S.DoomWinds:CooldownUp() or S.Sundering:CooldownUp() or Player:BuffDown(S.HotHandBuff)) and HL.CombatTime() < 15 then
+	if (S.DoomWinds:CooldownRemains() or S.Sundering:CooldownRemains() or Player:BuffDown(S.HotHandBuff)) and HL.CombatTime() < 15 then
 		local ShouldReturn = AoeTotemicOpen(); if ShouldReturn then return ShouldReturn; end
 	end
 	-- -- ascendance,if=ti_chain_lightning
@@ -1418,20 +1424,20 @@ local function AoeTotemic()
 		return S.CrashLightning:Cast()
 	end
 	--   feral_spirit
-	if RubimRH.CDsON() and IsReady("Feral Spirit") and TargetinRange(10) and ((S.DoomWinds:CooldownRemains() > 30 or S.DoomWinds:CooldownRemains() < 7) and
-			(S.PrimordialWave:CooldownRemains() < 2 or Player:BuffUp(S.PrimordialStormBuff) or not S.PrimordialStorm:IsAvailable())) then
+	if IsReady("Feral Spirit") and TargetinRange(10) and ((S.DoomWinds:CooldownRemains() >= 30 or S.DoomWinds:CooldownRemains() < 7) and
+			(S.PrimordialWave:CooldownRemains() < 2) or Player:BuffUp(S.PrimordialStormBuff) or not (S.PrimordialStorm:IsAvailable())) then
 		return S.FeralSpirit:Cast()
 	end
 	-- doom_winds,if=!talent.elemental_spirits.enabled&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)
-	if RubimRH.CDsON() and IsReady("Doom Winds") and (not S.ElementalSpirits:IsAvailable()) then
+	if RubimRH.CDsON() and IsReady("Doom Winds") and TargetinRange(10) and Player:BuffDown(S.DoomWindsBuff) and (not S.ElementalSpirits:IsAvailable()) then
 		return S.DoomWinds:Cast()
 	end
-	if RubimRH.CDsON() and IsReady("Primordial Wave") and cancastPS == true and C_Spell.GetSpellInfo("Primordial Wave").iconID == 643246
+	if RubimRH.CDsON() and IsReady("Primordial Storm") and cancastPS == true and C_Spell.GetSpellInfo("Primordial Wave").iconID == 643246
 		and TargetinRange(40) and ((MaelstromStacks >= 10) and (S.DoomWinds:CooldownRemains() > 3)) then
 		return Spell(326059):Cast()
 	end
 
-	if RubimRH.CDsON() and IsReady("Primordial Wave") and cancastPS == false and TargetinRange(40) and (FSTargets() == RangeCount(40) or FSTargets() >= 6) then
+	if RubimRH.CDsON() and IsReady("Primordial Wave") and cancastPS == false and TargetinRange(10) and (FSTargets() == RangeCount(10) or FSTargets() >= 6) then
 		return Spell(326059):Cast()
 	end
 
@@ -1579,10 +1585,10 @@ local function AoeTotemic()
 	end
 
 
-	-- -- feral_spirit
-	-- if IsReady("Feral Spirit") and TargetinRange(10) and not S.FlowingSpirits:IsAvailable() then
-	-- 	return S.FeralSpirit:Cast()
-	-- end
+	-- feral_spirit
+	if IsReady("Feral Spirit") and TargetinRange(10) and not S.FlowingSpirits:IsAvailable() then
+		return S.FeralSpirit:Cast()
+	end
 	-- -- doom_winds,if=buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled
 	-- if RubimRH.CDsON() and IsReady("Doom Winds") and TargetinRange(8) and (Player:BuffUp(S.LegacyoftheFrostWitchBuff) or not S.LegacyoftheFrostWitch:IsAvailable()) then
 	-- 	return S.DoomWinds:Cast()
@@ -1643,7 +1649,7 @@ local function AoeTotemic()
 		return S.ElementalBlast:Cast()
 	end
 	-- flame_shock,if=!ticking
-	if IsReady("Flame Shock") and TargetinRange(40)  then
+	if IsReady("Flame Shock") and TargetinRange(40) then
 		return S.FlameShock:Cast()
 	end
 end
@@ -1938,7 +1944,7 @@ local function APL()
 
 
 	----Print-----
-	--   print(Player:BuffStack(S.ElectrostaticWagerBuff) > 8)
+	--   print(Player:BuffDown(S.DoomWindsBuff))
 	-- print('totem2',totemName2)
 
 	-- print('totem3',totemName3)

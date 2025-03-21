@@ -327,7 +327,6 @@ else
 elite = false
 end
 
-
 local spellname, _, _, _, _, _, _, _, _ = UnitCastingInfo("target")
 if spellname == "Icy Shard" and Player:HealthPercentage()<70  then
   mitigateNWBoss = true
@@ -370,7 +369,20 @@ local targetdying = (aoeTTD() < 5 or targetTTD<5)
 
 aoerangecheck = (inRange10>=1 and not Player:IsMoving() or inRange8>=1  and Player:IsMoving())
 
+local currentSpeed, runSpeed, flightSpeed, swimSpeed = GetUnitSpeed("player")
 
+-- BASE_MOVEMENT_SPEED is 7 yards per second (default unmounted ground speed)
+local baseSpeed = 7
+
+-- Convert speeds to percentage relative to base movement speed
+local speedPercent = (currentSpeed / baseSpeed) * 100
+
+local slowThreshold = 90
+if speedPercent < slowThreshold and Player:IsMoving() then
+    freedomme = true
+else
+    freedomme = false
+end
 
 
 if ( Player:BuffRemains(S.ShieldoftheRighteousBuff)<Player:GCD() or (Player:HolyPower()>=5 or Player:BuffRemains(S.ShieldoftheRighteousBuff)<13-Player:GCD()*4 or not Player:BuffUp(S.ShiningLightFreeBuff) and Player:BuffStack(S.ShiningLightBuffStack)==2 and Player:HealthPercentage()<60) and not IsReady(427453,1)) and (targetRange8 or inRange8>=1)  then
@@ -535,7 +547,7 @@ if Player:AffectingCombat() and inRange20>=1 then
 
   if IsReady("Divine Shield")  and S.ArdentDefender:CooldownDown() and S.GuardianofAncientKings:CooldownDown() and S.FinalStand:IsAvailable()
   and (HPpercentloss > 12
-  and Player:HealthPercentage() < 40 or Player:HealthPercentage() < 25)
+  and Player:HealthPercentage() < 40 or Player:HealthPercentage() < 30)
   and useDS then
   return S.DivineShield:Cast()
   end
@@ -558,6 +570,7 @@ if Player:AffectingCombat() and inRange20>=1 then
     end
   end
   
+
   
   end
   
@@ -626,10 +639,16 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
     if IsReady("Lay on Hands") and not UnitIsDeadOrGhost("focus") and Player:GCDRemains()<0.5 and GetFocusTargetHealthPercentage()<30 and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.LayonHandsFocus:Cast()
     end
-    if IsReady("Blessing of Protection") and not UnitIsDeadOrGhost("focus")  and (AuraUtil.FindAuraByName("Raging Gaze", "focus", "HARMFUL") and not AuraUtil.FindAuraByName("Blessing of Sacrifice", "focus", "HARMFUL") or GetFocusTargetHealthPercentage()<40 and inRange30>2 or AuraUtil.FindAuraByName("Morbid Fixation", "focus", "HARMFUL") and inRange30>=1) and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
+    if IsReady("Blessing of Protection") and not AuraUtil.FindAuraByName("Blessing of Sacrifice", "focus", "HARMFUL") and not UnitIsDeadOrGhost("focus") 
+     and (AuraUtil.FindAuraByName("Raging Gaze", "focus", "HARMFUL")  or  GetFocusTargetHealthPercentage()<50 and inRange30>2 
+     or AuraUtil.FindAuraByName("Morbid Fixation", "focus", "HARMFUL") and inRange30>=1) and not AuraUtil.FindAuraByName("Forbearance", "focus", "HARMFUL") then
     return S.BlessingofProtectionFocus:Cast()
     end
-    if IsReady("Blessing of Sacrifice") and not UnitIsDeadOrGhost("focus") and (AuraUtil.FindAuraByName("Raging Gaze", "focus", "HARMFUL") and not AuraUtil.FindAuraByName("Blessing of Protection", "focus", "HARMFUL") or GetFocusTargetHealthPercentage()<40 or blessingofsacrificefocus()  or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
+    if IsReady("Blessing of Sacrifice") and not AuraUtil.FindAuraByName("Blessing of Protection", "focus", "HARMFUL") and not UnitIsDeadOrGhost("focus") 
+    and (AuraUtil.FindAuraByName("Homing Missile", "focus", "HARMFUL")
+     or AuraUtil.FindAuraByName("Burning Fermentation", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Raging Gaze", "focus", "HARMFUL")
+       or GetFocusTargetHealthPercentage()<40 or blessingofsacrificefocus()  
+      or AuraUtil.FindAuraByName("Putrid Waters", "focus", "HARMFUL") or AuraUtil.FindAuraByName("Void Rift", "focus", "HARMFUL") ) then
     return S.BlessingofSacrifice:Cast()
     end
     if IsReady("Word of Glory") and not UnitIsDeadOrGhost("focus") and GetFocusTargetHealthPercentage()<60 and (WordofGlorycast or Player:HolyPower()>=3) and HPpercentloss<10 and Player:HealthPercentage()>75 then
@@ -668,6 +687,11 @@ if IsReady("Intercession",nil,nil,1,1) and UnitIsDeadOrGhost("focus") and rezcha
         and Target:AffectingCombat() and Player:AffectingCombat() and targetRange20 then
         return S.autoattack:Cast()
         end 
+
+        -- if IsReady("Blessing of Freedom") and Player:IsMoving() and freedomme == true then
+        --   return S.BlessingofFreedom:Cast() 
+        --   end
+        
 
         --hold aggro
         if targetRange30 and isTanking == false and not Target:IsAPlayer() and Target:AffectingCombat() and not UnitInRaid("player") and UnitName("target") ~= "Cleave Training Dummy" then 

@@ -577,6 +577,7 @@ function blessingofsacrificefocus()
     if Player:AffectingCombat() then
         for id = 1, 10 do
             local spell = {"Putrid Waters", "Fiery Ricochet","Silenced Speaker" ,"Earth Shatterer","Smash Rock", "Ground Pound","Commanding Roar","Rock Spike",
+            "Rowdy Yell", "Sacrificial Pyre","Battle Cry","Blood and Glory","Explosive Leap",
             }
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId =
@@ -626,6 +627,7 @@ function stunprio()
         'Seismic Slam','Expulse','Demoralizing Shout','Spear Flurry','Elemental Focus','Dazzle','Ice Shard','Refreshing Tide','Thunderstrike','Boiling Rage','Tidal Divergence', --HoI
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
         'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+        "Final Sting",
         'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb','Astral Whirlwind',   -- AA
         'Tectonic Slam','Ice Shield','Cold Claws','Burning Ambition','Flame Dance','Thunderclap',       --RLP
         'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
@@ -662,6 +664,7 @@ function blindprio()
         'Seismic Slam','Expulse','Demoralizing Shout','Spear Flurry','Elemental Focus','Dazzle','Ice Shard','Refreshing Tide','Thunderstrike','Boiling Rage','Tidal Divergence', --HoI
         'Chronomelt','Infinite Bolt','Enervate','Infinite Bolt Volley','Stonebolt','Pulverizing Creations','Binding Grasp','Displace Chronosequence',
         'Dizzying Sands','Time Beam','Rocket Bolt Volley',--DotI
+        "Final Sting",
         'Mystic Blast', 'Monotonous Lecture', 'Arcane Missiles', 'Astral Bomb','Astral Whirlwind',   -- AA
         'Tectonic Slam','Ice Shield','Cold Claws','Burning Ambition','Flame Dance','Thunderclap',       --RLP
         'Piercing Shards','Arcane Fury','Mystic Vapors','Waking Bane','Condensed Frost','Icy Bindings','Ice Cutter','Unstable Power','Tear Flesh','Null Stomp', --AV
@@ -927,7 +930,7 @@ end
 function freedom()
     if Player:AffectingCombat() then
         for id = 1, 10 do
-            local spell = { "Grasping Slash","Bursting Cocoon","Ground Pound","Bramble Burst", "Reaping Winds","Mass Tremor","Curse of Entropy", }
+            local spell = { "Grasping Slash","Bursting Cocoon","Ground Pound","Bramble Burst", "Reaping Winds","Mass Tremor","Curse of Entropy", "Castigator's Shield", "Castigator's Detonation",}
             local unitID = "nameplate" .. id
             local name, text, texture, startTimeMS, endTimeMS, isTradeSkill, castID, notInterruptible, spellId = UnitCastingInfo(unitID)
             local spellName, _, _, startTimeMS, endTimeMS = UnitChannelInfo(unitID)
