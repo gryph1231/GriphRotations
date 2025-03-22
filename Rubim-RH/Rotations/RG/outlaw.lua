@@ -129,8 +129,8 @@ lust5    = Spell(264689),
 lustAT                 = Spell(155145), --arcane torrent
 Supercharger           = Spell(470347),
 }
-
 local S = RubimRH.Spell[260]
+S.CoupdeGrace.TextureSpellID = { 394888 }
 
 if not Item.Rogue then Item.Rogue = {}; end
 
@@ -748,6 +748,7 @@ if not Player:AffectingCombat() and Player:BuffDown(S.VanishBuff) then
       return S.RolltheBones:Cast()
     end
   end
+
 
 	if IsReady("Stealth") and not AuraUtil.FindAuraByName("Stealth", "player") and not Player:BuffUp(S.VanishBuff) and not Player:BuffUp(S.VanishBuff2) and not Player:DebuffUp(S.KillingSpreeDamageDebuff) and not Player:DebuffUp(S.HeartseekingHealthInjector) then
 		return S.Stealth:Cast()

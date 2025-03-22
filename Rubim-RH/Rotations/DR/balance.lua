@@ -80,6 +80,7 @@ SpymastersWebBuff                     = Spell(444959), -- Buff from using Spymas
 -- Debuffs
 MoonfireDebuff                        = Spell(164812),
 RakeDebuff                            = Spell(155722),
+DreamSurge = Spell(433831),
 RipDebuff                             = Spell(1079),
 SunfireDebuff                         = Spell(164815),
 ThrashBearDebuff                      = Spell(192090),
@@ -244,6 +245,22 @@ local CAInc = S.IncarnationTalent:IsAvailable() and S.Incarnation or S.Celestial
 local CAIncCD = S.OrbitalStrike:IsAvailable() and 120 or (S.WhirlingStars:IsAvailable() and 80 or 180)
 local ConvokeCD = S.ElunesGuidance:IsAvailable() and 60 or 120
 
+local function combatmobs40()
+  local totalRange40 = 0
+
+  for id = 1, 15 do -- Keep this at 15 to limit the checks
+      local unitID = "nameplate" .. id
+      if UnitCanAttack("player", unitID) 
+          and C_Spell.IsSpellInRange("Lightning Bolt", unitID)
+          and UnitHealthMax(unitID) > 5 
+          and (UnitAffectingCombat(unitID) or string.sub(UnitName(unitID), -5) == "Dummy") then
+          totalRange40 = totalRange40 + 1
+      end
+  end
+
+  return totalRange40
+end
+
 
 
 local function defensives()
@@ -391,48 +408,49 @@ local function MFactive()
     return MFAoE
   end
   
+
+
 --- ===== CastCycle Functions =====
-local function EvaluateCycleMoonfireAoE()
-  -- target_if=refreshable&(target.time_to_die-remains)>6&(!talent.treants_of_the_moon|spell_targets-active_dot.moonfire_dmg>6|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
-  return Target:DebuffRefreshable(S.MoonfireDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.MoonfireDebuff)) > 6 
-  and (not S.TreantsoftheMoon:IsAvailable() or combatmobs40() - MFactive() > 6 
-  or S.ForceofNature:CooldownRemains() > 3 and Player:BuffDown(S.HarmonyoftheGroveBuff))
-end
 
-local function EvaluateCycleMoonfireST()
-  -- target_if=remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
-  return Target:DebuffRemains(S.MoonfireDebuff) < 3 and (not S.TreantsoftheMoon:IsAvailable() or S.ForceofNature:CooldownRemains() > 3 and Player:BuffDown(S.HarmonyoftheGroveBuff))
-end
-
-local function EvaluateCycleMoonfireST2()
-  -- target_if=refreshable&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
-  return Target:DebuffRefreshable(S.MoonfireDebuff) and (not S.TreantsoftheMoon:IsAvailable() or S.ForceofNature:CooldownRemains() > 3 and Player:BuffDown(S.HarmonyoftheGroveBuff))
-end
-
-local function EvaluateCycleStellarFlareAoE()
-  -- target_if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
-  return Target:DebuffRefreshable(S.StellarFlareDebuff)  and (Target:TimeToDie() - Target:DebuffRemains(S.StellarFlareDebuff) > 7 + combatmobs40())
-end
-
-local function EvaluateCycleStellarFlareST()
-  -- target_if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
-  return Target:DebuffRefreshable(S.StellarFlareDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.StellarFlareDebuff) > 7 + combatmobs40())
-end
-
-local function EvaluateCycleSunfireAoE()
-  -- target_if=refreshable&(target.time_to_die-remains)>6-(spell_targets%2)
-  return Target:DebuffRefreshable(S.SunfireDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.SunfireDebuff)) > 6 - (combatmobs40() / 2)
-end
-
-local function EvaluateCycleSunfireST()
-  -- target_if=remains<3
-  return Target:DebuffRemains(S.SunfireDebuff) < 3
-end
-
-local function EvaluateCycleSunfireST2()
-  -- target_if=refreshable
-  return Target:DebuffRefreshable(S.SunfireDebuff)
-end
+  local function EvaluateCycleMoonfireAoE()
+    -- target_if=refreshable&(target.time_to_die-remains)>6&(!talent.treants_of_the_moon|spell_targets-active_dot.moonfire_dmg>6|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
+    return Target:DebuffRefreshable(S.MoonfireDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.MoonfireDebuff)) > 6 and (not S.TreantsoftheMoon:IsAvailable() or combatmobs40() - MFactive() > 6 or S.ForceofNature:CooldownRemains() > 3 and Player:BuffDown(S.HarmonyoftheGroveBuff))
+  end
+  
+  local function EvaluateCycleMoonfireST()
+    -- target_if=remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
+    return Target:DebuffRemains(S.MoonfireDebuff) < 3 and (not S.TreantsoftheMoon:IsAvailable() or S.ForceofNature:CooldownRemains() > 3 and Player:BuffDown(S.HarmonyoftheGroveBuff))
+  end
+  
+  local function EvaluateCycleMoonfireST2()
+    -- target_if=refreshable&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
+    return Target:DebuffRefreshable(S.MoonfireDebuff) and (not S.TreantsoftheMoon:IsAvailable() or S.ForceofNature:CooldownRemains() > 3 and Player:BuffDown(S.HarmonyoftheGroveBuff))
+  end
+  
+  local function EvaluateCycleStellarFlareAoE()
+    -- target_if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
+    return Target:DebuffRefreshable(S.StellarFlareDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.StellarFlareDebuff) > 7 + combatmobs40())
+  end
+  
+  local function EvaluateCycleStellarFlareST()
+    -- target_if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
+    return Target:DebuffRefreshable(S.StellarFlareDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.StellarFlareDebuff) > 7 + combatmobs40())
+  end
+  
+  local function EvaluateCycleSunfireAoE()
+    -- target_if=refreshable&(target.time_to_die-remains)>6-(spell_targets%2)
+    return Target:DebuffRefreshable(S.SunfireDebuff) and (Target:TimeToDie() - Target:DebuffRemains(S.SunfireDebuff)) > 6 - (combatmobs40() / 2)
+  end
+  
+  local function EvaluateCycleSunfireST()
+    -- target_if=remains<3|refreshable&(hero_tree.keeper_of_the_grove&cooldown.force_of_nature.ready|hero_tree.elunes_chosen&variable.cd_condition)
+    return Target:DebuffRemains(S.SunfireDebuff) < 3 or Target:DebuffRefreshable(S.SunfireDebuff)
+  end
+  
+  local function EvaluateCycleSunfireST2()
+    -- target_if=refreshable
+    return Target:DebuffRefreshable(S.SunfireDebuff)
+  end
 
 
 
@@ -475,22 +493,31 @@ end
 
 
 local function ST()
+
+  if IsReady("Warrior of Elune") and (S.LunarCalling:IsAvailable() or not S.LunarCalling:IsAvailable() and VarEclipseRemains <= 7) then
+    return S.WarriorofElune:Cast()
+  end
+
   -- wrath,if=variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
-  if IsReady("Wrath") and (VarEnterLunar and VarEclipse and VarEclipseRemains < S.Wrath:CastTime() and not VarCDCondition) and not Player:IsMoving() then
+  if IsReady("Wrath") and (VarEnterLunar and VarEclipse and VarEclipseRemains < S.Wrath:CastTime() and not VarCDCondition or HL.CombatTime()<2 and VarEclipseRemains<1) and not Player:IsMoving() then
     return S.Wrath:Cast()
   end
   -- starfire,if=!variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
-  if IsReady("Starfire") and (not VarEnterLunar and VarEclipse and VarEclipseRemains < S.Starfire:CastTime() and not VarCDCondition) and starfirecastmoving and starfireforeclipse then
+  if IsReady("Starfire") and (not VarEnterLunar and VarEclipse and VarEclipseRemains < S.Starfire:CastTime() and not VarCDCondition) and starfirecastmoving  then
     return S.Starfire:Cast()
   end
-  -- sunfire,target_if=remains<3
-  if IsReady("Sunfire") and EvaluateCycleSunfireST() then
-    return S.Sunfire:Cast()
+
+
+    -- sunfire,target_if=remains<3|refreshable&(hero_tree.keeper_of_the_grove&cooldown.force_of_nature.ready|hero_tree.elunes_chosen&variable.cd_condition)
+    if IsReady("Sunfire")  and (Target:DebuffRemains(S.SunfireDebuff)<3 or Target:DebuffRefreshable(S.SunfireDebuff) 
+    and (S.DreamSurge:IsAvailable() and S.ForceofNature:CooldownUp() or S.BoundlessMoonlight:IsAvailable() and VarCDCondition)) then
+      return S.Sunfire:Cast()
+    end
+    -- moonfire,target_if=remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
+    if IsReady("Moonfire") and Target:DebuffRemains(S.MoonfireDebuff)<3  and (not S.TreantsoftheMoon:IsAvailable() or S.ForceofNature:CooldownRemains()>3 and not Player:BuffUp(S.HarmonyoftheGroveBuff)) then
+      return S.Moonfire:Cast()
   end
-  -- moonfire,target_if=remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
-  if IsReady("Moonfire") and EvaluateCycleMoonfireST() then
-    return S.Moonfire:Cast()
-  end
+
 
   if RubimRH.CDsON() and VarCDCondition then
     -- celestial_alignment,if=variable.cd_condition
@@ -509,8 +536,9 @@ local function ST()
   if IsReady("Wrath") and (VarEnterLunar and (not VarEclipse or VarEclipseRemains < S.Wrath:CastTime())) and not Player:IsMoving() then
     return S.Wrath:Cast()
   end
+  
   -- starfire,if=!variable.enter_lunar&(!variable.eclipse|variable.eclipse_remains<cast_time)
-  if IsReady("Starfire") and (not VarEnterLunar and (not VarEclipse or VarEclipseRemains < S.Starfire:CastTime())) and starfirecastmoving and starfireforeclipse then
+  if IsReady("Starfire") and (not VarEnterLunar and (not VarEclipse or VarEclipseRemains < S.Starfire:CastTime())) and starfirecastmoving  then
     return S.Starfire:Cast()
   end
   -- starsurge,if=variable.cd_condition&astral_power.deficit>variable.passive_asp+action.force_of_nature.energize_amount
@@ -534,11 +562,11 @@ local function ST()
     return S.Starsurge:Cast()
   end
   -- sunfire,target_if=refreshable
-  if IsReady("Sunfire") and EvaluateCycleSunfireST2() then
+  if IsReady("Sunfire") and Target:DebuffRefreshable(S.SunfireDebuff)  then
     return S.Sunfire:Cast()
   end
   -- moonfire,target_if=refreshable&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
-  if IsReady("Moonfire") and EvaluateCycleMoonfireST2() then
+  if IsReady("Moonfire") and EvaluateCycleMoonfireST2()  then
     return S.Moonfire:Cast()
   end
   -- stellar_flare,target_if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
@@ -588,7 +616,7 @@ local function ST()
     return S.WildMushroom:Cast()
   end
   -- starfire,if=talent.lunar_calling
-  if IsReady("Starfire") and (S.LunarCalling:IsAvailable()) and starfirecastmoving and starfireforeclipse then
+  if IsReady("Starfire") and (S.LunarCalling:IsAvailable()) and starfirecastmoving  then
     return S.Starfire:Cast()
   end
   -- wrath
@@ -608,7 +636,7 @@ end
 
 local function AoE()
   -- wrath,if=variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time
-  if IsReady("Wrath") and (VarEnterLunar and VarEclipse and VarEclipseRemains < S.Wrath:CastTime()) and not Player:IsMoving() and wrathforeclipse then
+  if IsReady("Wrath") and (VarEnterLunar and VarEclipse and VarEclipseRemains < S.Wrath:CastTime()) and not Player:IsMoving()  then
     return S.Wrath:Cast()
   end
   -- starfire,if=!variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time
@@ -628,7 +656,7 @@ local function AoE()
     return S.Moonfire:Cast()
   end
   -- wrath,if=variable.enter_lunar&(!variable.eclipse|variable.eclipse_remains<cast_time)
-  if IsReady("Wrath") and (VarEnterLunar and (not VarEclipse or VarEclipseRemains < S.Wrath:CastTime())) and not Player:IsMoving() and wrathforeclipse then
+  if IsReady("Wrath") and (VarEnterLunar and (not VarEclipse or VarEclipseRemains < S.Wrath:CastTime())) and not Player:IsMoving()  then
     return S.Wrath:Cast()
   end
   -- starfire,if=!variable.enter_lunar&(!variable.eclipse|variable.eclipse_remains<cast_time)
@@ -715,7 +743,7 @@ local function AoE()
   return S.Starfire:Cast()
   end
   -- wrath
-  if IsReady("Wrath") and not Player:IsMoving() and wrathforeclipse then
+  if IsReady("Wrath") and not Player:IsMoving()  then
     return S.Wrath:Cast()
   end
 
@@ -813,8 +841,8 @@ VarBoatStacks = Player:BuffStack(S.BOATArcaneBuff) + Player:BuffStack(S.BOATNatu
    or S.ConvoketheSpirits:CooldownRemains() > CAInc:FullRechargeTime())) and CAInc:CooldownUp() and Player:BuffDown(CAInc)
 
 
-wrathforeclipse = (CanCastWithTolerance("Wrath") and S.Wrath:Count() <=1 or S.Wrath:Count() ==2)
-starfireforeclipse = (CanCastWithTolerance("Starfire") and S.Starfire:Count() <=1 or S.Starfire:Count() ==2) 
+-- wrathforeclipse = (CanCastWithTolerance("Wrath") and S.Wrath:Count() <=1 or S.Wrath:Count() ==2)
+-- starfireforeclipse = (CanCastWithTolerance("Starfire") and S.Starfire:Count() <=1 or S.Starfire:Count() ==2) 
 -- print(combatmobs40())
 
 
